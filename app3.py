@@ -896,6 +896,8 @@ with tabs[0]:
         import streamlit as st
         import folium
         from streamlit_folium import st_folium
+        # ОПРЕДЕЛЯЕМ БАЗОВЫЙ ПУТЬ (Добавьте это обязательно!)
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
         # --- ПУТЬ К ФАЙЛУ ---
         XLSX_PATH = os.path.join(base_path, "MS tizimi.xlsx")
