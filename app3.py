@@ -556,11 +556,12 @@ with tabs[0]:
 
         # 1. Словарь с путями к фото
     IMAGE_PATHS = {
-            "Метеонаблюдения": r"C:\Users\eltai_a\Desktop\RES\stend\МС.jpg",
-            "Аэрология": r"C:\Users\eltai_a\Desktop\RES\stend\Aerology.jpg",
-            "ДМРЛ": r"C:\Users\eltai_a\Desktop\RES\stend\DMRL.webp",
-            "Кадастр": r"C:\Users\eltai_a\Desktop\RES\stend\Cadastre.png"
+        "Метеонаблюдения": "МС.jpg",
+        "Аэрология": "Aerology.jpg",
+        "ДМРЛ": "DMRL.webp",
+        "Кадастр": "Cadastre.png"
     }
+
 
     @st.dialog("Метеорологический мониторинг", width="large")
     def show_modal(title, img_path):
@@ -749,7 +750,7 @@ with tabs[0]:
     if 'selected_region_id' not in st.session_state:
         st.session_state.selected_region_id = None
 
-    SHP_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\kaz 17 obl.shp"
+    SHP_PATH = "kaz 17 obl.shp"
 
 # --- 2. СЛОВАРЬ КАЗГИДРОМЕТ (ОПТИМИЗИРОВАННЫЙ) ---
     kaz_stats = {
@@ -897,7 +898,7 @@ with tabs[0]:
         from streamlit_folium import st_folium
 
         # --- ПУТЬ К ФАЙЛУ ---
-        XLSX_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\MS tizimi.xlsx"
+        XLSX_PATH = os.path.join(base_path, "MS tizimi.xlsx")
 
         @st.cache_data
         def load_stations_from_excel(path):
@@ -1456,10 +1457,10 @@ with tabs[0]:
             
             # 1. Словарь с путями к фото
     IMAGE_PATHS = {
-                "HP": r"C:\Users\eltai_a\Desktop\RES\stend\HP1.jpeg",
-                "Auto": r"C:\Users\eltai_a\Desktop\RES\stend\Aerology.jpeg",
-                "TDS": r"C:\Users\eltai_a\Desktop\RES\stend\DMRL.jpeg",
-                "Cadastre": r"C:\Users\eltai_a\Desktop\RES\stend\Cadastre.jpeg"
+                "HP": "HP1.jpeg",
+                "Auto": "Aerology.jpeg",
+                "TDS": "DMRL.jpeg",
+                "Cadastre": "Cadastre.jpeg"
         }
 
     # 1. Создаем контейнер для карточек
@@ -1748,9 +1749,9 @@ with tabs[0]:
             # --- БЛОКИ С ПОДРОБНОСТЯМИ ---
             # 1. Словарь с путями к фото (Замените на актуальные пути для агро)
     AGRO_IMAGE_PATHS = {
-                "Soil": r"C:\Users\eltai_a\Desktop\RES\stend\Soil.jpeg",
-                "Phenology": r"C:\Users\eltai_a\Desktop\RES\stend\Pheno.jpeg",
-                "AutoAgro": r"C:\Users\eltai_a\Desktop\RES\stend\AutoAgro.jpeg",
+                "Soil": "DMRL.jpeg",
+                "Phenology": "DMRL.jpeg",
+                "AutoAgro": "DMRL.jpeg",
         }
 
     a_col1, a_col2, a_col3  = st.columns(3)
@@ -1777,8 +1778,8 @@ with tabs[0]:
     def render_final_agro_map():
         st.markdown("### 🗺️ Карта агромониторинга по областям")
         
-        excel_path = r"C:\Users\eltai_a\Desktop\RES\stend\MS,AMP.AAP 2026.xlsx"
-        shapefile_path = r"C:\Users\eltai_a\Desktop\RES\stend\kaz 17 obl.shp"
+        excel_path = os.path.join(BASE_DIR, "data", "MS,AMP.AAP 2026.xlsx")
+        shapefile_path = os.path.join(BASE_DIR, "data", "kaz 17 obl.shp")"
         
         try:
             df = pd.read_excel(excel_path, sheet_name=0, header=None)
@@ -2004,8 +2005,8 @@ with tabs[0]:
         st.markdown("### 🌡️ Сравнительный анализ климатических показателей")
 
         # Пути к файлам (используем ваши локальные пути)
-        path_temp2 = r"C:\Users\eltai_a\Desktop\RES\stend\agro2.jpg"
-        path_gtk = r"C:\Users\eltai_a\Desktop\RES\stend\agro 3.png"
+        path_temp2 = "agro2.jpg"
+        path_gtk = "agro 3.png"
 
         # Создаем две колонки для визуального сопоставления
         col_left, col_right = st.columns(2)
@@ -3749,7 +3750,6 @@ with tabs[4]:
 
                 with col_b:
                     st.write(f"🏢 **Объекты:** {details['объекты']}")
-                    st.write(f"📑 **Малых рек:** {details.get('малые_реки', 'нет данных')}")
                     st.write(f"📊 **Норма (W):** {item_stats['норма']} км³/год")
                 # НОВЫЙ БЛОК: Текстовая справка по рекам
                         
