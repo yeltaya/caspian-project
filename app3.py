@@ -1779,7 +1779,7 @@ with tabs[0]:
         st.markdown("### 🗺️ Карта агромониторинга по областям")
         
         excel_path = os.path.join(BASE_DIR, "data", "MS,AMP.AAP 2026.xlsx")
-        shapefile_path = os.path.join(BASE_DIR, "data", "kaz 17 obl.shp")"
+        shapefile_path = os.path.join(BASE_DIR, "data", "kaz 17 obl.shp")
         
         try:
             df = pd.read_excel(excel_path, sheet_name=0, header=None)
