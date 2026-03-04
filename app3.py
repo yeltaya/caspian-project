@@ -2301,8 +2301,7 @@ with tabs[0]:
             st.write("##") 
             st.link_button("СКАЧАТЬ ПРИЛОЖЕНИЕ", "https://play.google.com/store/apps/details?id=kz.khm.airkz", use_container_width=True)
         
-        st.markdown("---")
-        
+       
     def s_footer():
         st.markdown("---") # Разделительная линия
         
@@ -2336,9 +2335,8 @@ with tabs[0]:
         <div class="footer">
             <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 250px; margin: 10px;">
-                    <h4 style="margin-bottom: 10px;">🇰🇿 РГП «Казгидромет»</h4>
-                    <p>Национальная гидрометеорологическая служба Казахстана.<br>
-                    Данные агромониторинга и гидрологии.</p>
+                    <h4 style="margin-bottom: 10px;"> РГП «Казгидромет»</h4>
+                    <p>Ведение метеорологического, гидрологического и экологического мониторинга на всей территории Республики Казахстан.</p>
                 </div>
                 <div style="flex: 1; min-width: 250px; margin: 10px;">
                     <h4 style="margin-bottom: 10px;">📞 Контакты</h4>
@@ -2349,7 +2347,6 @@ with tabs[0]:
                 <div style="flex: 1; min-width: 250px; margin: 10px;">
                     <h4 style="margin-bottom: 10px;">🔗 Полезные ссылки</h4>
                     <p><a href="https://www.kazhydromet.kz" target="_blank">Официальный сайт</a><br>
-                    <a href="https://www.kazhydromet.kz/ru/agrometeorologiya/agrometeorologicheskiy-ezhenedelnik" target="_blank">Агромониторинг</a></p>
                 </div>
             </div>
             <hr style="border: 0.5px solid #ccc; width: 80%; margin: 15px auto;">
