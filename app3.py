@@ -3898,7 +3898,20 @@ with tabs[4]:
                 tickcolor='black'  # Цвет маленьких черточек у цифр
             )
 
-           # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+
+
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
+                orientation="h",
+                y=-0.3,
+                x=0.4,
+                xanchor="center",
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
+            )
+
+
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
             fig_local = go.Figure()
             excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
 
@@ -3937,6 +3950,8 @@ with tabs[4]:
                     )
     
             )
+
+
             # --- 2. ГРАФИК ПРИТОКА (ИСПРАВЛЕННЫЙ) ---
             fig_pritok = go.Figure()
 
