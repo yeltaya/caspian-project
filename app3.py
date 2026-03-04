@@ -3927,18 +3927,6 @@ with tabs[4]:
             ))
 
             # Тренд
-            import numpy as np
-            z = np.polyfit(years, pritok_values, 1)
-            p = np.poly1d(z)
-
-            fig_pritok.add_trace(go.Scatter(
-                x=years,
-                y=p(years),
-                mode='lines',
-                name='Линейная (тренд)',
-                line=dict(color='black', width=1, dash='dot')
-            ))
-
             fig_pritok.update_layout(
                 title="<b>ПРИТОК БАССЕЙНА</b>",
                 xaxis_title="ГОД",
