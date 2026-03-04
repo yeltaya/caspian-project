@@ -3051,7 +3051,14 @@ with tabs[1]:
         with col_viz:
             st.subheader("🗺️ Визуализация")
             gif_path = os.path.join(IMG_DIR, "udpp.gif")
-
+# Проверяем наличие файла, чтобы приложение не упало
+            if os.path.exists(gif_path):
+                st.image(gif_path, use_container_width=True)
+            else:
+                st.error(f"Файл не найден: {gif_path}")
+                # Для отладки можно вывести список файлов в этой папке:
+                # st.write(os.listdir(IMG_DIR))
+                
         st.divider()
 
         # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
