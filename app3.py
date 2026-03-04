@@ -3812,7 +3812,21 @@ with tabs[4]:
             if "river_table_data" in details:
                 st.markdown("---")
                 st.markdown("#### 📋 Сводная таблица гидрологических показателей")
-                
+               
+                st.markdown("""
+                    <style>
+                    [data-testid="stTable"] {
+                        font-size: 20px;
+                    }
+                    /* Для старых версий Streamlit или специфических контейнеров */
+                    .css-110034a, .stDataFrame div {
+                        font-size: 1.2rem !important;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+    
+
+               
                 # Создаем DataFrame из списка словарей
                 df_rivers = pd.DataFrame(details["river_table_data"])
                 
