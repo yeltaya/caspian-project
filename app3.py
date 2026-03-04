@@ -2965,9 +2965,6 @@ with tabs[1]:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     
     def show_forecast_process():
-        # --- ЕДИНЫЙ CSS СТИЛЬ ---
-        IMG_DIR = BASE_DIR
-
         st.markdown("""
                 <style>
                 .big-climate-card {
@@ -3006,13 +3003,13 @@ with tabs[1]:
         col_tech, col_viz = st.columns([1.5, 1], gap="large")
             
         with col_tech:
-                st.title("Долгосрочный прогноз погоды")
-                tab1, tab2, tab3, tab4 = st.tabs(["⏳ Декада", "📅 Месяц", "🍂 Сезон", "💡 Шторма"])
+            st.title("Долгосрочный прогноз погоды")
+            tab1, tab2, tab3, tab4 = st.tabs(["⏳ Декада", "📅 Месяц", "🍂 Сезон", "💡 Шторма"])
                 
             with tab1:
-                    st.subheader("🗓️ Декадное прогнозирование")
-                    st.info("**График выпуска:** 30-31, 10 и 20 числа каждого месяца.")
-                    st.markdown("""
+                st.subheader("🗓️ Декадное прогнозирование")
+                st.info("**График выпуска:** 30-31, 10 и 20 числа каждого месяца.")
+                st.markdown("""
                     * **Детализация:** Прогноз с указанием конкретных атмосферных явлений.
                     * **Параметры:** Температура (мин/макс), осадки, туман, гололед, метель.
                     * **Точность:** Средняя оправдываемость составляет **70-75%**.
@@ -3020,18 +3017,18 @@ with tabs[1]:
                     """)
 
             with tab2:
-                    st.subheader("📋 Прогноз на месяц")
-                    st.success("**Тип:** Научно-консультативный бюллетень.")
-                    st.markdown("""
+                st.subheader("📋 Прогноз на месяц")
+                st.success("**Тип:** Научно-консультативный бюллетень.")
+                st.markdown("""
                     * **Методика:** Использование метода **года-аналога** (поиск схожих процессов в архивах за 50 лет).
                     * **Технологии:** Обработка данных 200+ станций в системе **QGIS**.
                     * **Выпуск:** Подготовка до 25 числа, публикация до 1 числа месяца.
                     """)
 
             with tab3:
-                    st.subheader("🍂 Сезонный мониторинг")
-                    st.warning("**Охват:** 6 выпусков в год (на сезоны и полугодия).")
-                    st.markdown("""
+                st.subheader("🍂 Сезонный мониторинг")
+                st.warning("**Охват:** 6 выпусков в год (на сезоны и полугодия).")
+                st.markdown("""
                     * **Анализ:** Мониторинг средней тропосферы (**АТ-500**).
                     * **Глобальные факторы:** Учет явлений **Эль-Ниньо** и **Ла-Нинья**.
                     * **Заблаговременность:** Прогноз до **6 месяцев** (носит фоновый характер).
@@ -3039,20 +3036,18 @@ with tabs[1]:
                     """)
 
             with tab4:
-                    st.subheader("💡 Штормовые предупреждения")
-                    st.error("**Статус:** Экстренное оповещение об ОЯ и СГЯ.")
-                    st.markdown("""
+                st.subheader("💡 Штормовые предупреждения")
+                st.error("**Статус:** Экстренное оповещение об ОЯ и СГЯ.")
+                st.markdown("""
                     * **Критерии:** Отклонение t° от нормы на **7°C и более**, ветер > 25 м/с, сильные осадки.
                     * **Каналы:** Рассылка через SMS, мобильное приложение **Darmen** и телеканалы.
                     * **Время:** Заблаговременность выпуска от **12 до 48 часов**.
                     * **Режим:** Круглосуточный мониторинг дежурными синоптиками.
                     """)
-
-            st.divider()
-                
+               
         with col_viz:
-                st.subheader("🗺️ Визуализация")
-                st.image(os.path.join(BASE_DIR, "udpp.gif"), use_container_width=True)
+            st.subheader("🗺️ Визуализация")
+            st.image(os.path.join(BASE_DIR, "udpp.gif"), use_container_width=True)
         st.divider()
         
         
@@ -3061,10 +3056,10 @@ with tabs[1]:
         col_climat_data, col_forecast_data = st.columns([1.2, 1], gap="medium")
 
         with col_climat_data:
-                st.markdown("#### 📜 Климатическая характеристика: Март")
+            st.markdown("#### 📜 Климатическая характеристика: Март")
                 
                 # ВАЖНО: Обновляем стили для увеличения шрифта
-                st.markdown("""
+            st.markdown("""
                     <style>
                     .big-climate-card {
                         background: #ffffff;
@@ -3094,7 +3089,7 @@ with tabs[1]:
                 """, unsafe_allow_html=True)
 
                 # Ряд из карточек
-                st.markdown("""
+            st.markdown("""
                 <div style="display: flex; gap: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
                         <div class="section-title">🌡️ Температура</div>
@@ -3122,10 +3117,10 @@ with tabs[1]:
                 """, unsafe_allow_html=True)
                 
         with col_forecast_data:
-                st.markdown("#### 🔍 Прогноз: Март 2026")
+            st.markdown("#### 🔍 Прогноз: Март 2026")
                 
                 # Ряд 1: Температурные отклонения и Осадки
-                st.markdown("""
+            st.markdown("""
                 <div style="display: flex; gap: 10px;">
                     <div class="big-climate-card" style="flex: 1; border-right: 5px solid #d9534f; border-left: none;">
                         <div class="section-title">🌡️ Отклонение t°</div>
@@ -3167,8 +3162,8 @@ with tabs[1]:
                 """, unsafe_allow_html=True)
 
                 
-        if __name__ == "__main__":
-            show_forecast_process()
+    if __name__ == "__main__":
+        show_forecast_process()
     
        
     with st.container():
