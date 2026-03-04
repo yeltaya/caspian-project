@@ -1781,8 +1781,11 @@ with tabs[0]:
     def render_final_agro_map():
         st.markdown("### 🗺️ Карта агромониторинга по областям")
         
-        excel_path = os.path.join(BASE_DIR, "data", "MS,AMP.AAP 2026.xlsx")
-        shapefile_path = os.path.join(BASE_DIR, "data", "kaz 17 obl.shp")
+        # ОПРЕДЕЛЯЕМ БАЗОВЫЙ ПУТЬ (Добавьте это обязательно!)
+        base_path = os.path.dirname(os.path.abspath(__file__))  
+        XLSX_PATH = os.path.join(base_path, "MS,AMP.AAP 2026.xlsx")
+        
+		SHP_PATH = "kaz 17 obl.shp"
         
         try:
             df = pd.read_excel(excel_path, sheet_name=0, header=None)
