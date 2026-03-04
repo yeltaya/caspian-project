@@ -1785,7 +1785,7 @@ with tabs[0]:
         base_path = os.path.dirname(os.path.abspath(__file__))  
         XLSX_PATH = os.path.join(base_path, "MS,AMP.AAP 2026.xlsx")
         
-		SHP_PATH = "kaz 17 obl.shp"
+	SHP_PATH = "kaz 17 obl.shp"
         
         try:
             df = pd.read_excel(excel_path, sheet_name=0, header=None)
