@@ -3249,9 +3249,13 @@ with tabs[4]:
     import os
     import pandas as pd
     import plotly.graph_objects as go
-
+     
+    
+    base_path = os.path.dirname(os.path.abspath(__file__))
+        
+        
     # --- НАСТРОЙКИ И ДАННЫЕ ---
-    FOLDER_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\UMGPGR\шейпы"
+    FOLDER_PATH = os.path.join(BASE_DIR, "shp")
 
     VXB_STATS = {
         "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": None},
