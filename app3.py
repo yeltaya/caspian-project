@@ -3052,20 +3052,7 @@ with tabs[1]:
                 
             with col_viz:
                 st.subheader("🗺️ Визуализация")
-                
-                # 1. Формируем путь. Если гифка в папке stend, добавьте "stend" в join
-                gif_filename = "udpp.gif"
-                gif_path = os.path.join(BASE_DIR, gif_filename) 
-                
-                # 2. Отображение (с проверкой, чтобы не было красных ошибок)
-                if os.path.exists(gif_path):
-                    st.image(gif_path, use_container_width=True)
-                else:
-                    st.warning(f"⚠️ Файл {gif_filename} не найден")
-                    # Подсказка для отладки (поможет понять, где файл)
-                    # st.write("Искал тут:", gif_path) 
-
-            # Divider должен быть ВНЕ блока with, чтобы разделить всю секцию
+                st.image(os.path.join(BASE_DIR, "udpp.gif"), use_container_width=True)
             st.divider()
         
         
