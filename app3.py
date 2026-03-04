@@ -1512,8 +1512,9 @@ with tabs[0]:
 
     import plotly.graph_objects as go
     import streamlit as st
+    import numpy as np
 
-    def render_hydro_chart():
+    def render_hydro_chart_3d():
         years = [
             1917, 1938, 1940, 1972, 1981, 1985, 1987, 1992, 1995, 2000, 
             2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010, 2011, 2015, 
@@ -1525,81 +1526,56 @@ with tabs[0]:
             310, 352, 377, 377, 410, 442
         ]
 
+        # Преобразуем года в текст для корректного отображения на оси
+        years_str = [str(y) for y in years]
+        
         main_color = '#1f4e79'
         highlight_color = '#EF553B'
-        
-        # Создаем список цветов с градиентным эффектом (через контуры)
-        colors = [main_color] * (len(years) - 1) + [highlight_color] 
+        colors = [main_color] * (len(years) - 1) + [highlight_color]
 
         fig = go.Figure()
 
-        # Добавляем "тень" под графиком для объема (Area chart)
-        fig.add_trace(go.Scatter(
-            x=years, y=posts,
-            fill='tozeroy',
-            mode='none',
-            fillcolor='rgba(31, 78, 121, 0.1)', # Легкая заливка для объема
-            hoverinfo='skip'
-        ))
-
-        # Основной график со столбцами
-        fig.add_trace(go.Bar(
-            x=years,
-            y=posts,
-            text=posts,
-            textposition='outside',
-            marker=dict(
-                color=colors,
-                line=dict(color='white', width=1), # Белый контур придает четкость и объем
-                pattern=dict(shape="/", solidity=0.1) # Легкая штриховка для текстурности
-            ),
-            hovertemplate="<b>Год: %{x}</b><br>Количество постов: %{y}<extra></extra>"
-        ))
+        # В Plotly "объемный эксель" имитируется через построение 3D поверхностей (Mesh3d) 
+        # или через Scatter3d с типом 'bar'. Самый простой и эффективный способ для 
+        # Streamlit — использование 3D-маркеров, имитирующих бары.
+        
+        for i in range(len(years)):
+            fig.add_trace(go.Mesh3d(
+                # Создаем "коробочку" для каждого года
+                x=[i-0.3, i-0.3, i+0.3, i+0.3, i-0.3, i-0.3, i+0.3, i+0.3],
+                y=[-0.3, 0.3, 0.3, -0.3, -0.3, 0.3, 0.3, -0.3],
+                z=[0, 0, 0, 0, posts[i], posts[i], posts[i], posts[i]],
+                i=[7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2],
+                j=[3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3],
+                k=[0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6],
+                color=colors[i],
+                opacity=1,
+                flatshading=True,
+                name=years_str[i],
+                hovertemplate=f"Год: {years[i]}<br>Постов: {posts[i]}<extra></extra>"
+            ))
 
         fig.update_layout(
-            title="<b>Динамика развития гидрологической сети (1917-2026 гг.)</b>",
-            xaxis=dict(
-                title="Год",
-                type='category',
-                tickangle=-45,
-                gridcolor='rgba(255,255,255,0.05)'
+            title="Динамика развития гидрологической сети (3D вид)",
+            scene=dict(
+                xaxis=dict(title='Период (годы)', tickvals=list(range(len(years))), ticktext=years_str),
+                yaxis=dict(title='', showticklabels=False), # Скрываем глубину
+                zaxis=dict(title='Количество постов', range=[0, 600]),
+                # Настройка угла обзора как в Excel (под наклоном)
+                camera=dict(
+                    eye=dict(x=1.5, y=-1.5, z=1.2)
+                ),
+                aspectmode='manual',
+                aspectratio=dict(x=2, y=0.5, z=1)
             ),
-            yaxis=dict(
-                title="Количество постов",
-                range=[0, 600],
-                showgrid=True,
-                gridcolor='rgba(255,255,255,0.1)'
-            ),
-            # Эффект перспективы через наклон и отступы
-            bargap=0.2, 
-            plot_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=0, r=0, b=0, t=50),
             paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color="white"),
-            margin=dict(l=20, r=20, t=80, b=40),
-        )
-
-        # Улучшенная аннотация
-        fig.add_annotation(
-            x=len(years)-1, 
-            y=442,
-            text="ПЛАН 2026<br>442 ПОСТА",
-            showarrow=True,
-            arrowhead=3,
-            arrowsize=1,
-            arrowwidth=2,
-            arrowcolor=highlight_color,
-            ax=0, ay=-60,
-            font=dict(color="white", size=12),
-            bgcolor=highlight_color,
-            bordercolor="white",
-            borderwidth=2,
-            borderpad=4,
-            opacity=0.9
+            font=dict(color="white")
         )
 
         st.plotly_chart(fig, use_container_width=True)
 
-    render_hydro_chart()
+    render_hydro_chart_3d()
 
         # --- 1. ПОДГОТОВКА ДАННЫХ ---
     data = {
