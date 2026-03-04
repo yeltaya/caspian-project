@@ -1151,32 +1151,35 @@ with tabs[0]:
             ))
 
             # Настройка внешнего вида
-            # Настройка внешнего вида
             fig.update_layout(
-                height=400,
-                margin=dict(l=10, r=10, t=30, b=10),
+                height=450,
+                margin=dict(l=50, r=10, t=50, b=50), # Увеличили отступы (l и b), чтобы крупные цифры не обрезались
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                legend=dict(
+                    orientation="h", 
+                    yanchor="bottom", 
+                    y=1.02, 
+                    xanchor="right", 
+                    x=1,
+                    font=dict(size=14) # Размер текста в легенде
+                ),
                 font=dict(color="#dee2e6"),
-                bargap=0.3, 
+                bargap=0.3,
                 yaxis=dict(
                     showgrid=True, 
                     gridcolor='rgba(200,200,200,0.1)',
                     zeroline=False,
-                    title="Кол-во оповещений",
-                    # ДОБАВЛЕНО: шрифт для чисел по оси Y
-                    tickfont=dict(size=16), 
-                    # ДОБАВЛЕНО: шрифт для заголовка оси Y
-                    titlefont=dict(size=16) 
+                    title=dict(text="Кол-во оповещений", font=dict(size=16)), # Размер заголовка оси Y
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ЧИСЕЛ ВДОЛЬ ОСИ Y
                 ),
                 xaxis=dict(
                     dtick=1, 
                     showgrid=False,
-                    # ДОБАВЛЕНО: шрифт для годов по оси X
-                    tickfont=dict(size=16) 
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ГОДОВ ВДОЛЬ ОСИ X
                 )
             )
+
 
 
             st.plotly_chart(fig, use_container_width=True)
