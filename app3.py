@@ -4075,18 +4075,6 @@ with tabs[4]:
                 hovertemplate="<b>Приток (Иле)</b><br>Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
-            valid_idx = np.isfinite(pritok_list_b)
-            if any(valid_idx):
-                z_b = np.polyfit(np.array(years_b)[valid_idx], np.array(pritok_list_b)[valid_idx], 1)
-                p_b = np.poly1d(z_b)
-                
-                fig_b_pritok.add_trace(go.Scatter(
-                    x=years_b,
-                    y=p_b(years_b),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot')
-                ))
             
             fig_b_pritok.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК ИЗ КИТАЯ (Р. ИЛЕ)</b>",
@@ -4242,18 +4230,6 @@ with tabs[4]:
             ))
 
             # Расчет линии тренда
-            valid_idx_ert = np.isfinite(pritok_vals_ert)
-            if any(valid_idx_ert):
-                z_ert = np.polyfit(np.array(years_ert)[valid_idx_ert], np.array(pritok_vals_ert)[valid_idx_ert], 1)
-                p_ert = np.poly1d(z_ert)
-                
-                fig_ert_pritok.add_trace(go.Scatter(
-                    x=years_ert,
-                    y=p_ert(years_ert),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot') # Пунктир
-                ))
             
             fig_ert_pritok.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК ИЗ КНР (ЕРТИССКИЙ ВХБ)</b>",
@@ -4567,20 +4543,6 @@ with tabs[4]:
                 hovertemplate="Год: %{x}<br>Сумма: %{y:.2f} м³/с<extra></extra>"
             ))
 
-            # Расчет линии тренда для суммарного стока
-            y_total = df_es['Суммарный местный сток (+1)'].values
-            x_total = df_es['Год'].values
-            valid_mask = np.isfinite(y_total)
-            if any(valid_mask):
-                z_es = np.polyfit(x_total[valid_mask], y_total[valid_mask], 1)
-                p_es = np.poly1d(z_es)
-                fig_es_total.add_trace(go.Scatter(
-                    x=x_total,
-                    y=p_es(x_total),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot')
-                ))
             
             fig_es_total.update_layout(
                 title="<b>СУММАРНЫЕ ПОВЕРХНОСТНЫЕ ВОДНЫЕ РЕСУРСЫ</b>",
@@ -4729,21 +4691,6 @@ with tabs[4]:
                 hovertemplate="Год: %{x}<br>Сумма: %{y:.2f} м³/с<extra></extra>"
             ))
 
-            # Расчет линии тренда
-            y_n_total = df_n['Суммарный сток'].values
-            x_n_total = df_n['Год'].values
-            valid_mask_n = np.isfinite(y_n_total)
-            
-            if any(valid_mask_n):
-                z_n = np.polyfit(x_n_total[valid_mask_n], y_n_total[valid_mask_n], 1)
-                p_n = np.poly1d(z_n)
-                fig_n_total.add_trace(go.Scatter(
-                    x=x_n_total,
-                    y=p_n(x_n_total),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot')
-                ))
             
             fig_n_total.update_layout(
                 title="<b>СУММАРНЫЕ ВОДНЫЕ РЕСУРСЫ (ОСНОВНЫЕ РЕКИ)</b>",
