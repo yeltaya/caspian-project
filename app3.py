@@ -3052,16 +3052,21 @@ with tabs[1]:
 
         with col_viz:
             st.subheader("🗺️ Визуализация")
-            gif_path = os.path.join(IMG_DIR, "udpp.gif")
-# Проверяем наличие файла, чтобы приложение не упало
+            
+            # ПРАВИЛЬНЫЙ ПУТЬ: используем IMG_DIR и только имя файла
+            # Больше никаких C:\Users\...
+            gif_filename = "udpp.gif"
+            gif_path = os.path.join(IMG_DIR, gif_filename)
+            
             if os.path.exists(gif_path):
                 st.image(gif_path, use_container_width=True)
             else:
-                st.error(f"Файл не найден: {gif_path}")
-                # Для отладки можно вывести список файлов в этой папке:
-                # st.write(os.listdir(IMG_DIR))
-                
+                # Если файл не найден, выводим подсказку (видна только вам при отладке)
+                st.warning(f"Файл {gif_filename} не найден в папке ресурсов.")
+                st.info(f"Путь, по которому искал сервер: {gif_path}")
+
         st.divider()
+    
 
         # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
         col_climat_data, col_forecast_data = st.columns([1.2, 1], gap="medium")
