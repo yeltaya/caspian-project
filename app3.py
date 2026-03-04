@@ -2302,11 +2302,11 @@ with tabs[0]:
             st.link_button("СКАЧАТЬ ПРИЛОЖЕНИЕ", "https://play.google.com/store/apps/details?id=kz.khm.airkz", use_container_width=True)
         
        
-    def s_footer():
+def s_footer():
         st.markdown("---") # Разделительная линия
         
         # CSS для фиксации футера или просто красивого оформления
-        footer_style = """
+    footer_style = """
         <style>
         .footer {
             left: 0;
@@ -2328,10 +2328,10 @@ with tabs[0]:
         }
         </style>
         """
-        st.markdown(footer_style, unsafe_allow_html=True)
+    st.markdown(footer_style, unsafe_allow_html=True)
 
         # HTML-содержимое футера
-        footer_html = """
+    footer_html = """
         <div class="footer">
             <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 250px; margin: 10px;">
@@ -2353,10 +2353,10 @@ with tabs[0]:
             <p style="font-size: 12px; color: #666;">© 2026 РГП Казгидромет. Все права защищены.</p>
         </div>
         """
-        st.markdown(footer_html, unsafe_allow_html=True)
+    st.markdown(footer_html, unsafe_allow_html=True)
 
     # Вызов функции в конце кода
-    s_footer()
+s_footer()
 
 
 
