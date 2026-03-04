@@ -1285,23 +1285,25 @@ with tabs[0]:
             ))
             fig_sgy_total.update_layout(
                 height=350, 
-                # Увеличиваем отступы l (слева) и b (снизу) минимум до 50, 
-                # чтобы крупные цифры не обрезались краем контейнера
-                margin=dict(l=60, r=20, t=30, b=60),
+                # l=80 и b=80 дадут запас для шрифта 16
+                margin=dict(l=80, r=20, t=30, b=80),
                 plot_bgcolor='rgba(0,0,0,0)', 
                 paper_bgcolor='rgba(0,0,0,0)', 
                 font=dict(color="white"),
                 
-                # Увеличение шрифта для горизонтальной оси (X)
+                # Горизонтальная ось
                 xaxis=dict(
                     tickfont=dict(size=16),
-                    titlefont=dict(size=16)
+                    title=dict(text="Год", font=dict(size=16)), # Добавил заголовок, если нужен
+                    automargin=True,
+                    type='category' # Гарантирует, что года/категории встанут ровно
                 ),
                 
-                # Увеличение шрифта для вертикальной оси (Y)
+                # Вертикальная ось
                 yaxis=dict(
                     tickfont=dict(size=16),
-                    titlefont=dict(size=16)
+                    title=dict(text="Количество", font=dict(size=16)),
+                    automargin=True
                 )
             )
             st.plotly_chart(fig_sgy_total, use_container_width=True)
