@@ -3948,7 +3948,19 @@ with tabs[4]:
                 )
             )
 
+            # --- 2. ГРАФИК ПРИТОКА (ИСПРАВЛЕННЫЙ) ---
             fig_pritok = go.Figure()
+
+            # Убедитесь, что years — это список чисел или массив numpy
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
+                line=dict(color='black', width=1.5),
+                marker=dict(color='#3498db', size=7, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
+            ))
 
             fig_pritok.update_layout(
                 title="<b>ПРИТОК БАССЕЙНА</b>",
@@ -3958,28 +3970,30 @@ with tabs[4]:
                 template="plotly_white",
                 hovermode="x",
                 legend=legend_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                # Обновляем ось X
+                margin=dict(l=60, r=20, t=60, b=100),
                 xaxis=dict(
+                    type='linear',             # Явно указываем тип оси
+                    autorange="reversed",      # Годы наоборот
                     showgrid=True, 
                     gridcolor='lightgrey', 
                     linecolor='black', 
                     mirror=True, 
                     tickangle=90,
-                    autorange="reversed",      # ГОДЫ НАОБОРОТ
-                    title_font=axis_font_settings,
-                    tickfont=tick_font_settings
+                    title_font=dict(size=18),  # Крупный шрифт заголовка
+                    tickfont=dict(size=14),    # Крупные цифры
+                    # Если годы не отображаются, можно принудительно задать диапазон:
+                    # range=[max(years), min(years)] 
                 ),
-                # Обновляем ось Y
                 yaxis=dict(
                     showgrid=True, 
                     gridcolor='lightgrey', 
                     linecolor='black', 
                     mirror=True,
-                    title_font=axis_font_settings,
-                    tickfont=tick_font_settings
+                    title_font=dict(size=18),
+                    tickfont=dict(size=14)
                 )
             )
+
 
             # Отображение
             g_col1, g_col2 = st.columns(2)
