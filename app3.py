@@ -2616,7 +2616,6 @@ with tabs[1]:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     # 1. ОСНОВНЫЕ ПУТИ
-    IMG_DIR = r"C:\Users\eltai_a\Desktop\RES\stend"
     IMG_DIR = os.path.join(BASE_DIR, "assets")
 
     # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
