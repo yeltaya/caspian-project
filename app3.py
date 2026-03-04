@@ -2054,8 +2054,6 @@ with tabs[0]:
 
         st.plotly_chart(fig, use_container_width=True)
 
-
-
     # 4. Наполнение правой колонки легендой
     with col_legend:
         st.markdown("<br><br>", unsafe_allow_html=True) # Отступ сверху
@@ -2081,9 +2079,6 @@ with tabs[0]:
                 ''', 
                 unsafe_allow_html=True
             )
-
-
-    st.markdown("---")
 
 
     import streamlit as st
@@ -2405,6 +2400,7 @@ st.markdown("""
         </p>
     </div>
 """, unsafe_allow_html=True)
+
     
 # ПРОГНОЗ ПОГОДЫ   
 with tabs[1]:
@@ -2570,7 +2566,7 @@ with tabs[1]:
     st.markdown("<h3 style='text-align: center; color: #1E3A8A;'>📊 Средняя оправдываемость прогнозов</h3>", unsafe_allow_html=True)
 
     # Верхний ряд: Основные метрики (интерактивные "кнопки")
-    col_acc1, col_acc2, col_acc3, col_acc4  = st.columns(4)
+    col_acc1, col_acc2, col_acc3, col_acc4, col_acc5  = st.columns(5)
     with col_acc1:
         st.metric("Суточные прогнозы", "96%", help="Высочайшая точность подтверждена верификацией")
     with col_acc2:
@@ -2579,7 +2575,8 @@ with tabs[1]:
         st.metric("Прогнозы на неделю", "91%")
     with col_acc4:
         st.metric("Прогнозы на месяц", "75%")
-
+    with col_acc5:
+        st.metric("Прогнозы на сезон", "65%")
     st.divider()
 
 
@@ -3095,7 +3092,7 @@ with tabs[1]:
         
 
             # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
-        col_climat_data, col_forecast_data = st.columns([1.2, 1], gap="medium")
+        col_climat_data, col_viz1 = st.columns([1.2, 1], gap="medium")
 
         with col_climat_data:
             st.markdown("#### 📜 Климатическая характеристика: Март")
@@ -3157,56 +3154,15 @@ with tabs[1]:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-                
-        with col_forecast_data:
-            st.markdown("#### 🔍 Прогноз: Март 2026")
-                
-                # Ряд 1: Температурные отклонения и Осадки
-            st.markdown("""
-                <div style="display: flex; gap: 10px;">
-                    <div class="big-climate-card" style="flex: 1; border-right: 5px solid #d9534f; border-left: none;">
-                        <div class="section-title">🌡️ Отклонение t°</div>
-                        <div class="info-item">
-                            📈 <span class="forecast-status-high">ВЫШЕ НОРМЫ НА 1°:</span> 
-                            <span class="val-bold">На большей части страны</span>
-                        </div>
-                        <div class="info-item">
-                            ✅ <span class="forecast-status-ok">ОКОЛО НОРМЫ:</span> 
-                            <span class="val-bold">Жетісу, Ю-В Алматинской, ВКО, Ю-В Абай</span>
-                        </div>
-                    </div>
-                    <div class="big-climate-card" style="flex: 1; border-right: 5px solid #5bc0de; border-left: none;">
-                        <div class="section-title">💧 Осадки</div>
-                        <div class="info-item">
-                            🌧️ <span class="forecast-status-high">БОЛЬШЕ НОРМЫ:</span> 
-                            <span class="val-bold">Большая часть РК</span>
-                        </div>
-                        <div class="info-item">
-                            ✅ <span class="forecast-status-ok">ОКОЛО НОРМЫ:</span> 
-                            <span class="val-bold">Актюб., Ұлытау, Кост., Акмол., Мангист., Кызылорд.</span>
-                        </div>
-                    </div>
-                </div>
+        with col_viz1:
+            st.subheader("🗺️ Визуализация")
+            st.image(os.path.join(BASE_DIR, "udpp1.gif"), use_container_width=True)
+            
+            st.divider()
+        
 
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <div class="big-climate-card" style="flex: 1; border-right: 5px solid #f0ad4e; border-left: none;">
-                        <div class="section-title">📍 Средние значения (t°)</div>
-                        <div class="info-item">🔹 <span class="val-bold">0...-7°С:</span> Большая часть территории РК</div>
-                        <div class="info-item">🔹 <span class="val-bold">+5...+10°С:</span> Туркестан., Жамбыл., Юг Кызылорд., Мангист.</div>
-                        <div class="info-item">🔹 <span class="val-bold">-8...-11°С:</span> Крайний восток страны</div>
-                    </div>
-                    <div class="big-climate-card" style="flex: 1; border-right: 4px solid #1d4d2b; border-left: none; background: #f8f9fa;">
-                        <div class="section-title">🧬 Год-аналог</div>
-                        <div class="info-item">📅 Выбранный период: <span class="val-bold">2025 год</span></div>
-                        <div class="info-item">📊 <span style="font-size: 0.85rem;">Синоптические процессы текущего года имеют высокую степень корреляции с весной 2025 г.</span></div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+     
 
-                
-    if __name__ == "__main__":
-        show_forecast_process()
-    
        
     with st.container():
         st.markdown("<h3 style='color: #1d4d2b; text-align: center; margin-bottom: 20px;'>💼 Отраслевое применение прогнозов</h3>", unsafe_allow_html=True)
