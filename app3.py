@@ -3887,6 +3887,16 @@ with tabs[4]:
             
             axis_font_settings = dict(size=18, family="Arial", color="black") # Цвет строго черный
             tick_font_settings = dict(size=14, family="Arial", color="black")
+            # --- Общие параметры для осей (чтобы не дублировать) ---
+            axis_style = dict(
+                showgrid=True, 
+                gridcolor='lightgrey', 
+                linecolor='black', # Цвет самой линии оси
+                linewidth=2,       # Делаем линию оси жирнее, чтобы она была заметной
+                mirror=True, 
+                title_font=axis_font_settings,
+                tickfont=tick_font_settings
+            )
 
 
 # Настройки для легенды в 3 столбца
@@ -3929,26 +3939,15 @@ with tabs[4]:
                 legend=legend_style,
                 margin=dict(l=60, r=20, t=60, b=100), # Выровняли отступы с притоком
                 xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black', # Толстая черная рамка
-                    linewidth=1.5,
-                    mirror=True, 
-                    tickangle=90,
-                    autorange="reversed", 
-                    title_font=axis_font_settings,
-                    tickfont=tick_font_settings
-                ),
-                yaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black',
-                    linewidth=1.5,
-                    mirror=True, 
-                    zeroline=False,
-                    title_font=axis_font_settings,
-                    tickfont=tick_font_settings
-                )
+                        **axis_style,
+                        tickangle=90,
+                        autorange="reversed" # Годы наоборот
+                    ),
+                    yaxis=dict(
+                        **axis_style,
+                        zeroline=False
+                    )
+    
             )
 
 
@@ -3976,27 +3975,16 @@ with tabs[4]:
                 legend=legend_style,
                 margin=dict(l=60, r=20, t=60, b=100), # Выровняли отступы с притоком
                 xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black', # Толстая черная рамка
-                    linewidth=1.5,
-                    mirror=True, 
-                    tickangle=90,
-                    autorange="reversed", 
-                    title_font=axis_font_settings,
-                    tickfont=tick_font_settings
-                ),
-                yaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black',
-                    linewidth=1.5,
-                    mirror=True, 
-                    zeroline=False,
-                    title_font=axis_font_settings,
-                    tickfont=tick_font_settings
+                        **axis_style,
+                        type='linear',
+                        tickangle=90,
+                        autorange="reversed" # Годы наоборот
+                    ),
+                    yaxis=dict(
+                        **axis_style
+                    )
                 )
-            )
+
 
 
 
