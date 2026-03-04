@@ -1008,7 +1008,7 @@ with tabs[0]:
 
 # --- ПРАВАЯ КОЛОНКА ---
         with col_right:
-            st.subheader("ℹ️ СЕТЬ")
+            st.subheader("ℹ️ Государственная сеть")
             
             if selected_id:
                 # --- БЛОК ВЫБРАННОГО РЕГИОНА ---
@@ -1510,67 +1510,94 @@ with tabs[0]:
             st.write("##")
 
 
-               # Данные на основе предоставленного изображения
-            years = [
-                1917, 1938, 1940, 1972, 1981, 1985, 1987, 1992, 1995, 2000, 
-                2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010, 2011, 2015, 
-                2018, 2020, 2021, 2024, 2025, 2026
-            ]
-            posts = [
-                123, 123, 150, 416, 506, 486, 432, 354, 322, 165, 
-                209, 206, 215, 226, 251, 276, 291, 292, 298, 302, 
-                310, 352, 377, 377, 410, 442
-            ]
+    import plotly.graph_objects as go
+    import streamlit as st
 
     def render_hydro_chart():
-            # Основной цвет — темно-синий (#1f4e79), акцентный для 2026 — красный (#EF553B)
-            main_color = '#1f4e79'
-            highlight_color = '#EF553B'
-            colors = [main_color] * (len(years) - 1) + [highlight_color] 
+        years = [
+            1917, 1938, 1940, 1972, 1981, 1985, 1987, 1992, 1995, 2000, 
+            2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010, 2011, 2015, 
+            2018, 2020, 2021, 2024, 2025, 2026
+        ]
+        posts = [
+            123, 123, 150, 416, 506, 486, 432, 354, 322, 165, 
+            209, 206, 215, 226, 251, 276, 291, 292, 298, 302, 
+            310, 352, 377, 377, 410, 442
+        ]
 
-            fig = go.Figure()
+        main_color = '#1f4e79'
+        highlight_color = '#EF553B'
+        
+        # Создаем список цветов с градиентным эффектом (через контуры)
+        colors = [main_color] * (len(years) - 1) + [highlight_color] 
 
-            fig.add_trace(go.Bar(
-                x=years,
-                y=posts,
-                text=posts,
-                textposition='outside',
-                marker_color=colors, 
-                hovertemplate="<b>Год: %{x}</b><br>Количество постов: %{y}<extra></extra>"
-            ))
+        fig = go.Figure()
 
-            fig.update_layout(
-                title="Динамика развития гидрологической сети (1917-2026 гг.)",
-                xaxis=dict(
-                    title="Год",
-                    type='category', # Убирает пустые промежутки между годами
-                    tickangle=-45
-                ),
-                yaxis=dict(
-                    title="Количество постов",
-                    range=[0, 600],
-                    showgrid=True,
-                    gridcolor='rgba(200, 200, 200, 0.2)'
-                ),
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                margin=dict(l=20, r=20, t=60, b=20),
-                font=dict(color="white")
-            )
-            
-            # Аннотация для выделения текущего статуса (2026 г. - 442 поста)
-            fig.add_annotation(
-                x=len(years)-1, 
-                y=442,
-                text="Текущий статус (2026)",
-                showarrow=True,
-                arrowhead=2,
-                ax=0,
-                ay=-40,
-                font=dict(color=highlight_color, size=13, family="Arial Black")
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
+        # Добавляем "тень" под графиком для объема (Area chart)
+        fig.add_trace(go.Scatter(
+            x=years, y=posts,
+            fill='tozeroy',
+            mode='none',
+            fillcolor='rgba(31, 78, 121, 0.1)', # Легкая заливка для объема
+            hoverinfo='skip'
+        ))
+
+        # Основной график со столбцами
+        fig.add_trace(go.Bar(
+            x=years,
+            y=posts,
+            text=posts,
+            textposition='outside',
+            marker=dict(
+                color=colors,
+                line=dict(color='white', width=1), # Белый контур придает четкость и объем
+                pattern=dict(shape="/", solidity=0.1) # Легкая штриховка для текстурности
+            ),
+            hovertemplate="<b>Год: %{x}</b><br>Количество постов: %{y}<extra></extra>"
+        ))
+
+        fig.update_layout(
+            title="<b>Динамика развития гидрологической сети (1917-2026 гг.)</b>",
+            xaxis=dict(
+                title="Год",
+                type='category',
+                tickangle=-45,
+                gridcolor='rgba(255,255,255,0.05)'
+            ),
+            yaxis=dict(
+                title="Количество постов",
+                range=[0, 600],
+                showgrid=True,
+                gridcolor='rgba(255,255,255,0.1)'
+            ),
+            # Эффект перспективы через наклон и отступы
+            bargap=0.2, 
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="white"),
+            margin=dict(l=20, r=20, t=80, b=40),
+        )
+
+        # Улучшенная аннотация
+        fig.add_annotation(
+            x=len(years)-1, 
+            y=442,
+            text="ПЛАН 2026<br>442 ПОСТА",
+            showarrow=True,
+            arrowhead=3,
+            arrowsize=1,
+            arrowwidth=2,
+            arrowcolor=highlight_color,
+            ax=0, ay=-60,
+            font=dict(color="white", size=12),
+            bgcolor=highlight_color,
+            bordercolor="white",
+            borderwidth=2,
+            borderpad=4,
+            opacity=0.9
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
     render_hydro_chart()
 
