@@ -2962,7 +2962,7 @@ with tabs[1]:
     st.divider()
 
 #ДОЛГОСРОЧНЫЕ ПРОГНОЗЫ
-
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     def show_forecast_process():
         # --- ЕДИНЫЙ CSS СТИЛЬ ---
     IMG_DIR = os.path.join(BASE_DIR)
