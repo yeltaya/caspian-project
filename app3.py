@@ -3050,7 +3050,7 @@ with tabs[1]:
 
         with col_viz:
             st.subheader("🗺️ Визуализация")
-            st.image(r"C:\Users\eltai_a\Desktop\RES\stend\udpp.gif", use_container_width=True)
+            gif_path = os.path.join(IMG_DIR, "udpp.gif")
 
         st.divider()
 
