@@ -3052,9 +3052,7 @@ with tabs[1]:
 
             with col_viz:
                 st.subheader("🗺️ Визуализация")
-                
-                # ПРАВИЛЬНЫЙ ПУТЬ: используем IMG_DIR и только имя файла
-                # Больше никаких C:\Users\...
+
                 gif_filename = "udpp.gif"
                 gif_path = os.path.join(IMG_DIR, gif_filename)
                 
