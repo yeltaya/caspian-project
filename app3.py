@@ -2035,7 +2035,7 @@ with tabs[0]:
                 type='category',        # ЯВНО УКАЗЫВАЕМ, ЧТО ЭТО ТЕКСТ
                 tickfont=dict(
                     size=16, 
-                    family="Arial Black", 
+                    family="Arial", 
                     color="#1f4e79"     # ТЕМНО-СИНИЙ (не белый!)
                 ),
                 automargin=False        # Отключаем авто, так как мы задали l=250 вручную
