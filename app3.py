@@ -2963,9 +2963,10 @@ with tabs[1]:
 
 #ДОЛГОСРОЧНЫЕ ПРОГНОЗЫ
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    
     def show_forecast_process():
         # --- ЕДИНЫЙ CSS СТИЛЬ ---
-        IMG_DIR = os.path.join(BASE_DIR)
+        IMG_DIR = BASE_DIR
 
         st.markdown("""
                 <style>
@@ -3051,10 +3052,22 @@ with tabs[1]:
                 
             with col_viz:
                 st.subheader("🗺️ Визуализация")
-
+                
+                # 1. Формируем путь. Если гифка в папке stend, добавьте "stend" в join
                 gif_filename = "udpp.gif"
+                gif_path = os.path.join(BASE_DIR, gif_filename) 
+                
+                # 2. Отображение (с проверкой, чтобы не было красных ошибок)
+                if os.path.exists(gif_path):
+                    st.image(gif_path, use_container_width=True)
+                else:
+                    st.warning(f"⚠️ Файл {gif_filename} не найден")
+                    # Подсказка для отладки (поможет понять, где файл)
+                    # st.write("Искал тут:", gif_path) 
 
+            # Divider должен быть ВНЕ блока with, чтобы разделить всю секцию
             st.divider()
+        
         
 
             # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
