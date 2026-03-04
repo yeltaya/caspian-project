@@ -3884,9 +3884,11 @@ with tabs[4]:
             pritok_values = [487, 679, 818, 711, 539, 766, 724, 535, 680, 913, 562, 592, 1050, 884, 1050, 728, 719, 446, 899, 917, 989, 444, 387, 603, 715, 364, 797, 368, 457, 1600, 624, 445, 444, 536, 145, 132, 197, 229, 320, 448, 362, 361, 371, 287, 310, 314, 278, 407, 631, 408, 455, 444, 513, 680, 817, 458, 500, 448, 757, 588, 446, 429, 674, 865, 745, 706, 523, 570, 393, 463, 791, 424, 567, 430, 558, 464, 387, 710, 482, 442, 390, 298, 403, 465, 534]
 
             import plotly.graph_objects as go
+            
+            axis_font_settings = dict(size=18, family="Arial", color="black") # Цвет строго черный
+            tick_font_settings = dict(size=14, family="Arial", color="black")
 
-            axis_font_settings = dict(size=16, family="Arial", color="black")  # Размер шрифта осей
-            tick_font_settings = dict(size=14, family="Arial", color="black")  # Размер шрифта цифр на осях
+
 # Настройки для легенды в 3 столбца
             legend_style = dict(
                 orientation="h",
@@ -3896,6 +3898,7 @@ with tabs[4]:
                 entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
                 entrywidthmode="fraction" 
             )
+
 
             # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
             fig_local = go.Figure()
@@ -3924,29 +3927,30 @@ with tabs[4]:
                 template="plotly_white",
                 hovermode="x unified",
                 legend=legend_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                # Обновляем ось X
+                margin=dict(l=60, r=20, t=60, b=100), # Выровняли отступы с притоком
                 xaxis=dict(
                     showgrid=True, 
                     gridcolor='lightgrey', 
-                    linecolor='black', 
+                    linecolor='black', # Толстая черная рамка
+                    linewidth=1.5,
                     mirror=True, 
                     tickangle=90,
-                    autorange="reversed",      # ГОДЫ НАОБОРОТ
-                    title_font=axis_font_settings, # Размер названия оси
-                    tickfont=tick_font_settings    # Размер цифр
+                    autorange="reversed", 
+                    title_font=axis_font_settings,
+                    tickfont=tick_font_settings
                 ),
-                # Обновляем ось Y
                 yaxis=dict(
                     showgrid=True, 
                     gridcolor='lightgrey', 
-                    linecolor='black', 
+                    linecolor='black',
+                    linewidth=1.5,
                     mirror=True, 
                     zeroline=False,
-                    title_font=axis_font_settings, # Размер названия оси
-                    tickfont=tick_font_settings    # Размер цифр
+                    title_font=axis_font_settings,
+                    tickfont=tick_font_settings
                 )
             )
+
 
             # --- 2. ГРАФИК ПРИТОКА (ИСПРАВЛЕННЫЙ) ---
             fig_pritok = go.Figure()
@@ -3962,37 +3966,38 @@ with tabs[4]:
                 hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
-            fig_pritok.update_layout(
-                title="<b>ПРИТОК БАССЕЙНА</b>",
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
                 height=500,
                 template="plotly_white",
-                hovermode="x",
+                hovermode="x unified",
                 legend=legend_style,
-                margin=dict(l=60, r=20, t=60, b=100),
+                margin=dict(l=60, r=20, t=60, b=100), # Выровняли отступы с притоком
                 xaxis=dict(
-                    type='linear',             # Явно указываем тип оси
-                    autorange="reversed",      # Годы наоборот
                     showgrid=True, 
                     gridcolor='lightgrey', 
-                    linecolor='black', 
+                    linecolor='black', # Толстая черная рамка
+                    linewidth=1.5,
                     mirror=True, 
                     tickangle=90,
-                    title_font=dict(size=18),  # Крупный шрифт заголовка
-                    tickfont=dict(size=14),    # Крупные цифры
-                    # Если годы не отображаются, можно принудительно задать диапазон:
-                    # range=[max(years), min(years)] 
+                    autorange="reversed", 
+                    title_font=axis_font_settings,
+                    tickfont=tick_font_settings
                 ),
                 yaxis=dict(
                     showgrid=True, 
                     gridcolor='lightgrey', 
-                    linecolor='black', 
-                    mirror=True,
-                    title_font=dict(size=18),
-                    tickfont=dict(size=14)
+                    linecolor='black',
+                    linewidth=1.5,
+                    mirror=True, 
+                    zeroline=False,
+                    title_font=axis_font_settings,
+                    tickfont=tick_font_settings
                 )
             )
+
 
 
             # Отображение
