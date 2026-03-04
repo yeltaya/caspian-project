@@ -1195,11 +1195,27 @@ with tabs[0]:
                 aspect="auto"
             )
             fig_heat.update_layout(
-                height=400, margin=dict(l=0, r=0, t=20, b=0),
+                height=400, 
+                # Увеличил l (слева) и b (снизу), чтобы крупный шрифт осей не вылезал за границы
+                margin=dict(l=50, r=10, t=30, b=50),
                 paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color="white")
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color="white"),
+                
+                # Настройка шрифта для горизонтальной оси (X)
+                xaxis=dict(
+                    tickfont=dict(size=16),  # Размер шрифта подписей
+                    titlefont=dict(size=16)  # Размер шрифта заголовка оси (если есть)
+                ),
+                
+                # Настройка шрифта для вертикальной оси (Y)
+                yaxis=dict(
+                    tickfont=dict(size=16),  # Размер шрифта подписей
+                    titlefont=dict(size=16)  # Размер шрифта заголовка оси (если есть)
+                )
             )
             st.plotly_chart(fig_heat, use_container_width=True)
+
 
         # --- 4. АВТОМАТИЧЕСКОЕ АНАЛИТИЧЕСКОЕ РЕЗЮМЕ ---
     st.markdown("---")
@@ -1266,10 +1282,28 @@ with tabs[0]:
                 text=total_sgy, textposition='auto'
             ))
             fig_sgy_total.update_layout(
-                height=350, margin=dict(l=0, r=0, t=20, b=0),
-                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color="white")
+                height=350, 
+                # Увеличиваем отступы l (слева) и b (снизу) минимум до 50, 
+                # чтобы крупные цифры не обрезались краем контейнера
+                margin=dict(l=60, r=20, t=30, b=60),
+                plot_bgcolor='rgba(0,0,0,0)', 
+                paper_bgcolor='rgba(0,0,0,0)', 
+                font=dict(color="white"),
+                
+                # Увеличение шрифта для горизонтальной оси (X)
+                xaxis=dict(
+                    tickfont=dict(size=16),
+                    titlefont=dict(size=16)
+                ),
+                
+                # Увеличение шрифта для вертикальной оси (Y)
+                yaxis=dict(
+                    tickfont=dict(size=16),
+                    titlefont=dict(size=16)
+                )
             )
             st.plotly_chart(fig_sgy_total, use_container_width=True)
+
 
     with col_right:
                 st.markdown("**Рейтинг регионов по количеству СГЯ (2020-2025)**")
@@ -1301,18 +1335,40 @@ with tabs[0]:
                     coloraxis_showscale=False # Убираем цветовую шкалу справа
                 )
 
-                # Настройка осей и подписей
+                # 1. Настройка самих столбцов и цифр НАД ними
                 fig_sgy_reg.update_traces(
                     textposition='outside', # Цифры снаружи столбцов
+                    # УВЕЛИЧИВАЕМ ШРИФТ ЦИФР НАД СТОЛБЦАМИ
+                    textfont=dict(size=16, color="white"), 
                     marker_line_color='rgb(8,48,107)',
                     marker_line_width=1,
                     opacity=0.9
                 )
 
-                fig_sgy_reg.update_xaxes(showgrid=True, gridcolor='rgba(255,255,255,0.1)', title="Всего СГЯ")
-                fig_sgy_reg.update_yaxes(title="")
+                # 2. Настройка горизонтальной оси (X)
+                fig_sgy_reg.update_xaxes(
+                    showgrid=True, 
+                    gridcolor='rgba(255,255,255,0.1)', 
+                    title=dict(text="Всего СГЯ", font=dict(size=18)), # Размер заголовка оси
+                    tickfont=dict(size=16) # Размер чисел на оси X
+                )
+
+                # 3. Настройка вертикальной оси (Y)
+                fig_sgy_reg.update_yaxes(
+                    title="",
+                    tickfont=dict(size=16) # Размер названий (регионов/категорий) на оси Y
+                )
+
+                # 4. Не забываем про отступы в layout, чтобы крупные названия не обрезались
+                fig_sgy_reg.update_layout(
+                    margin=dict(l=100, r=20, t=40, b=60), # Увеличил отступ слева (l) для названий регионов
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color="white")
+                )
 
                 st.plotly_chart(fig_sgy_reg, use_container_width=True)
+
                 
         # --- 3. АВТОМАТИЧЕСКОЕ РЕЗЮМЕ ПО СГЯ ---
     max_sgy_year = 2023
@@ -1349,7 +1405,7 @@ with tabs[0]:
                     margin: 5px 0;
                 }
                 .record-city {
-                    font-size: 0.9em;
+                    font-size: 1.5em;
                     color: #546e7a;
                     font-weight: 600;
                     text-transform: uppercase;
@@ -1551,24 +1607,30 @@ with tabs[0]:
             ))
 
             fig.update_layout(
-                title="Динамика развития гидрологической сети (1917-2026 гг.)",
+                title=dict(
+                    text="Динамика развития гидрологической сети (1917-2026 гг.)",
+                    font=dict(size=20) # Увеличили размер заголовка
+                ),
                 xaxis=dict(
-                    title="Год",
-                    type='category', # Убирает пустые промежутки между годами
-                    tickangle=-45
+                    title=dict(text="Год", font=dict(size=18)), # Шрифт заголовка оси X
+                    type='category',
+                    tickangle=-45,
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ГОДОВ
                 ),
                 yaxis=dict(
-                    title="Количество постов",
+                    title=dict(text="Количество постов", font=dict(size=18)), # Шрифт заголовка оси Y
                     range=[0, 600],
                     showgrid=True,
-                    gridcolor='rgba(200, 200, 200, 0.2)'
+                    gridcolor='rgba(200, 200, 200, 0.2)',
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ЧИСЕЛ (100, 200...)
                 ),
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                margin=dict(l=20, r=20, t=60, b=20),
+                # УВЕЛИЧИЛИ ОТСТУПЫ (l=60, b=80), чтобы крупные подписи влезли
+                margin=dict(l=60, r=20, t=80, b=80), 
                 font=dict(color="white")
             )
-            
+
             # Аннотация для выделения текущего статуса (2026 г. - 442 поста)
             fig.add_annotation(
                 x=len(years)-1, 
@@ -1617,11 +1679,40 @@ with tabs[0]:
             ))
             
             fig.update_layout(
-                barmode='group', height=700, margin=dict(l=0, r=50, t=0, b=0),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color="white"),
-                xaxis=dict(showgrid=True, gridcolor='rgba(200,200,200,0.1)')
+                barmode='group', 
+                height=700, 
+                # Увеличиваем отступы l и b, чтобы крупные подписи (регионы/годы) не обрезались
+                margin=dict(l=80, r=50, t=50, b=80), 
+                
+                # Увеличиваем шрифт в легенде
+                legend=dict(
+                    orientation="h", 
+                    yanchor="bottom", 
+                    y=1.02, 
+                    xanchor="right", 
+                    x=1,
+                    font=dict(size=16) # РАЗМЕР ШРИФТА ЛЕГЕНДЫ
+                ),
+                
+                plot_bgcolor='rgba(0,0,0,0)', 
+                paper_bgcolor='rgba(0,0,0,0)', 
+                font=dict(color="white"),
+                
+                # Настройка горизонтальной оси (X)
+                xaxis=dict(
+                    showgrid=True, 
+                    gridcolor='rgba(200,200,200,0.1)',
+                    tickfont=dict(size=16), # РАЗМЕР ШРИФТА ОСИ X
+                    titlefont=dict(size=18)
+                ),
+                
+                # Настройка вертикальной оси (Y)
+                yaxis=dict(
+                    tickfont=dict(size=16), # РАЗМЕР ШРИФТА ОСИ Y
+                    titlefont=dict(size=18)
+                )
             )
+
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
     with col_info:
@@ -1912,17 +2003,35 @@ with tabs[0]:
                     hovertemplate=f"<b>Зона {zone}</b>: %{{x}}%<extra></extra>"
                 ))
 
-        # Настройки отображения графика
+# Настройки отображения графика
         fig.update_layout(
             barmode='stack',
             height=750,
-            margin=dict(l=10, r=10, t=10, b=10),
+            # Увеличиваем отступ слева (l=150), чтобы влезли длинные названия категорий
+            # Увеличиваем отступ сверху (t=30) для комфортного визуального восприятия
+            margin=dict(l=150, r=20, t=30, b=20),
+            
+            # Ось X скрыта, но если захотите включить шрифт, добавьте tickfont сюда
             xaxis=dict(visible=False, range=[0, 100]),
-            yaxis=dict(autorange="reversed", tickfont=dict(size=12, family="Arial")),
+            
+            # Настройка оси Y (Названия категорий)
+            yaxis=dict(
+                autorange="reversed", 
+                # УВЕЛИЧИВАЕМ ШРИФТ НАЗВАНИЙ СЛЕВА
+                tickfont=dict(size=16, family="Arial Black", color="white")
+            ),
+            
             showlegend=False,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)'
         )
+
+        # Если у вас есть цифры внутри столбцов (traces), 
+        # добавьте этот блок для увеличения их шрифта:
+        fig.update_traces(
+            textfont=dict(size=16, family="Arial Black")
+        )
+        
         
         # Добавление вертикальных линий сетки для красоты
         fig.update_xaxes(showgrid=True, gridcolor='lightgrey', dtick=10)
@@ -1947,7 +2056,7 @@ with tabs[0]:
                         margin-top: 2px;
                         border: 1px solid #444;">
                     </div>
-                    <div style="font-size: 0.8rem; line-height: 1.1;">
+                    <div style="font-size: 1.0rem; line-height: 1.1;">
                         <strong>{zone}</strong>: {info["desc"]}
                     </div>
                 </div>
