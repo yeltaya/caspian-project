@@ -3201,7 +3201,7 @@ with tabs[1]:
                 min-height: 40px; /* Фиксированная высота для заголовка */
             }
             .no-img-body { 
-                font-size: 0.8rem; 
+                font-size: 1.0rem; 
                 color: #444; 
                 line-height: 1.2;
                 font-weight: 500;
@@ -3367,7 +3367,7 @@ with tabs[4]:
                     # Разделяем на Местный сток и Приток
                     m_col1, m_col2 = st.columns(2)
                     with m_col1:
-                        st.metric("🏔️ Местный сток", f"{cur_stats['местные']} км³")
+                        st.metric("💧︎ Местный сток", f"{cur_stats['местные']} км³")
                     with m_col2:
                         st.metric("💧 Приток", f"{cur_stats['приток']} км³")
                     
