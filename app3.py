@@ -1783,7 +1783,7 @@ with tabs[0]:
         
         # ОПРЕДЕЛЯЕМ БАЗОВЫЙ ПУТЬ (Добавьте это обязательно!)
         base_path = os.path.dirname(os.path.abspath(__file__))  
-        excel_path = os.path.join(base_path, "data", "MS,AMP.AAP 2026.xlsx")
+        excel_path = os.path.join(base_path, "MS,AMP.AAP 2026.xlsx")
         shapefile_path = os.path.join(base_path, "data", "kaz 17 obl.shp")
         
         try:
