@@ -3049,19 +3049,10 @@ with tabs[1]:
 
                 st.divider()
                 
-
             with col_viz:
                 st.subheader("🗺️ Визуализация")
 
                 gif_filename = "udpp.gif"
-                gif_path = os.path.join(IMG_DIR, gif_filename)
-                
-                if os.path.exists(gif_path):
-                    st.image(gif_path, use_container_width=True)
-                else:
-                    # Если файл не найден, выводим подсказку (видна только вам при отладке)
-                    st.warning(f"Файл {gif_filename} не найден в папке ресурсов.")
-                    st.info(f"Путь, по которому искал сервер: {gif_path}")
 
             st.divider()
         
