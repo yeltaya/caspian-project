@@ -3164,6 +3164,127 @@ with tabs[1]:
     if __name__ == "__main__":
         show_forecast_process()
     
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+
+def show_april_forecast_block(data_df):
+    """
+    data_df: DataFrame с вашими данными (число, KOKSHETAY, ASTANA и т.д.)
+    """
+    # --- СТИЛИЗАЦИЯ (Ваш текущий стиль) ---
+    st.markdown("""
+        <style>
+        .big-climate-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 10px;
+            border: 1px solid #eef0f2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            color: #1d4d2b;
+            font-weight: 800;
+            font-size: 1.4rem !important;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+        .info-item { 
+            font-size: 1.2rem !important; 
+            margin-bottom: 8px; 
+            line-height: 1.5; 
+        }
+        .val-bold {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # --- РАЗМЕТКА ---
+    col_info, col_graph = st.columns([1.1, 1], gap="medium")
+
+    with col_info:
+        st.markdown("#### 📜 Климатическая характеристика: Апрель")
+        
+        # Информационные карточки
+        st.markdown("""
+            <div style="display: flex; gap: 10px;">
+                <div class="big-climate-card" style="flex: 1;">
+                    <div class="section-title">🌡️ Температура</div>
+                    <div class="info-item">🔹 Средняя: <span class="val-bold">+4...+9°С</span></div>
+                    <div class="info-item">🔹 Аномалия: <span class="val-bold">+1.5°С</span></div>
+                </div>
+                <div class="big-climate-card" style="flex: 1;">
+                    <div class="section-title">❄️ Экстремумы</div>
+                    <div class="info-item">🔴 Тепло: <span class="val-bold">до +28°С</span></div>
+                    <div class="info-item">🔵 Холод: <span class="val-bold">до -12°С</span></div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <div class="big-climate-card" style="flex: 1;">
+                    <div class="section-title">💧 Осадки</div>
+                    <div class="info-item">📅 Ожидается: <span class="val-bold">~30 мм</span></div>
+                    <div class="info-item">📅 Характер: <span class="val-bold">Ливневые</span></div>
+                </div>
+                <div class="big-climate-card" style="flex: 1; border-left: 5px solid #3498db;">
+                    <div class="section-title">🌬️ Явления</div>
+                    <div class="info-item">🚩 Ветер: <span class="val-bold">15-20 м/с</span></div>
+                    <div class="info-item">⚡ Грозы: <span class="val-bold">возможны</span></div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col_graph:
+        st.markdown("#### 📈 Прогноз хода температуры")
+        
+        # Определяем список станций (исключая служебные колонки)
+        meta_cols = ['число', 'Среднее', 'Ср.зн.', 'норма', 'аномалия', 'низ', 'верх', 'maх', 'min']
+        available_stations = [c for c in data_df.columns if c not in meta_cols]
+        
+        # Выбор станции
+        target = st.selectbox("📍 Выберите станцию для отображения:", available_stations)
+        
+        # Построение графика
+        fig = go.Figure()
+
+        # Линия нормы
+        if 'норма' in data_df.columns:
+            fig.add_trace(go.Scatter(
+                x=data_df['число'], y=data_df['норма'],
+                name='Норма',
+                line=dict(color='rgba(150,150,150,0.5)', dash='dot', width=2)
+            ))
+
+        # Линия прогноза для выбранной станции
+        fig.add_trace(go.Scatter(
+            x=data_df['число'], y=data_df[target],
+            name=f'Прогноз ({target})',
+            mode='lines+markers',
+            line=dict(color='#27ae60', width=3),
+            marker=dict(size=6, color='#27ae60')
+        ))
+
+        fig.update_layout(
+            height=400,
+            margin=dict(l=10, r=10, t=10, b=10),
+            plot_bgcolor='rgba(255,255,255,0)',
+            xaxis=dict(title="Число апреля", gridcolor='#f0f2f6', showline=True, linecolor='#ccd1d9'),
+            yaxis=dict(title="Температура, °C", gridcolor='#f0f2f6', showline=True, linecolor='#ccd1d9'),
+            hovermode="x unified",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+# Пример того, как вызывать это в основном коде:
+# df = pd.read_csv("path_to_your_data.csv")
+# show_april_forecast_block(df)
+
+
+
+
        
     with st.container():
         st.markdown("<h3 style='color: #1d4d2b; text-align: center; margin-bottom: 20px;'>💼 Отраслевое применение прогнозов</h3>", unsafe_allow_html=True)
