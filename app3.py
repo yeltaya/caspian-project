@@ -2301,65 +2301,24 @@ with tabs[0]:
             st.write("##") 
             st.link_button("СКАЧАТЬ ПРИЛОЖЕНИЕ", "https://play.google.com/store/apps/details?id=kz.khm.airkz", use_container_width=True)
         
-       
-def s_footer():
-    st.markdown("---") # Разделительная линия
-        
-        # CSS для фиксации футера или просто красивого оформления
-    footer_style = """
-        <style>
-        .footer {
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: #f0f2f6;
-            color: #31333F;
-            text-align: center;
-            padding: 20px;
-            line-height: 1.6;
-            border-top: 1px solid #e6e9ef;
-        }
-        .footer a {
-            color: #ff4b4b;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        </style>
-        """
-    st.markdown(footer_style, unsafe_allow_html=True)
-
-        # HTML-содержимое футера
-    footer_html = """
-        <div class="footer">
-            <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 250px; margin: 10px;">
-                    <h4 style="margin-bottom: 10px;"> РГП «Казгидромет»</h4>
-                    <p>Ведение метеорологического, гидрологического и экологического мониторинга на всей территории Республики Казахстан.</p>
-                </div>
-                <div style="flex: 1; min-width: 250px; margin: 10px;">
-                    <h4 style="margin-bottom: 10px;">📞 Контакты</h4>
-                    <p>Адрес: г. Астана, проспект Мәңгілік Ел, 11/1<br>
-                    Email: <a href="mailto:info@kazhydromet.kz">info@kazhydromet.kz</a><br>
-                    Тел: +7 (7172) 79-83-94</p>
-                </div>
-                <div style="flex: 1; min-width: 250px; margin: 10px;">
-                    <h4 style="margin-bottom: 10px;">🔗 Полезные ссылки</h4>
-                    <p><a href="https://www.kazhydromet.kz" target="_blank">Официальный сайт</a><br>
-                </div>
+    # --- ФИНАЛЬНЫЙ ПОДВАЛ (FOOTER) ---
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("""
+        <div style="background: #001f3f; padding: 40px; border-radius: 30px 30px 0 0; color: white; text-align: center;">
+            <h2 style="font-weight: 900; margin-bottom: 10px;">СОХРАНИМ КАСПИЙ ВМЕСТЕ</h2>
+            <p style="opacity: 0.8; font-size: 1.1rem; max-width: 700px; margin: 0 auto 25px auto;">
+                Мониторинг Казгидромета — это основа для принятия государственных решений по адаптации к изменениям климата.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600;">
+                <span>🌐 www.kazhydromet.kz</span>
+                <span>📧 caspian@meteo.kz</span>
+                <span>📞 +7 (7172) 79-83-94</span>
             </div>
-            <hr style="border: 0.5px solid #ccc; width: 80%; margin: 15px auto;">
-            <p style="font-size: 12px; color: #666;">© 2026 РГП Казгидромет. Все права защищены.</p>
+            <hr style="opacity: 0.2; margin: 25px 0;">
+            <p style="font-size: 0.8rem; opacity: 0.5;">© 2025 РГП «Казгидромет». Все данные защищены.</p>
         </div>
-        """
-    st.markdown(footer_html, unsafe_allow_html=True)
-
-    # Вызов функции в конце кода
-s_footer()
-
-
-
+""", unsafe_allow_html=True)
+    
 # ПРОГНОЗ ПОГОДЫ   
 with tabs[1]:
     # Заголовок с кастомным цветом
@@ -5955,28 +5914,6 @@ with tabs[5]:
                     <div style="font-size: 0.85rem; color: #64748B;">{risks[i]['text']}</div>
                 </div>
             """, unsafe_allow_html=True)
-
-
-
-    # --- ФИНАЛЬНЫЙ ПОДВАЛ (FOOTER) ---
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("""
-        <div style="background: #001f3f; padding: 40px; border-radius: 30px 30px 0 0; color: white; text-align: center;">
-            <h2 style="font-weight: 900; margin-bottom: 10px;">СОХРАНИМ КАСПИЙ ВМЕСТЕ</h2>
-            <p style="opacity: 0.8; font-size: 1.1rem; max-width: 700px; margin: 0 auto 25px auto;">
-                Мониторинг Казгидромета — это основа для принятия государственных решений по адаптации к изменениям климата.
-            </p>
-            <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600;">
-                <span>🌐 www.kazhydromet.kz</span>
-                <span>📧 caspian@meteo.kz</span>
-                <span>📞 +7 (7172) 79-83-94</span>
-            </div>
-            <hr style="opacity: 0.2; margin: 25px 0;">
-            <p style="font-size: 0.8rem; opacity: 0.5;">© 2025 РГП «Казгидромет». Все данные защищены.</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-
 
         # 7. РЕГЛАМЕНТЫ (TABS)
     st.markdown("<br>", unsafe_allow_html=True)
