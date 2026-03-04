@@ -1777,14 +1777,17 @@ with tabs[0]:
     import folium
     import geopandas as gpd
     from streamlit_folium import st_folium
+    import os
+
+    # Используем ранее определенный BASE_DIR для стабильности в облаке
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     def render_final_agro_map():
         st.markdown("### 🗺️ Карта агромониторинга по областям")
         
-        # ОПРЕДЕЛЯЕМ БАЗОВЫЙ ПУТЬ (Добавьте это обязательно!)
-        base_path = os.path.dirname(os.path.abspath(__file__))  
-        excel_path = os.path.join(base_path, "MS,AMP.AAP 2026.xlsx")
-        shapefile_path = os.path.join(base_path, "kaz 17 obl.shp")
+        # ПУТИ ДЛЯ ОБЛАКА (Замените на ваши папки в GitHub)
+        excel_path = os.path.join(BASE_DIR, "data", "MS,AMP.AAP 2026.xlsx")
+        shapefile_path = os.path.join(BASE_DIR, "shp", "kaz 17 obl.shp")
         
         try:
             df = pd.read_excel(excel_path, sheet_name=0, header=None)
@@ -1796,91 +1799,90 @@ with tabs[0]:
             if gdf_borders.crs is None or gdf_borders.crs != "EPSG:4326":
                 gdf_borders = gdf_borders.to_crs(epsg=4326)
         except Exception as e:
-            st.error(f"Ошибка файлов: {e}")
+            st.error(f"⚠️ Файлы не найдены. Проверьте пути в GitHub. Ошибка: {e}")
             return
 
-        # --- МАКСИМАЛЬНО ПОЛНЫЙ МАППИНГ ---
+        # --- МАППИНГ ИКОНОК (Используем символы, максимально похожие на фото) ---
+        # Для полной аутентичности можно загрузить картинки в папку и использовать их пути
         mapping = {
-            "яровая пшеница": "🌾", "озимая пшеница": "🍞", "ячмень": "🌱",
+            "яровая пшеница": "🌾", "озимая пшеница": "🌾", "ячмень": "🌱",
             "кукуруза": "🌽", "подсолнечник": "🌻", "рис": "🍚",
-            "хлопок": "☁️", "картофель": "🥔", "сахарная свекла": "🍯",
-            "овес": "🌾", "лён": "🚜", "рапс": "🌼", "гречиха": "🌿",
-            "соя": "🌱", "многолетние": "🌿", "пастбища": "🍀",
-            "житняк": "🌾", "люцерна": "☘️", "эспарцет": "🌸",
-            "бахчевые": "🍉", "овощи": "🥕", "плодовые": "🍎"
+            "хлопок": "☁️", "картофель": "🥔", "сахарная свекла": "🍠",
+            "овощи": "🥕", "плодовые": "🍎", "пастбища": "🌿"
         }
 
         def get_icon(text):
             t = str(text).lower()
             for key, icon in mapping.items():
                 if key in t: return icon
-            return "🌱"
+            return "📍"
 
-        # Создаем карту
-        m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="CartoDB positron")
+        # --- НАСТРОЙКА КАРТЫ КАК НА ФОТО ---
+        # Используем "CartoDB Positron" или "OpenStreetMap" для четких границ
+        m = folium.Map(
+            location=[48.0, 67.0], 
+            zoom_start=5, 
+            tiles="OpenStreetMap", # Более детальная карта как на ГИС-снимке
+            control_scale=True
+        )
 
-        # Слой границ
+        # Слой границ (Синие линии как на фото)
         folium.GeoJson(
             gdf_borders,
-            style_function=lambda x: {'fillColor': '#f1f8e9', 'color': '#2e7d32', 'weight': 1.5, 'fillOpacity': 0.4}
+            style_function=lambda x: {
+                'fillColor': 'transparent', 
+                'color': '#1565C0', # Насыщенный синий для границ областей
+                'weight': 2.0, 
+                'fillOpacity': 0.0
+            }
         ).add_to(m)
 
         legend_dict = {}
 
         for _, row in df.iterrows():
-            cult_name = str(row[4]) if pd.notnull(row[4]) else "Не указано"
-            icon = get_icon(cult_name)
-            legend_dict[cult_name] = icon
+            cult_name = str(row[4]) if pd.notnull(row[4]) else "Культура"
+            icon_symbol = get_icon(cult_name)
+            legend_dict[cult_name] = icon_symbol
 
+            # Создаем кастомный маркер
             folium.Marker(
                 location=[row[2], row[3]],
-                popup=f"<b>{row[0]}</b><br>{cult_name}",
-                icon=folium.DivIcon(html=f'<div style="font-size: 16pt; filter: drop-shadow(1px 1px 1px white);">{icon}</div>')
+                popup=folium.Popup(f"<b>{row[0]}</b><br>{cult_name}", max_width=200),
+                icon=folium.DivIcon(html=f"""
+                    <div style="
+                        font-size: 20pt; 
+                        text-shadow: 2px 2px 4px white; 
+                        display: flex; 
+                        justify-content: center; 
+                        align-items: center;">
+                        {icon_symbol}
+                    </div>""")
             ).add_to(m)
 
-        # --- ГЕНЕРАЦИЯ ЛЕГЕНДЫ ---
-        legend_html = ""
-        for name, icon in sorted(legend_dict.items()):
-            if name != "nan":
-                legend_html += f"<div style='margin-bottom: 6px; display: flex; align-items: center; gap: 8px;'><span>{icon}</span> <span style='font-size: 0.85em; color: #333;'>{name}</span></div>"
-
-        # --- ВЕРСТКА: КАРТА + ЛЕГЕНДА СПРАВА ---
-        # Используем одну строку и две колонки с фиксированным соотношением
+        # --- ВЕРСТКА: КАРТА + ЛЕГЕНДА ---
         col_map, col_leg = st.columns([4, 1])
 
         with col_map:
-            # Используем st_folium вместо folium_static для адаптивности
-            # use_container_width=True заставит карту растянуться на весь блок col_map
-            st_folium(
-                m, 
-                width=None, # Убираем фиксированную ширину
-                height=750, 
-                use_container_width=True
-            )
+            st_folium(m, height=700, use_container_width=True, key="agro_map")
 
         with col_leg:
-            # Контейнер легенды (оставляем ваш стиль, он совпадает по высоте 750px)
+            # Стилизация легенды под стиль Казгидромета
+            legend_html = "".join([
+                f"<div style='margin-bottom: 8px;'>{icon} <small>{name}</small></div>" 
+                for name, icon in sorted(legend_dict.items()) if str(name) != "nan"
+            ])
+            
             st.markdown(f"""
-                <div style="
-                    background-color: white; 
-                    padding: 15px; 
-                    border-radius: 10px; 
-                    border: 2px solid #1b5e20; 
-                    height: 750px; 
-                    overflow-y: auto;
-                    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                ">
-                    <h4 style="color: #1b5e20; margin-top: 0; font-size: 1.1em; border-bottom: 2px solid #eee; padding-bottom: 10px;">🌾 Легенда</h4>
-                    <div style="margin-top: 15px;">
-                        {legend_html}
-                    </div>
+                <div style="background:#f9f9f9; padding:15px; border-radius:10px; border:1px solid #ccc; height:700px; overflow-y:auto;">
+                    <b style="color:#1565C0;">Условные обозначения:</b><hr>
+                    {legend_html}
                 </div>
             """, unsafe_allow_html=True)
-            
 
-    render_final_agro_map()
-
+    if __name__ == "__main__":
+        render_final_agro_map()
+    
+    
 #АГРОКЛИМАТИЧЕСИК ЗОНЫ
     import streamlit as st
     import plotly.graph_objects as go
@@ -2658,8 +2660,6 @@ with tabs[1]:
         ]
     )
 
-
-
         # Визуальный разделитель с пояснением
     st.warning("""
             💡 **Интеграция данных:** Все потоки информации стекаются в единый прогностический центр, 
@@ -2965,45 +2965,43 @@ with tabs[1]:
         with col_tech:
             st.title("Долгосрочный прогноз погоды")
             tab1, tab2, tab3, tab4 = st.tabs(["⏳ Декада", "📅 Месяц", "🍂 Сезон", "💡 Шторма"])
-                
+            
             with tab1:
-                st.subheader("🗓️ Декадное прогнозирование")
-                st.info("**График выпуска:** 30-31, 10 и 20 числа каждого месяца.")
+                st.subheader("🗓️ Прогноз на 10 дней")
+                st.info("**Периодичность:** 30-31, 10 и 20 числа каждого месяца.")
                 st.markdown("""
-                    * **Детализация:** Прогноз с указанием конкретных атмосферных явлений.
-                    * **Параметры:** Температура (мин/макс), осадки, туман, гололед, метель.
-                    * **Точность:** Средняя оправдываемость составляет **70-75%**.
-                    * **Передача:** Оперативно передается в МЧС и ситуационные центры.
-                    """)
+                * **Детализация:** прогноз с указанием конкретных атмосферных явлений.
+                * **Параметры:** температура (мин/макс), осадки, ветер, туман, гололед, метель, пыльная буря.
+                * **Передача:** оперативно передается в государственные и местные исполнительные органы.
+                """)
 
             with tab2:
                 st.subheader("📋 Прогноз на месяц")
-                st.success("**Тип:** Научно-консультативный бюллетень.")
+                st.success("**Тип:** Консультативный бюллетень.")
                 st.markdown("""
-                    * **Методика:** Использование метода **года-аналога** (поиск схожих процессов в архивах за 50 лет).
-                    * **Технологии:** Обработка данных 200+ станций в системе **QGIS**.
-                    * **Выпуск:** Подготовка до 25 числа, публикация до 1 числа месяца.
-                    """)
+                * **Методика:** использование метода **года-аналога** посредством АРМ-Долгосрочник (поиск схожих процессов в архивах за 30 лет).
+                * **Технологии:** обработка данных 200+ станций.
+                * **Выпуск:** ежемесячно к 15 числу.
+                * **Регионы:** формируется по всем 17 областям РК.                
+                """)
 
             with tab3:
-                st.subheader("🍂 Сезонный мониторинг")
-                st.warning("**Охват:** 6 выпусков в год (на сезоны и полугодия).")
+                st.subheader("🍂 Прогноз на сезон")
+                st.warning("**Охват:** 6 выпусков в год (на сезон и субсезон).")
                 st.markdown("""
-                    * **Анализ:** Мониторинг средней тропосферы (**АТ-500**).
-                    * **Глобальные факторы:** Учет явлений **Эль-Ниньо** и **Ла-Нинья**.
-                    * **Заблаговременность:** Прогноз до **6 месяцев** (носит фоновый характер).
-                    * **Регионы:** Формируется по всем 17 областям РК.
-                    """)
+                * **Анализ:** использование метода **года-аналога** посредством АРМ-Долгосрочник (поиск схожих процессов в архивах за 30 лет).
+                * **Заблаговременность:** прогноз до **3-7 месяцев**.
+                * **Регионы:** формируется по территории Казахстана.
+                """)
 
             with tab4:
                 st.subheader("💡 Штормовые предупреждения")
-                st.error("**Статус:** Экстренное оповещение об ОЯ и СГЯ.")
+                st.error("Штормовые предупреждения о волнах холода и тепла, обильных осадках и о засушливых условиях.")
                 st.markdown("""
-                    * **Критерии:** Отклонение t° от нормы на **7°C и более**, ветер > 25 м/с, сильные осадки.
-                    * **Каналы:** Рассылка через SMS, мобильное приложение **Darmen** и телеканалы.
-                    * **Время:** Заблаговременность выпуска от **12 до 48 часов**.
-                    * **Режим:** Круглосуточный мониторинг дежурными синоптиками.
-                    """)
+                * **Критерии:** отклонение t° от нормы на **7°C и более**, осадки больше/меньше нормы.
+                * **Заблаговременность:** заблаговременность выпуска от **24 до 240 часов**.
+                """)
+
                
         with col_viz:
             st.subheader("🗺️ Визуализация")
