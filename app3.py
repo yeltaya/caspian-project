@@ -2301,23 +2301,26 @@ with tabs[0]:
             st.write("##") 
             st.link_button("СКАЧАТЬ ПРИЛОЖЕНИЕ", "https://play.google.com/store/apps/details?id=kz.khm.airkz", use_container_width=True)
         
-    # --- ФИНАЛЬНЫЙ ПОДВАЛ (FOOTER) ---
+# --- ФИНАЛЬНЫЙ ПОДВАЛ (FOOTER) ---
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("""
-        <div style="background: #001f3f; padding: 40px; border-radius: 30px 30px 0 0; color: white; text-align: center;">
-            <h2 style="font-weight: 900; margin-bottom: 10px;">СОХРАНИМ КАСПИЙ ВМЕСТЕ</h2>
-            <p style="opacity: 0.8; font-size: 1.1rem; max-width: 700px; margin: 0 auto 25px auto;">
-                Мониторинг Казгидромета — это основа для принятия государственных решений по адаптации к изменениям климата.
-            </p>
-            <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600;">
-                <span>🌐 www.kazhydromet.kz</span>
-                <span>📧 caspian@meteo.kz</span>
-                <span>📞 +7 (7172) 79-83-94</span>
-            </div>
-            <hr style="opacity: 0.2; margin: 25px 0;">
-            <p style="font-size: 0.8rem; opacity: 0.5;">© 2025 РГП «Казгидромет». Все данные защищены.</p>
+    <div style="background: #001f3f; padding: 40px; border-radius: 30px 30px 0 0; color: white; text-align: center;">
+        <h2 style="font-weight: 900; margin-bottom: 10px; letter-spacing: 2px;">СОХРАНИМ КАСПИЙ ВМЕСТЕ</h2>
+        <p style="opacity: 0.8; font-size: 1.1rem; max-width: 800px; margin: 0 auto 25px auto;">
+            Ведение метеорологического, гидрологического и экологического мониторинга — основа для устойчивого развития и защиты экосистемы Каспийского региона.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600; flex-wrap: wrap;">
+            <span>🌐 www.kazhydromet.kz</span>
+            <span>📧 caspian@meteo.kz</span>
+            <span>📞 +7 (7172) 79-83-94</span>
         </div>
+        <hr style="opacity: 0.2; margin: 25px 0;">
+        <p style="font-size: 0.8rem; opacity: 0.5; letter-spacing: 1px;">
+            © 2026 РГП «КАЗГИДРОМЕТ» | НАЦИОНАЛЬНАЯ ГИДРОМЕТЕОРОЛОГИЧЕСКАЯ СЛУЖБА РК
+        </p>
+    </div>
 """, unsafe_allow_html=True)
+
     
 # ПРОГНОЗ ПОГОДЫ   
 with tabs[1]:
