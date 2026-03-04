@@ -1127,66 +1127,51 @@ with tabs[0]:
             
             fig = go.Figure()
 
-            # 1. Столбцы для объемов
+            # 1. Столбцы для объемов (более наглядно для сравнения лет)
             fig.add_trace(go.Bar(
                 x=years,
                 y=total_values,
-                text=total_values,           # Добавляем текст со значениями
-                textposition='outside',      # Выносим значения над столбцы
-                textfont=dict(size=14, color="#dee2e6"), # Увеличиваем ШРИФТ ЗНАЧЕНИЙ над столбцами
                 name="Количество",
                 marker=dict(
-                    color='rgba(52, 152, 219, 0.6)', 
+                    color='rgba(52, 152, 219, 0.6)', # Полупрозрачный синий
                     line=dict(color='#3498db', width=1)
                 ),
                 hovertemplate="Год: %{x}<br>Всего: %{y}<extra></extra>"
             ))
 
-            # 2. Линия тренда
+            # 2. Линия тренда поверх столбцов
             fig.add_trace(go.Scatter(
                 x=years,
                 y=total_values,
                 mode='lines+markers',
                 name="Динамика",
-                line=dict(color='#FFA500', width=3),
+                line=dict(color='#FFA500', width=3), # Яркий оранжевый для контраста
                 marker=dict(size=8, symbol='circle', color='white', line=dict(width=2, color='#FFA500')),
-                hoverinfo="skip"
+                hoverinfo="skip" # Чтобы не дублировать подсказку
             ))
 
             # Настройка внешнего вида
             fig.update_layout(
-                height=450, # Немного увеличил высоту, чтобы влезли крупные шрифты
-                margin=dict(l=10, r=10, t=50, b=10),
+                height=400,
+                margin=dict(l=10, r=10, t=30, b=10),
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                # УВЕЛИЧИВАЕМ ШРИФТ ЛЕГЕНДЫ
-                legend=dict(
-                    orientation="h", 
-                    yanchor="bottom", y=1.02, 
-                    xanchor="right", x=1,
-                    font=dict(size=14) 
-                ),
-                font=dict(color="#dee2e6", size=12), # Общий шрифт
-                bargap=0.3,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                font=dict(color="#dee2e6"),
+                bargap=0.3, # Зазор между столбцами
                 yaxis=dict(
                     showgrid=True, 
                     gridcolor='rgba(200,200,200,0.1)',
                     zeroline=False,
-                    title="Кол-во оповещений",
-                    # УВЕЛИЧИВАЕМ ШРИФТ НА ОСИ Y
-                    tickfont=dict(size=14),
-                    titlefont=dict(size=14)
+                    title="Кол-во оповещений"
                 ),
                 xaxis=dict(
-                    dtick=1,
-                    showgrid=False,
-                    # УВЕЛИЧИВАЕМ ШРИФТ ГОДОВ (ОСЬ X)
-                    tickfont=dict(size=14)
+                    dtick=1, # Показать каждый год
+                    showgrid=False
                 )
             )
 
             st.plotly_chart(fig, use_container_width=True)
-            
         
 
     with col_right:
@@ -1588,7 +1573,7 @@ with tabs[0]:
             st.plotly_chart(fig, use_container_width=True)
 
     render_hydro_chart()
-    
+
 
         # --- 1. ПОДГОТОВКА ДАННЫХ ---
     data = {
