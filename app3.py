@@ -1682,37 +1682,50 @@ with tabs[0]:
                 text=df_posts["Гидропосты"], textposition='outside'
             ))
             
-        # Пример правильных отступов (все строки внутри функции/блока выровнены)
-        fig.update_layout(
-            barmode='group', 
-            height=700, 
-            margin=dict(l=100, r=50, t=80, b=100), 
-            legend=dict(
-                orientation="h", 
-                yanchor="bottom", 
-                y=1.02, 
-                xanchor="right", 
-                x=1,
-                font=dict(size=16)
-            ),
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)', 
-            font=dict(color="white"),
-            xaxis=dict(
-                showgrid=True, 
-                gridcolor='rgba(200,200,200,0.1)',
-                tickfont=dict(size=16),
-                title=dict(text="Год", font=dict(size=18)), # Исправленный заголовок
-                automargin=True
-            ),
-            yaxis=dict(
-                tickfont=dict(size=16),
-                title=dict(text="Значение", font=dict(size=18)), # Исправленный заголовок
-                automargin=True
+            fig.update_layout(
+                barmode='group', 
+                height=700, 
+                # Увеличиваем отступы еще сильнее на всякий случай
+                margin=dict(l=120, r=50, t=80, b=120), 
+                legend=dict(
+                    orientation="h", 
+                    yanchor="bottom", 
+                    y=1.02, 
+                    xanchor="right", 
+                    x=1,
+                    font=dict(size=16, color="white")
+                ),
+                plot_bgcolor='rgba(0,0,0,0)', 
+                paper_bgcolor='rgba(0,0,0,0)', 
+                font=dict(color="white"), # Глобальный цвет текста
+                
+                xaxis=dict(
+                    visible=True,           # ПРИНУДИТЕЛЬНО делаем ось видимой
+                    showticklabels=True,    # ПРИНУДИТЕЛЬНО показываем числа/года
+                    tickfont=dict(size=16, color="white"),
+                    title=dict(
+                        text="Год", 
+                        font=dict(size=18, color="white")
+                    ),
+                    gridcolor='rgba(200,200,200,0.1)',
+                    automargin=True,
+                    type='category'         # Помогает, если на оси года или названия
+                ),
+                
+                yaxis=dict(
+                    visible=True,           # ПРИНУДИТЕЛЬНО делаем ось видимой
+                    showticklabels=True,    # ПРИНУДИТЕЛЬНО показываем числа
+                    tickfont=dict(size=16, color="white"),
+                    title=dict(
+                        text="Значение", 
+                        font=dict(size=18, color="white")
+                    ),
+                    gridcolor='rgba(200,200,200,0.1)',
+                    automargin=True
+                )
             )
-        )
 
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 
 
