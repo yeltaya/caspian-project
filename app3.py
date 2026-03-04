@@ -1682,42 +1682,46 @@ with tabs[0]:
                 text=df_posts["Гидропосты"], textposition='outside'
             ))
             
-            fig.update_layout(
+             fig.update_layout(
                 barmode='group', 
                 height=700, 
-                # Увеличиваем отступы l и b, чтобы крупные подписи (регионы/годы) не обрезались
-                margin=dict(l=80, r=50, t=50, b=80), 
+                # Увеличиваем отступы, чтобы крупные шрифты не резались
+                margin=dict(l=100, r=50, t=80, b=100), 
                 
-                # Увеличиваем шрифт в легенде
                 legend=dict(
                     orientation="h", 
                     yanchor="bottom", 
                     y=1.02, 
                     xanchor="right", 
                     x=1,
-                    font=dict(size=16) # РАЗМЕР ШРИФТА ЛЕГЕНДЫ
+                    font=dict(size=16)
                 ),
                 
                 plot_bgcolor='rgba(0,0,0,0)', 
                 paper_bgcolor='rgba(0,0,0,0)', 
                 font=dict(color="white"),
                 
-                # Настройка горизонтальной оси (X)
+                # Исправленная настройка оси X
                 xaxis=dict(
                     showgrid=True, 
                     gridcolor='rgba(200,200,200,0.1)',
-                    tickfont=dict(size=16), # РАЗМЕР ШРИФТА ОСИ X
-                    titlefont=dict(size=18)
+                    tickfont=dict(size=16),
+                    # Правильный синтаксис заголовка:
+                    title=dict(text="Год", font=dict(size=18)), 
+                    automargin=True
                 ),
                 
-                # Настройка вертикальной оси (Y)
+                # Исправленная настройка оси Y
                 yaxis=dict(
-                    tickfont=dict(size=16), # РАЗМЕР ШРИФТА ОСИ Y
-                    titlefont=dict(size=18)
+                    tickfont=dict(size=16),
+                    # Правильный синтаксис заголовка:
+                    title=dict(text="Значение", font=dict(size=18)),
+                    automargin=True
                 )
             )
 
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
 
     with col_info:
             # ПРАВЫЙ БЛОК: ПРОДУКЦИЯ (Стиль как на фото)
