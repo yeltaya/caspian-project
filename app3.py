@@ -3884,8 +3884,6 @@ with tabs[4]:
             pritok_values = [487, 679, 818, 711, 539, 766, 724, 535, 680, 913, 562, 592, 1050, 884, 1050, 728, 719, 446, 899, 917, 989, 444, 387, 603, 715, 364, 797, 368, 457, 1600, 624, 445, 444, 536, 145, 132, 197, 229, 320, 448, 362, 361, 371, 287, 310, 314, 278, 407, 631, 408, 455, 444, 513, 680, 817, 458, 500, 448, 757, 588, 446, 429, 674, 865, 745, 706, 523, 570, 393, 463, 791, 424, 567, 430, 558, 464, 387, 710, 482, 442, 390, 298, 403, 465, 534]
 
             import plotly.graph_objects as go
-            axis_font_settings = dict(size=18, family="Arial", color="black")
-            tick_font_settings = dict(size=14, family="Arial", color="black")
 
 # Настройки для легенды в 3 столбца
             legend_style = dict(
@@ -3952,8 +3950,8 @@ with tabs[4]:
                 hovermode="x",
                 legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
 
             # Отображение
@@ -4026,84 +4024,75 @@ with tabs[4]:
             pritok_list_b = [391, 486, 456, 341, 387, 380, 438, 390, 374, 394, 406, 362, 414, 396, 441, 417, 452, 333, 453, 502, 486, 375, 357, 387, 476, 347, 440, 361, 330, 502, 455, 435, 383, 438, 332, 322, 344, 355, 350, 388, 417, 418, 358, 348, 342, 393, 357, 440, 548, 369, 383, 382, 328, 430, 391, 301, 389, 341, 453, 478, 434, 448, 477, 417, 304, 380, 475, 409, 373, 425, 575, 444, 340, 333, 260, 371, 604, 451, 343, 376, 274, 286, 302, 309, 349]
 
 
-# Настройки легенды в 3 столбца (общие для обоих графиков)
-            legend_3col_style = dict(
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
                 orientation="h",
-                y=-0.35, # Смещаем ниже, так как подписи лет вертикальные
+                y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.33, # 33% ширины на каждый элемент = 3 столбца
-                entrywidthmode="fraction"
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
             )
 
-            # --- 1. ГРАФИК МЕСТНОГО СТОКА (Балхаш-Алаколь) ---
-            fig_b_local = go.Figure()
-            excel_colors_b = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633']
-            
-            for i, col_name in enumerate(df_balhash_local.columns[1:]):
-                fig_b_local.add_trace(go.Scatter(
-                    x=df_balhash_local['Год'], 
-                    y=df_balhash_local[col_name],
-                    mode='lines+markers',
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+            fig_local = go.Figure()
+            excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
+
+            for i, col_name in enumerate(df_local.columns[1:]):
+                fig_local.add_trace(go.Scatter(
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
                     name=col_name,
                     line=dict(color='black', width=1),
                     marker=dict(
-                        color=excel_colors_b[i % len(excel_colors_b)],
+                        color=excel_colors[i % len(excel_colors)],
                         size=6,
                         line=dict(color='black', width=1)
                     ),
                     hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
-            
-            fig_b_local.update_layout(
-                title="<b>МЕСТНЫЙ СТОК: БАЛХАШ-АЛАКОЛЬСКИЙ БАССЕЙН</b>",
+
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                height=500, # Увеличили высоту для комфортного размещения легенды
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
                 template="plotly_white",
                 hovermode="x unified",
-                legend=legend_3col_style, # Применяем 3 столбца
-                margin=dict(l=40, r=20, t=60, b=100), # b=100 чтобы легенда не накладывалась на годы
-                xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black', 
-                    mirror=True,
-                    tickangle=90
-                ),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
 
-            # --- 2. ГРАФИК ПРИТОКА (С ЛИНЕЙНОЙ ТРЕНДА) ---
-            fig_b_pritok = go.Figure()
+            # --- 2. ГРАФИК ПРИТОКА ---
+            fig_pritok = go.Figure()
 
-            fig_b_pritok.add_trace(go.Scatter(
-                x=years_b, 
-                y=pritok_list_b,
-                mode='lines+markers',
-                name='Иле (пр. Добын)',
-                line=dict(color='black', width=1.2),
-                marker=dict(
-                    color='#3498db',
-                    size=7,
-                    line=dict(color='black', width=1)
-                ),
-                hovertemplate="<b>Приток (Иле)</b><br>Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
+                line=dict(color='black', width=1.5),
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
-            
-            fig_b_pritok.update_layout(
-                title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК ИЗ КИТАЯ (Р. ИЛЕ)</b>",
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                height=500, # Увеличили высоту
+                height=500,
                 template="plotly_white",
                 hovermode="x",
-                legend=legend_3col_style, # Применяем 3 столбца
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
+            
 
             # 3. Отображение
             g_col1, g_col2 = st.columns(2)
@@ -4175,90 +4164,75 @@ with tabs[4]:
             pritok_vals_ert = [327, 411, 425, 307, 267, 218, 458, 372, 239, 274, 283, 193, 388, 235, 322, 298, 347, 313, 466, 364, 354, 385, 267, 218, 262, 211, 446, 198, 298, 478, 374, 385, 305, 352, 143, 245, 214, 278, 166, 274, 224, 229, 134, 229, 373, 316, 206, 328, 420, 201, 283, 219, 293, 461, 383, 290, 234, 265, 293, 273, 238, 383, 309, 204, 272, 305, 268, 224, 175, 180, 353, 177, 145, 366, 236, 254, 346, 349, 327, 251, 242, 208, 182, 254, 369]
 
 
-            # Общие настройки легенды в 3 столбца
-            legend_3col_style = dict(
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
                 orientation="h",
-                y=-0.35, 
+                y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.33, 
-                entrywidthmode="fraction"
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
             )
 
-            # --- 1. ГРАФИК МЕСТНОГО СТОКА (Ертисский ВХБ) ---
-            fig_ert_local = go.Figure()
-            # Палитра для маркеров (Excel-style)
-            excel_colors_ert = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633']
-            
-            for i, col_name in enumerate(df_local_ert.columns[1:]):
-                fig_ert_local.add_trace(go.Scatter(
-                    x=df_local_ert['Год'], 
-                    y=df_local_ert[col_name],
-                    mode='lines+markers', # Линии + точки
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+            fig_local = go.Figure()
+            excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
+
+            for i, col_name in enumerate(df_local.columns[1:]):
+                fig_local.add_trace(go.Scatter(
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
                     name=col_name,
-                    line=dict(
-                        color='black',    # Тонкая черная линия
-                        width=1
-                    ),
+                    line=dict(color='black', width=1),
                     marker=dict(
-                        color=excel_colors_ert[i % len(excel_colors_ert)], # Цветная заливка
+                        color=excel_colors[i % len(excel_colors)],
                         size=6,
-                        line=dict(color='black', width=1) # Ободок
+                        line=dict(color='black', width=1)
                     ),
                     hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
-            
-            fig_ert_local.update_layout(
-                title="<b>МЕСТНЫЙ СТОК ОСНОВНЫХ РЕК (ЕРТИССКИЙ ВХБ)</b>",
+
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                height=500,
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
                 template="plotly_white",
                 hovermode="x unified",
-                legend=legend_3col_style, # 3 столбца снизу
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black', 
-                    mirror=True,
-                    tickangle=90
-                ),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
 
-            # --- 2. ГРАФИК ПРИТОКА (С ЛИНЕЙНОЙ ТРЕНДА) ---
-            fig_ert_pritok = go.Figure()
+            # --- 2. ГРАФИК ПРИТОКА ---
+            fig_pritok = go.Figure()
 
-            # Основной график притока
-            fig_ert_pritok.add_trace(go.Scatter(
-                x=years_ert, 
-                y=pritok_vals_ert,
-                mode='lines+markers',
-                name='Кара Ертис (с. Боран)',
-                line=dict(color='black', width=1.2),
-                marker=dict(
-                    color='#3498db', # Голубой маркер
-                    size=7,
-                    line=dict(color='black', width=1)
-                ),
-                hovertemplate="<b>Приток (с. Боран)</b><br>Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
+                line=dict(color='black', width=1.5),
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
-            # Расчет линии тренда
-            
-            fig_ert_pritok.update_layout(
-                title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК ИЗ КНР (ЕРТИССКИЙ ВХБ)</b>",
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
                 height=500,
                 template="plotly_white",
                 hovermode="x",
-                legend=legend_3col_style, # 3 столбца снизу
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
+            
 
             # Отображение
             g_col1, g_col2 = st.columns(2)
@@ -4339,95 +4313,75 @@ with tabs[4]:
 
             colors_zhk = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
 
-            # Единый стиль легенды в 3 столбца
-            legend_3col_style = dict(
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
                 orientation="h",
-                y=-0.35, 
+                y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.33, 
-                entrywidthmode="fraction"
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
             )
 
-            # Цвета маркеров (Excel-style)
-            excel_colors_zhk = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633']
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+            fig_local = go.Figure()
+            excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
 
-            # --- ГРАФИК 1: МЕСТНЫЙ СТОК (Жайык-Каспийский ВХБ) ---
-            fig_zhk_local = go.Figure()
-            for i, col_name in enumerate(df_local_zhk.columns[1:]):
-                fig_zhk_local.add_trace(go.Scatter(
-                    x=df_local_zhk['Год'], 
-                    y=df_local_zhk[col_name],
-                    mode='lines+markers',
+            for i, col_name in enumerate(df_local.columns[1:]):
+                fig_local.add_trace(go.Scatter(
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
                     name=col_name,
                     line=dict(color='black', width=1),
                     marker=dict(
-                        color=excel_colors_zhk[i % len(excel_colors_zhk)],
+                        color=excel_colors[i % len(excel_colors)],
                         size=6,
                         line=dict(color='black', width=1)
                     ),
                     hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
 
-            fig_zhk_local.update_layout(
-                title="<b>МЕСТНЫЙ СТОК (ЖАЙЫК-КАСПИЙСКИЙ ВХБ)</b>",
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
                 template="plotly_white",
-                height=500,
                 hovermode="x unified",
-                legend=legend_3col_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
 
-            # --- ГРАФИК 2: ТРАНСГРАНИЧНЫЙ ПРИТОК ---
-            fig_zhk_pritok = go.Figure()
-            for i, col_name in enumerate(df_pritok_zhk.columns[1:]):
-                # Рисуем основные линии притока
-                fig_zhk_pritok.add_trace(go.Scatter(
-                    x=df_pritok_zhk['Год'], 
-                    y=df_pritok_zhk[col_name],
-                    mode='lines+markers',
-                    name=col_name,
-                    line=dict(color='black', width=1),
-                    marker=dict(
-                        color=excel_colors_zhk[(i+2) % len(excel_colors_zhk)], # Смещение цвета для отличия от первого графика
-                        size=6,
-                        line=dict(color='black', width=1)
-                    ),
-                    hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
-                ))
+            # --- 2. ГРАФИК ПРИТОКА ---
+            fig_pritok = go.Figure()
 
-                # Добавляем линию тренда только для первой (основной) реки в списке, 
-                # чтобы не перегружать график, либо уберите условие if i == 0 для всех трендов
-                if i == 0:
-                    valid_idx = np.isfinite(df_pritok_zhk[col_name])
-                    if any(valid_idx):
-                        z = np.polyfit(df_pritok_zhk['Год'][valid_idx], df_pritok_zhk[col_name][valid_idx], 1)
-                        p = np.poly1d(z)
-                        fig_zhk_pritok.add_trace(go.Scatter(
-                            x=df_pritok_zhk['Год'],
-                            y=p(df_pritok_zhk['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col_name}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
+                line=dict(color='black', width=1.5),
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
+            ))
 
-            fig_zhk_pritok.update_layout(
-                title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК (РФ -> РК)</b>",
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                template="plotly_white",
                 height=500,
-                hovermode="x unified",
-                legend=legend_3col_style,
+                template="plotly_white",
+                hovermode="x",
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
+            
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4498,79 +4452,75 @@ with tabs[4]:
 
             colors_es = ['#3498db', '#e67e22', '#2ecc71', '#9b59b6']
 
-            # Единый стиль легенды в 3 столбца
-            legend_3col_style = dict(
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
                 orientation="h",
-                y=-0.35, 
+                y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.33, 
-                entrywidthmode="fraction"
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
             )
 
-            # Цвета маркеров (Excel-style)
-            excel_colors_es = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633']
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+            fig_local = go.Figure()
+            excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
 
-            # --- ГРАФИК 1: ПОГРАФИЧНО РЕКИ (Есильский бассейн) ---
-            fig_es_rivers = go.Figure()
-            river_cols = ["р. Есиль - г. Астана", "р. Жабай - г. Атбасар", "р. Калкутан-с. Калкутан"]
-            
-            for i, col in enumerate(river_cols):
-                fig_es_rivers.add_trace(go.Scatter(
-                    x=df_es['Год'], y=df_es[col],
-                    mode='lines+markers', # Линии + точки
-                    name=col,
-                    line=dict(color='black', width=1), # Тонкая черная линия
+            for i, col_name in enumerate(df_local.columns[1:]):
+                fig_local.add_trace(go.Scatter(
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
+                    name=col_name,
+                    line=dict(color='black', width=1),
                     marker=dict(
-                        color=excel_colors_es[i % len(excel_colors_es)],
+                        color=excel_colors[i % len(excel_colors)],
                         size=6,
                         line=dict(color='black', width=1)
                     ),
-                    hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
+                    hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
-            
-            fig_es_rivers.update_layout(
-                title="<b>СТОК ОСНОВНЫХ РЕК ЕСИЛЬСКОГО БАССЕЙНА</b>",
+
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                template="plotly_white", 
-                height=500, 
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
+                template="plotly_white",
                 hovermode="x unified",
-                legend=legend_3col_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
 
-            # --- ГРАФИК 2: ОБЩИЙ РЕСУРС (С ТРЕНДОМ) ---
-            fig_es_total = go.Figure()
-            
-            # Основная линия суммарного стока
-            fig_es_total.add_trace(go.Scatter(
-                x=df_es['Год'], y=df_es['Суммарный местный сток (+1)'],
-                mode='lines+markers', 
-                name='Суммарный сток',
+            # --- 2. ГРАФИК ПРИТОКА ---
+            fig_pritok = go.Figure()
+
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
                 line=dict(color='black', width=1.5),
-                marker=dict(
-                    color='#2ecc71', # Зеленый маркер для ресурсов
-                    size=7,
-                    line=dict(color='black', width=1)
-                ),
-                hovertemplate="Год: %{x}<br>Сумма: %{y:.2f} м³/с<extra></extra>"
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
-            
-            fig_es_total.update_layout(
-                title="<b>СУММАРНЫЕ ПОВЕРХНОСТНЫЕ ВОДНЫЕ РЕСУРСЫ</b>",
-                xaxis_title="ГОД", 
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
+                xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                template="plotly_white", 
                 height=500,
-                legend=legend_3col_style,
+                template="plotly_white",
+                hovermode="x",
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
+            
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4644,81 +4594,75 @@ with tabs[4]:
             colors_n = ['#3498db', '#e67e22', '#2ecc71', '#9b59b6', '#f1c40f']
 
 
-
-            # Унифицированный стиль легенды в 3 столбца
-            legend_3col_style = dict(
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
                 orientation="h",
-                y=-0.35, 
+                y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.33, 
-                entrywidthmode="fraction"
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
             )
 
-            # Цвета маркеров в стиле Excel
-            excel_colors_n = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633']
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+            fig_local = go.Figure()
+            excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
 
-            # --- ГРАФИК 1: ПОГРАФИЧНО РЕКИ (Нура-Сарысуйский бассейн) ---
-            fig_n_rivers = go.Figure()
-            river_cols = [c for c in df_n.columns if c not in ["Год", "Суммарный сток"]]
-            
-            for i, col in enumerate(river_cols):
-                fig_n_rivers.add_trace(go.Scatter(
-                    x=df_n['Год'], y=df_n[col],
-                    mode='lines+markers', # Линии + точки
-                    name=col,
-                    line=dict(color='black', width=1), # Тонкая черная линия
+            for i, col_name in enumerate(df_local.columns[1:]):
+                fig_local.add_trace(go.Scatter(
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
+                    name=col_name,
+                    line=dict(color='black', width=1),
                     marker=dict(
-                        color=excel_colors_n[i % len(excel_colors_n)],
+                        color=excel_colors[i % len(excel_colors)],
                         size=6,
                         line=dict(color='black', width=1)
                     ),
-                    hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
+                    hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
-            
-            fig_n_rivers.update_layout(
-                title="<b>ДИНАМИКА СТОКА РЕК НУРА-САРЫСУЙСКОГО БАССЕЙНА</b>",
+
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                template="plotly_white", 
-                height=500, 
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
+                template="plotly_white",
                 hovermode="x unified",
-                legend=legend_3col_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
 
-            # --- ГРАФИК 2: ОБЩИЙ РЕСУРС (С ТРЕНДОМ) ---
-            fig_n_total = go.Figure()
-            
-            # Основная линия суммарного стока
-            fig_es_total = go.Figure() # Исправлено название переменной для консистентности
-            fig_n_total.add_trace(go.Scatter(
-                x=df_n['Год'], y=df_n['Суммарный сток'],
-                mode='lines+markers', 
-                name='Суммарный сток',
+            # --- 2. ГРАФИК ПРИТОКА ---
+            fig_pritok = go.Figure()
+
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
                 line=dict(color='black', width=1.5),
-                marker=dict(
-                    color='#3498db', # Синий маркер для суммарного стока
-                    size=7,
-                    line=dict(color='black', width=1)
-                ),
-                hovertemplate="Год: %{x}<br>Сумма: %{y:.2f} м³/с<extra></extra>"
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
-            
-            fig_n_total.update_layout(
-                title="<b>СУММАРНЫЕ ВОДНЫЕ РЕСУРСЫ (ОСНОВНЫЕ РЕКИ)</b>",
-                xaxis_title="ГОД", 
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
+                xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                template="plotly_white", 
                 height=500,
-                legend=legend_3col_style,
+                template="plotly_white",
+                hovermode="x",
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
+            
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4800,91 +4744,75 @@ with tabs[4]:
             colors_st = ['#2980b9', '#e67e22', '#27ae60', '#d35400', '#8e44ad', '#c0392b', '#16a085']
 
 
-            # Унифицированный стиль легенды в 3 столбца
-            legend_3col_style = dict(
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
                 orientation="h",
-                y=-0.35, 
+                y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.33, 
-                entrywidthmode="fraction"
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
             )
 
-            # Цвета маркеров (Excel-style)
-            excel_colors_st = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633']
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+            fig_local = go.Figure()
+            excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
 
-            # --- ГРАФИК 1: ПРИТОК ИЗ КР (Кыргызстан -> Казахстан) ---
-            fig_st_inflow = go.Figure()
-            for i, col in enumerate(df_inflow.columns[1:]):
-                fig_st_inflow.add_trace(go.Scatter(
-                    x=df_inflow['Год'], y=df_inflow[col],
-                    mode='lines+markers', # Прямые линии + маркеры
-                    name=col,
+            for i, col_name in enumerate(df_local.columns[1:]):
+                fig_local.add_trace(go.Scatter(
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
+                    name=col_name,
                     line=dict(color='black', width=1),
                     marker=dict(
-                        color=excel_colors_st[i % len(excel_colors_st)],
+                        color=excel_colors[i % len(excel_colors)],
                         size=6,
                         line=dict(color='black', width=1)
                     ),
-                    hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
-                ))
-                
-                # Добавляем линию тренда для основной трансграничной реки (первая в списке)
-                if i == 0:
-                    valid_idx = np.isfinite(df_inflow[col])
-                    if any(valid_idx):
-                        z = np.polyfit(df_inflow['Год'][valid_idx], df_inflow[col][valid_idx], 1)
-                        p = np.poly1d(z)
-                        fig_st_inflow.add_trace(go.Scatter(
-                            x=df_inflow['Год'],
-                            y=p(df_inflow['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
-
-            fig_st_inflow.update_layout(
-                title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК (КЫРГЫЗСТАН -> КАЗАХСТАН)</b>",
-                xaxis_title="ГОД",
-                yaxis_title="Q, м³/с",
-                template="plotly_white", 
-                height=500, 
-                hovermode="x unified",
-                legend=legend_3col_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
-
-            # --- ГРАФИК 2: МЕСТНЫЙ СТОК (Шу-Таласский ВХБ внутри РК) ---
-            fig_st_local = go.Figure()
-            for i, col in enumerate(df_local.columns[1:]):
-                fig_st_local.add_trace(go.Scatter(
-                    x=df_local['Год'], y=df_local[col],
-                    mode='lines+markers',
-                    name=col,
-                    line=dict(color='black', width=1),
-                    marker=dict(
-                        color=excel_colors_st[(i+4) % len(excel_colors_st)], # Смещение цвета
-                        size=6,
-                        line=dict(color='black', width=1)
-                    ),
-                    hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
+                    hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
 
-            fig_st_local.update_layout(
-                title="<b>МЕСТНЫЙ СТОК ШУ-ТАЛАССКОГО ВХБ (ВНУТРИ РК)</b>",
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                template="plotly_white", 
-                height=500, 
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
+                template="plotly_white",
                 hovermode="x unified",
-                legend=legend_3col_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
+
+            # --- 2. ГРАФИК ПРИТОКА ---
+            fig_pritok = go.Figure()
+
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
+                line=dict(color='black', width=1.5),
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
+            ))
+
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
+                xaxis_title="ГОД",
+                yaxis_title="Q, м³/с",
+                height=500,
+                template="plotly_white",
+                hovermode="x",
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100),
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
+            )
+            
 
             # --- ВЫВОД ---
             col_a, col_b = st.columns(2)
@@ -4963,91 +4891,75 @@ with tabs[4]:
 
             colors_tt = ['#34495e', '#e74c3c', '#27ae60', '#f39c12', '#9b59b6']
 
-            # Унифицированный стиль легенды в 3 столбца
-            legend_3col_style = dict(
+# Настройки для легенды в 3 столбца
+            legend_style = dict(
                 orientation="h",
-                y=-0.35, 
+                y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.33, 
-                entrywidthmode="fraction"
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidthmode="fraction" 
             )
 
-            # Цвета маркеров в стиле Excel
-            excel_colors_tt = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633']
+            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+            fig_local = go.Figure()
+            excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
 
-            # --- ГРАФИК 1: ТРАНСГРАНИЧНЫЙ ПРИТОК (РФ -> РК) ---
-            fig_tt_inflow = go.Figure()
-            for i, col in enumerate(df_inflow_tt.columns[1:]):
-                fig_tt_inflow.add_trace(go.Scatter(
-                    x=df_inflow_tt['Год'], y=df_inflow_tt[col],
-                    mode='lines+markers', # Линии + точки
-                    name=col,
+            for i, col_name in enumerate(df_local.columns[1:]):
+                fig_local.add_trace(go.Scatter(
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
+                    name=col_name,
                     line=dict(color='black', width=1),
                     marker=dict(
-                        color=excel_colors_tt[i % len(excel_colors_tt)],
+                        color=excel_colors[i % len(excel_colors)],
                         size=6,
                         line=dict(color='black', width=1)
                     ),
-                    hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
-                ))
-                
-                # Добавляем линию тренда для первой реки в списке (например, р. Тобыл)
-                if i == 0:
-                    valid_idx = np.isfinite(df_inflow_tt[col])
-                    if any(valid_idx):
-                        z_tt = np.polyfit(df_inflow_tt['Год'][valid_idx], df_inflow_tt[col][valid_idx], 1)
-                        p_tt = np.poly1d(z_tt)
-                        fig_tt_inflow.add_trace(go.Scatter(
-                            x=df_inflow_tt['Год'],
-                            y=p_tt(df_inflow_tt['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
-
-            fig_tt_inflow.update_layout(
-                title="<b>ПРИТОК ТРАНСГРАНИЧНЫХ РЕК (РФ -> РК)</b>",
-                xaxis_title="ГОД",
-                yaxis_title="Q, м³/с",
-                template="plotly_white", 
-                height=500, 
-                hovermode="x unified",
-                legend=legend_3col_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
-
-            # --- ГРАФИК 2: МЕСТНЫЙ СТОК (РК) ---
-            fig_tt_local = go.Figure()
-            for i, col in enumerate(df_local_tt.columns[1:]):
-                fig_tt_local.add_trace(go.Scatter(
-                    x=df_local_tt['Год'], y=df_local_tt[col],
-                    mode='lines+markers',
-                    name=col,
-                    line=dict(color='black', width=1),
-                    marker=dict(
-                        color=excel_colors_tt[(i+2) % len(excel_colors_tt)], # Смещение цвета
-                        size=6,
-                        line=dict(color='black', width=1)
-                    ),
-                    hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
+                    hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
 
-            fig_tt_local.update_layout(
-                title="<b>МЕСТНЫЙ СТОК (РЕКИ КАРА-ТОРГАЙ И ИРГИЗ)</b>",
+            fig_local.update_layout(
+                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                template="plotly_white", 
-                height=500, 
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
+                template="plotly_white",
                 hovermode="x unified",
-                legend=legend_3col_style,
-                margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
+
+            # --- 2. ГРАФИК ПРИТОКА ---
+            fig_pritok = go.Figure()
+
+            fig_pritok.add_trace(go.Scatter(
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
+                line=dict(color='black', width=1.5),
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
+            ))
+
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
+                xaxis_title="ГОД",
+                yaxis_title="Q, м³/с",
+                height=500,
+                template="plotly_white",
+                hovermode="x",
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100),
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
+            )
+            
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
