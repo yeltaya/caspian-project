@@ -1194,26 +1194,28 @@ with tabs[0]:
                 color_continuous_scale="Blues",
                 aspect="auto"
             )
+            
+            # Исправленный блок для Heatmap
             fig_heat.update_layout(
-                height=400, 
-                # Увеличил l (слева) и b (снизу), чтобы крупный шрифт осей не вылезал за границы
-                margin=dict(l=50, r=10, t=30, b=50),
+                height=450, # Немного увеличим высоту для крупных шрифтов
+                margin=dict(l=80, r=20, t=50, b=80), # Увеличили отступы, чтобы шрифт 16 не обрезался
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color="white"),
                 
-                # Настройка шрифта для горизонтальной оси (X)
+                # Настройка горизонтальной оси (X)
                 xaxis=dict(
-                    tickfont=dict(size=16),  # Размер шрифта подписей
-                    titlefont=dict(size=16)  # Размер шрифта заголовка оси (если есть)
+                    tickfont=dict(size=16),
+                    side='bottom' # Гарантирует, что подписи будут снизу
                 ),
                 
-                # Настройка шрифта для вертикальной оси (Y)
+                # Настройка вертикальной оси (Y)
                 yaxis=dict(
-                    tickfont=dict(size=16),  # Размер шрифта подписей
-                    titlefont=dict(size=16)  # Размер шрифта заголовка оси (если есть)
+                    tickfont=dict(size=16),
+                    autorange='reversed' # Важно для тепловых карт, чтобы данные шли сверху вниз
                 )
             )
+
             st.plotly_chart(fig_heat, use_container_width=True)
 
 
