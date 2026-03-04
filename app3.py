@@ -3891,26 +3891,14 @@ with tabs[4]:
             axis_style = dict(
                 showgrid=True, 
                 gridcolor='lightgrey', 
-                linecolor='black', # Цвет самой линии оси
-                linewidth=2,       # Делаем линию оси жирнее, чтобы она была заметной
-                mirror=True, 
+                showline=False,    # УБИРАЕМ черную линию (рамку)
+                zeroline=False,    # Убираем нулевую линию
                 title_font=axis_font_settings,
-                tickfont=tick_font_settings
+                tickfont=tick_font_settings,
+                tickcolor='black'  # Цвет маленьких черточек у цифр
             )
 
-
-# Настройки для легенды в 3 столбца
-            legend_style = dict(
-                orientation="h",
-                y=-0.3,
-                x=0.4,
-                xanchor="center",
-                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
-                entrywidthmode="fraction" 
-            )
-
-
-            # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
+           # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
             fig_local = go.Figure()
             excel_colors = ['#ffffff', '#ff0000', '#ffff00', '#7030a0', '#996633'] 
 
@@ -3949,24 +3937,27 @@ with tabs[4]:
                     )
     
             )
-
-
             # --- 2. ГРАФИК ПРИТОКА (ИСПРАВЛЕННЫЙ) ---
             fig_pritok = go.Figure()
 
             # Убедитесь, что years — это список чисел или массив numpy
             fig_pritok.add_trace(go.Scatter(
-                x=years, 
-                y=pritok_values,
-                mode='markers+lines',
-                name='Значение стока',
-                line=dict(color='black', width=1.5),
-                marker=dict(color='#3498db', size=7, line=dict(color='black', width=1)),
-                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
-            ))
+                    x=df_local['Год'], 
+                    y=df_local[col_name],
+                    mode='markers+lines',
+                    name=col_name,
+                    line=dict(color='black', width=1),
+                    marker=dict(
+                        color=excel_colors[i % len(excel_colors)],
+                        size=6,
+                        line=dict(color='black', width=1)
+                    ),
+                    hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
+                ))
+
 
             fig_local.update_layout(
-                title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
+                title="<b>ПРИТОК</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
                 height=500,
