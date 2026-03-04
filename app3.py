@@ -1156,7 +1156,7 @@ with tabs[0]:
                 margin=dict(l=10, r=10, t=30, b=10),
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                legend=dict(orientation="h", yanchor="bottom", y=2.02, xanchor="right", x=1),
                 font=dict(color="#dee2e6"),
                 bargap=0.3, # Зазор между столбцами
                 yaxis=dict(
