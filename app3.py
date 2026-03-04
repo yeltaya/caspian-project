@@ -3910,7 +3910,7 @@ with tabs[4]:
                     line=dict(color='black', width=1),
                     marker=dict(
                         color=excel_colors[i % len(excel_colors)],
-                        size=8,
+                        size=6,
                         line=dict(color='black', width=1)
                     ),
                     hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
@@ -3925,8 +3925,8 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
-                xaxis=dict(showgrid=True, gridcolor='black', linecolor='black', mirror=True, tickangle=-90),
-                yaxis=dict(showgrid=True, gridcolor='black', linecolor='black', mirror=True, zeroline=False)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
             )
 
             # --- 2. ГРАФИК ПРИТОКА ---
@@ -3938,7 +3938,7 @@ with tabs[4]:
                 mode='markers+lines',
                 name='Значение стока',
                 line=dict(color='black', width=1.5),
-                marker=dict(color='#3498db', size=8, line=dict(color='black', width=1)),
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
                 hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
