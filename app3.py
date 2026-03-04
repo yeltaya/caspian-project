@@ -3889,7 +3889,7 @@ with tabs[4]:
             legend_style = dict(
                 orientation="h",
                 y=-0.3,
-                x=0.5,
+                x=0.4,
                 xanchor="center",
                 entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
                 entrywidthmode="fraction" 
