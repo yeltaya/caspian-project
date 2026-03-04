@@ -3885,6 +3885,8 @@ with tabs[4]:
 
             import plotly.graph_objects as go
 
+            axis_font_settings = dict(size=16, family="Arial", color="black")  # Размер шрифта осей
+            tick_font_settings = dict(size=14, family="Arial", color="black")  # Размер шрифта цифр на осях
 # Настройки для легенды в 3 столбца
             legend_style = dict(
                 orientation="h",
@@ -3918,29 +3920,36 @@ with tabs[4]:
                 title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
+                height=500,
                 template="plotly_white",
                 hovermode="x unified",
-                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
-                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False)
+                legend=legend_style,
+                margin=dict(l=40, r=20, t=60, b=100),
+                # Обновляем ось X
+                xaxis=dict(
+                    showgrid=True, 
+                    gridcolor='lightgrey', 
+                    linecolor='black', 
+                    mirror=True, 
+                    tickangle=90,
+                    autorange="reversed",      # ГОДЫ НАОБОРОТ
+                    title_font=axis_font_settings, # Размер названия оси
+                    tickfont=tick_font_settings    # Размер цифр
+                ),
+                # Обновляем ось Y
+                yaxis=dict(
+                    showgrid=True, 
+                    gridcolor='lightgrey', 
+                    linecolor='black', 
+                    mirror=True, 
+                    zeroline=False,
+                    title_font=axis_font_settings, # Размер названия оси
+                    tickfont=tick_font_settings    # Размер цифр
+                )
             )
 
-            # --- 2. ГРАФИК ПРИТОКА ---
             fig_pritok = go.Figure()
 
-            fig_pritok.add_trace(go.Scatter(
-                x=years, 
-                y=pritok_values,
-                mode='markers+lines',
-                name='Значение стока',
-                line=dict(color='black', width=1.5),
-                marker=dict(color='#3498db', size=7, line=dict(color='black', width=1)),
-                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
-            ))
-
-            # Тренд
             fig_pritok.update_layout(
                 title="<b>ПРИТОК БАССЕЙНА</b>",
                 xaxis_title="ГОД",
@@ -3948,10 +3957,28 @@ with tabs[4]:
                 height=500,
                 template="plotly_white",
                 hovermode="x",
-                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                legend=legend_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+                # Обновляем ось X
+                xaxis=dict(
+                    showgrid=True, 
+                    gridcolor='lightgrey', 
+                    linecolor='black', 
+                    mirror=True, 
+                    tickangle=90,
+                    autorange="reversed",      # ГОДЫ НАОБОРОТ
+                    title_font=axis_font_settings,
+                    tickfont=tick_font_settings
+                ),
+                # Обновляем ось Y
+                yaxis=dict(
+                    showgrid=True, 
+                    gridcolor='lightgrey', 
+                    linecolor='black', 
+                    mirror=True,
+                    title_font=axis_font_settings,
+                    tickfont=tick_font_settings
+                )
             )
 
             # Отображение
