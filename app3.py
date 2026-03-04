@@ -400,19 +400,7 @@ with tabs[0]:
         </style>
 
     """, unsafe_allow_html=True)
-    # 1. ГЛОБАЛЬНОЕ ОПРЕДЕЛЕНИЕ ПУТИ (в самом верху!)
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-    # 2. ТЕПЕРЬ ВСЕ ВАШИ ПУТИ БУДУТ РАБОТАТЬ ВЕЗДЕ:
-    XLSX_PATH = os.path.join(BASE_DIR, "data", "MS tizimi.xlsx")
-    SHAPEFILE_PATH = os.path.join(BASE_DIR, "data", "kaz 17 obl.shp")
-    EXCEL_MAP_PATH = os.path.join(BASE_DIR, "data", "MS,AMP.AAP 2026.xlsx")
-
-    def render_final_agro_map():
-        # Теперь здесь не будет ошибки NameError, так как BASE_DIR определена глобально
-        excel_path = EXCEL_MAP_PATH 
-        shapefile_path = SHAPEFILE_PATH
-        
+       
     
     # 2. HEADER
     st.markdown('<p class="promo-subtitle">Национальная гидрометеорологическая служба Казахстана с 1922 года</p>', unsafe_allow_html=True)
