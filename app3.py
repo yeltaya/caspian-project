@@ -1772,116 +1772,62 @@ with tabs[0]:
                        ["<b>50:</b> агрометеорологических постов ", "<b>96:</b> влагомеров почвы"], "AutoAgro")
 
 
-    import streamlit as st
-    import pandas as pd
-    import folium
-    import geopandas as gpd
-    from streamlit_folium import st_folium
     import os
+    import streamlit as st
 
-    # Используем ранее определенный BASE_DIR для стабильности в облаке
+    # 1. Используем глобальный BASE_DIR (определен в начале файла)
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     def render_final_agro_map():
         st.markdown("### 🗺️ Карта агромониторинга по областям")
         
-        # ПУТИ ДЛЯ ОБЛАКА (Замените на ваши папки в GitHub)
-        excel_path = os.path.join(BASE_DIR, "data", "MS,AMP.AAP 2026.xlsx")
-        shapefile_path = os.path.join(BASE_DIR, "shp", "kaz 17 obl.shp")
+        # Формируем путь к вашему изображению
+        # Убедитесь, что файл на GitHub называется именно AGRO.jpg (регистр важен!)
+        img_filename = "AGRO.jpg"
+        img_path = os.path.join(BASE_DIR, img_filename)
         
-        try:
-            df = pd.read_excel(excel_path, sheet_name=0, header=None)
-            df[2] = pd.to_numeric(df[2], errors='coerce')
-            df[3] = pd.to_numeric(df[3], errors='coerce')
-            df = df.dropna(subset=[2, 3])
-            
-            gdf_borders = gpd.read_file(shapefile_path)
-            if gdf_borders.crs is None or gdf_borders.crs != "EPSG:4326":
-                gdf_borders = gdf_borders.to_crs(epsg=4326)
-        except Exception as e:
-            st.error(f"⚠️ Файлы не найдены. Проверьте пути в GitHub. Ошибка: {e}")
-            return
-
-        # --- МАППИНГ ИКОНОК (Используем символы, максимально похожие на фото) ---
-        # Для полной аутентичности можно загрузить картинки в папку и использовать их пути
-        mapping = {
-            "яровая пшеница": "🌾", "озимая пшеница": "🌾", "ячмень": "🌱",
-            "кукуруза": "🌽", "подсолнечник": "🌻", "рис": "🍚",
-            "хлопок": "☁️", "картофель": "🥔", "сахарная свекла": "🍠",
-            "овощи": "🥕", "плодовые": "🍎", "пастбища": "🌿"
-        }
-
-        def get_icon(text):
-            t = str(text).lower()
-            for key, icon in mapping.items():
-                if key in t: return icon
-            return "📍"
-
-        # --- НАСТРОЙКА КАРТЫ КАК НА ФОТО ---
-        # Используем "CartoDB Positron" или "OpenStreetMap" для четких границ
-        m = folium.Map(
-            location=[48.0, 67.0], 
-            zoom_start=5, 
-            tiles="OpenStreetMap", # Более детальная карта как на ГИС-снимке
-            control_scale=True
-        )
-
-        # Слой границ (Синие линии как на фото)
-        folium.GeoJson(
-            gdf_borders,
-            style_function=lambda x: {
-                'fillColor': 'transparent', 
-                'color': '#1565C0', # Насыщенный синий для границ областей
-                'weight': 2.0, 
-                'fillOpacity': 0.0
-            }
-        ).add_to(m)
-
-        legend_dict = {}
-
-        for _, row in df.iterrows():
-            cult_name = str(row[4]) if pd.notnull(row[4]) else "Культура"
-            icon_symbol = get_icon(cult_name)
-            legend_dict[cult_name] = icon_symbol
-
-            # Создаем кастомный маркер
-            folium.Marker(
-                location=[row[2], row[3]],
-                popup=folium.Popup(f"<b>{row[0]}</b><br>{cult_name}", max_width=200),
-                icon=folium.DivIcon(html=f"""
-                    <div style="
-                        font-size: 20pt; 
-                        text-shadow: 2px 2px 4px white; 
-                        display: flex; 
-                        justify-content: center; 
-                        align-items: center;">
-                        {icon_symbol}
-                    </div>""")
-            ).add_to(m)
-
-        # --- ВЕРСТКА: КАРТА + ЛЕГЕНДА ---
-        col_map, col_leg = st.columns([4, 1])
-
+        # Создаем две колонки: для карты и для пояснительного текста
+        col_map, col_text = st.columns([3, 1])
+        
         with col_map:
-            st_folium(m, height=700, use_container_width=True, key="agro_map")
-
-        with col_leg:
-            # Стилизация легенды под стиль Казгидромета
-            legend_html = "".join([
-                f"<div style='margin-bottom: 8px;'>{icon} <small>{name}</small></div>" 
-                for name, icon in sorted(legend_dict.items()) if str(name) != "nan"
-            ])
+            # Проверка наличия файла, чтобы избежать MediaFileStorageError
+            if os.path.exists(img_path):
+                st.image(
+                    img_path, 
+                    caption="Схема агрометеорологических наблюдений с/х культур", 
+                    use_container_width=True
+                )
+            else:
+                st.error(f"⚠️ Файл '{img_filename}' не найден в репозитории.")
+                # Подсказка для отладки
+                st.info(f"Искал по пути: {img_path}")
+                
+        with col_text:
+            st.markdown("""
+            **О карте:**
+            Данная схема отображает пункты агрометеорологического мониторинга по всей территории РК.
             
-            st.markdown(f"""
-                <div style="background:#f9f9f9; padding:15px; border-radius:10px; border:1px solid #ccc; height:700px; overflow-y:auto;">
-                    <b style="color:#1565C0;">Условные обозначения:</b><hr>
-                    {legend_html}
-                </div>
-            """, unsafe_allow_html=True)
+            **Основные культуры:**
+            * 🌾 Зерновые
+            * 🌽 Пропашные
+            * 🌻 Масличные
+            * 🍎 Плодовые
+            """)
+            
+            # Кнопка для скачивания (если нужно)
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as file:
+                    st.download_button(
+                        label="📂 Скачать карту",
+                        data=file,
+                        file_name="Agro_Map_Kazhydromet.jpg",
+                        mime="image/jpg"
+                    )
 
-    if __name__ == "__main__":
-        render_final_agro_map()
-    
+    # Вызов функции
+    render_final_agro_map()
+
+
     
 #АГРОКЛИМАТИЧЕСИК ЗОНЫ
     import streamlit as st
