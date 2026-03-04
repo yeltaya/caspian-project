@@ -2010,22 +2010,35 @@ with tabs[0]:
                     hovertemplate=f"<b>Зона {zone}</b>: %{{x}}%<extra></extra>"
                 ))
 
-# Настройки отображения графика
+        # Настройки отображения графика
         fig.update_layout(
             barmode='stack',
             height=750,
-            # Увеличиваем отступ слева (l=150), чтобы влезли длинные названия категорий
-            # Увеличиваем отступ сверху (t=30) для комфортного визуального восприятия
-            margin=dict(l=150, r=20, t=30, b=20),
+            # УВЕЛИЧИВАЕМ ОТСТУП СЛЕВА ДО 250. 
+            # Названия типа "Восточно-Казахстанская и Абайская" требуют много места.
+            margin=dict(l=250, r=20, t=50, b=50), 
             
-            # Ось X скрыта, но если захотите включить шрифт, добавьте tickfont сюда
-            xaxis=dict(visible=False, range=[0, 100]),
+            # Ось X (проценты снизу)
+            xaxis=dict(
+                visible=True, 
+                range=[0, 100],
+                tickfont=dict(size=16, color="#1f4e79"),
+                title=dict(text="%", font=dict(size=14, color="#1f4e79")),
+                gridcolor='rgba(0,0,0,0.1)'
+            ),
             
-            # Настройка оси Y (Названия категорий)
+            # Ось Y (ЗДЕСЬ НАЗВАНИЯ ОБЛАСТЕЙ)
             yaxis=dict(
+                visible=True,           # ПРИНУДИТЕЛЬНО ВКЛЮЧИТЬ
+                showticklabels=True,    # ПОКАЗАТЬ ПОДПИСИ
                 autorange="reversed", 
-                # УВЕЛИЧИВАЕМ ШРИФТ НАЗВАНИЙ СЛЕВА
-                tickfont=dict(size=16, family="Arial Black", color="white")
+                type='category',        # ЯВНО УКАЗЫВАЕМ, ЧТО ЭТО ТЕКСТ
+                tickfont=dict(
+                    size=16, 
+                    family="Arial Black", 
+                    color="#1f4e79"     # ТЕМНО-СИНИЙ (не белый!)
+                ),
+                automargin=False        # Отключаем авто, так как мы задали l=250 вручную
             ),
             
             showlegend=False,
@@ -2033,17 +2046,15 @@ with tabs[0]:
             paper_bgcolor='rgba(0,0,0,0)'
         )
 
-        # Если у вас есть цифры внутри столбцов (traces), 
-        # добавьте этот блок для увеличения их шрифта:
+        # Шрифт цифр внутри полосок
         fig.update_traces(
-            textfont=dict(size=16, family="Arial Black")
+            textfont=dict(size=18, family="Arial Black", color="black"),
+            textposition='inside'
         )
-        
-        
-        # Добавление вертикальных линий сетки для красоты
-        fig.update_xaxes(showgrid=True, gridcolor='lightgrey', dtick=10)
 
         st.plotly_chart(fig, use_container_width=True)
+
+
 
     # 4. Наполнение правой колонки легендой
     with col_legend:
