@@ -3884,32 +3884,18 @@ with tabs[4]:
             pritok_values = [487, 679, 818, 711, 539, 766, 724, 535, 680, 913, 562, 592, 1050, 884, 1050, 728, 719, 446, 899, 917, 989, 444, 387, 603, 715, 364, 797, 368, 457, 1600, 624, 445, 444, 536, 145, 132, 197, 229, 320, 448, 362, 361, 371, 287, 310, 314, 278, 407, 631, 408, 455, 444, 513, 680, 817, 458, 500, 448, 757, 588, 446, 429, 674, 865, 745, 706, 523, 570, 393, 463, 791, 424, 567, 430, 558, 464, 387, 710, 482, 442, 390, 298, 403, 465, 534]
 
             import plotly.graph_objects as go
-            
-            axis_font_settings = dict(size=18, family="Arial", color="black") # Цвет строго черный
-            tick_font_settings = dict(size=14, family="Arial", color="black")
-            # --- Общие параметры для осей (чтобы не дублировать) ---
-            axis_style = dict(
-                showgrid=True, 
-                gridcolor='lightgrey', 
-                showline=False,    # УБИРАЕМ черную линию (рамку)
-                zeroline=False,    # Убираем нулевую линию
-                title_font=axis_font_settings,
-                tickfont=tick_font_settings,
-                tickcolor='black'  # Цвет маленьких черточек у цифр
-            )
-
-
+        axis_font_settings = dict(size=18, family="Arial", color="black")
+        tick_font_settings = dict(size=14, family="Arial", color="black")
 
 # Настройки для легенды в 3 столбца
             legend_style = dict(
                 orientation="h",
                 y=-0.3,
-                x=0.4,
+                x=0.5,
                 xanchor="center",
                 entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
                 entrywidthmode="fraction" 
             )
-
 
             # --- 1. ГРАФИК МЕСТНОГО СТОКА ---
             fig_local = go.Figure()
@@ -3934,65 +3920,41 @@ with tabs[4]:
                 title="<b>ОСНОВНЫЕ РЕКИ БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
-                height=500,
+                height=500, # Немного увеличим высоту, чтобы легенда влезла комфортно
                 template="plotly_white",
                 hovermode="x unified",
-                legend=legend_style,
-                margin=dict(l=60, r=20, t=60, b=100), # Выровняли отступы с притоком
-                xaxis=dict(
-                        **axis_style,
-                        tickangle=90,
-                        autorange="reversed" # Годы наоборот
-                    ),
-                    yaxis=dict(
-                        **axis_style,
-                        zeroline=False
-                    )
-    
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False)
             )
 
-
-            # --- 2. ГРАФИК ПРИТОКА (ИСПРАВЛЕННЫЙ) ---
+            # --- 2. ГРАФИК ПРИТОКА ---
             fig_pritok = go.Figure()
 
-            # Убедитесь, что years — это список чисел или массив numpy
             fig_pritok.add_trace(go.Scatter(
-                    x=df_local['Год'], 
-                    y=df_local[col_name],
-                    mode='markers+lines',
-                    name=col_name,
-                    line=dict(color='black', width=1),
-                    marker=dict(
-                        color=excel_colors[i % len(excel_colors)],
-                        size=6,
-                        line=dict(color='black', width=1)
-                    ),
-                    hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
-                ))
+                x=years, 
+                y=pritok_values,
+                mode='markers+lines',
+                name='Значение стока',
+                line=dict(color='black', width=1.5),
+                marker=dict(color='#3498db', size=7, line=dict(color='black', width=1)),
+                hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
+            ))
 
-
-            fig_local.update_layout(
-                title="<b>ПРИТОК</b>",
+            # Тренд
+            fig_pritok.update_layout(
+                title="<b>ПРИТОК БАССЕЙНА</b>",
                 xaxis_title="ГОД",
                 yaxis_title="Q, м³/с",
                 height=500,
                 template="plotly_white",
-                hovermode="x unified",
-                legend=legend_style,
-                margin=dict(l=60, r=20, t=60, b=100), # Выровняли отступы с притоком
-                xaxis=dict(
-                        **axis_style,
-                        type='linear',
-                        tickangle=90,
-                        autorange="reversed" # Годы наоборот
-                    ),
-                    yaxis=dict(
-                        **axis_style
-                    )
-                )
-
-
-
+                hovermode="x",
+                legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
+                margin=dict(l=40, r=20, t=60, b=100),
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
+            )
 
             # Отображение
             g_col1, g_col2 = st.columns(2)
