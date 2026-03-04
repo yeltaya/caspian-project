@@ -2965,7 +2965,9 @@ with tabs[1]:
 
     def show_forecast_process():
         # --- ЕДИНЫЙ CSS СТИЛЬ ---
-        st.markdown("""
+    IMG_DIR = os.path.join(BASE_DIR)
+
+    st.markdown("""
             <style>
             .big-climate-card {
                 background: #ffffff;
