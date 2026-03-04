@@ -1682,12 +1682,11 @@ with tabs[0]:
                 text=df_posts["Гидропосты"], textposition='outside'
             ))
             
-             fig.update_layout(
+            # Пример правильных отступов (все строки внутри функции/блока выровнены)
+            fig.update_layout(
                 barmode='group', 
                 height=700, 
-                # Увеличиваем отступы, чтобы крупные шрифты не резались
                 margin=dict(l=100, r=50, t=80, b=100), 
-                
                 legend=dict(
                     orientation="h", 
                     yanchor="bottom", 
@@ -1696,31 +1695,25 @@ with tabs[0]:
                     x=1,
                     font=dict(size=16)
                 ),
-                
                 plot_bgcolor='rgba(0,0,0,0)', 
                 paper_bgcolor='rgba(0,0,0,0)', 
                 font=dict(color="white"),
-                
-                # Исправленная настройка оси X
                 xaxis=dict(
                     showgrid=True, 
                     gridcolor='rgba(200,200,200,0.1)',
                     tickfont=dict(size=16),
-                    # Правильный синтаксис заголовка:
-                    title=dict(text="Год", font=dict(size=18)), 
+                    title=dict(text="Год", font=dict(size=18)), # Исправленный заголовок
                     automargin=True
                 ),
-                
-                # Исправленная настройка оси Y
                 yaxis=dict(
                     tickfont=dict(size=16),
-                    # Правильный синтаксис заголовка:
-                    title=dict(text="Значение", font=dict(size=18)),
+                    title=dict(text="Значение", font=dict(size=18)), # Исправленный заголовок
                     automargin=True
                 )
             )
 
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
 
 
     with col_info:
