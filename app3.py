@@ -3533,9 +3533,9 @@ with tabs[4]:
     if __name__ == "__main__":
         show_water_resources_analysis()
     
-      
-        # Базовый путь к папке с фотографиями
-        BASE_IMAGE_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\UMGPGR"
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
+        BASE_IMAGE_PATH = os.path.join(BASE_DIR)
+        
 
         vxb_list = [k for k in VXB_STATS.keys() if k != "Республика Казахстан"]
 
