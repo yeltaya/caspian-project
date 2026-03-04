@@ -2305,7 +2305,6 @@ with tabs[0]:
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("""
     <div style="background: #ffffff; padding: 40px; border-radius: 30px 30px 0 0; color: #001f3f; text-align: center; border-top: 1px solid #eaeaea; box-shadow: 0px -5px 15px rgba(0,0,0,0.02);">
-        <h2 style="font-weight: 900; margin-bottom: 10px; letter-spacing: 2px; color: #001f3f;">Национальная гидрометеорологическая служба Казахстана</h2>
         <p style="opacity: 0.8; font-size: 1.1rem; max-width: 800px; margin: 0 auto 25px auto; color: #444;">
             Обеспечение экологической и метеорологической безопасности Республики Казахстан через ведение непрерывного мониторинга атмосферного воздуха, водных ресурсов и климатических изменений.
         </p>
