@@ -1685,43 +1685,36 @@ with tabs[0]:
             fig.update_layout(
                 barmode='group', 
                 height=700, 
-                # Увеличиваем отступы еще сильнее на всякий случай
-                margin=dict(l=120, r=50, t=80, b=120), 
-                legend=dict(
-                    orientation="h", 
-                    yanchor="bottom", 
-                    y=1.02, 
-                    xanchor="right", 
-                    x=1,
-                    font=dict(size=16, color="white")
-                ),
+                # Увеличиваем левый отступ (l), так как названия областей длинные
+                margin=dict(l=200, r=50, t=50, b=100), 
+                
                 plot_bgcolor='rgba(0,0,0,0)', 
                 paper_bgcolor='rgba(0,0,0,0)', 
-                font=dict(color="white"), # Глобальный цвет текста
+                font=dict(color="#1f4e79"), # Темно-синий текст для светлой темы (как на фото)
                 
+                # Горизонтальная ось (теперь здесь ЧИСЛА)
                 xaxis=dict(
-                    visible=True,           # ПРИНУДИТЕЛЬНО делаем ось видимой
-                    showticklabels=True,    # ПРИНУДИТЕЛЬНО показываем числа/года
-                    tickfont=dict(size=16, color="white"),
+                    visible=True,
+                    showticklabels=True,
+                    tickfont=dict(size=16, color="#1f4e79"),
                     title=dict(
-                        text="Год", 
-                        font=dict(size=18, color="white")
+                        text="Количество постов", 
+                        font=dict(size=18, color="#1f4e79")
                     ),
-                    gridcolor='rgba(200,200,200,0.1)',
-                    automargin=True,
-                    type='category'         # Помогает, если на оси года или названия
+                    gridcolor='rgba(0,0,0,0.1)',
+                    automargin=True
                 ),
                 
+                # Вертикальная ось (теперь здесь НАЗВАНИЯ ОБЛАСТЕЙ)
                 yaxis=dict(
-                    visible=True,           # ПРИНУДИТЕЛЬНО делаем ось видимой
-                    showticklabels=True,    # ПРИНУДИТЕЛЬНО показываем числа
-                    tickfont=dict(size=16, color="white"),
-                    title=dict(
-                        text="Значение", 
-                        font=dict(size=18, color="white")
-                    ),
-                    gridcolor='rgba(200,200,200,0.1)',
-                    automargin=True
+                    visible=True,
+                    showticklabels=True,
+                    # Указываем тип 'category' здесь, так как области по вертикали
+                    type='category', 
+                    tickfont=dict(size=16, color="#1f4e79"),
+                    automargin=True,
+                    # Убираем заголовок оси Y, так как названия регионов говорят сами за себя
+                    title=dict(text="") 
                 )
             )
 
