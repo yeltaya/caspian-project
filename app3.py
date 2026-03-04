@@ -3884,8 +3884,8 @@ with tabs[4]:
             pritok_values = [487, 679, 818, 711, 539, 766, 724, 535, 680, 913, 562, 592, 1050, 884, 1050, 728, 719, 446, 899, 917, 989, 444, 387, 603, 715, 364, 797, 368, 457, 1600, 624, 445, 444, 536, 145, 132, 197, 229, 320, 448, 362, 361, 371, 287, 310, 314, 278, 407, 631, 408, 455, 444, 513, 680, 817, 458, 500, 448, 757, 588, 446, 429, 674, 865, 745, 706, 523, 570, 393, 463, 791, 424, 567, 430, 558, 464, 387, 710, 482, 442, 390, 298, 403, 465, 534]
 
             import plotly.graph_objects as go
-        axis_font_settings = dict(size=18, family="Arial", color="black")
-        tick_font_settings = dict(size=14, family="Arial", color="black")
+            axis_font_settings = dict(size=18, family="Arial", color="black")
+            tick_font_settings = dict(size=14, family="Arial", color="black")
 
 # Настройки для легенды в 3 столбца
             legend_style = dict(
