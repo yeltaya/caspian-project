@@ -5273,14 +5273,18 @@ with tabs[5]:
         ]
 
         for card in history_cards:
+            # Проверяем: если в значении есть минус, красим в красный
+            value_class = "metric-value-red" if "-" in str(card['val']) else "metric-value"
+            
             with card["col"]:
                 st.markdown(f"""
                     <div class="metric-card">
                         <p class="metric-year">{card['year']} год</p>
-                        <p class="metric-value">{card['val']}</p>
+                        <p class="{value_class}">{card['val']}</p>
                         <p class="metric-label">{card['label']}</p>
                     </div>
                 """, unsafe_allow_html=True)
+        
                 
         
         
