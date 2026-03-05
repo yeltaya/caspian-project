@@ -5025,7 +5025,7 @@ with tabs[4]:
 with tabs[5]:
     st.markdown('<h1 class="main-title">🌊 Исследование Каспийского моря</h1>', unsafe_allow_html=True)
     # ВСЕ СТРОКИ НИЖЕ ДОЛЖНЫ ИМЕТЬ ОТСТУП (4 ПРОБЕЛА)
-    
+        
     
     if 'selected_param' not in st.session_state:
         st.session_state.selected_param = "Уровень моря"
@@ -5058,66 +5058,73 @@ with tabs[5]:
     t_col1, t_col2, t_col3 = st.columns([0.9, 1, 1.2])
 
     with t_col1:
-        st.markdown('<div class="white-label-header"><p class="section-header-text">📡 Сеть</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="official-text">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
-        st.markdown("""<div class="network-text">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
+        # Увеличили font-size до 1.3rem для заголовка и 1.1rem для текста
+        st.markdown('<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">📡 Сеть</p></div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px;">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
+        st.markdown("""<div style="font-size: 1.15rem; line-height: 1.8;">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
 
     with t_col2:
-        st.markdown('<div class="white-label-header"><p class="section-header-text">🔎 Параметры</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">🔎 Параметры</p></div>', unsafe_allow_html=True)
         
-        # Приписка про 2025 год
-        st.markdown('<div style="color: #64748B; font-size: 0.9rem; margin-bottom: 10px; font-weight: 600;">📅 Оперативные данные за 2025 г.</div>', unsafe_allow_html=True)
+        # Сделали приписку про 2025 год крупнее (1.0rem) и темнее
+        st.markdown('<div style="color: #1E293B; font-size: 1.0rem; margin-bottom: 10px; font-weight: 700;">📅 Оперативные данные за 2025 г.</div>', unsafe_allow_html=True)
         
         p_c1, p_c2 = st.columns(2)
-        
-        # Добавили "Темп. воды" в список
         params = [
-            ("🌊", "Уровень моря"), 
-            ("🌡️", "Температура воздуха"), 
-            ("💧", "Температура воды"), # Новый параметр
-            ("🧪", "Соленость"), 
-            ("❄️", "Лед"), 
-            ("🌬️", "Ветер"), 
-            ("〰️", "Волнение")
+            ("🌊", "Уровень моря"), ("🌡️", "Температура воздуха"), 
+            ("💧", "Температура воды"), ("🧪", "Соленость"), 
+            ("❄️", "Лед"), ("🌬️", "Ветер"), ("〰️", "Волнение")
         ]
         
         for i, (emoji, name) in enumerate(params):
             with [p_c1, p_c2][i % 2]:
+                # Кнопки в Streamlit нельзя увеличить напрямую через font-size без кастомного CSS, 
+                # но use_container_width=True делает их массивнее.
                 if st.button(f"{emoji} {name}", key=f"top_{name}", use_container_width=True):
                     st.session_state.selected_param = name
+                
 
     with t_col3:
-        # Используем .get(), чтобы не вылетала ошибка, если ключ не найден
         current_unit = units.get(st.session_state.selected_param, "")
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
         
-        st.markdown(f'<div class="white-label-header"><p class="section-header-text">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
-        
-        fig_s = go.Figure()
-        
-        # Берем данные из словаря по выбранному ключу
         display_data = seasonal_data.get(st.session_state.selected_param, [0]*12)
         
+        fig_s = go.Figure()
         fig_s.add_trace(go.Scatter(
             x=months, y=display_data,
             mode='lines+markers', 
-            line=dict(color='#0072FF', width=3, shape='spline'),
-            marker=dict(size=8, color='white', line=dict(color='#0072FF', width=2)),
+            line=dict(color='#0072FF', width=4, shape='spline'), # Увеличили толщину линии до 4
+            marker=dict(size=10, color='white', line=dict(color='#0072FF', width=2)), # Увеличили маркер
             name=st.session_state.selected_param
         ))
         
         fig_s.update_layout(
-            height=250, 
-            margin=dict(l=10, r=10, t=30, b=10), 
+            height=300, # Увеличили высоту для лучшей видимости
+            margin=dict(l=50, r=10, t=30, b=50), # Увеличили l и b для подписей
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)',
-            hovermode="x unified"
+            hovermode="x unified",
+            # Настройки шрифта для всего графика
+            font=dict(color="black") 
         )
-        fig_s.update_xaxes(showgrid=False, tickfont=dict(size=12, color='#64748B'))
-        fig_s.update_yaxes(showgrid=True, gridcolor='#E2E8F0', tickfont=dict(size=12, color='#64748B'))
+
+        # Применяем ЧЕРНЫЙ цвет и КРУПНЫЙ шрифт к осям
+        fig_s.update_xaxes(
+            showgrid=False, 
+            tickfont=dict(size=14, color='black', family="Arial Black"), # Крупные черные месяцы
+            linecolor='black'
+        )
+        fig_s.update_yaxes(
+            showgrid=True, 
+            gridcolor='#E2E8F0', 
+            tickfont=dict(size=14, color='black', family="Arial Black"), # Крупные черные значения
+            title_font=dict(size=16, color='black'),
+            linecolor='black'
+        )
         
         st.plotly_chart(fig_s, use_container_width=True, config={'displayModeBar': False})
-
-    st.markdown("<hr style='margin: 30px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    
 
     # --- НИЖНИЙ БЛОК ---
     b_col1, b_col2 = st.columns([1.8, 1])
