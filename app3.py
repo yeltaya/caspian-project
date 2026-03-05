@@ -5247,34 +5247,15 @@ with tabs[5]:
             {"year": "2024", "val": "-29,05 м", "col": r2_c2, "label": "Текущий спад"},
         ]
 
-    for card in history_cards:
-        with card["col"]:
-            # Добавляем градиент и тень (box-shadow) для эффекта свечения
-            # Увеличиваем font-size для года (1.1rem), значения (1.8rem) и подписи (0.9rem)
-            st.markdown(f"""
-                <div style="
-                    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
-                    padding: 20px; 
-                    border-radius: 15px; 
-                    border: 1px solid #3498db; 
-                    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2); 
-                    margin-bottom: 10px; 
-                    text-align: center;">
-                    
-                    <p style="margin: 0; color: #1e3a8a; font-size: 1.1rem; font-weight: 700;">
-                        {card['year']} год
-                    </p>
-                    
-                    <p style="margin: 8px 0; color: black; font-size: 1.8rem; font-weight: 900; letter-spacing: -1px;">
-                        {card['val']}
-                    </p>
-                    
-                    <p style="margin: 0; color: #475569; font-size: 0.9rem; font-weight: 500;">
-                        {card['label']}
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-        
+        for card in history_cards:
+            with card["col"]:
+                st.markdown(f"""
+                    <div style="background: white; padding: 15px; border-radius: 15px; border: 1px solid #E2E8F0; margin-bottom: 10px; text-align: center;">
+                        <p style="margin: 0; color: #64748B; font-size: 0.8rem; font-weight: 600;">{card['year']} год</p>
+                        <p style="margin: 5px 0; color: #1E293B; font-size: 1.2rem; font-weight: 800;">{card['val']}</p>
+                        <p style="margin: 0; color: #94A3B8; font-size: 0.7rem;">{card['label']}</p>
+                    </div>
+                """, unsafe_allow_html=True)
 
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
         st.markdown("""
