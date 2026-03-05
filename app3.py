@@ -5247,7 +5247,7 @@ with tabs[5]:
                 box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
                 text-align: center;
                 margin-bottom: 20px;
-                min-height: 200px; /* Немного увеличили высоту для иконок */
+                min-height: 150px; /* Немного увеличили высоту для иконок */
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -5340,39 +5340,36 @@ with tabs[5]:
                             </div>
                         """, unsafe_allow_html=True)
                         
-                            
-                
-        
-        
 
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
         st.markdown("""
             <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; margin-top: 15px; font-family: 'Montserrat', sans-serif;">
-                <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 800; font-size: 0.9rem; text-align: center; text-transform: uppercase;">
+                <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 600; font-size: 1.1rem; text-align: center; text-transform: uppercase;">
                     Изменение акватории (2006 — 2024)
                 </p>
                 <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px;">
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #64748B; font-size: 0.7rem;">2006 г.</p>
-                        <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 800;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #64748B; font-size: 0.9rem;">2006 г.</p>
+                        <p style="margin: 0; color: #0C4A6E; font-size: 1.3rem; font-weight: 400;">392.3 <span style="font-size: 0.8rem;">тыс. км²</span></p>
                     </div>
                     <div style="flex-grow: 1; position: relative; margin: 0 15px; text-align: center;">
                         <div style="height: 2px; background: #0EA5E9; width: 100%;"></div>
                         <div style="position: absolute; right: -2px; top: -5px; width: 10px; height: 10px; border-top: 2px solid #0EA5E9; border-right: 2px solid #0EA5E9; transform: rotate(45deg);"></div>
-                        <span style="background: #0EA5E9; color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; position: relative; top: -20px;">
+                        <span style="background: #0EA5E9; color: white; padding: 2px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: 400; position: relative; top: -20px;">
                             -36.6 тыс. км²
                         </span>
                     </div>
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #0369A1; font-size: 0.7rem; font-weight: 700;">2024 г.</p>
-                        <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 800;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #0369A1; font-size: 0.9rem; font-weight: 400;">2024 г.</p>
+                        <p style="margin: 0; color: #0369A1; font-size: 1.3rem; font-weight: 400;">355.7 <span style="font-size: 0.8rem;">тыс. км²</span></p>
                     </div>
                 </div>
-                <p style="margin: 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
-                    За этот период Каспий потерял объем воды, равный <b>47.6 км³</b>.
+                <p style="margin: 0; text-align: center; color: #0C4A6E; font-size: 1.0rem; line-height: 1.4;">
+                    За этот период Каспий потерял объем воды, равный 47.6 км³.
                 </p>
             </div>
         """, unsafe_allow_html=True)
+
 
         # 4. ВТОРОЙ БЛОК: КРИТИЧЕСКИЙ ПОРОГ (-34 см)
         st.markdown("""
