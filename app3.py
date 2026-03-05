@@ -5129,7 +5129,7 @@ with tabs[5]:
     # --- НИЖНИЙ БЛОК ---
     b_col1, b_col2 = st.columns([1.8, 1])
     
-    st.markdown("---")
+    st.divider()
             
     with b_col1:
         # Увеличили заголовок до 1.3rem и сделали его жирным
@@ -5202,7 +5202,7 @@ with tabs[5]:
                     <div style="border-left: 3px solid #64748B; padding-left: 15px;">
                         <span style="color: #64748B; font-weight: 800;">1930 — 1977</span><br>
                         <b>Резкое падение</b><br>
-                        <span style="font-size: 0.9rem;">Обусловлено активным строительством ГЭС на Волге и длительным периодом засухи.</span>
+                        <span style="font-size: 1.0rem;">Обусловлено активным строительством ГЭС на Волге и длительным периодом засухи.</span>
                     </div>
                 """, unsafe_allow_html=True)
                 
@@ -5211,7 +5211,7 @@ with tabs[5]:
                     <div style="border-left: 3px solid #0072FF; padding-left: 15px;">
                         <span style="color: #0072FF; font-weight: 800;">1978 — 1995</span><br>
                         <b>Аномальный подъем</b><br>
-                        <span style="font-size: 0.9rem;">Внезапное увеличение стока рек и изменение атмосферной циркуляции. Уровень вырос на 2.5 метра.</span>
+                        <span style="font-size: 1.0rem;">Внезапное увеличение стока рек и изменение атмосферной циркуляции. Уровень вырос на 2.5 метра.</span>
                     </div>
                 """, unsafe_allow_html=True)
                 
@@ -5220,7 +5220,7 @@ with tabs[5]:
                     <div style="border-left: 3px solid #D32F2F; padding-left: 15px;">
                         <span style="color: #D32F2F; font-weight: 800;">2005 — н.в.</span><br>
                         <b>Текущий спад</b><br>
-                        <span style="font-size: 0.9rem;">Снижение притока и рост испарения из-за глобального потепления. Фаза, требующая адаптации.</span>
+                        <span style="font-size: 1.0rem;">Снижение притока и рост испарения из-за глобального потепления. Фаза, требующая адаптации.</span>
                     </div>
                 """, unsafe_allow_html=True)
             
@@ -5247,15 +5247,34 @@ with tabs[5]:
             {"year": "2024", "val": "-29,05 м", "col": r2_c2, "label": "Текущий спад"},
         ]
 
-        for card in history_cards:
-            with card["col"]:
-                st.markdown(f"""
-                    <div style="background: white; padding: 15px; border-radius: 15px; border: 1px solid #E2E8F0; margin-bottom: 10px; text-align: center;">
-                        <p style="margin: 0; color: #64748B; font-size: 0.8rem; font-weight: 600;">{card['year']} год</p>
-                        <p style="margin: 5px 0; color: #1E293B; font-size: 1.2rem; font-weight: 800;">{card['val']}</p>
-                        <p style="margin: 0; color: #94A3B8; font-size: 0.7rem;">{card['label']}</p>
-                    </div>
-                """, unsafe_allow_html=True)
+    for card in history_cards:
+        with card["col"]:
+            # Добавляем градиент и тень (box-shadow) для эффекта свечения
+            # Увеличиваем font-size для года (1.1rem), значения (1.8rem) и подписи (0.9rem)
+            st.markdown(f"""
+                <div style="
+                    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+                    padding: 20px; 
+                    border-radius: 15px; 
+                    border: 1px solid #3498db; 
+                    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2); 
+                    margin-bottom: 10px; 
+                    text-align: center;">
+                    
+                    <p style="margin: 0; color: #1e3a8a; font-size: 1.1rem; font-weight: 700;">
+                        {card['year']} год
+                    </p>
+                    
+                    <p style="margin: 8px 0; color: black; font-size: 1.8rem; font-weight: 900; letter-spacing: -1px;">
+                        {card['val']}
+                    </p>
+                    
+                    <p style="margin: 0; color: #475569; font-size: 0.9rem; font-weight: 500;">
+                        {card['label']}
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+        
 
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
         st.markdown("""
