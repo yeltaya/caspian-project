@@ -5264,20 +5264,18 @@ with tabs[5]:
                         flex-direction: column;
                         justify-content: center;">
                         
-                        <p style="margin: 0; color: #3498db; font-size: 1.4rem; font-weight: 700; text-transform: uppercase;">
+                        <p style="margin: 0; color: #3498db; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; font-family: Arial;">
                             {card['year']} год
                         </p>
                         
-                        <p style="margin: 15px 0; color: black; font-size: 3.2rem; font-weight: 900; line-height: 1;">
+                        <p style="margin: 15px 0; color: black; font-size: 3.2rem; font-weight: 900; line-height: 1; font-family: Arial;">
                             {card['val']}
                         </p>
                         
-                        <p style="margin: 0; color: #64748b; font-size: 1.3rem; font-weight: 600;">
+                        <p style="margin: 0; color: #64748b; font-size: 1.3rem; font-weight: 600; font-family: Arial;">
                             {card['label']}
                         </p>
-                    </div>
-                """, unsafe_allow_html=True)
-        
+                        
         
         
 
