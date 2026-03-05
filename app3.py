@@ -7223,7 +7223,6 @@ with tabs[6]:
                         <h4 style="color:{zone['color']}; margin-top:0;">{zone['title']}</h4>
                         <p style="font-size:0.9rem; color:#555;">{zone['desc']}</p>
                         <div style="background:{zone['bg']}; padding:8px; border-radius:6px; font-size:0.85rem;">
-                            <b>Осадки:</b> {zone['precip']}
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
