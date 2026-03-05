@@ -5250,7 +5250,6 @@ with tabs[5]:
 
         for card in history_cards:
             with card["col"]:
-                # Весь секрет в параметре unsafe_allow_html=True в конце!
                 st.markdown(f"""
                     <div style="
                         background: linear-gradient(145deg, #ffffff, #f0f7ff);
@@ -5278,6 +5277,7 @@ with tabs[5]:
                         </p>
                     </div>
                 """, unsafe_allow_html=True)
+        
         
         
 
