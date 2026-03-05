@@ -5252,27 +5252,24 @@ with tabs[5]:
             with card["col"]:
                 st.markdown(f"""
                     <div style="
-                        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-                        padding: 25px 15px; 
+                        background: linear-gradient(145deg, #ffffff, #f0f9ff);
+                        padding: 20px 10px; 
                         border-radius: 20px; 
-                        border: 2px solid #3498db; 
-                        box-shadow: 0 10px 15px -3px rgba(52, 152, 219, 0.1); 
+                        border: 1px solid #3498db; 
+                        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.15); 
                         text-align: center;
-                        min-height: 220px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        margin-bottom: 20px;">
+                        margin-bottom: 15px;
+                        transition: transform 0.3s ease;">
                         
-                        <p style="margin: 0; color: #3498db; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                        <p style="margin: 0; color: #3498db; font-size: 1.1rem; font-weight: 700; text-transform: uppercase;">
                             {card['year']} год
                         </p>
                         
-                        <p style="margin: 10px 0; color: #1e293b; font-size: 3.2rem; font-weight: 900; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                        <p style="margin: 10px 0; color: black; font-size: 2.5rem; font-weight: 900; line-height: 1.1;">
                             {card['val']}
                         </p>
                         
-                        <p style="margin: 0; color: #64748b; font-size: 1.1rem; font-weight: 500; line-height: 1.2;">
+                        <p style="margin: 0; color: #64748b; font-size: 1.0rem; font-weight: 600;">
                             {card['label']}
                         </p>
                     </div>
