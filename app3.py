@@ -5064,7 +5064,7 @@ with tabs[5]:
         st.markdown("""<div style="font-size: 1.2rem; line-height: 2.0;">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
 
     with t_col2:
-        st.markdown('<div class="white-label-header"><p style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">🔎 Параметры</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">🔎 Параметры</p></div>', unsafe_allow_html=True)
         
         # Сделали приписку про 2025 год крупнее (1.0rem) и темнее
         st.markdown('<div style="color: #1E293B; font-size: 1.0rem; margin-bottom: 10px; font-weight: 700;">📅 Оперативные данные за 2025 г.</div>', unsafe_allow_html=True)
@@ -5086,7 +5086,7 @@ with tabs[5]:
 
     with t_col3:
         current_unit = units.get(st.session_state.selected_param, "")
-        st.markdown(f'<div class="white-label-header"><p style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
         
         display_data = seasonal_data.get(st.session_state.selected_param, [0]*12)
         
@@ -5134,7 +5134,7 @@ with tabs[5]:
             
     with b_col1:
         # Увеличили заголовок до 1.3rem и сделали его жирным
-        st.markdown('<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
+        st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
         
         # Главный тезис: увеличили до 1.2rem и добавили насыщенный черный цвет
         st.markdown('<div style="font-size: 1.2rem; font-weight: 700; color: #1E293B; margin-bottom: 10px; line-height: 1.4;">Уровень Каспийского моря подвержен значительным колебаниям</div>', unsafe_allow_html=True)
@@ -5316,11 +5316,11 @@ with tabs[5]:
             </div>
         """, unsafe_allow_html=True)
 
-
-
+    st.divider()
+    
     # --- ОБЩИЙ БЛОК: ОСНОВНЫЕ ФАКТОРЫ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
 
     # Общий подзаголовок на всю ширину (тот самый текст)
     st.markdown("""
@@ -5505,7 +5505,9 @@ with tabs[5]:
         )
         
         st.plotly_chart(fig_climate, use_container_width=True, config={'displayModeBar': False})
-
+    st.divider()
+    
+    
     # --- БЛОК: ГЛОБАЛЬНЫЕ ПОСЛЕДСТВИЯ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">⚠️ Комплексное влияние на регион</p></div>', unsafe_allow_html=True)
@@ -5592,7 +5594,8 @@ with tabs[5]:
 
     # --- КОНЕЦ БЛОКА ---
 
-
+    st.divider()
+    
     # --- БЛОК: ПРОГНОЗЫ И ПРОДУКЦИЯ С ЭФФЕКТОМ НАЖАТИЯ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Прогнозы и информационная продукция</p></div>', unsafe_allow_html=True)
@@ -5684,6 +5687,10 @@ with tabs[5]:
             </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        
+    st.divider()        
+        
     # --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">🔭 Долгосрочная оценка изменений</p></div>', unsafe_allow_html=True)
@@ -5805,7 +5812,7 @@ with tabs[5]:
             </div>
         """, unsafe_allow_html=True)
 
-
+    st.divider()
     # --- БЛОК: ПРОГНОЗЫ И БУДУЩЕЕ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Будущее Каспия: Сценарии до 2100 года</p></div>', unsafe_allow_html=True)
@@ -5848,6 +5855,9 @@ with tabs[5]:
             </div>
         """, unsafe_allow_html=True)
 
+    st.divider()
+    
+    
     # --- БЛОК: ПОСЛЕДСТВИЯ И ВЫЗОВЫ ---
     st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown('<div class="promo-bold" style="text-align: center;">🚨 Ключевые риски при снижении уровня</div>', unsafe_allow_html=True)
