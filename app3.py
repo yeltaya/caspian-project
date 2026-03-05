@@ -5237,60 +5237,110 @@ with tabs[5]:
         # 1. Заголовок
         st.markdown('<div class="white-label-header"><p class="section-header-text">⏳ Исторические минимумы и максимумы</p></div>', unsafe_allow_html=True)
         
-        # 2. Стили (вынесены для чистоты, добавлен эффект при наведении)
         st.markdown("""
         <style>
             .metric-card {
                 background: linear-gradient(145deg, #ffffff, #f0f7ff);
-                padding: 25px 10px;
+                padding: 30px 15px;
                 border-radius: 20px;
                 border: 2px solid #3498db;
-                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.15);
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
                 text-align: center;
                 margin-bottom: 20px;
-                min-height: 220px; /* Фиксируем высоту, чтобы карточки были ровными */
+                min-height: 250px; /* Немного увеличили высоту для иконок */
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 transition: 0.3s;
             }
             .metric-card:hover {
-                box-shadow: 0 15px 35px rgba(52, 152, 219, 0.3);
                 transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(52, 152, 219, 0.3);
             }
-            .metric-year { color: #3498db; font-size: 1.4rem; font-weight: 800; margin: 0; text-transform: uppercase; }
-            .metric-value { color: black; font-size: 3.2rem; font-weight: 900; margin: 10px 0; line-height: 1; }
-            .metric-value-red { color: #e74c3c; font-size: 3.2rem; font-weight: 900; margin: 10px 0; line-height: 1; }
-            .metric-label { color: #475569; font-size: 1.2rem; font-weight: 600; margin: 0; }
+            
+            /* Год - Крупный синий */
+            .metric-year { 
+                color: #3498db; 
+                font-size: 1.6rem; 
+                font-weight: 800; 
+                margin: 0; 
+                text-transform: uppercase; 
+            }
+            
+            /* ГЛАВНОЕ ЗНАЧЕНИЕ - Сделали гигантским */
+            .metric-value { 
+                color: black; /* По умолчанию черный */
+                font-size: 3.8rem; /* Очень крупно */
+                font-weight: 900; 
+                margin: 15px 0; 
+                line-height: 1; 
+            }
+            
+            /* Красный цвет для отрицательных значений */
+            .metric-value-red { 
+                color: #e74c3c; 
+                font-size: 3.8rem; 
+                font-weight: 900; 
+                margin: 15px 0; 
+                line-height: 1; 
+            }
+            
+            /* Иконка - Крупная */
+            .metric-icon { 
+                font-size: 3rem; 
+                margin-top: 10px; 
+            }
+            
+            /* Подпись - Четкая */
+            .metric-label { 
+                color: #475569; 
+                font-size: 1.3rem; 
+                font-weight: 600; 
+                margin: 0; 
+                margin-top: 5px;
+            }
         </style>
         """, unsafe_allow_html=True)
 
+
         # 3. Данные (без привязки к колонкам)
         history_data = [
-            {"year": "1903", "val": "-25,74 м", "label": "Максимум"},
-            {"year": "1977", "val": "-29,01 м", "label": "Минимум XX в."},
-            {"year": "1995", "val": "-26,62 м", "label": "Пик подъема"},
-            {"year": "2024", "val": "-29,05 м", "label": "Текущий спад"},
+            # Максимум 1903 г. - ставим нейтральную или волну
+            {"year": "1903", "val": "-25,74 м", "label": "Максимум", "icon": "🌊"},
+            # Минимум XX в. - стрелка вниз
+            {"year": "1977", "val": "-29,01 м", "label": "Минимум XX в.", "icon": "📉"},
+            # Пик подъема 1995 г. - стрелка вверх
+            {"year": "1995", "val": "-26,62 м", "label": "Пик подъема", "icon": "📈"},
+            # Текущий спад 2024 г. - стрелка вниз
+            {"year": "2024", "val": "-29,05 м", "label": "Текущий спад", "icon": "📉"},
         ]
 
+
         # 4. Динамическое создание сетки (по 2 карточки в ряд)
+# Используем автоматическое распределение по 2 колонки
         for i in range(0, len(history_data), 2):
             cols = st.columns(2)
             for j in range(2):
                 if i + j < len(history_data):
                     card = history_data[i + j]
-                    # Логика цвета
-                    v_class = "metric-value-red" if "-" in str(card['val']) else "metric-value"
                     
+                    # ЛОГИКА: Если в значении есть минус, используем красный класс
+                    if "-" in str(card['val']):
+                        value_class = "metric-value-red"
+                    else:
+                        value_class = "metric-value"
+                        
                     with cols[j]:
                         st.markdown(f"""
                             <div class="metric-card">
                                 <p class="metric-year">{card['year']} год</p>
-                                <p class="{v_class}">{card['val']}</p>
+                                <p class="{value_class}">{card['val']}</p>
+                                <div class="metric-icon">{card['icon']}</div>
                                 <p class="metric-label">{card['label']}</p>
                             </div>
                         """, unsafe_allow_html=True)
-                    
+                        
+                            
                 
         
         
