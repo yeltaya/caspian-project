@@ -5402,8 +5402,8 @@ with tabs[5]:
     st.divider()
     
     # --- ОБЩИЙ БЛОК: ОСНОВНЫЕ ФАКТОРЫ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
+    st.markdown("<hr style='margin: 80px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown('<div class="white-label-header"><p style="font-size: 5.0rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
 
     # Общий подзаголовок на всю ширину (тот самый текст)
     st.markdown("""
