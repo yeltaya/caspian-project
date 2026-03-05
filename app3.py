@@ -5128,7 +5128,9 @@ with tabs[5]:
 
     # --- НИЖНИЙ БЛОК ---
     b_col1, b_col2 = st.columns([1.8, 1])
-
+    
+    st.markdown("---")
+            
     with b_col1:
         # Увеличили заголовок до 1.3rem и сделали его жирным
         st.markdown('<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
@@ -5163,7 +5165,7 @@ with tabs[5]:
         fig_hist.update_xaxes(
             showgrid=False, 
             linecolor='black',       # Сделали линию оси черной
-            linewidth=2,             # Сделали линию чуть толще
+            linewidth=1,             # Сделали линию чуть толще
             range=[1920, 2026],
             tickfont=dict(size=14, color='black', family="Arial"), # Крупные цифры годов
             title_font=dict(size=16, color='black')               # Крупный заголовок (если есть)
@@ -5173,7 +5175,7 @@ with tabs[5]:
             showgrid=True, 
             gridcolor='#E2E8F0', 
             linecolor='black',       # Сделали линию оси черной
-            linewidth=2,
+            linewidth=1,
             zeroline=False,
             tickfont=dict(size=14, color='black', family="Arial"), # Крупные значения уровня
             title_font=dict(size=16, color='black')               # Крупный заголовок "м БС"
