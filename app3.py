@@ -5247,8 +5247,8 @@ with tabs[5]:
                 text-align: center;
                 margin-bottom: 20px;
             }
-            .metric-year { color: #3498db; font-size: 1.2rem; font-weight: 700; margin: 0; }
-            .metric-value { color: black; font-size: 2.5rem; font-weight: 900; margin: 10px 0; }
+            .metric-year { color: #3498db; font-size: 1.5rem; font-weight: 700; margin: 0; }
+            .metric-value { color: black; font-size: 4.0rem; font-weight: 900; margin: 10px 0; }
             .metric-label { color: #64748b; font-size: 1rem; font-weight: 600; margin: 0; }
         </style>
         """, unsafe_allow_html=True)
