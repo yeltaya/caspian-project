@@ -3922,8 +3922,8 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black')),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=18, color='black'),tickfont=dict(size=14, color='black'))
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=12, color='black'),tickfont=dict(size=10, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=12, color='black'),tickfont=dict(size=10, color='black'))
             )
 
             # --- 2. ГРАФИК ПРИТОКА ---
@@ -3949,9 +3949,9 @@ with tabs[4]:
                 hovermode="x",
                 legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=12, color='black'),tickfont=dict(size=10, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=12, color='black'),tickfont=dict(size=10, color='black'))
+           )
 
             # Отображение
             g_col1, g_col2 = st.columns(2)
