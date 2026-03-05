@@ -5236,7 +5236,23 @@ with tabs[5]:
     with b_col2:
         # 1. Заголовок (внутри колонки)
         st.markdown('<div class="white-label-header"><p class="section-header-text">⏳ Исторические минимумы и максимумы</p></div>', unsafe_allow_html=True)
-        
+        st.markdown("""
+        <style>
+            .metric-card {
+                background: white;
+                padding: 20px;
+                border-radius: 15px;
+                border: 2px solid #3498db;
+                box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .metric-year { color: #3498db; font-size: 1.2rem; font-weight: 700; margin: 0; }
+            .metric-value { color: black; font-size: 2.5rem; font-weight: 900; margin: 10px 0; }
+            .metric-label { color: #64748b; font-size: 1rem; font-weight: 600; margin: 0; }
+        </style>
+        """, unsafe_allow_html=True)
+       
         # 2. Колонки для плашек
         r1_c1, r1_c2 = st.columns(2)
         r2_c1, r2_c2 = st.columns(2)
@@ -5251,31 +5267,13 @@ with tabs[5]:
         for card in history_cards:
             with card["col"]:
                 st.markdown(f"""
-                    <div style="
-                        background: linear-gradient(145deg, #ffffff, #f0f7ff);
-                        padding: 25px 15px; 
-                        border-radius: 20px; 
-                        border: 2px solid #3498db; 
-                        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2); 
-                        text-align: center;
-                        margin-bottom: 15px;
-                        min-height: 220px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;">
-                        
-                        <p style="margin: 0; color: #3498db; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; font-family: Arial;">
-                            {card['year']} год
-                        </p>
-                        
-                        <p style="margin: 15px 0; color: black; font-size: 3.2rem; font-weight: 900; line-height: 1; font-family: Arial;">
-                            {card['val']}
-                        </p>
-                        
-                        <p style="margin: 0; color: #64748b; font-size: 1.3rem; font-weight: 600; font-family: Arial;">
-                            {card['label']}
-                        </p>
-                        
+                    <div class="metric-card">
+                        <p class="metric-year">{card['year']} год</p>
+                        <p class="metric-value">{card['val']}</p>
+                        <p class="metric-label">{card['label']}</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
         
         
 
