@@ -5239,39 +5239,26 @@ with tabs[5]:
         st.markdown("""
         <style>
             .metric-card {
-                background: linear-gradient(145deg, #ffffff, #f0f7ff);
+                background: linear-gradient(145deg, #ffffff, #f8fcff);
                 padding: 30px 15px;
                 border-radius: 20px;
                 border: 2px solid #3498db;
-                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
                 text-align: center;
                 margin-bottom: 20px;
             }
-            /* Год - Сделали крупнее */
-            .metric-year { 
-                color: #3498db; 
-                font-size: 1.5rem; 
-                font-weight: 800; 
-                text-transform: uppercase;
-                margin: 0; 
-            }
-            /* ГЛАВНОЕ ЗНАЧЕНИЕ - Сделали гигантским и черным */
-            .metric-value { 
-                color: black; 
-                font-size: 3.5rem; 
-                font-weight: 900; 
-                margin: 10px 0; 
-                line-height: 1;
-            }
-            /* Подпись - Сделали четче */
-            .metric-label { 
-                color: #475569; 
-                font-size: 1.3rem; 
-                font-weight: 600; 
-                margin: 0; 
-            }
+            .metric-year { color: #3498db; font-size: 1.5rem; font-weight: 800; margin: 0; }
+            
+            /* Обычный черный цвет */
+            .metric-value { color: black; font-size: 3.5rem; font-weight: 900; margin: 10px 0; line-height: 1; }
+            
+            /* Ярко-красный для минусовых значений */
+            .metric-value-red { color: #e74c3c; font-size: 3.5rem; font-weight: 900; margin: 10px 0; line-height: 1; }
+            
+            .metric-label { color: #475569; font-size: 1.3rem; font-weight: 600; margin: 0; }
         </style>
-""", unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
 
        
         # 2. Колонки для плашек
