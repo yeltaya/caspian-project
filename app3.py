@@ -4208,15 +4208,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style, # 3 столбца снизу
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black', 
-                    mirror=True,
-                    tickangle=90
-                ),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- 2. ГРАФИК ПРИТОКА (С ЛИНЕЙНОЙ ТРЕНДА) ---
             fig_ert_pritok = go.Figure()
@@ -4247,9 +4241,9 @@ with tabs[4]:
                 hovermode="x",
                 legend=legend_3col_style, # 3 столбца снизу
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # Отображение
             g_col1, g_col2 = st.columns(2)
@@ -4369,9 +4363,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: ТРАНСГРАНИЧНЫЙ ПРИТОК ---
             fig_zhk_pritok = go.Figure()
@@ -4391,22 +4385,6 @@ with tabs[4]:
                     hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
 
-                # Добавляем линию тренда только для первой (основной) реки в списке, 
-                # чтобы не перегружать график, либо уберите условие if i == 0 для всех трендов
-                if i == 0:
-                    valid_idx = np.isfinite(df_pritok_zhk[col_name])
-                    if any(valid_idx):
-                        z = np.polyfit(df_pritok_zhk['Год'][valid_idx], df_pritok_zhk[col_name][valid_idx], 1)
-                        p = np.poly1d(z)
-                        fig_zhk_pritok.add_trace(go.Scatter(
-                            x=df_pritok_zhk['Год'],
-                            y=p(df_pritok_zhk['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col_name}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
-
             fig_zhk_pritok.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК (РФ -> РК)</b>",
                 xaxis_title="ГОД",
@@ -4416,9 +4394,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4529,9 +4507,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: ОБЩИЙ РЕСУРС (С ТРЕНДОМ) ---
             fig_es_total = go.Figure()
@@ -4559,9 +4537,9 @@ with tabs[4]:
                 height=500,
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4676,9 +4654,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: ОБЩИЙ РЕСУРС (С ТРЕНДОМ) ---
             fig_n_total = go.Figure()
@@ -4707,9 +4685,9 @@ with tabs[4]:
                 height=500,
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4751,10 +4729,7 @@ with tabs[4]:
                 """, icon="⚠️")
                 
              
-
-
-
-            
+          
 # --- СПЕЦИАЛЬНЫЙ БЛОК Шу-Таласского ВХБ ---
         if "Шу-Таласский" in name:
             st.markdown("---")
@@ -4820,21 +4795,6 @@ with tabs[4]:
                     hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
                 
-                # Добавляем линию тренда для основной трансграничной реки (первая в списке)
-                if i == 0:
-                    valid_idx = np.isfinite(df_inflow[col])
-                    if any(valid_idx):
-                        z = np.polyfit(df_inflow['Год'][valid_idx], df_inflow[col][valid_idx], 1)
-                        p = np.poly1d(z)
-                        fig_st_inflow.add_trace(go.Scatter(
-                            x=df_inflow['Год'],
-                            y=p(df_inflow['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
-
             fig_st_inflow.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК (КЫРГЫЗСТАН -> КАЗАХСТАН)</b>",
                 xaxis_title="ГОД",
@@ -4844,9 +4804,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: МЕСТНЫЙ СТОК (Шу-Таласский ВХБ внутри РК) ---
             fig_st_local = go.Figure()
@@ -4873,9 +4833,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД ---
             col_a, col_b = st.columns(2)
@@ -4983,20 +4943,6 @@ with tabs[4]:
                     hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
                 
-                # Добавляем линию тренда для первой реки в списке (например, р. Тобыл)
-                if i == 0:
-                    valid_idx = np.isfinite(df_inflow_tt[col])
-                    if any(valid_idx):
-                        z_tt = np.polyfit(df_inflow_tt['Год'][valid_idx], df_inflow_tt[col][valid_idx], 1)
-                        p_tt = np.poly1d(z_tt)
-                        fig_tt_inflow.add_trace(go.Scatter(
-                            x=df_inflow_tt['Год'],
-                            y=p_tt(df_inflow_tt['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
 
             fig_tt_inflow.update_layout(
                 title="<b>ПРИТОК ТРАНСГРАНИЧНЫХ РЕК (РФ -> РК)</b>",
@@ -5007,9 +4953,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+           )
 
             # --- ГРАФИК 2: МЕСТНЫЙ СТОК (РК) ---
             fig_tt_local = go.Figure()
@@ -5036,9 +4982,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
