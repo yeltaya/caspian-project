@@ -5350,18 +5350,18 @@ with tabs[5]:
                 <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px;">
                     <div style="text-align: center;">
                         <p style="margin: 0; color: #64748B; font-size: 0.7rem;">2006 г.</p>
-                        <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 800;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 400;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
                     </div>
                     <div style="flex-grow: 1; position: relative; margin: 0 15px; text-align: center;">
                         <div style="height: 2px; background: #0EA5E9; width: 100%;"></div>
                         <div style="position: absolute; right: -2px; top: -5px; width: 10px; height: 10px; border-top: 2px solid #0EA5E9; border-right: 2px solid #0EA5E9; transform: rotate(45deg);"></div>
-                        <span style="background: #0EA5E9; color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; position: relative; top: -20px;">
+                        <span style="background: #0EA5E9; color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; position: relative; top: -20px;">
                             -36.6 тыс. км²
                         </span>
                     </div>
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #0369A1; font-size: 0.7rem; font-weight: 700;">2024 г.</p>
-                        <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 800;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #0369A1; font-size: 0.7rem; font-weight: 400;">2024 г.</p>
+                        <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 400;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
                     </div>
                 </div>
                 <p style="margin: 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
