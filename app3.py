@@ -5234,57 +5234,63 @@ with tabs[5]:
     # --- КОНЕЦ БЛОКА ЦИКЛИЧНОСТИ ---
 
     with b_col2:
-        # 1. Заголовок (внутри колонки)
+        # 1. Заголовок
         st.markdown('<div class="white-label-header"><p class="section-header-text">⏳ Исторические минимумы и максимумы</p></div>', unsafe_allow_html=True)
+        
+        # 2. Стили (вынесены для чистоты, добавлен эффект при наведении)
         st.markdown("""
         <style>
             .metric-card {
-                background: linear-gradient(145deg, #ffffff, #f8fcff);
-                padding: 30px 15px;
+                background: linear-gradient(145deg, #ffffff, #f0f7ff);
+                padding: 25px 10px;
                 border-radius: 20px;
                 border: 2px solid #3498db;
-                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.15);
                 text-align: center;
                 margin-bottom: 20px;
+                min-height: 220px; /* Фиксируем высоту, чтобы карточки были ровными */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                transition: 0.3s;
             }
-            .metric-year { color: #3498db; font-size: 1.5rem; font-weight: 800; margin: 0; }
-            
-            /* Обычный черный цвет */
-            .metric-value { color: black; font-size: 3.5rem; font-weight: 900; margin: 10px 0; line-height: 1; }
-            
-            /* Ярко-красный для минусовых значений */
-            .metric-value-red { color: #e74c3c; font-size: 3.5rem; font-weight: 900; margin: 10px 0; line-height: 1; }
-            
-            .metric-label { color: #475569; font-size: 1.3rem; font-weight: 600; margin: 0; }
+            .metric-card:hover {
+                box-shadow: 0 15px 35px rgba(52, 152, 219, 0.3);
+                transform: translateY(-5px);
+            }
+            .metric-year { color: #3498db; font-size: 1.4rem; font-weight: 800; margin: 0; text-transform: uppercase; }
+            .metric-value { color: black; font-size: 3.2rem; font-weight: 900; margin: 10px 0; line-height: 1; }
+            .metric-value-red { color: #e74c3c; font-size: 3.2rem; font-weight: 900; margin: 10px 0; line-height: 1; }
+            .metric-label { color: #475569; font-size: 1.2rem; font-weight: 600; margin: 0; }
         </style>
         """, unsafe_allow_html=True)
 
-
-       
-        # 2. Колонки для плашек
-        r1_c1, r1_c2 = st.columns(2)
-        r2_c1, r2_c2 = st.columns(2)
-        
-        history_cards = [
-            {"year": "1903", "val": "-25,74 м", "col": r1_c1, "label": "Максимум"},
-            {"year": "1977", "val": "-29,01 м", "col": r1_c2, "label": "Минимум XX в."},
-            {"year": "1995", "val": "-26,62 м", "col": r2_c1, "label": "Пик подъема"},
-            {"year": "2024", "val": "-29,05 м", "col": r2_c2, "label": "Текущий спад"},
+        # 3. Данные (без привязки к колонкам)
+        history_data = [
+            {"year": "1903", "val": "-25,74 м", "label": "Максимум"},
+            {"year": "1977", "val": "-29,01 м", "label": "Минимум XX в."},
+            {"year": "1995", "val": "-26,62 м", "label": "Пик подъема"},
+            {"year": "2024", "val": "-29,05 м", "label": "Текущий спад"},
         ]
 
-        for card in history_cards:
-            # Проверяем: если в значении есть минус, красим в красный
-            value_class = "metric-value-red" if "-" in str(card['val']) else "metric-value"
-            
-            with card["col"]:
-                st.markdown(f"""
-                    <div class="metric-card">
-                        <p class="metric-year">{card['year']} год</p>
-                        <p class="{value_class}">{card['val']}</p>
-                        <p class="metric-label">{card['label']}</p>
-                    </div>
-                """, unsafe_allow_html=True)
-        
+        # 4. Динамическое создание сетки (по 2 карточки в ряд)
+        for i in range(0, len(history_data), 2):
+            cols = st.columns(2)
+            for j in range(2):
+                if i + j < len(history_data):
+                    card = history_data[i + j]
+                    # Логика цвета
+                    v_class = "metric-value-red" if "-" in str(card['val']) else "metric-value"
+                    
+                    with cols[j]:
+                        st.markdown(f"""
+                            <div class="metric-card">
+                                <p class="metric-year">{card['year']} год</p>
+                                <p class="{v_class}">{card['val']}</p>
+                                <p class="metric-label">{card['label']}</p>
+                            </div>
+                        """, unsafe_allow_html=True)
+                    
                 
         
         
