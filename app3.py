@@ -3464,13 +3464,6 @@ with tabs[4]:
             opacity=0.9
         ))
 
-        # Линия тренда - Темно-синий/Полночный
-        fig.add_trace(go.Scatter(
-            x=df['Год'], y=df['Тренд'],
-            mode='lines',
-            name='Линия тренда (ВХБ)',
-            line=dict(color='#08306b', dash='dash', width=3) 
-        ))
 
         # Настройка оформления
         fig.update_layout(
@@ -3485,6 +3478,9 @@ with tabs[4]:
             hovermode="x unified",
             height=550,
             template="plotly_white",
+            xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+            yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+                        
             # Добавляем сетку для лучшей читаемости
             yaxis=dict(gridcolor='#f0f0f0'),
             xaxis=dict(gridcolor='#f0f0f0')
