@@ -5247,7 +5247,7 @@ with tabs[5]:
                 box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
                 text-align: center;
                 margin-bottom: 20px;
-                min-height: 250px; /* Немного увеличили высоту для иконок */
+                min-height: 200px; /* Немного увеличили высоту для иконок */
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
