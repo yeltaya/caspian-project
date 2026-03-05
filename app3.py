@@ -3478,8 +3478,8 @@ with tabs[4]:
             hovermode="x unified",
             height=550,
             template="plotly_white",
-            xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
-            yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+            xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black')),
+            yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black'))
             )
 
         # Отображение в Streamlit
@@ -3784,7 +3784,9 @@ with tabs[4]:
                 mini_fig.update_layout(
                     barmode='stack', height=180, 
                     margin=dict(l=0,r=0,t=10,b=0), 
-                    template="plotly_white", showlegend=False
+                    template="plotly_white", showlegend=False,
+                    xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                    yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
                 )
                 # ВАЖНО: используем уникальный key для каждого графика
                 st.plotly_chart(mini_fig, use_container_width=True, key=f"mini_chart_{name}")
