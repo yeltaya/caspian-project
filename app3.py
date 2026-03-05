@@ -5059,12 +5059,12 @@ with tabs[5]:
 
     with t_col1:
         # Увеличили font-size до 1.3rem для заголовка и 1.1rem для текста
-        st.markdown('<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">📡 Сеть</p></div>', unsafe_allow_html=True)
-        st.markdown('<div style="font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px;">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
-        st.markdown("""<div style="font-size: 1.15rem; line-height: 1.8;">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
+        st.markdown('<div class="white-label-header"><p style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">📡 Сеть</p></div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 1.4rem; line-height: 1.5; margin-bottom: 15px;">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
+        st.markdown("""<div style="font-size: 1.2rem; line-height: 2.0;">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
 
     with t_col2:
-        st.markdown('<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">🔎 Параметры</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="white-label-header"><p style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">🔎 Параметры</p></div>', unsafe_allow_html=True)
         
         # Сделали приписку про 2025 год крупнее (1.0rem) и темнее
         st.markdown('<div style="color: #1E293B; font-size: 1.0rem; margin-bottom: 10px; font-weight: 700;">📅 Оперативные данные за 2025 г.</div>', unsafe_allow_html=True)
@@ -5086,7 +5086,7 @@ with tabs[5]:
 
     with t_col3:
         current_unit = units.get(st.session_state.selected_param, "")
-        st.markdown(f'<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
         
         display_data = seasonal_data.get(st.session_state.selected_param, [0]*12)
         
@@ -5112,13 +5112,13 @@ with tabs[5]:
         # Применяем ЧЕРНЫЙ цвет и КРУПНЫЙ шрифт к осям
         fig_s.update_xaxes(
             showgrid=False, 
-            tickfont=dict(size=14, color='black', family="Arial Black"), # Крупные черные месяцы
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные черные месяцы
             linecolor='black'
         )
         fig_s.update_yaxes(
             showgrid=True, 
             gridcolor='#E2E8F0', 
-            tickfont=dict(size=14, color='black', family="Arial Black"), # Крупные черные значения
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные черные значения
             title_font=dict(size=16, color='black'),
             linecolor='black'
         )
@@ -5130,12 +5130,15 @@ with tabs[5]:
     b_col1, b_col2 = st.columns([1.8, 1])
 
     with b_col1:
-        st.markdown('<div class="white-label-header"><p class="section-header-text">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
+        # Увеличили заголовок до 1.3rem и сделали его жирным
+        st.markdown('<div class="white-label-header"><p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
         
-        st.markdown('<div class="promo-bold">Уровень Каспийского моря подвержен значительным колебаниям</div>', unsafe_allow_html=True)
-        st.markdown('<div class="promo-sub">В 2025 г. уровень моря в его казахстанской части достиг отметки минус 29,35 м БС. Это один из самых низких показателей за последние 100 лет в казахстанской части Каспийского моря.</div>', unsafe_allow_html=True)
-
-
+        # Главный тезис: увеличили до 1.2rem и добавили насыщенный черный цвет
+        st.markdown('<div style="font-size: 1.2rem; font-weight: 700; color: #1E293B; margin-bottom: 10px; line-height: 1.4;">Уровень Каспийского моря подвержен значительным колебаниям</div>', unsafe_allow_html=True)
+        
+        # Основное описание: увеличили до 1.1rem, сделали межстрочный интервал шире для легкости чтения
+        st.markdown('<div style="font-size: 1.1rem; color: #334155; line-height: 1.6; text-align: justify;">В 2025 г. уровень моря в его казахстанской части достиг отметки <span style="color: #E11D48; font-weight: bold;">минус 29,35 м БС</span>. Это один из самых низких показателей за последние 100 лет в казахстанской части Каспийского моря.</div>', unsafe_allow_html=True)
+        
         # ТЕПЕРЬ ГРАФИК ВНУТРИ КОЛОНКИ (ПРАВИЛЬНЫЙ ОТСТУП)
         fig_hist = go.Figure()
         fig_hist.add_trace(go.Scatter(
@@ -5156,9 +5159,28 @@ with tabs[5]:
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             hovermode="x unified"
         )
-        fig_hist.update_xaxes(showgrid=False, linecolor='#E2E8F0', range=[1920, 2026])
-        fig_hist.update_yaxes(showgrid=True, gridcolor='#E2E8F0', linecolor='#E2E8F0', zeroline=False)
+# Увеличиваем шрифты и меняем цвета на черные
+        fig_hist.update_xaxes(
+            showgrid=False, 
+            linecolor='black',       # Сделали линию оси черной
+            linewidth=2,             # Сделали линию чуть толще
+            range=[1920, 2026],
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные цифры годов
+            title_font=dict(size=16, color='black')               # Крупный заголовок (если есть)
+        )
+        
+        fig_hist.update_yaxes(
+            showgrid=True, 
+            gridcolor='#E2E8F0', 
+            linecolor='black',       # Сделали линию оси черной
+            linewidth=2,
+            zeroline=False,
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные значения уровня
+            title_font=dict(size=16, color='black')               # Крупный заголовок "м БС"
+        )
+
         st.plotly_chart(fig_hist, use_container_width=True, config={'displayModeBar': False})
+        
 
     # --- БЛОК: НАУЧНЫЙ КОНТЕКСТ (ЦИКЛИЧНОСТЬ) ---
     with b_col1: # Размещаем под графиком динамики
