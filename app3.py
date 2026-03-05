@@ -5059,7 +5059,7 @@ with tabs[5]:
 
     with t_col1:
         # Увеличили font-size до 1.3rem для заголовка и 1.1rem для текста
-        st.markdown('<div class="white-label-header"><p style="font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">📡 Сеть</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 10px;">📡 Сеть</p></div>', unsafe_allow_html=True)
         st.markdown('<div style="font-size: 1.4rem; line-height: 1.5; margin-bottom: 15px;">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
         st.markdown("""<div style="font-size: 1.2rem; line-height: 2.0;">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
 
@@ -5134,7 +5134,7 @@ with tabs[5]:
             
     with b_col1:
         # Увеличили заголовок до 1.3rem и сделали его жирным
-        st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
+        st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
         
         # Главный тезис: увеличили до 1.2rem и добавили насыщенный черный цвет
         st.markdown('<div style="font-size: 1.2rem; font-weight: 700; color: #1E293B; margin-bottom: 10px; line-height: 1.4;">Уровень Каспийского моря подвержен значительным колебаниям</div>', unsafe_allow_html=True)
@@ -5252,9 +5252,9 @@ with tabs[5]:
             with card["col"]:
                 st.markdown(f"""
                     <div style="background: white; padding: 15px; border-radius: 15px; border: 1px solid #E2E8F0; margin-bottom: 10px; text-align: center;">
-                        <p style="margin: 0; color: #64748B; font-size: 0.8rem; font-weight: 600;">{card['year']} год</p>
-                        <p style="margin: 5px 0; color: #1E293B; font-size: 1.2rem; font-weight: 800;">{card['val']}</p>
-                        <p style="margin: 0; color: #94A3B8; font-size: 0.7rem;">{card['label']}</p>
+                        <p style="margin: 0; color: #64748B; font-size: 2.0rem; font-weight: 600;">{card['year']} год</p>
+                        <p style="margin: 5px 0; color: #1E293B; font-size: 3.0rem; font-weight: 800;">{card['val']}</p>
+                        <p style="margin: 0; color: #94A3B8; font-size: 1.5rem;">{card['label']}</p>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -5320,7 +5320,7 @@ with tabs[5]:
     
     # --- ОБЩИЙ БЛОК: ОСНОВНЫЕ ФАКТОРЫ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
+    st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
 
     # Общий подзаголовок на всю ширину (тот самый текст)
     st.markdown("""
