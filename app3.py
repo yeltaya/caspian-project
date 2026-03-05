@@ -5125,11 +5125,12 @@ with tabs[5]:
         
         st.plotly_chart(fig_s, use_container_width=True, config={'displayModeBar': False})
     
-
+    st.divider()
+    
     # --- НИЖНИЙ БЛОК ---
     b_col1, b_col2 = st.columns([1.8, 1])
     
-    st.divider()
+       
             
     with b_col1:
         # Увеличили заголовок до 1.3rem и сделали его жирным
