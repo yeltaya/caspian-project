@@ -5250,30 +5250,31 @@ with tabs[5]:
 
         for card in history_cards:
             with card["col"]:
-                # ОБЯЗАТЕЛЬНО используем st.markdown с ключом unsafe_allow_html=True
+                # Весь секрет в unsafe_allow_html=True в конце!
                 st.markdown(f"""
                     <div style="
-                        background: linear-gradient(145deg, #ffffff, #f0f9ff);
+                        background: linear-gradient(145deg, #ffffff, #f8fcff);
                         padding: 20px 10px; 
-                        border-radius: 20px; 
+                        border-radius: 15px; 
                         border: 2px solid #3498db; 
-                        box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2); 
+                        box-shadow: 0 10px 20px rgba(52, 152, 219, 0.2); 
                         text-align: center;
                         margin-bottom: 15px;">
                         
-                        <p style="margin: 0; color: #3498db; font-size: 1.4rem; font-weight: 700; text-transform: uppercase;">
+                        <p style="margin: 0; color: #3498db; font-size: 1.2rem; font-weight: 700; text-transform: uppercase;">
                             {card['year']} год
                         </p>
                         
-                        <p style="margin: 10px 0; color: black; font-size: 2.8rem; font-weight: 900; line-height: 1;">
+                        <p style="margin: 10px 0; color: black; font-size: 2.5rem; font-weight: 900; line-height: 1;">
                             {card['val']}
                         </p>
                         
-                        <p style="margin: 0; color: #64748b; font-size: 1.2rem; font-weight: 600;">
+                        <p style="margin: 0; color: #64748b; font-size: 1.1rem; font-weight: 600;">
                             {card['label']}
                         </p>
                     </div>
                 """, unsafe_allow_html=True)
+        
         
 
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
