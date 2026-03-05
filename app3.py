@@ -5251,12 +5251,33 @@ with tabs[5]:
         for card in history_cards:
             with card["col"]:
                 st.markdown(f"""
-                    <div style="background: white; padding: 15px; border-radius: 15px; border: 1px solid #E2E8F0; margin-bottom: 10px; text-align: center;">
-                        <p style="margin: 0; color: #64748B; font-size: 2.0rem; font-weight: 600;">{card['year']} год</p>
-                        <p style="margin: 5px 0; color: #1E293B; font-size: 3.0rem; font-weight: 800;">{card['val']}</p>
-                        <p style="margin: 0; color: #94A3B8; font-size: 1.5rem;">{card['label']}</p>
+                    <div style="
+                        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                        padding: 25px 15px; 
+                        border-radius: 20px; 
+                        border: 2px solid #3498db; 
+                        box-shadow: 0 10px 15px -3px rgba(52, 152, 219, 0.1); 
+                        text-align: center;
+                        min-height: 220px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        margin-bottom: 20px;">
+                        
+                        <p style="margin: 0; color: #3498db; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                            {card['year']} год
+                        </p>
+                        
+                        <p style="margin: 10px 0; color: #1e293b; font-size: 3.2rem; font-weight: 900; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                            {card['val']}
+                        </p>
+                        
+                        <p style="margin: 0; color: #64748b; font-size: 1.1rem; font-weight: 500; line-height: 1.2;">
+                            {card['label']}
+                        </p>
                     </div>
                 """, unsafe_allow_html=True)
+        
 
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
         st.markdown("""
