@@ -5239,19 +5239,40 @@ with tabs[5]:
         st.markdown("""
         <style>
             .metric-card {
-                background: white;
-                padding: 20px;
-                border-radius: 15px;
+                background: linear-gradient(145deg, #ffffff, #f0f7ff);
+                padding: 30px 15px;
+                border-radius: 20px;
                 border: 2px solid #3498db;
-                box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
                 text-align: center;
                 margin-bottom: 20px;
             }
-            .metric-year { color: #3498db; font-size: 1.5rem; font-weight: 700; margin: 0; }
-            .metric-value { color: black; font-size: 4.0rem; font-weight: 900; margin: 10px 0; }
-            .metric-label { color: #64748b; font-size: 1rem; font-weight: 600; margin: 0; }
+            /* Год - Сделали крупнее */
+            .metric-year { 
+                color: #3498db; 
+                font-size: 1.5rem; 
+                font-weight: 800; 
+                text-transform: uppercase;
+                margin: 0; 
+            }
+            /* ГЛАВНОЕ ЗНАЧЕНИЕ - Сделали гигантским и черным */
+            .metric-value { 
+                color: black; 
+                font-size: 3.5rem; 
+                font-weight: 900; 
+                margin: 10px 0; 
+                line-height: 1;
+            }
+            /* Подпись - Сделали четче */
+            .metric-label { 
+                color: #475569; 
+                font-size: 1.3rem; 
+                font-weight: 600; 
+                margin: 0; 
+            }
         </style>
-        """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
+
        
         # 2. Колонки для плашек
         r1_c1, r1_c2 = st.columns(2)
