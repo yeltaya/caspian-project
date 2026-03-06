@@ -6420,55 +6420,50 @@ with tabs[6]:
         {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},  # Светло-песочный
         {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
     ]
-
-    st.markdown("---")
-    st.markdown("### 🏆 Самые сухие годы")
-    
+  
 
     # Создаем колонки
     col_info, col_chart, col_map = st.columns([1, 1, 1], gap="large")
 
     with col_info:
-        # Текстовый хайлайт
-        st.markdown("""
-            <div style="background-color: #fff5f5; padding: 20px; border-radius: 12px; border-left: 6px solid #d32f2f; margin-top: 10px;">
-                <h4 style="margin-top: 0; color: #d32f2f;">Беспрецедентный рост</h4>
-                <p style="font-size: 1rem; line-height: 1.5;">
-                    <span style="font-weight: 800; font-size: 1.2rem;">За последние 50 лет наблюдается слабая тенденция к увеличению годовых сумм атмосферных осадков на 2,5 мм/10 лет, в основном за счет осадков весеннего сезона. По территории Казахстана все тренды среднего годового и сезонного количества осадков статистически незначимы. </b>.
-                </p>
-                <p style="font-size: 0.9rem; color: #666;">
-                    Уменьшение осадков наблюдалось в центральных и южных регионах. Изменения максимальной продолжительности бездождных периодов с осадками менее 1 мм в сутки достигли 1–4 дней за десятилетие, как в сторону увеличения, так и в сторону уменьшения.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+            # Текстовый хайлайт в коричневых тонах (стиль засухи)
+            st.markdown("""
+                <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 10px;">
+                    <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
+                    <p style="font-size: 1rem; line-height: 1.5;">
+                        <span style="font-weight: 800; font-size: 1.2rem;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению годовых сумм осадков на 2,5 мм/10 лет, однако в южных регионах сохраняется риск засушливости.
+                    </p>
+                    <p style="font-size: 0.9rem; color: #6d4c41;">
+                        Наиболее сухие периоды зафиксированы в 1944 и 1975 годах. Статистика показывает, что рост осадков весной не всегда компенсирует летний дефицит влаги.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
 
-    with col_chart:
-        st.caption("Самые сухие годы в территории Казахстана за период 1941–2025 гг.")
-        
-        # Генерация HTML для инфографики
-        rows_html = ""
-        max_val = 2.96
-        for item in rank_data:
-            width = (item["value"] / max_val) * 100
-            rows_html += f"""
-            <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
-                <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
-                <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
-                <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
-                    <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
-                        <span style="color: white; font-size: 11px; font-weight: bold;">+{item['value']}°C</span>
+        with col_chart:
+            st.caption("Самые сухие годы в Казахстане (1941–2025 гг.)")
+            
+            # Генерация HTML
+            rows_html = ""
+            # Находим максимум для масштабирования (в осадках это обычно около 100%)
+            max_val = max([item["value"] for item in rank_data1]) 
+            
+            for item in rank_data1:
+                width = (item["value"] / max_val) * 100
+                rows_html += f"""
+                <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
+                    <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
+                    <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
+                    <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
+                        <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
+                            <span style="color: white; font-size: 11px; font-weight: bold;">{item['value']}%</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            """
-                # Отрисовка через iframe для стабильности
-        components.html(f"""
-            <div style="padding-top: 5px;">
-                {rows_html}
-            </div>
-        """, height=350)
- 
+                """
             
+            components.html(f"<div style='padding-top: 5px;'>{rows_html}</div>", height=350)
+            
+                
     with col_map:
         # Путь к вашему изображению
         map_path = "temp1.gif"
