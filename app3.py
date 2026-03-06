@@ -7049,8 +7049,8 @@ with tabs[6]:
         # Попытка загрузить файлы по их реальным именам из репозитория
         try:
             # Вариант 1 (из последних загрузок)
-            df_temp = pd.read_csv("Summary_Anom_T_1941-2025.xlsx")
-            df_precip = pd.read_csv("Summary_Anom_R_1941-2025.xlsx")
+            df_temp = pd.read_excel("Summary_Anom_T_1941-2025.xlsx")
+            df_precip = pd.read_excel("Summary_Anom_R_1941-2025.xlsx")
 # 2. ОБЯЗАТЕЛЬНО блок EXCEPT (именно его не хватает)
         except FileNotFoundError:
             # Если не нашли, пробуем старые названия (для страховки)
