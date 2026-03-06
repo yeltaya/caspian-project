@@ -7047,9 +7047,9 @@ with tabs[6]:
     @st.cache_data
     def load_all_data():
         # Загружаем файлы
-        df_temp = pd.read_csv("Summary_Anom_T_1941-2025.xlsx - Temp.csv")
-        df_precip = pd.read_csv("Summary_Anom_R_1941-2025.xlsx - Sheet1.csv")
-        
+        df_temp = pd.read_csv("temp_data.csv")
+        df_precip = pd.read_csv("precip_data.csv")
+                
         # Словарь маппинга (сопоставления) ключей вашей базы данных и колонок в файлах
         # Добавьте сюда все регионы из вашего ALL_REGIONS_DATABASE
         mapping = {
