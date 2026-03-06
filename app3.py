@@ -7087,7 +7087,33 @@ with tabs[6]:
     df_temp, df_precip, name_mapping = load_all_data()    
 
       
+    def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
+        st.subheader(title)
+        st.caption(subtitle)
         
+        # Создаем график
+        fig_chart = go.Figure()
+        
+        # Определяем цвета столбцов
+        colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in df[column_name]]
+        
+        fig_chart.add_trace(go.Bar(
+            x=df['Год'], 
+            y=df[column_name], 
+            marker_color=colors, 
+            opacity=0.6, 
+            name='Ежегодная аномалия'
+        ))
+        
+        # Тренд (скользящее среднее)
+        sma = df[column_name].rolling(window=10, min_periods=1, center=True).mean()
+        fig_chart.add_trace(go.Scatter(
+            x=df['Год'], y=sma, mode='lines', 
+            line=dict(color='#222', width=2), name='Тренд'
+        ))
+
+        st.plotly_chart(fig_chart, use_container_width=True)
+    
 # --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
 
     # 1. Выбор области (используем ключи из твоей базы ALL_REGIONS_DATABASE)
@@ -7141,9 +7167,7 @@ with tabs[6]:
             delta_color="off"
         )
     
-    def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
-        # Весь код функции здесь...
-        # Убедитесь, что def стоит вплотную к левому краю (без пробелов)
+
         
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
         st.markdown("---")
