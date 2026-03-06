@@ -7077,89 +7077,79 @@ with tabs[6]:
 
     df_temp, df_precip, name_mapping = load_all_data()
 
-    # --- 2. ВЫБОР РЕГИОНА ---
+# --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
+
+    # 1. Выбор области (используем ключи из твоей базы ALL_REGIONS_DATABASE)
     selected_name = st.selectbox("Выберите область Казахстана:", list(ALL_REGIONS_DATABASE.keys()))
+
+    # 2. Получаем данные по области из статической базы (площадь, описание зон и т.д.)
     reg = ALL_REGIONS_DATABASE[selected_name]
 
-    # Получаем ключи для колонок из маппинга
-    cols = name_mapping.get(selected_name, {"col_t": selected_name, "col_p": selected_name})
+    # 3. Связываем выбор пользователя с названиями колонок в CSV через mapping
+    region_cols = mapping.get(selected_name)
 
-    # Извлекаем свежие данные за 2025 год из файлов для карточек
-    latest_temp_anom = df_temp[cols['col_t']].iloc[-1]
-    latest_precip_anom = df_precip[cols['col_p']].iloc[-1]
+    if region_cols:
+        col_t = region_cols['col_t']
+        col_p = region_cols['col_p']
 
-    # --- 3. КАРТОЧКИ ПОКАЗАТЕЛЕЙ ---
-    c1, c2, c3, c4 = st.columns(4)
-
-    # 1. Территория (статично из вашей базы)
-    c1.metric("Территория", reg['area'], delta=f"{reg['area_perc']} от РК", delta_color="off")
-
-    # 2. Температура (Расчет аномалии из файла)
-    temp_2025 = float(reg['norm_temp']) + latest_temp_anom
-    c2.metric(
-        label="Температура 2025", 
-        value=f"{temp_2025:.1f} °С", 
-        delta=f"{latest_temp_anom:+.2f} °С к норме",
-        delta_color="inverse"
-    )
-
-    # 3. Аномалия (напрямую из файла температуры)
-    c3.metric(
-        label="Текущая аномалия", 
-        value=f"{latest_temp_anom:+.2f} °С", 
-        delta="Ранг №1 в истории" if latest_temp_anom > 2.5 else "Выше нормы",
-        delta_color="normal"
-    )
-
-    # 4. Осадки (напрямую из файла осадков)
-    c4.metric(
-        label="Осадки 2025", 
-        value=f"{latest_precip_anom:+.1f} %", 
-        delta="от нормы",
-        delta_color="off"
-    )
-
-    # --- 4. ГРАФИКИ (ИСПОЛЬЗУЮТ ВАШУ ФУНКЦИЮ) ---
-    def render_climate_charts(df, column_name, title, subtitle, bar_colors, unit):
-        st.subheader(title)
-        fig_chart = go.Figure()
+        # Извлекаем последние данные (2025 год) для карточек
+        # df_temp и df_precip должны быть загружены заранее
+        current_temp_anom = df_temp[col_t].iloc[-1]
+        current_precip_anom = df_precip[col_p].iloc[-1]
         
-        # Фильтруем данные, чтобы убрать None/NaN для корректного тренда
-        plot_df = df[['Год', column_name]].dropna()
-        
-        colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in plot_df[column_name]]
-        
-        fig_chart.add_trace(go.Bar(
-            x=plot_df['Год'], y=plot_df[column_name], 
-            marker_color=colors, opacity=0.6, name='Ежегодная аномалия'
-        ))
-        
-        sma = plot_df[column_name].rolling(window=10, min_periods=1, center=True).mean()
-        fig_chart.add_trace(go.Scatter(
-            x=plot_df['Год'], y=sma, 
-            mode='lines', line=dict(color='#222', width=2.5), name='10-летнее среднее'
-        ))
+        # Расчет текущей температуры: Норма + Аномалия
+        temp_2025 = float(reg['norm_temp']) + current_temp_anom
 
-        fig_chart.update_layout(height=320, margin=dict(l=0, r=0, t=10, b=10), showlegend=True)
-        st.plotly_chart(fig_chart, use_container_width=True)
+        # --- 4. ОБНОВЛЕННЫЕ КАРТОЧКИ ---
+        c1, c2, c3, c4 = st.columns(4)
 
-    col_l, col_r = st.columns(2)
+        # Карточка 1: Территория (без изменений)
+        c1.metric("Территория", reg['area'], delta=f"{reg['area_perc']} от РК", delta_color="off")
 
-    with col_l:
-        render_climate_charts(
-            df_temp, cols['col_t'], 
-            "Динамика температуры", 
-            "Отклонение от нормы (°C)", 
-            ['#d32f2f', '#1f77b4'], "°C"
+        # Карточка 2: Температура (динамическая из CSV)
+        c2.metric(
+            label="Температура 2025", 
+            value=f"{temp_2025:.1f} °С", 
+            delta=f"{current_temp_anom:+.2f} °С к норме",
+            delta_color="inverse"
         )
 
-    with col_r:
-        render_climate_charts(
-            df_precip, cols['col_p'], 
-            "Динамика осадков", 
-            "Отклонение от нормы (%)", 
-            ['#2e7d32', '#8d6e63'], "%"
+        # Карточка 3: Аномалия (динамическая из CSV)
+        c3.metric(
+            label="Текущая аномалия", 
+            value=f"{current_temp_anom:+.2f} °С", 
+            delta="Ранг №1" if current_temp_anom > 2.0 else "Выше нормы",
+            delta_color="normal"
         )
+
+        # Карточка 4: Осадки (динамическая из CSV)
+        c4.metric(
+            label="Осадки 2025", 
+            value=f"{current_precip_anom:+.1f} %", 
+            delta="отклонение",
+            delta_color="off"
+        )
+
+        # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
+        st.markdown("---")
+        col_l, col_r = st.columns(2)
+
+        with col_l:
+            render_climate_charts(
+                df_temp, col_t, 
+                "Температура воздуха", 
+                "Аномалии температуры (°C)", 
+                ['#d32f2f', '#1f77b4'], "°C"
+            )
+
+        with col_r:
+            render_climate_charts(
+                df_precip, col_p, 
+                "Осадки", 
+                "Отклонение осадков от нормы (%)", 
+                ['#2e7d32', '#8d6e63'], "%"
+            )
+        
         
 
     # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
