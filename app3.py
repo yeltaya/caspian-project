@@ -7043,15 +7043,16 @@ with tabs[6]:
             ]      
         } 
 }
-    # --- 1. ЗАГРУЗКА И ПОДГОТОВКА ДАННЫХ ---
+
     @st.cache_data
     def load_all_data():
-        # Загружаем файлы
-        df_temp = pd.read_csv("temp_data.csv")
-        df_precip = pd.read_csv("precip_data.csv")
-                
-        # Словарь маппинга (сопоставления) ключей вашей базы данных и колонок в файлах
-        # Добавьте сюда все регионы из вашего ALL_REGIONS_DATABASE
+        # Попытка загрузить файлы по их реальным именам из репозитория
+        try:
+            # Вариант 1 (из последних загрузок)
+            df_temp = pd.read_csv("Summary_Anom_T_1941-2025.xlsx")
+            df_precip = pd.read_csv("Summary_Anom_R_1941-2025.xlsx")
+
+
         mapping = {
             "Абайская область": {"col_t": "АБАЙ.ОБЛ", "col_p": "Абайск.обл"},
             "Акмолинская область": {"col_t": "АКМОЛ.ОБЛ", "col_p": "Акм обл"},
@@ -7074,8 +7075,6 @@ with tabs[6]:
         }
 
         return df_temp, df_precip, mapping
-
-    df_temp, df_precip, name_mapping = load_all_data()
     
     
 
