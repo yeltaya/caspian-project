@@ -7084,7 +7084,7 @@ with tabs[6]:
 
         return df_temp, df_precip, mapping
     
-    
+    df_temp, df_precip, name_mapping = load_all_data()    
 
 # --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
 
