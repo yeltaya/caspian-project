@@ -7044,8 +7044,7 @@ with tabs[6]:
         } 
 }
 
-    # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
-    st.markdown("### 📊 Климатические тренды")
+
 
     @st.cache_data
     def load_all_data():
@@ -7131,7 +7130,10 @@ with tabs[6]:
     if region_cols:
         col_t = region_cols['col_t']
         col_p = region_cols['col_p']
-
+        
+    # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
+    st.markdown("### 📊 Климатические тренды")
+    
         # Извлекаем последние данные (2025 год) для карточек
         # df_temp и df_precip должны быть загружены заранее
         current_temp_anom = df_temp[col_t].iloc[-1]
