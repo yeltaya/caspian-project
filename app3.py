@@ -7140,7 +7140,11 @@ with tabs[6]:
             delta="отклонение",
             delta_color="off"
         )
-
+    
+    def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
+        # Весь код функции здесь...
+        # Убедитесь, что def стоит вплотную к левому краю (без пробелов)
+        
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
         st.markdown("---")
         col_l, col_r = st.columns(2)
