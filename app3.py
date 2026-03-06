@@ -400,7 +400,8 @@ with tabs[0]:
         </style>
 
     """, unsafe_allow_html=True)
-
+       
+    
     # 2. HEADER
     st.markdown('<p class="promo-subtitle">Национальная гидрометеорологическая служба Казахстана с 1922 года</p>', unsafe_allow_html=True)
 
@@ -556,11 +557,12 @@ with tabs[0]:
 
         # 1. Словарь с путями к фото
     IMAGE_PATHS = {
-            "Метеонаблюдения": r"C:\Users\eltai_a\Desktop\RES\stend\МС.jpg",
-            "Аэрология": r"C:\Users\eltai_a\Desktop\RES\stend\Aerology.jpg",
-            "ДМРЛ": r"C:\Users\eltai_a\Desktop\RES\stend\DMRL.webp",
-            "Кадастр": r"C:\Users\eltai_a\Desktop\RES\stend\Cadastre.png"
+        "Метеонаблюдения": "МС.jpg",
+        "Аэрология": "Aerology.jpg",
+        "ДМРЛ": "DMRL.webp",
+        "Кадастр": "Cadastre.png"
     }
+
 
     @st.dialog("Метеорологический мониторинг", width="large")
     def show_modal(title, img_path):
@@ -749,7 +751,7 @@ with tabs[0]:
     if 'selected_region_id' not in st.session_state:
         st.session_state.selected_region_id = None
 
-    SHP_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\kaz 17 obl.shp"
+    SHP_PATH = "kaz 17 obl.shp"
 
 # --- 2. СЛОВАРЬ КАЗГИДРОМЕТ (ОПТИМИЗИРОВАННЫЙ) ---
     kaz_stats = {
@@ -895,9 +897,11 @@ with tabs[0]:
         import streamlit as st
         import folium
         from streamlit_folium import st_folium
+        # ОПРЕДЕЛЯЕМ БАЗОВЫЙ ПУТЬ (Добавьте это обязательно!)
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
         # --- ПУТЬ К ФАЙЛУ ---
-        XLSX_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\MS tizimi.xlsx"
+        XLSX_PATH = os.path.join(base_path, "MS tizimi.xlsx")
 
         @st.cache_data
         def load_stations_from_excel(path):
@@ -1004,7 +1008,7 @@ with tabs[0]:
 
 # --- ПРАВАЯ КОЛОНКА ---
         with col_right:
-            st.subheader("ℹ️ СЕТЬ")
+            st.subheader("ℹ️ Государственная сеть")
             
             if selected_id:
                 # --- БЛОК ВЫБРАННОГО РЕГИОНА ---
@@ -1148,24 +1152,35 @@ with tabs[0]:
 
             # Настройка внешнего вида
             fig.update_layout(
-                height=400,
-                margin=dict(l=10, r=10, t=30, b=10),
+                height=450,
+                margin=dict(l=50, r=10, t=50, b=50), # Увеличили отступы (l и b), чтобы крупные цифры не обрезались
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                legend=dict(
+                    orientation="h", 
+                    yanchor="bottom", 
+                    y=1.02, 
+                    xanchor="right", 
+                    x=1,
+                    font=dict(size=14) # Размер текста в легенде
+                ),
                 font=dict(color="#dee2e6"),
-                bargap=0.3, # Зазор между столбцами
+                bargap=0.3,
                 yaxis=dict(
                     showgrid=True, 
                     gridcolor='rgba(200,200,200,0.1)',
                     zeroline=False,
-                    title="Кол-во оповещений"
+                    title=dict(text="Кол-во оповещений", font=dict(size=16)), # Размер заголовка оси Y
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ЧИСЕЛ ВДОЛЬ ОСИ Y
                 ),
                 xaxis=dict(
-                    dtick=1, # Показать каждый год
-                    showgrid=False
+                    dtick=1, 
+                    showgrid=False,
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ГОДОВ ВДОЛЬ ОСИ X
                 )
             )
+
+
 
             st.plotly_chart(fig, use_container_width=True)
         
@@ -1179,12 +1194,30 @@ with tabs[0]:
                 color_continuous_scale="Blues",
                 aspect="auto"
             )
+            
+            # Исправленный блок для Heatmap
             fig_heat.update_layout(
-                height=400, margin=dict(l=0, r=0, t=20, b=0),
+                height=450, # Немного увеличим высоту для крупных шрифтов
+                margin=dict(l=80, r=20, t=50, b=80), # Увеличили отступы, чтобы шрифт 16 не обрезался
                 paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color="white")
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color="white"),
+                
+                # Настройка горизонтальной оси (X)
+                xaxis=dict(
+                    tickfont=dict(size=16),
+                    side='bottom' # Гарантирует, что подписи будут снизу
+                ),
+                
+                # Настройка вертикальной оси (Y)
+                yaxis=dict(
+                    tickfont=dict(size=16),
+                    autorange='reversed' # Важно для тепловых карт, чтобы данные шли сверху вниз
+                )
             )
+
             st.plotly_chart(fig_heat, use_container_width=True)
+
 
         # --- 4. АВТОМАТИЧЕСКОЕ АНАЛИТИЧЕСКОЕ РЕЗЮМЕ ---
     st.markdown("---")
@@ -1251,10 +1284,30 @@ with tabs[0]:
                 text=total_sgy, textposition='auto'
             ))
             fig_sgy_total.update_layout(
-                height=350, margin=dict(l=0, r=0, t=20, b=0),
-                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color="white")
+                height=350, 
+                # l=80 и b=80 дадут запас для шрифта 16
+                margin=dict(l=80, r=20, t=30, b=80),
+                plot_bgcolor='rgba(0,0,0,0)', 
+                paper_bgcolor='rgba(0,0,0,0)', 
+                font=dict(color="white"),
+                
+                # Горизонтальная ось
+                xaxis=dict(
+                    tickfont=dict(size=16),
+                    title=dict(text="Год", font=dict(size=16)), # Добавил заголовок, если нужен
+                    automargin=True,
+                    type='category' # Гарантирует, что года/категории встанут ровно
+                ),
+                
+                # Вертикальная ось
+                yaxis=dict(
+                    tickfont=dict(size=16),
+                    title=dict(text="Количество", font=dict(size=16)),
+                    automargin=True
+                )
             )
             st.plotly_chart(fig_sgy_total, use_container_width=True)
+
 
     with col_right:
                 st.markdown("**Рейтинг регионов по количеству СГЯ (2020-2025)**")
@@ -1286,18 +1339,40 @@ with tabs[0]:
                     coloraxis_showscale=False # Убираем цветовую шкалу справа
                 )
 
-                # Настройка осей и подписей
+                # 1. Настройка самих столбцов и цифр НАД ними
                 fig_sgy_reg.update_traces(
                     textposition='outside', # Цифры снаружи столбцов
+                    # УВЕЛИЧИВАЕМ ШРИФТ ЦИФР НАД СТОЛБЦАМИ
+                    textfont=dict(size=16, color="white"), 
                     marker_line_color='rgb(8,48,107)',
                     marker_line_width=1,
                     opacity=0.9
                 )
 
-                fig_sgy_reg.update_xaxes(showgrid=True, gridcolor='rgba(255,255,255,0.1)', title="Всего СГЯ")
-                fig_sgy_reg.update_yaxes(title="")
+                # 2. Настройка горизонтальной оси (X)
+                fig_sgy_reg.update_xaxes(
+                    showgrid=True, 
+                    gridcolor='rgba(255,255,255,0.1)', 
+                    title=dict(text="Всего СГЯ", font=dict(size=18)), # Размер заголовка оси
+                    tickfont=dict(size=16) # Размер чисел на оси X
+                )
+
+                # 3. Настройка вертикальной оси (Y)
+                fig_sgy_reg.update_yaxes(
+                    title="",
+                    tickfont=dict(size=16) # Размер названий (регионов/категорий) на оси Y
+                )
+
+                # 4. Не забываем про отступы в layout, чтобы крупные названия не обрезались
+                fig_sgy_reg.update_layout(
+                    margin=dict(l=100, r=20, t=40, b=60), # Увеличил отступ слева (l) для названий регионов
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color="white")
+                )
 
                 st.plotly_chart(fig_sgy_reg, use_container_width=True)
+
                 
         # --- 3. АВТОМАТИЧЕСКОЕ РЕЗЮМЕ ПО СГЯ ---
     max_sgy_year = 2023
@@ -1334,7 +1409,7 @@ with tabs[0]:
                     margin: 5px 0;
                 }
                 .record-city {
-                    font-size: 0.9em;
+                    font-size: 1.5em;
                     color: #546e7a;
                     font-weight: 600;
                     text-transform: uppercase;
@@ -1456,10 +1531,10 @@ with tabs[0]:
             
             # 1. Словарь с путями к фото
     IMAGE_PATHS = {
-                "HP": r"C:\Users\eltai_a\Desktop\RES\stend\HP1.jpeg",
-                "Auto": r"C:\Users\eltai_a\Desktop\RES\stend\Aerology.jpeg",
-                "TDS": r"C:\Users\eltai_a\Desktop\RES\stend\DMRL.jpeg",
-                "Cadastre": r"C:\Users\eltai_a\Desktop\RES\stend\Cadastre.jpeg"
+                "HP": "HP1.jpeg",
+                "Auto": "Aerology.jpeg",
+                "TDS": "DMRL.jpeg",
+                "Cadastre": "Cadastre.jpeg"
         }
 
     # 1. Создаем контейнер для карточек
@@ -1536,24 +1611,30 @@ with tabs[0]:
             ))
 
             fig.update_layout(
-                title="Динамика развития гидрологической сети (1917-2026 гг.)",
+                title=dict(
+                    text="Динамика развития гидрологической сети (1917-2026 гг.)",
+                    font=dict(size=20) # Увеличили размер заголовка
+                ),
                 xaxis=dict(
-                    title="Год",
-                    type='category', # Убирает пустые промежутки между годами
-                    tickangle=-45
+                    title=dict(text="Год", font=dict(size=18)), # Шрифт заголовка оси X
+                    type='category',
+                    tickangle=-45,
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ГОДОВ
                 ),
                 yaxis=dict(
-                    title="Количество постов",
+                    title=dict(text="Количество постов", font=dict(size=18)), # Шрифт заголовка оси Y
                     range=[0, 600],
                     showgrid=True,
-                    gridcolor='rgba(200, 200, 200, 0.2)'
+                    gridcolor='rgba(200, 200, 200, 0.2)',
+                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ЧИСЕЛ (100, 200...)
                 ),
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                margin=dict(l=20, r=20, t=60, b=20),
+                # УВЕЛИЧИЛИ ОТСТУПЫ (l=60, b=80), чтобы крупные подписи влезли
+                margin=dict(l=60, r=20, t=80, b=80), 
                 font=dict(color="white")
             )
-            
+
             # Аннотация для выделения текущего статуса (2026 г. - 442 поста)
             fig.add_annotation(
                 x=len(years)-1, 
@@ -1602,12 +1683,44 @@ with tabs[0]:
             ))
             
             fig.update_layout(
-                barmode='group', height=700, margin=dict(l=0, r=50, t=0, b=0),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color="white"),
-                xaxis=dict(showgrid=True, gridcolor='rgba(200,200,200,0.1)')
+                barmode='group', 
+                height=700, 
+                # Увеличиваем левый отступ (l), так как названия областей длинные
+                margin=dict(l=200, r=50, t=50, b=100), 
+                
+                plot_bgcolor='rgba(0,0,0,0)', 
+                paper_bgcolor='rgba(0,0,0,0)', 
+                font=dict(color="#1f4e79"), # Темно-синий текст для светлой темы (как на фото)
+                
+                # Горизонтальная ось (теперь здесь ЧИСЛА)
+                xaxis=dict(
+                    visible=True,
+                    showticklabels=True,
+                    tickfont=dict(size=16, color="#1f4e79"),
+                    title=dict(
+                        text="Количество постов", 
+                        font=dict(size=18, color="#1f4e79")
+                    ),
+                    gridcolor='rgba(0,0,0,0.1)',
+                    automargin=True
+                ),
+                
+                # Вертикальная ось (теперь здесь НАЗВАНИЯ ОБЛАСТЕЙ)
+                yaxis=dict(
+                    visible=True,
+                    showticklabels=True,
+                    # Указываем тип 'category' здесь, так как области по вертикали
+                    type='category', 
+                    tickfont=dict(size=16, color="#1f4e79"),
+                    automargin=True,
+                    # Убираем заголовок оси Y, так как названия регионов говорят сами за себя
+                    title=dict(text="") 
+                )
             )
+
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+
 
     with col_info:
             # ПРАВЫЙ БЛОК: ПРОДУКЦИЯ (Стиль как на фото)
@@ -1748,9 +1861,9 @@ with tabs[0]:
             # --- БЛОКИ С ПОДРОБНОСТЯМИ ---
             # 1. Словарь с путями к фото (Замените на актуальные пути для агро)
     AGRO_IMAGE_PATHS = {
-                "Soil": r"C:\Users\eltai_a\Desktop\RES\stend\Soil.jpeg",
-                "Phenology": r"C:\Users\eltai_a\Desktop\RES\stend\Pheno.jpeg",
-                "AutoAgro": r"C:\Users\eltai_a\Desktop\RES\stend\AutoAgro.jpeg",
+                "Soil": "DMRL.jpeg",
+                "Phenology": "DMRL.jpeg",
+                "AutoAgro": "DMRL.jpeg",
         }
 
     a_col1, a_col2, a_col3  = st.columns(3)
@@ -1768,113 +1881,63 @@ with tabs[0]:
                        ["<b>50:</b> агрометеорологических постов ", "<b>96:</b> влагомеров почвы"], "AutoAgro")
 
 
+    import os
     import streamlit as st
-    import pandas as pd
-    import folium
-    import geopandas as gpd
-    from streamlit_folium import st_folium
+
+    # 1. Используем глобальный BASE_DIR (определен в начале файла)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     def render_final_agro_map():
         st.markdown("### 🗺️ Карта агромониторинга по областям")
         
-        excel_path = r"C:\Users\eltai_a\Desktop\RES\stend\MS,AMP.AAP 2026.xlsx"
-        shapefile_path = r"C:\Users\eltai_a\Desktop\RES\stend\kaz 17 obl.shp"
+        # Формируем путь к вашему изображению
+        # Убедитесь, что файл на GitHub называется именно AGRO.jpg (регистр важен!)
+        img_filename = "AGRO.jpg"
+        img_path = os.path.join(BASE_DIR, img_filename)
         
-        try:
-            df = pd.read_excel(excel_path, sheet_name=0, header=None)
-            df[2] = pd.to_numeric(df[2], errors='coerce')
-            df[3] = pd.to_numeric(df[3], errors='coerce')
-            df = df.dropna(subset=[2, 3])
-            
-            gdf_borders = gpd.read_file(shapefile_path)
-            if gdf_borders.crs is None or gdf_borders.crs != "EPSG:4326":
-                gdf_borders = gdf_borders.to_crs(epsg=4326)
-        except Exception as e:
-            st.error(f"Ошибка файлов: {e}")
-            return
-
-        # --- МАКСИМАЛЬНО ПОЛНЫЙ МАППИНГ ---
-        mapping = {
-            "яровая пшеница": "🌾", "озимая пшеница": "🍞", "ячмень": "🌱",
-            "кукуруза": "🌽", "подсолнечник": "🌻", "рис": "🍚",
-            "хлопок": "☁️", "картофель": "🥔", "сахарная свекла": "🍯",
-            "овес": "🌾", "лён": "🚜", "рапс": "🌼", "гречиха": "🌿",
-            "соя": "🌱", "многолетние": "🌿", "пастбища": "🍀",
-            "житняк": "🌾", "люцерна": "☘️", "эспарцет": "🌸",
-            "бахчевые": "🍉", "овощи": "🥕", "плодовые": "🍎"
-        }
-
-        def get_icon(text):
-            t = str(text).lower()
-            for key, icon in mapping.items():
-                if key in t: return icon
-            return "🌱"
-
-        # Создаем карту
-        m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="CartoDB positron")
-
-        # Слой границ
-        folium.GeoJson(
-            gdf_borders,
-            style_function=lambda x: {'fillColor': '#f1f8e9', 'color': '#2e7d32', 'weight': 1.5, 'fillOpacity': 0.4}
-        ).add_to(m)
-
-        legend_dict = {}
-
-        for _, row in df.iterrows():
-            cult_name = str(row[4]) if pd.notnull(row[4]) else "Не указано"
-            icon = get_icon(cult_name)
-            legend_dict[cult_name] = icon
-
-            folium.Marker(
-                location=[row[2], row[3]],
-                popup=f"<b>{row[0]}</b><br>{cult_name}",
-                icon=folium.DivIcon(html=f'<div style="font-size: 16pt; filter: drop-shadow(1px 1px 1px white);">{icon}</div>')
-            ).add_to(m)
-
-        # --- ГЕНЕРАЦИЯ ЛЕГЕНДЫ ---
-        legend_html = ""
-        for name, icon in sorted(legend_dict.items()):
-            if name != "nan":
-                legend_html += f"<div style='margin-bottom: 6px; display: flex; align-items: center; gap: 8px;'><span>{icon}</span> <span style='font-size: 0.85em; color: #333;'>{name}</span></div>"
-
-        # --- ВЕРСТКА: КАРТА + ЛЕГЕНДА СПРАВА ---
-        # Используем одну строку и две колонки с фиксированным соотношением
-        col_map, col_leg = st.columns([4, 1])
-
+        # Создаем две колонки: для карты и для пояснительного текста
+        col_map, col_text = st.columns([3, 1])
+        
         with col_map:
-            # Используем st_folium вместо folium_static для адаптивности
-            # use_container_width=True заставит карту растянуться на весь блок col_map
-            st_folium(
-                m, 
-                width=None, # Убираем фиксированную ширину
-                height=750, 
-                use_container_width=True
-            )
-
-        with col_leg:
-            # Контейнер легенды (оставляем ваш стиль, он совпадает по высоте 750px)
-            st.markdown(f"""
-                <div style="
-                    background-color: white; 
-                    padding: 15px; 
-                    border-radius: 10px; 
-                    border: 2px solid #1b5e20; 
-                    height: 750px; 
-                    overflow-y: auto;
-                    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                ">
-                    <h4 style="color: #1b5e20; margin-top: 0; font-size: 1.1em; border-bottom: 2px solid #eee; padding-bottom: 10px;">🌾 Легенда</h4>
-                    <div style="margin-top: 15px;">
-                        {legend_html}
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
+            # Проверка наличия файла, чтобы избежать MediaFileStorageError
+            if os.path.exists(img_path):
+                st.image(
+                    img_path, 
+                    caption="Схема агрометеорологических наблюдений с/х культур", 
+                    use_container_width=True
+                )
+            else:
+                st.error(f"⚠️ Файл '{img_filename}' не найден в репозитории.")
+                # Подсказка для отладки
+                st.info(f"Искал по пути: {img_path}")
+                
+        with col_text:
+            st.markdown("""
+            **О карте:**
+            Данная схема отображает пункты агрометеорологического мониторинга по всей территории РК.
             
+            **Основные культуры:**
+            * 🌾 Зерновые
+            * 🌽 Пропашные
+            * 🌻 Масличные
+            * 🍎 Плодовые
+            """)
+            
+            # Кнопка для скачивания (если нужно)
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as file:
+                    st.download_button(
+                        label="📂 Скачать карту",
+                        data=file,
+                        file_name="Agro_Map_Kazhydromet.jpg",
+                        mime="image/jpg"
+                    )
 
+    # Вызов функции
     render_final_agro_map()
 
+
+    
 #АГРОКЛИМАТИЧЕСИК ЗОНЫ
     import streamlit as st
     import plotly.graph_objects as go
@@ -1951,16 +2014,43 @@ with tabs[0]:
         fig.update_layout(
             barmode='stack',
             height=750,
-            margin=dict(l=10, r=10, t=10, b=10),
-            xaxis=dict(visible=False, range=[0, 100]),
-            yaxis=dict(autorange="reversed", tickfont=dict(size=12, family="Arial")),
+            # УВЕЛИЧИВАЕМ ОТСТУП СЛЕВА ДО 250. 
+            # Названия типа "Восточно-Казахстанская и Абайская" требуют много места.
+            margin=dict(l=250, r=20, t=50, b=50), 
+            
+            # Ось X (проценты снизу)
+            xaxis=dict(
+                visible=True, 
+                range=[0, 100],
+                tickfont=dict(size=16, color="#1f4e79"),
+                title=dict(text="%", font=dict(size=14, color="#1f4e79")),
+                gridcolor='rgba(0,0,0,0.1)'
+            ),
+            
+            # Ось Y (ЗДЕСЬ НАЗВАНИЯ ОБЛАСТЕЙ)
+            yaxis=dict(
+                visible=True,           # ПРИНУДИТЕЛЬНО ВКЛЮЧИТЬ
+                showticklabels=True,    # ПОКАЗАТЬ ПОДПИСИ
+                autorange="reversed", 
+                type='category',        # ЯВНО УКАЗЫВАЕМ, ЧТО ЭТО ТЕКСТ
+                tickfont=dict(
+                    size=16, 
+                    family="Arial", 
+                    color="#1f4e79"     # ТЕМНО-СИНИЙ (не белый!)
+                ),
+                automargin=False        # Отключаем авто, так как мы задали l=250 вручную
+            ),
+            
             showlegend=False,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)'
         )
-        
-        # Добавление вертикальных линий сетки для красоты
-        fig.update_xaxes(showgrid=True, gridcolor='lightgrey', dtick=10)
+
+        # Шрифт цифр внутри полосок
+        fig.update_traces(
+            textfont=dict(size=18, family="Arial Black", color="black"),
+            textposition='inside'
+        )
 
         st.plotly_chart(fig, use_container_width=True)
 
@@ -1982,16 +2072,13 @@ with tabs[0]:
                         margin-top: 2px;
                         border: 1px solid #444;">
                     </div>
-                    <div style="font-size: 0.8rem; line-height: 1.1;">
+                    <div style="font-size: 1.0rem; line-height: 1.1;">
                         <strong>{zone}</strong>: {info["desc"]}
                     </div>
                 </div>
                 ''', 
                 unsafe_allow_html=True
             )
-
-
-    st.markdown("---")
 
 
     import streamlit as st
@@ -2004,8 +2091,8 @@ with tabs[0]:
         st.markdown("### 🌡️ Сравнительный анализ климатических показателей")
 
         # Пути к файлам (используем ваши локальные пути)
-        path_temp2 = r"C:\Users\eltai_a\Desktop\RES\stend\agro2.jpg"
-        path_gtk = r"C:\Users\eltai_a\Desktop\RES\stend\agro 3.png"
+        path_temp2 = "agro2.jpg"
+        path_gtk = "agro 3.png"
 
         # Создаем две колонки для визуального сопоставления
         col_left, col_right = st.columns(2)
@@ -2295,11 +2382,26 @@ with tabs[0]:
             st.write("##") 
             st.link_button("СКАЧАТЬ ПРИЛОЖЕНИЕ", "https://play.google.com/store/apps/details?id=kz.khm.airkz", use_container_width=True)
         
-        st.markdown("---")
-        
+# --- ФИНАЛЬНЫЙ ПОДВАЛ (WHITE FOOTER) ---
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("""
+    <div style="background: #ffffff; padding: 40px; border-radius: 30px 30px 0 0; color: #001f3f; text-align: center; border-top: 1px solid #eaeaea; box-shadow: 0px -5px 15px rgba(0,0,0,0.02);">
+        <p style="opacity: 0.8; font-size: 1.1rem; max-width: 800px; margin: 0 auto 25px auto; color: #444;">
+            Обеспечение экологической и метеорологической безопасности Республики Казахстан через ведение непрерывного мониторинга атмосферного воздуха, водных ресурсов и климатических изменений.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600; flex-wrap: wrap;">
+            <span><a href="https://www.kazhydromet.kz" target="_blank" style="color: #001f3f; text-decoration: none;">🌐 www.kazhydromet.kz</a></span>
+            <span><a href="mailto:info@meteo.kz" style="color: #001f3f; text-decoration: none;">📧 info@meteo.kz</a></span>
+            <span><a href="tel:+77172798394" style="color: #001f3f; text-decoration: none;">📞 +7 (7172) 79-83-94</a></span>
+        </div>
+        <hr style="opacity: 0.1; margin: 25px 0; border: 0; border-top: 1px solid #001f3f;">
+        <p style="font-size: 0.8rem; opacity: 0.6; letter-spacing: 1px; color: #666;">
+            © 2026 РГП «КАЗГИДРОМЕТ» 
+        </p>
+    </div>
+""", unsafe_allow_html=True)
 
-
-
+    
 # ПРОГНОЗ ПОГОДЫ   
 with tabs[1]:
     # Заголовок с кастомным цветом
@@ -2464,7 +2566,7 @@ with tabs[1]:
     st.markdown("<h3 style='text-align: center; color: #1E3A8A;'>📊 Средняя оправдываемость прогнозов</h3>", unsafe_allow_html=True)
 
     # Верхний ряд: Основные метрики (интерактивные "кнопки")
-    col_acc1, col_acc2, col_acc3, col_acc4  = st.columns(4)
+    col_acc1, col_acc2, col_acc3, col_acc4, col_acc5  = st.columns(5)
     with col_acc1:
         st.metric("Суточные прогнозы", "96%", help="Высочайшая точность подтверждена верификацией")
     with col_acc2:
@@ -2473,7 +2575,8 @@ with tabs[1]:
         st.metric("Прогнозы на неделю", "91%")
     with col_acc4:
         st.metric("Прогнозы на месяц", "75%")
-
+    with col_acc5:
+        st.metric("Прогнозы на сезон", "65%")
     st.divider()
 
 
@@ -2553,11 +2656,10 @@ with tabs[1]:
         </style>
     """, unsafe_allow_html=True)
 
-    import streamlit as st
-    import os
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     # 1. ОСНОВНЫЕ ПУТИ
-    IMG_DIR = r"C:\Users\eltai_a\Desktop\RES\stend"
+    IMG_DIR = os.path.join(BASE_DIR)
 
     # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
     def draw_data_card(col, file_name, title, color, items):
@@ -2638,8 +2740,6 @@ with tabs[1]:
             
         ]
     )
-
-
 
         # Визуальный разделитель с пояснением
     st.warning("""
@@ -2903,214 +3003,164 @@ with tabs[1]:
     st.divider()
 
 #ДОЛГОСРОЧНЫЕ ПРОГНОЗЫ
-
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    
     def show_forecast_process():
-        # --- ЕДИНЫЙ CSS СТИЛЬ ---
         st.markdown("""
-            <style>
-            .big-climate-card {
-                background: #ffffff;
-                border-radius: 12px;
-                padding: 15px;
-                margin-bottom: 15px;
-                border: 1px solid #eef0f2;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                height: 100%; /* Чтобы карточки были одной высоты */
-            }
-            .section-title {
-                color: #1d4d2b;
-                font-weight: 800;
-                font-size: 1.2rem;
-                margin-bottom: 10px;
-                border-bottom: 3px solid #f1f3f5;
-                padding-bottom: 5px;
-            }
-            .info-list { list-style-type: none; padding: 0; margin: 0; }
-            .info-item {
-                font-size: 0.95rem;
-                margin-bottom: 6px;
-                line-height: 1.3;
-                display: flex;
-                align-items: flex-start;
-                gap: 8px;
-            }
-            .highlight-val { font-weight: 700; color: #2c3e50; }
-            .forecast-status-high { color: #d9534f; font-weight: 800; }
-            .forecast-status-ok { color: #2ecc71; font-weight: 800; }
-            </style>
-        """, unsafe_allow_html=True)
+                <style>
+                .big-climate-card {
+                    background: #ffffff;
+                    border-radius: 12px;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                    border: 1px solid #eef0f2;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    height: 100%; /* Чтобы карточки были одной высоты */
+                }
+                .section-title {
+                    color: #1d4d2b;
+                    font-weight: 800;
+                    font-size: 1.2rem;
+                    margin-bottom: 10px;
+                    border-bottom: 3px solid #f1f3f5;
+                    padding-bottom: 5px;
+                }
+                .info-list { list-style-type: none; padding: 0; margin: 0; }
+                .info-item {
+                    font-size: 0.95rem;
+                    margin-bottom: 6px;
+                    line-height: 1.3;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 8px;
+                }
+                .highlight-val { font-weight: 700; color: #2c3e50; }
+                .forecast-status-high { color: #d9534f; font-weight: 800; }
+                .forecast-status-ok { color: #2ecc71; font-weight: 800; }
+                </style>
+            """, unsafe_allow_html=True)
 
-        # --- ВЕРХНИЙ БЛОК (ТЕХНОЛОГИИ И ГИФКА) ---
+            # --- ВЕРХНИЙ БЛОК (ТЕХНОЛОГИИ И ГИФКА) ---
         col_tech, col_viz = st.columns([1.5, 1], gap="large")
-        
+            
         with col_tech:
             st.title("Долгосрочный прогноз погоды")
             tab1, tab2, tab3, tab4 = st.tabs(["⏳ Декада", "📅 Месяц", "🍂 Сезон", "💡 Шторма"])
             
             with tab1:
-                st.subheader("🗓️ Декадное прогнозирование")
-                st.info("**График выпуска:** 30-31, 10 и 20 числа каждого месяца.")
+                st.subheader("🗓️ Прогноз на 10 дней")
+                st.info("**Периодичность:** 30-31, 10 и 20 числа каждого месяца.")
                 st.markdown("""
-                * **Детализация:** Прогноз с указанием конкретных атмосферных явлений.
-                * **Параметры:** Температура (мин/макс), осадки, туман, гололед, метель.
-                * **Точность:** Средняя оправдываемость составляет **70-75%**.
-                * **Передача:** Оперативно передается в МЧС и ситуационные центры.
+                * **Детализация:** прогноз с указанием конкретных атмосферных явлений.
+                * **Параметры:** температура (мин/макс), осадки, ветер, туман, гололед, метель, пыльная буря.
+                * **Передача:** оперативно передается в государственные и местные исполнительные органы.
                 """)
 
             with tab2:
                 st.subheader("📋 Прогноз на месяц")
-                st.success("**Тип:** Научно-консультативный бюллетень.")
+                st.success("**Тип:** Консультативный бюллетень.")
                 st.markdown("""
-                * **Методика:** Использование метода **года-аналога** (поиск схожих процессов в архивах за 50 лет).
-                * **Технологии:** Обработка данных 200+ станций в системе **QGIS**.
-                * **Выпуск:** Подготовка до 25 числа, публикация до 1 числа месяца.
+                * **Методика:** использование метода **года-аналога** посредством АРМ-Долгосрочник (поиск схожих процессов в архивах за 30 лет).
+                * **Технологии:** обработка данных 200+ станций.
+                * **Выпуск:** ежемесячно к 15 числу.
+                * **Регионы:** формируется по всем 17 областям РК.                
                 """)
 
             with tab3:
-                st.subheader("🍂 Сезонный мониторинг")
-                st.warning("**Охват:** 6 выпусков в год (на сезоны и полугодия).")
+                st.subheader("🍂 Прогноз на сезон")
+                st.warning("**Охват:** 6 выпусков в год (на сезон и субсезон).")
                 st.markdown("""
-                * **Анализ:** Мониторинг средней тропосферы (**АТ-500**).
-                * **Глобальные факторы:** Учет явлений **Эль-Ниньо** и **Ла-Нинья**.
-                * **Заблаговременность:** Прогноз до **6 месяцев** (носит фоновый характер).
-                * **Регионы:** Формируется по всем 17 областям РК.
+                * **Анализ:** использование метода **года-аналога** посредством АРМ-Долгосрочник (поиск схожих процессов в архивах за 30 лет).
+                * **Заблаговременность:** прогноз до **3-7 месяцев**.
+                * **Регионы:** формируется по территории Казахстана.
                 """)
 
             with tab4:
                 st.subheader("💡 Штормовые предупреждения")
-                st.error("**Статус:** Экстренное оповещение об ОЯ и СГЯ.")
+                st.error("Штормовые предупреждения о волнах холода и тепла, обильных осадках и о засушливых условиях.")
                 st.markdown("""
-                * **Критерии:** Отклонение t° от нормы на **7°C и более**, ветер > 25 м/с, сильные осадки.
-                * **Каналы:** Рассылка через SMS, мобильное приложение **Darmen** и телеканалы.
-                * **Время:** Заблаговременность выпуска от **12 до 48 часов**.
-                * **Режим:** Круглосуточный мониторинг дежурными синоптиками.
+                * **Критерии:** отклонение t° от нормы на **7°C и более**, осадки больше/меньше нормы.
+                * **Заблаговременность:** заблаговременность выпуска от **24 до 240 часов**.
                 """)
 
-            st.divider()
-            
-
+               
         with col_viz:
             st.subheader("🗺️ Визуализация")
-            st.image(r"C:\Users\eltai_a\Desktop\RES\stend\udpp.gif", use_container_width=True)
-
+            st.image(os.path.join(BASE_DIR, "udpp.gif"), use_container_width=True)
         st.divider()
+        
+        
 
-        # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
-        col_climat_data, col_forecast_data = st.columns([1.2, 1], gap="medium")
+            # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
+        col_climat_data, col_viz1 = st.columns([1.2, 1], gap="medium")
 
         with col_climat_data:
             st.markdown("#### 📜 Климатическая характеристика: Март")
-            
-            # ВАЖНО: Обновляем стили для увеличения шрифта
+                
+                # ВАЖНО: Обновляем стили для увеличения шрифта
             st.markdown("""
-                <style>
-                .big-climate-card {
-                    background: #ffffff;
-                    border-radius: 12px;
-                    padding: 20px;
-                    margin-bottom: 10px;
-                    border: 1px solid #eef0f2;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                }
-                .section-title {
-                    color: #1d4d2b;
-                    font-weight: 800;
-                    font-size: 1.4rem !important; /* УВЕЛИЧЕНО с 1.1 до 1.4 */
-                    margin-bottom: 12px;
-                    border-bottom: 2px solid #f1f3f5;
-                }
-                .info-item { 
-                    font-size: 1.2rem !important; /* УВЕЛИЧЕНО с 0.95 до 1.2 */
-                    margin-bottom: 8px; 
-                    line-height: 1.5; 
-                }
-                .val-bold {
-                    font-weight: 700;
-                    color: #2c3e50;
-                }
-                </style>
-            """, unsafe_allow_html=True)
+                    <style>
+                    .big-climate-card {
+                        background: #ffffff;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 10px;
+                        border: 1px solid #eef0f2;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    }
+                    .section-title {
+                        color: #1d4d2b;
+                        font-weight: 800;
+                        font-size: 1.4rem !important; /* УВЕЛИЧЕНО с 1.1 до 1.4 */
+                        margin-bottom: 12px;
+                        border-bottom: 2px solid #f1f3f5;
+                    }
+                    .info-item { 
+                        font-size: 1.2rem !important; /* УВЕЛИЧЕНО с 0.95 до 1.2 */
+                        margin-bottom: 8px; 
+                        line-height: 1.5; 
+                    }
+                    .val-bold {
+                        font-weight: 700;
+                        color: #2c3e50;
+                    }
+                    </style>
+                """, unsafe_allow_html=True)
 
-            # Ряд из карточек
+                # Ряд из карточек
             st.markdown("""
-            <div style="display: flex; gap: 10px;">
-                <div class="big-climate-card" style="flex: 1;">
-                    <div class="section-title">🌡️ Температура</div>
-                    <div class="info-item">🔹 Север: <span class="val-bold">-9...-14°С</span></div>
-                    <div class="info-item">🔹 Юг: <span class="val-bold">+6...+8°С</span></div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="big-climate-card" style="flex: 1;">
+                        <div class="section-title">🌡️ Температура</div>
+                        <div class="info-item">🔹 Север: <span class="val-bold">-9...-14°С</span></div>
+                        <div class="info-item">🔹 Юг: <span class="val-bold">+6...+8°С</span></div>
+                    </div>
+                    <div class="big-climate-card" style="flex: 1;">
+                        <div class="section-title">❄️ Экстремумы</div>
+                        <div class="info-item">🔴 Тепло: <span class="val-bold">до +35°С</span></div>
+                        <div class="info-item">🔵 Холод: <span class="val-bold">до -47°С</span></div>
+                    </div>
                 </div>
-                <div class="big-climate-card" style="flex: 1;">
-                    <div class="section-title">❄️ Экстремумы</div>
-                    <div class="info-item">🔴 Тепло: <span class="val-bold">до +35°С</span></div>
-                    <div class="info-item">🔵 Холод: <span class="val-bold">до -47°С</span></div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <div class="big-climate-card" style="flex: 1;">
+                        <div class="section-title">💧 Осадки</div>
+                        <div class="info-item">📅 В среднем: <span class="val-bold">14-25 мм</span></div>
+                        <div class="info-item">📅 Вид: <span class="val-bold">смешанные</span></div>
+                    </div>
+                    <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
+                        <div class="section-title">🌬️ Явления</div>
+                        <div class="info-item">🚩 Метели: <span class="val-bold">до 20 дн.</span></div>
+                        <div class="info-item">⚡ Гололед: <span class="val-bold">2-3 раза</span></div>
+                    </div>
                 </div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div class="big-climate-card" style="flex: 1;">
-                    <div class="section-title">💧 Осадки</div>
-                    <div class="info-item">📅 В среднем: <span class="val-bold">14-25 мм</span></div>
-                    <div class="info-item">📅 Вид: <span class="val-bold">смешанные</span></div>
-                </div>
-                <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
-                    <div class="section-title">🌬️ Явления</div>
-                    <div class="info-item">🚩 Метели: <span class="val-bold">до 20 дн.</span></div>
-                    <div class="info-item">⚡ Гололед: <span class="val-bold">2-3 раза</span></div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
+        with col_viz1:
+            st.subheader("🗺️ Визуализация")
+            st.image(os.path.join(BASE_DIR, "udpp1.gif"), use_container_width=True)
             
-        with col_forecast_data:
-            st.markdown("#### 🔍 Прогноз: Март 2026")
-            
-            # Ряд 1: Температурные отклонения и Осадки
-            st.markdown("""
-            <div style="display: flex; gap: 10px;">
-                <div class="big-climate-card" style="flex: 1; border-right: 5px solid #d9534f; border-left: none;">
-                    <div class="section-title">🌡️ Отклонение t°</div>
-                    <div class="info-item">
-                        📈 <span class="forecast-status-high">ВЫШЕ НОРМЫ НА 1°:</span> 
-                        <span class="val-bold">На большей части страны</span>
-                    </div>
-                    <div class="info-item">
-                        ✅ <span class="forecast-status-ok">ОКОЛО НОРМЫ:</span> 
-                        <span class="val-bold">Жетісу, Ю-В Алматинской, ВКО, Ю-В Абай</span>
-                    </div>
-                </div>
-                <div class="big-climate-card" style="flex: 1; border-right: 5px solid #5bc0de; border-left: none;">
-                    <div class="section-title">💧 Осадки</div>
-                    <div class="info-item">
-                        🌧️ <span class="forecast-status-high">БОЛЬШЕ НОРМЫ:</span> 
-                        <span class="val-bold">Большая часть РК</span>
-                    </div>
-                    <div class="info-item">
-                        ✅ <span class="forecast-status-ok">ОКОЛО НОРМЫ:</span> 
-                        <span class="val-bold">Актюб., Ұлытау, Кост., Акмол., Мангист., Кызылорд.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div class="big-climate-card" style="flex: 1; border-right: 5px solid #f0ad4e; border-left: none;">
-                    <div class="section-title">📍 Средние значения (t°)</div>
-                    <div class="info-item">🔹 <span class="val-bold">0...-7°С:</span> Большая часть территории РК</div>
-                    <div class="info-item">🔹 <span class="val-bold">+5...+10°С:</span> Туркестан., Жамбыл., Юг Кызылорд., Мангист.</div>
-                    <div class="info-item">🔹 <span class="val-bold">-8...-11°С:</span> Крайний восток страны</div>
-                </div>
-                <div class="big-climate-card" style="flex: 1; border-right: 4px solid #1d4d2b; border-left: none; background: #f8f9fa;">
-                    <div class="section-title">🧬 Год-аналог</div>
-                    <div class="info-item">📅 Выбранный период: <span class="val-bold">2025 год</span></div>
-                    <div class="info-item">📊 <span style="font-size: 0.85rem;">Синоптические процессы текущего года имеют высокую степень корреляции с весной 2025 г.</span></div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Футер
-        st.markdown("---")
-        st.caption("Данные обновлены на основе прогноза РГП «Казгидромет» на март 2026. Блок всегда отображен.")
+            st.divider()
         
-    
-    
-            
+               
     if __name__ == "__main__":
         show_forecast_process()
     
@@ -3151,7 +3201,7 @@ with tabs[1]:
                 min-height: 40px; /* Фиксированная высота для заголовка */
             }
             .no-img-body { 
-                font-size: 0.8rem; 
+                font-size: 1.0rem; 
                 color: #444; 
                 line-height: 1.2;
                 font-weight: 500;
@@ -3198,20 +3248,24 @@ with tabs[4]:
     import os
     import pandas as pd
     import plotly.graph_objects as go
-
+     
+    
+    base_path = os.path.dirname(os.path.abspath(__file__))
+        
+        
     # --- НАСТРОЙКИ И ДАННЫЕ ---
-    FOLDER_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\UMGPGR\шейпы"
+    FOLDER_PATH = os.path.join(BASE_DIR, "shp")
 
     VXB_STATS = {
-        "Арало-Сырдарьинский ВХБ": {"норма": 21.5, "местные": 3.22, "приток": 18.2, "отток": None},
-        "Балхаш-Алакольский ВХБ": {"норма": 29.9, "местные": 17.2, "приток": 12.7, "отток": "В КНР: 0.67"},
-        "Ертисский ВХБ": {"норма": 33.4, "местные": 26.4, "приток": 7.02, "отток": "В КНР: 2.20, В РФ: 26.2"},
-        "Жайык-Каспийский ВХБ": {"норма": 12.0, "местные": 3.37, "приток": 19.6, "отток": "В РФ: 1.48"},
+        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": None},
+        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, "отток": "В КНР: 0.67"},
+        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, "отток": "В КНР: 2.20, В РФ: 26.2"},
+        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, "отток": "В РФ: 1.48"},
         "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, "отток": "В РФ: 1.86"},
         "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0, "отток": None},
-        "Шу-Таласский ВХБ": {"норма": 4.13, "местные": 1.29, "приток": 2.24, "отток": None},
-        "Тобол-Торгайский ВХБ": {"норма": 1.67, "местные": 1.34, "приток": 0.34, "отток": "В РФ: 0.46"},
-        "Республика Казахстан": {"норма": 107.0, "местные": 57.1, "приток": 49.4, "отток": None}
+        "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84, "отток": None},
+        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, "отток": "В РФ: 0.46"},
+        "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
     }
 
     @st.cache_data
@@ -3313,7 +3367,9 @@ with tabs[4]:
                     # Разделяем на Местный сток и Приток
                     m_col1, m_col2 = st.columns(2)
                     with m_col1:
-                        st.metric("🏔️ Местный сток", f"{cur_stats['местные']} км³")
+                    # Используем символ '💧' (U+1F4A7) с модификатором текста для затемнения
+                        st.metric("💧︎ Местный сток", f"{cur_stats['местные']} км³")
+    
                     with m_col2:
                         st.metric("💧 Приток", f"{cur_stats['приток']} км³")
                     
@@ -3408,13 +3464,6 @@ with tabs[4]:
             opacity=0.9
         ))
 
-        # Линия тренда - Темно-синий/Полночный
-        fig.add_trace(go.Scatter(
-            x=df['Год'], y=df['Тренд'],
-            mode='lines',
-            name='Линия тренда (ВХБ)',
-            line=dict(color='#08306b', dash='dash', width=3) 
-        ))
 
         # Настройка оформления
         fig.update_layout(
@@ -3429,24 +3478,57 @@ with tabs[4]:
             hovermode="x unified",
             height=550,
             template="plotly_white",
-            # Добавляем сетку для лучшей читаемости
-            yaxis=dict(gridcolor='#f0f0f0'),
-            xaxis=dict(gridcolor='#f0f0f0')
-        )
+            xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black')),
+            yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black'))
+            )
 
         # Отображение в Streamlit
         st.plotly_chart(fig, use_container_width=True)
 
-        # 4. Аналитическая справка
-        st.info(f"""
-            **Аналитическая сводка:** * Исторический максимум (ВХБ): **{df['ВХБ'].max()} км³** ({df.loc[df['ВХБ'].idxmax(), 'Год']} г.)
-            * Исторический минимум (ВХБ): **{df['ВХБ'].min()} км³** ({df.loc[df['ВХБ'].idxmin(), 'Год']} г.)
-            * Среднее значение за период: **{df['ВХБ'].mean():.2f} км³**
-        """)
+    def show_water_resources_analysis():
+        st.subheader("📊 Анализ суммарных водных ресурсов РК (1940–2024 гг.)")
+        
+        # Создаем контейнер для визуального выделения блока
+        with st.container(border=True):
+            col1, col2 = st.columns([3, 1])
+            
+            with col1:
+                st.markdown("""
+                Анализ графика суммарных водных ресурсов Республики Казахстан за **1940–2024 гг.** показывает постепенное 
+                плавное снижение объемов речного стока. Такая динамика линии тренда отражает естественную реакцию 
+                гидрологической системы на современные климатические изменения.
+                """)
+            
+            with col2:
+                # Маленький индикатор тренда для наглядности
+                st.metric(label="Тренд стока", value="Снижение", delta="- плавный", delta_color="inverse")
 
-      
-        # Базовый путь к папке с фотографиями
-        BASE_IMAGE_PATH = r"C:\Users\eltai_a\Desktop\RES\stend\UMGPGR"
+            st.divider()
+
+            st.write("""
+            Согласно данным, наблюдаемое уменьшение водных ресурсов связано с тем, что рост испаряемости и изменения 
+            в режиме осадков начинают преобладать над приточностью. Несмотря на то, что в отдельные годы мы видим 
+            значительные пики водности, общая тенденция указывает на постепенное сокращение среднемноголетнего стока.
+            """)
+
+            # Используем блок внимания для ключевого вывода
+            st.info("""
+            **Ключевой фактор:** Перестройка структуры питания рек, где доля ледникового стока стабилизируется, 
+            а трансграничный приток испытывает влияние хозяйственной деятельности в верховьях.
+            """, icon="💧")
+
+            st.warning("""
+            **Вывод:** Нисходящая линия тренда — это важный индикатор, который призывает к более 
+            рациональному и бережному использованию имеющихся запасов воды в долгосрочной перспективе.
+            """, icon="⚠️")
+
+    # Вызов функции в основном приложении
+    if __name__ == "__main__":
+        show_water_resources_analysis()
+    
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
+        BASE_IMAGE_PATH = os.path.join(BASE_DIR)
+        
 
         vxb_list = [k for k in VXB_STATS.keys() if k != "Республика Казахстан"]
 
@@ -3458,7 +3540,7 @@ with tabs[4]:
                 "площадь": "347 757 км²",
                 "гп_кол": "58",
                 "рек_всего": "13 201",
-                "артерия": "Река Ертис",
+                "артерия": "Река Ертис - крупнейшая по водности река Казахстана и основная транзитная водная артерия страны. Формирует значительную часть поверхностного стока восточного и северо-восточного Казахстана, обладает развитым каскадом водохранилищ и ГЭС. Играет ключевую роль в межбассейновом перераспределении водных ресурсов (в том числе через канал Иртыш–Караганда).",
                 "объекты": ">82 вдхр. и прудов",
                 "рек_инфо": "6 / Малых: 1195",
                 "местные_текст": "5 крупных рек (Калжыр, Куршим, Буктырма, Ульби, Оба) формируют ~70% стока.",
@@ -3480,7 +3562,7 @@ with tabs[4]:
                 "площадь": "345 000 км²",
                 "гп_кол": "41",
                 "рек_всего": "1500-2000",
-                "артерия": "Река Сырдарья",
+                "артерия": "Река Сырдарья - крупная трансграничная река аридной зоны Центральной Азии с ледниково-снеговым питанием в верховьях. В пределах Казахстана её сток существенно зарегулирован водохранилищами и используется преимущественно для ирригации. Является основным водотоком северной части Аральского бассейна.",
                 "объекты": "Свыше 33 водохранилищ и прудов",
                 "рек_инфо": "Общее количество рек: 1500 - 2000 / Большие и средние: 497",
                 "местные_текст": "Сток формируется реками Арыс, Шаян, Бугунь.",
@@ -3500,12 +3582,12 @@ with tabs[4]:
                     {"Река / Створ": "р. Бугунь - с. Екпенды", "Норма": 4.28, "Пик": "13.3 (1969)", "Мин": "0.12 (1994)", "Динамика": "↔ Стабильно"}
             ]                
         },
-            "Балхаш-Алакольский ВХБ": {
+            "Балкаш-Алакольский ВХБ": {
                 "photo": "Балхаш-Алакольский ВХБ.tiff",
                 "площадь": "406 000 км²",
                 "гп_кол": "69",
                 "рек_всего": "Более 52000",
-                "артерия": "Река Иле",
+                "артерия": "Река Иле - трансграничная река с истоками в горах Тянь-Шаня, характеризуется ледниково-снеговым типом питания. Обеспечивает основную часть притока в озеро Балхаш, определяя его гидрологический режим и минерализацию. Дельта реки представляет собой важный водно-болотный комплекс международного значения.",
                 "объекты": "Свыше 24300 озер и водоемов",
                 "рек_инфо": "более 52000 / Малых и средних: около 45000",
                 "местные_текст": "Сток формируется реками Шарын, Шилик, Иле, Каратал, Лепси.",
@@ -3532,7 +3614,7 @@ with tabs[4]:
                 "площадь": "645 000 км²",
                 "гп_кол": "52",
                 "рек_всего": "200-240",
-                "артерия": "Река Жайык",
+                "артерия": "Река Жайык - трансграничная река бассейна Каспийского моря с преимущественно снеговым типом питания. Для реки характерен интенсивный весенний паводочный период, имеет высокую рыбохозяйственную значимость, включая нерестовые миграции осетровых. Географически служит естественной линией разграничения Европы и Азии.",
                 "объекты": "Около 30 водохранилищ",
                 "рек_инфо": "Больших и средних: 10 / Малых: 180-200 ",
                 "местные_текст": "Сток формируется реками Илек, Большая Кобда, Орь, Уил, Эмба.",
@@ -3556,7 +3638,7 @@ with tabs[4]:
                 "площадь": "237 226 км²",
                 "гп_кол": "43",
                 "рек_всего": "2 000",
-                "артерия": "Река Есиль",
+                "артерия": "Река Есиль - равнинная река степной зоны с преимущественно снеговым питанием и продолжительным весенним половодьем. Отличается значительной межгодовой изменчивостью стока. Формирует водно-экологический каркас северных регионов и играет важную роль в водоснабжении населённых пунктов.",
                 "объекты": "Около 50 водохранилищ.",
                 "рек_инфо": " Большие и средние: 20-25/ Малые:более 1900",
                 "местные_текст": "Сток формируется реками Есиль, Калкутан, Жабай.",
@@ -3575,7 +3657,7 @@ with tabs[4]:
                 "площадь": "290 210 км²",
                 "гп_кол": "27",
                 "рек_всего": "15",
-                "артерия": "Река Нура",
+                "артерия": "Река Нура - река центрального Казахстана с преимущественно снеговым питанием и ограниченным водным стоком. Впадает в бессточную систему озёр Тенгиз-Коргалжынской впадины. Имеет значимое экологическое значение в формировании водно-болотных угодий.",
                 "объекты": "около 400 водохранилищ, прудов и искусственных накопителей воды различного размера и назначения",
                 "рек_инфо": " Основные: 2 / Притоки: 13",
                 "местные_текст": "Сток формируется реками Нура, Сарысу, Каракенгир, Жиланды.",
@@ -3596,7 +3678,7 @@ with tabs[4]:
                 "площадь": "160 500 км²",
                 "гп_кол": "22",
                 "рек_всего": "850",
-                "артерия": "Река Шу, Река Талас",
+                "артерия": "Река Шу - трансграничная река с истоками в горных районах Кыргызстана. В пределах Казахстана характеризуется снижением стока вследствие инфильтрации и водоотбора. Гидрологический режим определяется сочетанием снегового и ледникового питания. Река Талас - горная трансграничная река с выраженным весенне-летним максимумом стока. Значительная часть воды используется для орошения, что приводит к уменьшению водности в нижнем течении. Исторически играла роль в формировании оазисных систем региона.",
                 "объекты": "Свыше 21 водохранилищ и прудов",
                 "рек_инфо": "Большие и средние: 25-30 / Малых: 800",
                 "местные_текст": "Сток формируется реками Курагаты и Терис.",
@@ -3616,12 +3698,12 @@ with tabs[4]:
                     {"Река / Створ": "р. Карабалта – а. Баласагун", "Норма": 1.40, "Пик": "4.0 (2016)", "Мин": "0.15 (2024)", "Динамика": "↔ Стабильно"}
 ]
         },
-            "Тобол-Торгайский ВХБ": {
+            "Тобыл-Торгайский ВХБ": {
                 "photo": "Тобыл-Торгай.tiff",
                 "площадь": "347 680 км²",
                 "гп_кол": "25",
                 "рек_всего": "Свыше 350",
-                "артерия": "Река Тобыл",
+                "артерия": "Река Тобыл - левобережный приток Ертиса, формирующийся в условиях лесостепной и степной зон. Отличается развитой озёрной системой в бассейне и значительным антропогенным регулированием стока. Входит в трансграничную водную систему бассейна Оби.",
                 "объекты": "Свыше 180-190 водохранилищ и прудов.",
                 "рек_инфо": "2 / Большие и средные: 21",
                 "местные_текст": "Для оценки водных ресурсов, формирующихся в Тобыл-Торгайском ВХБ выбраны постоянно действующие 4 реки бассейна с наибольшей водностью таких как: Тобыл, Аят, Кара Торгай, Иргиз, определяющих в основном поверхностные водные ресурсы, которые в сумме составляют около 76 % всех местных водных ресурсов.",
@@ -3683,10 +3765,10 @@ with tabs[4]:
                 # Блок Местные ресурсы vs Приток
                 col_res, col_inf = st.columns(2)
                 with col_res:
-                    st.write("🌳 **Местные ресурсы**")
+                    st.write("💧︎ **Местные ресурсы**")
                     st.caption(details["местные_текст"])
                 with col_inf:
-                    st.write("🌏 **Приток**")
+                    st.write("💧 **Приток**")
                     st.caption(details["приток_текст"])
 
                 # ГРАФИК (Теперь рисуется для каждого ВХБ свой!)
@@ -3702,7 +3784,9 @@ with tabs[4]:
                 mini_fig.update_layout(
                     barmode='stack', height=180, 
                     margin=dict(l=0,r=0,t=10,b=0), 
-                    template="plotly_white", showlegend=False
+                    template="plotly_white", showlegend=False,
+                    xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                    yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
                 )
                 # ВАЖНО: используем уникальный key для каждого графика
                 st.plotly_chart(mini_fig, use_container_width=True, key=f"mini_chart_{name}")
@@ -3712,17 +3796,31 @@ with tabs[4]:
                 col_a, col_b = st.columns(2)
                 with col_a:
                     st.write(f"🌊 **Артерия:** {details['артерия']}")
-                    st.write(f"📊 **Норма (W):** {item_stats['норма']} км³/год")
+
                 with col_b:
                     st.write(f"🏢 **Объекты:** {details['объекты']}")
-                    st.write(f"📑 **Малых рек:** {details.get('малые_реки', 'нет данных')}")
+                    st.write(f"📊 **Норма (W):** {item_stats['норма']} км³/год")
                 # НОВЫЙ БЛОК: Текстовая справка по рекам
                         
             # Проверяем наличие нового ключа с данными для таблицы
             if "river_table_data" in details:
                 st.markdown("---")
                 st.markdown("#### 📋 Сводная таблица гидрологических показателей")
-                
+               
+                st.markdown("""
+                    <style>
+                    [data-testid="stTable"] {
+                        font-size: 20px;
+                    }
+                    /* Для старых версий Streamlit или специфических контейнеров */
+                    .css-110034a, .stDataFrame div {
+                        font-size: 1.2rem !important;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+    
+
+               
                 # Создаем DataFrame из списка словарей
                 df_rivers = pd.DataFrame(details["river_table_data"])
                 
@@ -3747,6 +3845,8 @@ with tabs[4]:
                         for r, t in details["river_descriptions"].items():
                             st.write(f"**{r}:** {t}")
                 
+
+
                
         # --- СПЕЦИАЛЬНЫЙ БЛОК ДЛЯ АРАЛО-СЫРДАРЬИНСКОГО ВХБ ---
         if "Арало-Сырдарьинский" in name:
@@ -3764,7 +3864,7 @@ with tabs[4]:
             years = list(range(1940, 2025))
             data_rivers = {
                 "Год": years,
-                "р. Сырдарья - нижний бьеф Шардаринского водохранилища": [492, 690, 824, 716, 544, 773, 732, 539, 687, 929, 567, 598, 1066, 894, 1065, 737, 724, 450, 923, 930, 882, 438, 353, 631, 728, 245, 592, 469, 564, 917, 574, 538, 519, 559, 245, 167, 210, 225, 275, 405, 336, 304, 298, 250, 248, 269, 226, 336, 581, 402, 466, 449, 510, 678, 627, 402, 492, 439, 665, 546, 412, 386, 606, 677, 664, 703, 536, 551, 347, 471, 842, 426, 587, 413, 533, 468, 466, 728, 392, 451, 316, 268, 346, 349, 328],
+                "р. Сырдарья - н.б. Шардаринского водохранилища": [492, 690, 824, 716, 544, 773, 732, 539, 687, 929, 567, 598, 1066, 894, 1065, 737, 724, 450, 923, 930, 882, 438, 353, 631, 728, 245, 592, 469, 564, 917, 574, 538, 519, 559, 245, 167, 210, 225, 275, 405, 336, 304, 298, 250, 248, 269, 226, 336, 581, 402, 466, 449, 510, 678, 627, 402, 492, 439, 665, 546, 412, 386, 606, 677, 664, 703, 536, 551, 347, 471, 842, 426, 587, 413, 533, 468, 466, 728, 392, 451, 316, 268, 346, 349, 328],
                 "р. Сырдарья - ж.-д. ст. Томенарык": [457, 631, 808, 692, 496, 713, 713, 471, 596, 856, 505, 602, 1023, 872, 986, 703, 678, 431, 836, 871, 985, 423, 294, 563, 690, 247, 509, 439, 438, 840, 489, 426, 443, 505, 201, 122, 148, 152, 208, 348, 278, 269, 234, 183, 183, 198, 160, 273, 501, 320, 340, 343, 388, 593, 669, 422, 430, 373, 504, 521, 300, 330, 501, 547, 565, 566, 434, 482, 313, 360, 694, 345, 511, 350, 510, 444, 502, 690, 404, 429, 319, 299, 317, 375, 371],
                 "р. Сырдарья - г. Казалы": [402, 455, 524, 513, 385, 490, 519, 340, 422, 508, 378, 419, 595, 620, 670, 530, 520, 300, 568, 580, 667, 401, 184, 335, 473, 149, 304, 277, 231, 554, 313, 259, 221, 283, 61.2, 19.4, 17.9, 15.2, 24.8, 100, 89.4, 76.8, 55.2, 29.8, 19.0, 21.6, 26.6, 64.8, 217, 138, 114, 117, 144, 296, 310, 84.3, 139, 109, 257, 144, 77.1, 62.2, 316, 329, 305, 314, 252, 255, 144, 163, 341, 205, 212, 228, 236, 63.0, 58.6, 350, 186, 167, 72.9, 76, 75, 112, 128],
                 "р. Келес - устье": [2.70, 10.50, 6.70, 7.20, 7.80, 7.20, 8.50, 3.20, 8.20, 22.70, 8.80, 2.50, 6.70, 9.50, 13.20, 8.70, 6.20, 5.20, 19.00, 14.00, 18.00, 7.70, 8.00, 11.80, 14.70, 7.00, 7.03, 14.10, 13.40, 27.60, 11.70, 7.86, 15.30, 10.90, 6.83, 5.65, 9.16, 8.79, 15.70, 16.40, 13.30, 13.40, 9.14, 6.14, 8.61, 12.80, 6.29, 1.50, 16.30, 13.20, 19.50, 16.00, 19.70, 27.20, 24.50, 14.80, 16.10, 17.20, 26.10, 22.20, 14.50, 13.70, 23.80, 25.50, 21.40, 24.80, 19.20, 25.00, 14.50, 27.20, 29.30, 18.60, 26.50, 24.60, 25.60, 26.40, 28.10, 28.50, 20.40, 25.20, 20.4, 16.60, 24.10, 23.9, 30.9],
@@ -3778,14 +3878,13 @@ with tabs[4]:
             pritok_values = [487, 679, 818, 711, 539, 766, 724, 535, 680, 913, 562, 592, 1050, 884, 1050, 728, 719, 446, 899, 917, 989, 444, 387, 603, 715, 364, 797, 368, 457, 1600, 624, 445, 444, 536, 145, 132, 197, 229, 320, 448, 362, 361, 371, 287, 310, 314, 278, 407, 631, 408, 455, 444, 513, 680, 817, 458, 500, 448, 757, 588, 446, 429, 674, 865, 745, 706, 523, 570, 393, 463, 791, 424, 567, 430, 558, 464, 387, 710, 482, 442, 390, 298, 403, 465, 534]
 
             import plotly.graph_objects as go
-
 # Настройки для легенды в 3 столбца
             legend_style = dict(
                 orientation="h",
                 y=-0.3,
                 x=0.5,
                 xanchor="center",
-                entrywidth=0.3, # Устанавливаем ширину каждого элемента в 30% от общей ширины
+                entrywidth=0.4, # Устанавливаем ширину каждого элемента в 30% от общей ширины
                 entrywidthmode="fraction" 
             )
 
@@ -3817,8 +3916,8 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100), # Увеличили b для легенды
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False)
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
             )
 
             # --- 2. ГРАФИК ПРИТОКА ---
@@ -3830,23 +3929,11 @@ with tabs[4]:
                 mode='markers+lines',
                 name='Значение стока',
                 line=dict(color='black', width=1.5),
-                marker=dict(color='#3498db', size=7, line=dict(color='black', width=1)),
+                marker=dict(color='#3498db', size=6, line=dict(color='black', width=1)),
                 hovertemplate="Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
             # Тренд
-            import numpy as np
-            z = np.polyfit(years, pritok_values, 1)
-            p = np.poly1d(z)
-
-            fig_pritok.add_trace(go.Scatter(
-                x=years,
-                y=p(years),
-                mode='lines',
-                name='Линейная (тренд)',
-                line=dict(color='black', width=1, dash='dot')
-            ))
-
             fig_pritok.update_layout(
                 title="<b>ПРИТОК БАССЕЙНА</b>",
                 xaxis_title="ГОД",
@@ -3856,9 +3943,9 @@ with tabs[4]:
                 hovermode="x",
                 legend=legend_style, # ПРИМЕНЯЕМ СТИЛЬ С 3 СТОЛБЦАМИ
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+           )
 
             # Отображение
             g_col1, g_col2 = st.columns(2)
@@ -3867,10 +3954,43 @@ with tabs[4]:
             with g_col2:
                 st.plotly_chart(fig_pritok, use_container_width=True, key=f"fixed_pritok_3col_{name}")
                 
-              
-            st.divider()           
+            # 1. Объявляем функцию
+            def show_aral_analysis():
+                st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+                
+                with st.container(border=True):
+                    col1, col2 = st.columns([3, 1])
+                    
+                    with col1:
+                        st.markdown("""
+                        За рассматриваемый период с **1940 по 2024 гг.** прослеживается отчетливая тенденция к снижению объема стока, который в последние десятилетия часто опускается ниже исторической нормы.
+                        """)
+                    
+                    with col2:
+                        st.metric(label="Тренд стока", value="Снижение", delta="- плавный", delta_color="inverse")
+
+                    st.divider()
+
+                    st.write("""
+                    Тенденция к сокращению объема стока объясняется тем, что в Арало-Сырдарьинском бассейне темпы роста температуры значительно опережают увеличение осадков, что ведет к деградации оледенения.
+                    """)
+
+                    st.info("""
+                    **Ключевой фактор:** В отличие от северных бассейнов, здесь антропогенная нагрузка в виде интенсивного безвозвратного водопотребления на орошение и испарения из водохранилищ превышает естественные возможности восполнения рек, что формирует устойчивый отрицательный тренд и дефицит водных ресурсов в низовьях.
+                    """, icon="💧")
+
+                    st.warning("""
+                    **Вывод:** Нисходящая линия тренда — это важный индикатор, который призывает к более 
+                    рациональному и бережному использованию имеющихся запасов воды.
+                    """, icon="⚠️")
+
+            # 2. СРАЗУ ВЫЗЫВАЕМ
+            show_aral_analysis()
+
+
+          
         # --- СПЕЦИАЛЬНЫЙ БЛОК БАЛХАШ-АЛАКОЛЬСКОГО ВХБ ---
-        if "Балхаш-Алакольский" in name:
+        if "Балкаш-Алакольский" in name:
             st.markdown("---")
             st.markdown("### 📊 Детальный анализ стока по основным водным артериям")
 
@@ -3880,7 +4000,7 @@ with tabs[4]:
     1. Иле-Балкашский бассейн; 2. Бассейн оз. Алаколь. 
 Для оценки водных ресурсов, формирующихся в Иле-Балкашском бассейне выбраны постоянно действующие 4 крупные реки бассейна с наибольшей водностью таких как: рр. Шарын, Шилик впадающие в р. Иле, рр. Каратал, Лепси - в оз. Балкаш, определяющие в основном поверхностные водные ресурсы, которые в сумме составляют около 30 % всех местных водных ресурсов""")   
             with desc_col2:
-                st.info("""**Приток:** В Балхаш-Алакольский ВХБ приток поступающий из КНР по реке Иле фиксируется в створе пр. Добын. Оценивается приток за вычетом оттока по рекам Текес, Баянкол, Нарынкол и сток реки Коргас в створе 11 км выше с. Баскуншы, который впадает в р. Иле выше створа пр. Добын. Приток из КНР по реке Емель поступающий в бассейн оз. Алаколь, фиксируется в створе пос. Кызылту""")
+                st.info("""**Приток:** В Балкаш-Алакольский ВХБ приток поступающий из КНР по реке Иле фиксируется в створе пр. Добын. Оценивается приток за вычетом оттока по рекам Текес, Баянкол, Нарынкол и сток реки Коргас в створе 11 км выше с. Баскуншы, который впадает в р. Иле выше створа пр. Добын. Приток из КНР по реке Емель поступающий в бассейн оз. Алаколь, фиксируется в створе пос. Кызылту""")
 
             # 1. Подготовка данных (Используем локальные имена переменных, чтобы не было "утечек")
             years_b = list(range(1940, 2025))
@@ -3935,15 +4055,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style, # Применяем 3 столбца
                 margin=dict(l=40, r=20, t=60, b=100), # b=100 чтобы легенда не накладывалась на годы
-                xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black', 
-                    mirror=True,
-                    tickangle=90
-                ),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+           )
 
             # --- 2. ГРАФИК ПРИТОКА (С ЛИНЕЙНОЙ ТРЕНДА) ---
             fig_b_pritok = go.Figure()
@@ -3962,18 +4076,6 @@ with tabs[4]:
                 hovertemplate="<b>Приток (Иле)</b><br>Год: %{x}<br>Сток: %{y} м³/с<extra></extra>"
             ))
 
-            valid_idx = np.isfinite(pritok_list_b)
-            if any(valid_idx):
-                z_b = np.polyfit(np.array(years_b)[valid_idx], np.array(pritok_list_b)[valid_idx], 1)
-                p_b = np.poly1d(z_b)
-                
-                fig_b_pritok.add_trace(go.Scatter(
-                    x=years_b,
-                    y=p_b(years_b),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot')
-                ))
             
             fig_b_pritok.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК ИЗ КИТАЯ (Р. ИЛЕ)</b>",
@@ -3984,9 +4086,9 @@ with tabs[4]:
                 hovermode="x",
                 legend=legend_3col_style, # Применяем 3 столбца
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+           )
 
             # 3. Отображение
             g_col1, g_col2 = st.columns(2)
@@ -3995,8 +4097,40 @@ with tabs[4]:
             with g_col2:
                 st.plotly_chart(fig_b_pritok, use_container_width=True, key=f"balhash_spec_pritok_{name}")
                            
+        # --- ЭТОТ БЛОК ВСТАВЛЯТЬ ТОЛЬКО В РАЗДЕЛ БАЛКАШ-АЛАКОЛЬСКОГО ВХБ ---
+            # Убедитесь, что этот блок стоит на том же уровне, что и графики для Балхаша
+            st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+
+            # border=True работает в новых версиях Streamlit (1.30+)
+            with st.container(border=True):
+                col_text, col_metric = st.columns([3, 1])
+                
+                with col_text:
+                    st.markdown("""
+                    График демонстрирует слабоположительную линейную тенденцию, что на фоне 
+                    современной деградации оледенения интерпретируется как фаза **«пика стока»**.
+                    """)
+                
+                with col_metric:
+                    # metric автоматически подсвечивает дельту
+                    st.metric(label="Тренд стока", value="Рост", delta="+ небольшой")
+
+                st.divider()
+
+                st.write("""
+                Наблюдаемый рост стока в Балкаш-Алакольском бассейне связан с интенсивным таянием высокогорных ледников. 
+                Однако этот эффект является временным: по мере сокращения площади оледенения, приточность начнет неизбежно снижаться.
+                """)
+
+                st.info("""
+                **Ключевой фактор:** Несмотря на визуальный тренд к росту, высокая межгодовая изменчивость и цикличность притока р. Или указывают на то, что текущие показатели находятся в пределах верхней границы многолетней нормы, за которой неизбежно последует фаза дефицита из-за сокращения ледникового питания.
+                """, icon="💧")
+
+                st.warning("""
+                **Вывод:** Текущий «пик стока» — это обманчивый индикатор. Необходимо адаптировать систему к снижению водности.
+                """, icon="⚠️")
+                
         
-            st.divider()   
         # --- СПЕЦИАЛЬНЫЙ БЛОК ДЛЯ ЕРТИССКОГО ВХБ ---
         if "Ертисский" in name:
             st.markdown("---")
@@ -4068,15 +4202,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style, # 3 столбца снизу
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='lightgrey', 
-                    linecolor='black', 
-                    mirror=True,
-                    tickangle=90
-                ),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- 2. ГРАФИК ПРИТОКА (С ЛИНЕЙНОЙ ТРЕНДА) ---
             fig_ert_pritok = go.Figure()
@@ -4097,18 +4225,6 @@ with tabs[4]:
             ))
 
             # Расчет линии тренда
-            valid_idx_ert = np.isfinite(pritok_vals_ert)
-            if any(valid_idx_ert):
-                z_ert = np.polyfit(np.array(years_ert)[valid_idx_ert], np.array(pritok_vals_ert)[valid_idx_ert], 1)
-                p_ert = np.poly1d(z_ert)
-                
-                fig_ert_pritok.add_trace(go.Scatter(
-                    x=years_ert,
-                    y=p_ert(years_ert),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot') # Пунктир
-                ))
             
             fig_ert_pritok.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК ИЗ КНР (ЕРТИССКИЙ ВХБ)</b>",
@@ -4119,9 +4235,9 @@ with tabs[4]:
                 hovermode="x",
                 legend=legend_3col_style, # 3 столбца снизу
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # Отображение
             g_col1, g_col2 = st.columns(2)
@@ -4129,8 +4245,40 @@ with tabs[4]:
                 st.plotly_chart(fig_ert_local, use_container_width=True, key=f"ertis_local_graph_{name}")
             with g_col2:
                 st.plotly_chart(fig_ert_pritok, use_container_width=True, key=f"ertis_pritok_graph_{name}")
+
+
+            # Убедитесь, что этот блок стоит на том же уровне, что и графики 
+            st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+
+            # border=True работает в новых версиях Streamlit (1.30+)
+            with st.container(border=True):
+                col_text, col_metric = st.columns([3, 1])
                 
-            st.divider()                   
+                with col_text:
+                    st.markdown("""
+                    За рассматриваемый период с 1940-2024 гг. прослеживается тенденция в пределах нормы объема стока.
+                    """)
+                
+                with col_metric:
+                    # metric автоматически подсвечивает дельту
+                    st.metric(label="Тренд стока", value="Рост", delta="+ небольшой")
+
+                st.divider()
+
+                st.write("""
+                Тенденция сохранения объёма стока в пределах нормы объясняется тем, что за 1940–2024 гг. изменения осадков и температуры в бассейне Ертис носили непостоянный характер, поэтому увеличение испарения в тёплые годы компенсировалось ростом снегозапасов и увлажнения в холодные периоды.
+                """)
+
+                st.info("""
+                **Ключевой фактор:** В результате естественная климатическая изменчивость сглаживала отклонения, не формируя устойчивого тренда изменения стока.
+                """, icon="💧")
+
+                st.warning("""
+                **Вывод:** Текущее состояние — это временное влияние таяния ледников.
+                """, icon="⚠️")
+                
+
+                
         # --- СПЕЦИАЛЬНЫЙ БЛОК ЖАЙЫК-КАСПИЙСКОГО ВХБ ---
         if "Жайык-Каспийский" in name:
             st.markdown("---")
@@ -4209,9 +4357,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: ТРАНСГРАНИЧНЫЙ ПРИТОК ---
             fig_zhk_pritok = go.Figure()
@@ -4231,22 +4379,6 @@ with tabs[4]:
                     hovertemplate=f"<b>{col_name}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
 
-                # Добавляем линию тренда только для первой (основной) реки в списке, 
-                # чтобы не перегружать график, либо уберите условие if i == 0 для всех трендов
-                if i == 0:
-                    valid_idx = np.isfinite(df_pritok_zhk[col_name])
-                    if any(valid_idx):
-                        z = np.polyfit(df_pritok_zhk['Год'][valid_idx], df_pritok_zhk[col_name][valid_idx], 1)
-                        p = np.poly1d(z)
-                        fig_zhk_pritok.add_trace(go.Scatter(
-                            x=df_pritok_zhk['Год'],
-                            y=p(df_pritok_zhk['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col_name}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
-
             fig_zhk_pritok.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК (РФ -> РК)</b>",
                 xaxis_title="ГОД",
@@ -4256,9 +4388,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4267,6 +4399,40 @@ with tabs[4]:
             with col_b:
                 st.plotly_chart(fig_zhk_pritok, use_container_width=True, key=f"zhk_pritok_graph_{name}")
             st.divider()   
+
+            # Убедитесь, что этот блок стоит на том же уровне, что и графики 
+            st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+
+            # border=True работает в новых версиях Streamlit (1.30+)
+            with st.container(border=True):
+                col_text, col_metric = st.columns([3, 1])
+                
+                with col_text:
+                    st.markdown("""
+                    Суммарные ресурсы Жайык–Каспийского ВХБ за период 1940–2024 гг. в целом наблюдается тенденция к снижению водных ресурсов при сохранении высокой межгодовой изменчивости, причём в последние десятилетия значения часто формируются ниже многолетней нормы.
+                    """)
+                
+                with col_metric:
+                    # metric автоматически подсвечивает дельту
+                    st.metric(label="Тренд стока", value="Снижение", delta="- постепенное")
+
+                st.divider()
+
+                st.write("""
+                Сокращение обусловлено ростом температуры и испаряемости, а также регулирующим воздействием хозяйственной деятельности в верховьях, при этом решающую роль в формировании общего водного баланса играет приток, определяющий уровень водообеспеченности нижнего течения и прикаспийской зоны.
+                """)
+
+                st.info("""
+                **Ключевой фактор:** В результате естественная климатическая изменчивость сглаживала отклонения, не формируя устойчивого тренда изменения стока.
+                """, icon="💧")
+
+                st.warning("""
+                **Вывод:** Текущее состояние — это временное влияние таяния ледников.
+                """, icon="⚠️")
+                
+                
+                
+
             
          # --- СПЕЦИАЛЬНЫЙ БЛОК ЕСИЛЬСКОГО ВХБ ---
         if "Есильский" in name:
@@ -4335,9 +4501,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: ОБЩИЙ РЕСУРС (С ТРЕНДОМ) ---
             fig_es_total = go.Figure()
@@ -4356,20 +4522,6 @@ with tabs[4]:
                 hovertemplate="Год: %{x}<br>Сумма: %{y:.2f} м³/с<extra></extra>"
             ))
 
-            # Расчет линии тренда для суммарного стока
-            y_total = df_es['Суммарный местный сток (+1)'].values
-            x_total = df_es['Год'].values
-            valid_mask = np.isfinite(y_total)
-            if any(valid_mask):
-                z_es = np.polyfit(x_total[valid_mask], y_total[valid_mask], 1)
-                p_es = np.poly1d(z_es)
-                fig_es_total.add_trace(go.Scatter(
-                    x=x_total,
-                    y=p_es(x_total),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot')
-                ))
             
             fig_es_total.update_layout(
                 title="<b>СУММАРНЫЕ ПОВЕРХНОСТНЫЕ ВОДНЫЕ РЕСУРСЫ</b>",
@@ -4379,9 +4531,9 @@ with tabs[4]:
                 height=500,
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4390,6 +4542,39 @@ with tabs[4]:
             with col_b:
                 st.plotly_chart(fig_es_total, use_container_width=True, key=f"esil_total_{name}")
             st.divider()                   
+
+        # --- ЭТОТ БЛОК ВСТАВЛЯТЬ ТОЛЬКО В РАЗДЕЛ БАЛКАШ-АЛАКОЛЬСКОГО ВХБ ---
+            # Убедитесь, что этот блок стоит на том же уровне, что и графики для Балхаша
+            st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+
+            # border=True работает в новых версиях Streamlit (1.30+)
+            with st.container(border=True):
+                col_text, col_metric = st.columns([3, 1])
+                
+                with col_text:
+                    st.markdown("""
+                    За период 1940–2024 гг. прослеживается тенденция к увеличению объёма стока.
+                    """)
+                
+                with col_metric:
+                    # metric автоматически подсвечивает дельту
+                    st.metric(label="Тренд стока", value="Рост", delta="+ небольшой")
+
+                st.divider()
+
+                st.write("""
+                Рост водности обусловлен увеличением количества осадков в холодный период и усилением снегового питания на фоне повышения температуры воздуха, что подтверждается исследованиями по северу Казахстана.
+                """)
+
+                st.info("""
+                **Ключевой фактор:** Несмотря на визуальный тренд к росту, высокая межгодовая изменчивость и цикличность притока р. Или указывают на то, что текущие показатели находятся в пределах верхней границы многолетней нормы, за которой неизбежно последует фаза дефицита из-за сокращения ледникового питания.
+                """, icon="💧")
+
+                st.warning("""
+                **Вывод:** Текущий «пик стока» — это обманчивый индикатор. Необходимо адаптировать систему к снижению водности.
+                """, icon="⚠️")
+                
+
                 
 # --- СПЕЦИАЛЬНЫЙ БЛОК НУРА-САРЫСУЙСКОГО ВХБ ---
         if "Нура-Сарысуйский" in name:
@@ -4463,9 +4648,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: ОБЩИЙ РЕСУРС (С ТРЕНДОМ) ---
             fig_n_total = go.Figure()
@@ -4485,21 +4670,6 @@ with tabs[4]:
                 hovertemplate="Год: %{x}<br>Сумма: %{y:.2f} м³/с<extra></extra>"
             ))
 
-            # Расчет линии тренда
-            y_n_total = df_n['Суммарный сток'].values
-            x_n_total = df_n['Год'].values
-            valid_mask_n = np.isfinite(y_n_total)
-            
-            if any(valid_mask_n):
-                z_n = np.polyfit(x_n_total[valid_mask_n], y_n_total[valid_mask_n], 1)
-                p_n = np.poly1d(z_n)
-                fig_n_total.add_trace(go.Scatter(
-                    x=x_n_total,
-                    y=p_n(x_n_total),
-                    mode='lines',
-                    name='Линейная (тренд)',
-                    line=dict(color='black', width=1, dash='dot')
-                ))
             
             fig_n_total.update_layout(
                 title="<b>СУММАРНЫЕ ВОДНЫЕ РЕСУРСЫ (ОСНОВНЫЕ РЕКИ)</b>",
@@ -4509,9 +4679,9 @@ with tabs[4]:
                 height=500,
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4520,7 +4690,40 @@ with tabs[4]:
             with col_b:
                 st.plotly_chart(fig_n_total, use_container_width=True, key=f"nura_total_{name}")
             st.divider()   
-            
+
+        # --- ЭТОТ БЛОК ВСТАВЛЯТЬ ТОЛЬКО В РАЗДЕЛ БАЛКАШ-АЛАКОЛЬСКОГО ВХБ ---
+            # Убедитесь, что этот блок стоит на том же уровне, что и графики для Балхаша
+            st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+
+            # border=True работает в новых версиях Streamlit (1.30+)
+            with st.container(border=True):
+                col_text, col_metric = st.columns([3, 1])
+                
+                with col_text:
+                    st.markdown("""
+                   За рассматриваемый период с 1940 по 2024 гг. прослеживается слабая тенденция к росту (или сохранению) среднего объема стока, несмотря на высокую межгодовую изменчивость.
+                    """)
+                
+                with col_metric:
+                    # metric автоматически подсвечивает дельту
+                    st.metric(label="Тренд стока", value="Рост", delta="+ небольшой")
+
+                st.divider()
+
+                st.write("""
+                Тенденция сохранения и незначительного роста тренда объясняется тем, что в данном бассейне наблюдается увеличение количества зимних осадков и изменение интенсивности весеннего снеготаяния, что при сохранении промерзания почвы способствует формированию более высоких паводковых пиков в отдельные годы.
+                """)
+
+                st.info("""
+                **Ключевой фактор:**В результате, несмотря на рост летних температур, увеличение увлажненности в холодный период и приток паводковых вод нивелируют потери на испарение, удерживая линию тренда от падения.
+                """, icon="💧")
+
+                st.warning("""
+                **Вывод:** Зимние осадки удерживают сток в норме ($1{,}16$ км³/год), компенсируя испарение, но резкие паводки повышают риски.
+                """, icon="⚠️")
+                
+             
+          
 # --- СПЕЦИАЛЬНЫЙ БЛОК Шу-Таласского ВХБ ---
         if "Шу-Таласский" in name:
             st.markdown("---")
@@ -4586,21 +4789,6 @@ with tabs[4]:
                     hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
                 
-                # Добавляем линию тренда для основной трансграничной реки (первая в списке)
-                if i == 0:
-                    valid_idx = np.isfinite(df_inflow[col])
-                    if any(valid_idx):
-                        z = np.polyfit(df_inflow['Год'][valid_idx], df_inflow[col][valid_idx], 1)
-                        p = np.poly1d(z)
-                        fig_st_inflow.add_trace(go.Scatter(
-                            x=df_inflow['Год'],
-                            y=p(df_inflow['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
-
             fig_st_inflow.update_layout(
                 title="<b>ТРАНСГРАНИЧНЫЙ ПРИТОК (КЫРГЫЗСТАН -> КАЗАХСТАН)</b>",
                 xaxis_title="ГОД",
@@ -4610,9 +4798,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ГРАФИК 2: МЕСТНЫЙ СТОК (Шу-Таласский ВХБ внутри РК) ---
             fig_st_local = go.Figure()
@@ -4639,9 +4827,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД ---
             col_a, col_b = st.columns(2)
@@ -4650,10 +4838,42 @@ with tabs[4]:
             with col_b:
                 st.plotly_chart(fig_st_local, use_container_width=True, key=f"st_local_graph_{name}")
             st.divider()                
+
+        # --- ЭТОТ БЛОК ВСТАВЛЯТЬ ТОЛЬКО В РАЗДЕЛ БАЛКАШ-АЛАКОЛЬСКОГО ВХБ ---
+            # Убедитесь, что этот блок стоит на том же уровне, что и графики для Балхаша
+            st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+
+            # border=True работает в новых версиях Streamlit (1.30+)
+            with st.container(border=True):
+                col_text, col_metric = st.columns([3, 1])
+                
+                with col_text:
+                    st.markdown("""
+                   За рассматриваемый период наблюдается слабовыраженная положительная тенденция изменения объёма стока.
+                    """)
+                
+                with col_metric:
+                    # metric автоматически подсвечивает дельту
+                    st.metric(label="Тренд стока", value="Рост", delta="+ небольшой")
+
+                st.divider()
+
+                st.write("""
+                Увеличение водности связано с интенсификацией снегово-ледникового питания в высокогорной части бассейна на фоне деградации ледников Тянь-Шаня и изменением режима осадков, что временно компенсирует рост испаряемости и формирует рост суммарного притока в отдельные многоводные годы.
+                """)
+
+                st.info("""
+                **Ключевой фактор:**В результате, несмотря на рост летних температур, увеличение увлажненности в холодный период и приток паводковых вод нивелируют потери на испарение, удерживая линию тренда от падения.
+                """, icon="💧")
+
+                st.warning("""
+                **Вывод:** Зимние осадки удерживают сток в норме ($1{,}16$ км³/год), компенсируя испарение, но резкие паводки повышают риски.
+                """, icon="⚠️")
+
                 
                 
 # --- СПЕЦИАЛЬНЫЙ БЛОК Тобол-Торгайского ВХБ ---
-        if "Тобол-Торгайский" in name:
+        if "Тобыл-Торгайский" in name:
             st.markdown("---")
             st.markdown("### 📊 Детальный анализ стока по основным водным артериям")
 
@@ -4717,20 +4937,6 @@ with tabs[4]:
                     hovertemplate=f"<b>{col}</b><br>Год: %{{x}}<br>Сток: %{{y}} м³/с<extra></extra>"
                 ))
                 
-                # Добавляем линию тренда для первой реки в списке (например, р. Тобыл)
-                if i == 0:
-                    valid_idx = np.isfinite(df_inflow_tt[col])
-                    if any(valid_idx):
-                        z_tt = np.polyfit(df_inflow_tt['Год'][valid_idx], df_inflow_tt[col][valid_idx], 1)
-                        p_tt = np.poly1d(z_tt)
-                        fig_tt_inflow.add_trace(go.Scatter(
-                            x=df_inflow_tt['Год'],
-                            y=p_tt(df_inflow_tt['Год']),
-                            mode='lines',
-                            name=f'Тренд: {col}',
-                            line=dict(color='black', width=1, dash='dot'),
-                            showlegend=True
-                        ))
 
             fig_tt_inflow.update_layout(
                 title="<b>ПРИТОК ТРАНСГРАНИЧНЫХ РЕК (РФ -> РК)</b>",
@@ -4741,9 +4947,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+           )
 
             # --- ГРАФИК 2: МЕСТНЫЙ СТОК (РК) ---
             fig_tt_local = go.Figure()
@@ -4770,9 +4976,9 @@ with tabs[4]:
                 hovermode="x unified",
                 legend=legend_3col_style,
                 margin=dict(l=40, r=20, t=60, b=100),
-                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=90),
-                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True)
-            )
+                xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+          )
 
             # --- ВЫВОД В STREAMLIT ---
             col_a, col_b = st.columns(2)
@@ -4781,6 +4987,36 @@ with tabs[4]:
             with col_b:
                 st.plotly_chart(fig_tt_local, use_container_width=True, key=f"tt_local_graph_{name}")
                 
+        # --- ЭТОТ БЛОК ВСТАВЛЯТЬ ТОЛЬКО В РАЗДЕЛ БАЛКАШ-АЛАКОЛЬСКОГО ВХБ ---
+            # Убедитесь, что этот блок стоит на том же уровне, что и графики для Балхаша
+            st.subheader("📊 Анализ суммарных водных ресурсов бассейна (1940–2024 гг.)")
+
+            # border=True работает в новых версиях Streamlit (1.30+)
+            with st.container(border=True):
+                col_text, col_metric = st.columns([3, 1])
+                
+                with col_text:
+                    st.markdown("""
+                   Суммарные ресурсы Тобыл-Торгайского ВХБ за рассматриваемый период с 1940 по 2024 гг. на графике прослеживается выраженная тенденция к снижению объема стока, при этом ресурсы бассейна характеризуются экстремальной многолетней неравномерностью.
+                    """)
+                
+                with col_metric:
+                    # metric автоматически подсвечивает дельту
+                    st.metric(label="Тренд стока", value="Рост", delta="+ небольшой")
+
+                st.divider()
+
+                st.write("""
+                Тенденция к снижению объема стока в Тобыл-Торгайском бассейне объясняется сочетанием климатических изменений — уменьшением количества осадков в теплые сезоны при росте испаряемости — и значительным антропогенным воздействием, включая зарегулированность стока каскадом водохранилищ (Верхне-Тобольское, Каратомарское) и интенсивный водозабор для нужд промышленности и сельского хозяйства. 
+                """)
+
+                st.info("""
+                **Ключевой фактор:**В отличие от северных рек, данный бассейн является наиболее маловодным в Казахстане, где естественное сокращение стока из-за потепления не компенсируется осадками, что ведет к устойчивому дефициту воды.
+                """, icon="💧")
+
+                st.warning("""
+                **Вывод:** Сочетание засухи и водозабора ведет к устойчивому дефициту воды, формируя выраженный тренд на снижение стока в самом маловодном бассейне Казахстана.
+                """, icon="⚠️")
                 
 
   
@@ -4789,7 +5025,7 @@ with tabs[4]:
 with tabs[5]:
     st.markdown('<h1 class="main-title">🌊 Исследование Каспийского моря</h1>', unsafe_allow_html=True)
     # ВСЕ СТРОКИ НИЖЕ ДОЛЖНЫ ИМЕТЬ ОТСТУП (4 ПРОБЕЛА)
-    
+        
     
     if 'selected_param' not in st.session_state:
         st.session_state.selected_param = "Уровень моря"
@@ -4822,77 +5058,90 @@ with tabs[5]:
     t_col1, t_col2, t_col3 = st.columns([0.9, 1, 1.2])
 
     with t_col1:
-        st.markdown('<div class="white-label-header"><p class="section-header-text">📡 Сеть</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="official-text">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
-        st.markdown("""<div class="network-text">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
+        # Увеличили font-size до 1.3rem для заголовка и 1.1rem для текста
+        st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 10px;">📡 Сеть</p></div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 1.4rem; line-height: 1.5; margin-bottom: 15px;">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
+        st.markdown("""<div style="font-size: 1.2rem; line-height: 2.0;">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
 
     with t_col2:
-        st.markdown('<div class="white-label-header"><p class="section-header-text">🔎 Параметры</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">🔎 Параметры</p></div>', unsafe_allow_html=True)
         
-        # Приписка про 2025 год
-        st.markdown('<div style="color: #64748B; font-size: 0.9rem; margin-bottom: 10px; font-weight: 600;">📅 Оперативные данные за 2025 г.</div>', unsafe_allow_html=True)
+        # Сделали приписку про 2025 год крупнее (1.0rem) и темнее
+        st.markdown('<div style="color: #1E293B; font-size: 1.0rem; margin-bottom: 10px; font-weight: 700;">📅 Оперативные данные за 2025 г.</div>', unsafe_allow_html=True)
         
         p_c1, p_c2 = st.columns(2)
-        
-        # Добавили "Темп. воды" в список
         params = [
-            ("🌊", "Уровень моря"), 
-            ("🌡️", "Температура воздуха"), 
-            ("💧", "Температура воды"), # Новый параметр
-            ("🧪", "Соленость"), 
-            ("❄️", "Лед"), 
-            ("🌬️", "Ветер"), 
-            ("〰️", "Волнение")
+            ("🌊", "Уровень моря"), ("🌡️", "Температура воздуха"), 
+            ("💧", "Температура воды"), ("🧪", "Соленость"), 
+            ("❄️", "Лед"), ("🌬️", "Ветер"), ("〰️", "Волнение")
         ]
         
         for i, (emoji, name) in enumerate(params):
             with [p_c1, p_c2][i % 2]:
+                # Кнопки в Streamlit нельзя увеличить напрямую через font-size без кастомного CSS, 
+                # но use_container_width=True делает их массивнее.
                 if st.button(f"{emoji} {name}", key=f"top_{name}", use_container_width=True):
                     st.session_state.selected_param = name
+                
 
     with t_col3:
-        # Используем .get(), чтобы не вылетала ошибка, если ключ не найден
         current_unit = units.get(st.session_state.selected_param, "")
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
         
-        st.markdown(f'<div class="white-label-header"><p class="section-header-text">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
-        
-        fig_s = go.Figure()
-        
-        # Берем данные из словаря по выбранному ключу
         display_data = seasonal_data.get(st.session_state.selected_param, [0]*12)
         
+        fig_s = go.Figure()
         fig_s.add_trace(go.Scatter(
             x=months, y=display_data,
             mode='lines+markers', 
-            line=dict(color='#0072FF', width=3, shape='spline'),
-            marker=dict(size=8, color='white', line=dict(color='#0072FF', width=2)),
+            line=dict(color='#0072FF', width=4, shape='spline'), # Увеличили толщину линии до 4
+            marker=dict(size=10, color='white', line=dict(color='#0072FF', width=2)), # Увеличили маркер
             name=st.session_state.selected_param
         ))
         
         fig_s.update_layout(
-            height=250, 
-            margin=dict(l=10, r=10, t=30, b=10), 
+            height=300, # Увеличили высоту для лучшей видимости
+            margin=dict(l=50, r=10, t=30, b=50), # Увеличили l и b для подписей
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)',
-            hovermode="x unified"
+            hovermode="x unified",
+            # Настройки шрифта для всего графика
+            font=dict(color="black") 
         )
-        fig_s.update_xaxes(showgrid=False, tickfont=dict(size=12, color='#64748B'))
-        fig_s.update_yaxes(showgrid=True, gridcolor='#E2E8F0', tickfont=dict(size=12, color='#64748B'))
+
+        # Применяем ЧЕРНЫЙ цвет и КРУПНЫЙ шрифт к осям
+        fig_s.update_xaxes(
+            showgrid=False, 
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные черные месяцы
+            linecolor='black'
+        )
+        fig_s.update_yaxes(
+            showgrid=True, 
+            gridcolor='#E2E8F0', 
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные черные значения
+            title_font=dict(size=16, color='black'),
+            linecolor='black'
+        )
         
         st.plotly_chart(fig_s, use_container_width=True, config={'displayModeBar': False})
-
-    st.markdown("<hr style='margin: 30px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-
+    
+    st.divider()
+    
     # --- НИЖНИЙ БЛОК ---
     b_col1, b_col2 = st.columns([1.8, 1])
-
+    
+       
+            
     with b_col1:
-        st.markdown('<div class="white-label-header"><p class="section-header-text">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
+        # Увеличили заголовок до 1.3rem и сделали его жирным
+        st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
         
-        st.markdown('<div class="promo-bold">Уровень Каспийского моря подвержен значительным колебаниям</div>', unsafe_allow_html=True)
-        st.markdown('<div class="promo-sub">В 2025 г. уровень моря в его казахстанской части достиг отметки минус 29,35 м БС. Это один из самых низких показателей за последние 100 лет в казахстанской части Каспийского моря.</div>', unsafe_allow_html=True)
-
-
+        # Главный тезис: увеличили до 1.2rem и добавили насыщенный черный цвет
+        st.markdown('<div style="font-size: 1.2rem; font-weight: 700; color: #1E293B; margin-bottom: 10px; line-height: 1.4;">Уровень Каспийского моря подвержен значительным колебаниям</div>', unsafe_allow_html=True)
+        
+        # Основное описание: увеличили до 1.1rem, сделали межстрочный интервал шире для легкости чтения
+        st.markdown('<div style="font-size: 1.1rem; color: #334155; line-height: 1.6; text-align: justify;">В 2025 г. уровень моря в его казахстанской части достиг отметки <span style="color: #E11D48; font-weight: bold;">минус 29,35 м БС</span>. Это один из самых низких показателей за последние 100 лет в казахстанской части Каспийского моря.</div>', unsafe_allow_html=True)
+        
         # ТЕПЕРЬ ГРАФИК ВНУТРИ КОЛОНКИ (ПРАВИЛЬНЫЙ ОТСТУП)
         fig_hist = go.Figure()
         fig_hist.add_trace(go.Scatter(
@@ -4913,9 +5162,28 @@ with tabs[5]:
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             hovermode="x unified"
         )
-        fig_hist.update_xaxes(showgrid=False, linecolor='#E2E8F0', range=[1920, 2026])
-        fig_hist.update_yaxes(showgrid=True, gridcolor='#E2E8F0', linecolor='#E2E8F0', zeroline=False)
+# Увеличиваем шрифты и меняем цвета на черные
+        fig_hist.update_xaxes(
+            showgrid=False, 
+            linecolor='black',       # Сделали линию оси черной
+            linewidth=1,             # Сделали линию чуть толще
+            range=[1920, 2026],
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные цифры годов
+            title_font=dict(size=16, color='black')               # Крупный заголовок (если есть)
+        )
+        
+        fig_hist.update_yaxes(
+            showgrid=True, 
+            gridcolor='#E2E8F0', 
+            linecolor='black',       # Сделали линию оси черной
+            linewidth=1,
+            zeroline=False,
+            tickfont=dict(size=14, color='black', family="Arial"), # Крупные значения уровня
+            title_font=dict(size=16, color='black')               # Крупный заголовок "м БС"
+        )
+
         st.plotly_chart(fig_hist, use_container_width=True, config={'displayModeBar': False})
+        
 
     # --- БЛОК: НАУЧНЫЙ КОНТЕКСТ (ЦИКЛИЧНОСТЬ) ---
     with b_col1: # Размещаем под графиком динамики
@@ -4935,7 +5203,7 @@ with tabs[5]:
                     <div style="border-left: 3px solid #64748B; padding-left: 15px;">
                         <span style="color: #64748B; font-weight: 800;">1930 — 1977</span><br>
                         <b>Резкое падение</b><br>
-                        <span style="font-size: 0.9rem;">Обусловлено активным строительством ГЭС на Волге и длительным периодом засухи.</span>
+                        <span style="font-size: 1.0rem;">Обусловлено активным строительством ГЭС на Волге и длительным периодом засухи.</span>
                     </div>
                 """, unsafe_allow_html=True)
                 
@@ -4944,7 +5212,7 @@ with tabs[5]:
                     <div style="border-left: 3px solid #0072FF; padding-left: 15px;">
                         <span style="color: #0072FF; font-weight: 800;">1978 — 1995</span><br>
                         <b>Аномальный подъем</b><br>
-                        <span style="font-size: 0.9rem;">Внезапное увеличение стока рек и изменение атмосферной циркуляции. Уровень вырос на 2.5 метра.</span>
+                        <span style="font-size: 1.0rem;">Внезапное увеличение стока рек и изменение атмосферной циркуляции. Уровень вырос на 2.5 метра.</span>
                     </div>
                 """, unsafe_allow_html=True)
                 
@@ -4953,7 +5221,7 @@ with tabs[5]:
                     <div style="border-left: 3px solid #D32F2F; padding-left: 15px;">
                         <span style="color: #D32F2F; font-weight: 800;">2005 — н.в.</span><br>
                         <b>Текущий спад</b><br>
-                        <span style="font-size: 0.9rem;">Снижение притока и рост испарения из-за глобального потепления. Фаза, требующая адаптации.</span>
+                        <span style="font-size: 1.0rem;">Снижение притока и рост испарения из-за глобального потепления. Фаза, требующая адаптации.</span>
                     </div>
                 """, unsafe_allow_html=True)
             
@@ -4966,51 +5234,134 @@ with tabs[5]:
     # --- КОНЕЦ БЛОКА ЦИКЛИЧНОСТИ ---
 
     with b_col2:
-        # 1. Заголовок (внутри колонки)
+        # 1. Заголовок
         st.markdown('<div class="white-label-header"><p class="section-header-text">⏳ Исторические минимумы и максимумы</p></div>', unsafe_allow_html=True)
         
-        # 2. Колонки для плашек
-        r1_c1, r1_c2 = st.columns(2)
-        r2_c1, r2_c2 = st.columns(2)
-        
-        history_cards = [
-            {"year": "1903", "val": "-25,74 м", "col": r1_c1, "label": "Максимум"},
-            {"year": "1977", "val": "-29,01 м", "col": r1_c2, "label": "Минимум XX в."},
-            {"year": "1995", "val": "-26,62 м", "col": r2_c1, "label": "Пик подъема"},
-            {"year": "2024", "val": "-29,05 м", "col": r2_c2, "label": "Текущий спад"},
+        st.markdown("""
+        <style>
+            .metric-card {
+                background: linear-gradient(145deg, #ffffff, #f0f7ff);
+                padding: 30px 15px;
+                border-radius: 20px;
+                border: 2px solid #3498db;
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
+                text-align: center;
+                margin-bottom: 20px;
+                min-height: 150px; /* Немного увеличили высоту для иконок */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                transition: 0.3s;
+            }
+            .metric-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(52, 152, 219, 0.3);
+            }
+            
+            /* Год - Крупный синий */
+            .metric-year { 
+                color: #3498db; 
+                font-size: 1.6rem; 
+                font-weight: 800; 
+                margin: 0; 
+                text-transform: uppercase; 
+            }
+            
+            /* ГЛАВНОЕ ЗНАЧЕНИЕ - Сделали гигантским */
+            .metric-value { 
+                color: black; /* По умолчанию черный */
+                font-size: 3.8rem; /* Очень крупно */
+                font-weight: 900; 
+                margin: 15px 0; 
+                line-height: 1; 
+            }
+            
+            /* Красный цвет для отрицательных значений */
+            .metric-value-red { 
+                color: #e74c3c; 
+                font-size: 3.8rem; 
+                font-weight: 900; 
+                margin: 15px 0; 
+                line-height: 1; 
+            }
+            
+            /* Иконка - Крупная */
+            .metric-icon { 
+                font-size: 3rem; 
+                margin-top: 10px; 
+            }
+            
+            /* Подпись - Четкая */
+            .metric-label { 
+                color: #475569; 
+                font-size: 1.3rem; 
+                font-weight: 600; 
+                margin: 0; 
+                margin-top: 5px;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+
+        # 3. Данные (без привязки к колонкам)
+        history_data = [
+            # Максимум 1903 г. - ставим нейтральную или волну
+            {"year": "1903", "val": "-25,74 м", "label": "Максимум", "icon": "🌊"},
+            # Минимум XX в. - стрелка вниз
+            {"year": "1977", "val": "-29,01 м", "label": "Минимум XX в.", "icon": "📉"},
+            # Пик подъема 1995 г. - стрелка вверх
+            {"year": "1995", "val": "-26,62 м", "label": "Пик подъема", "icon": "📈"},
+            # Текущий спад 2024 г. - стрелка вниз
+            {"year": "2024", "val": "-29,05 м", "label": "Текущий спад", "icon": "📉"},
         ]
 
-        for card in history_cards:
-            with card["col"]:
-                st.markdown(f"""
-                    <div style="background: white; padding: 15px; border-radius: 15px; border: 1px solid #E2E8F0; margin-bottom: 10px; text-align: center;">
-                        <p style="margin: 0; color: #64748B; font-size: 0.8rem; font-weight: 600;">{card['year']} год</p>
-                        <p style="margin: 5px 0; color: #1E293B; font-size: 1.2rem; font-weight: 800;">{card['val']}</p>
-                        <p style="margin: 0; color: #94A3B8; font-size: 0.7rem;">{card['label']}</p>
-                    </div>
-                """, unsafe_allow_html=True)
+
+        # 4. Динамическое создание сетки (по 2 карточки в ряд)
+# Используем автоматическое распределение по 2 колонки
+        for i in range(0, len(history_data), 2):
+            cols = st.columns(2)
+            for j in range(2):
+                if i + j < len(history_data):
+                    card = history_data[i + j]
+                    
+                    # ЛОГИКА: Если в значении есть минус, используем красный класс
+                    if "-" in str(card['val']):
+                        value_class = "metric-value-red"
+                    else:
+                        value_class = "metric-value"
+                        
+                    with cols[j]:
+                        st.markdown(f"""
+                            <div class="metric-card">
+                                <p class="metric-year">{card['year']} год</p>
+                                <p class="{value_class}">{card['val']}</p>
+                                <div class="metric-icon">{card['icon']}</div>
+                                <p class="metric-label">{card['label']}</p>
+                            </div>
+                        """, unsafe_allow_html=True)
+                        
 
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
         st.markdown("""
             <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; margin-top: 15px; font-family: 'Montserrat', sans-serif;">
-                <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 800; font-size: 0.9rem; text-align: center; text-transform: uppercase;">
+                <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 600; font-size: 1.1rem; text-align: center; text-transform: uppercase;">
                     Изменение акватории (2006 — 2024)
                 </p>
                 <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px;">
                     <div style="text-align: center;">
                         <p style="margin: 0; color: #64748B; font-size: 0.7rem;">2006 г.</p>
-                        <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 800;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 400;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
                     </div>
                     <div style="flex-grow: 1; position: relative; margin: 0 15px; text-align: center;">
                         <div style="height: 2px; background: #0EA5E9; width: 100%;"></div>
                         <div style="position: absolute; right: -2px; top: -5px; width: 10px; height: 10px; border-top: 2px solid #0EA5E9; border-right: 2px solid #0EA5E9; transform: rotate(45deg);"></div>
-                        <span style="background: #0EA5E9; color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; position: relative; top: -20px;">
+                        <span style="background: #0EA5E9; color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; position: relative; top: -20px;">
                             -36.6 тыс. км²
                         </span>
                     </div>
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #0369A1; font-size: 0.7rem; font-weight: 700;">2024 г.</p>
-                        <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 800;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #0369A1; font-size: 0.7rem; font-weight: 400;">2024 г.</p>
+                        <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 400;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
                     </div>
                 </div>
                 <p style="margin: 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
@@ -5048,11 +5399,11 @@ with tabs[5]:
             </div>
         """, unsafe_allow_html=True)
 
-
-
+    st.divider()
+    
     # --- ОБЩИЙ БЛОК: ОСНОВНЫЕ ФАКТОРЫ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 80px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown('<div class="white-label-header"><p style="font-size: 5.0rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
 
     # Общий подзаголовок на всю ширину (тот самый текст)
     st.markdown("""
@@ -5237,7 +5588,9 @@ with tabs[5]:
         )
         
         st.plotly_chart(fig_climate, use_container_width=True, config={'displayModeBar': False})
-
+    st.divider()
+    
+    
     # --- БЛОК: ГЛОБАЛЬНЫЕ ПОСЛЕДСТВИЯ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">⚠️ Комплексное влияние на регион</p></div>', unsafe_allow_html=True)
@@ -5324,7 +5677,8 @@ with tabs[5]:
 
     # --- КОНЕЦ БЛОКА ---
 
-
+    st.divider()
+    
     # --- БЛОК: ПРОГНОЗЫ И ПРОДУКЦИЯ С ЭФФЕКТОМ НАЖАТИЯ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Прогнозы и информационная продукция</p></div>', unsafe_allow_html=True)
@@ -5416,6 +5770,10 @@ with tabs[5]:
             </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        
+    st.divider()        
+        
     # --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">🔭 Долгосрочная оценка изменений</p></div>', unsafe_allow_html=True)
@@ -5537,7 +5895,7 @@ with tabs[5]:
             </div>
         """, unsafe_allow_html=True)
 
-
+    st.divider()
     # --- БЛОК: ПРОГНОЗЫ И БУДУЩЕЕ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Будущее Каспия: Сценарии до 2100 года</p></div>', unsafe_allow_html=True)
@@ -5580,6 +5938,9 @@ with tabs[5]:
             </div>
         """, unsafe_allow_html=True)
 
+    st.divider()
+    
+    
     # --- БЛОК: ПОСЛЕДСТВИЯ И ВЫЗОВЫ ---
     st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown('<div class="promo-bold" style="text-align: center;">🚨 Ключевые риски при снижении уровня</div>', unsafe_allow_html=True)
@@ -5602,28 +5963,6 @@ with tabs[5]:
                     <div style="font-size: 0.85rem; color: #64748B;">{risks[i]['text']}</div>
                 </div>
             """, unsafe_allow_html=True)
-
-
-
-    # --- ФИНАЛЬНЫЙ ПОДВАЛ (FOOTER) ---
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("""
-        <div style="background: #001f3f; padding: 40px; border-radius: 30px 30px 0 0; color: white; text-align: center;">
-            <h2 style="font-weight: 900; margin-bottom: 10px;">СОХРАНИМ КАСПИЙ ВМЕСТЕ</h2>
-            <p style="opacity: 0.8; font-size: 1.1rem; max-width: 700px; margin: 0 auto 25px auto;">
-                Мониторинг Казгидромета — это основа для принятия государственных решений по адаптации к изменениям климата.
-            </p>
-            <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600;">
-                <span>🌐 www.kazhydromet.kz</span>
-                <span>📧 caspian@meteo.kz</span>
-                <span>📞 +7 (7172) 79-83-94</span>
-            </div>
-            <hr style="opacity: 0.2; margin: 25px 0;">
-            <p style="font-size: 0.8rem; opacity: 0.5;">© 2025 РГП «Казгидромет». Все данные защищены.</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-
 
         # 7. РЕГЛАМЕНТЫ (TABS)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -5799,7 +6138,7 @@ with tabs[6]:
                 <div class="m-top-row">
                     <div class="m-row-item">
                         <div class="m-label">Темп потепления</div>
-                        <div class="m-value">+0.29 °С</div>
+                        <div class="m-value">+0.40°С</div>
                         <div class="m-sub">за 10 лет (в среднем)</div>
                         <div class="m-badge b-red">↑ ВЫШЕ МИРОВОГО</div>
                     </div>                   
@@ -6053,17 +6392,161 @@ with tabs[6]:
             
     with col_map:
         # Путь к вашему изображению
-        map_path = r"C:\Users\eltai_a\Desktop\RES\stend\02_зима_нд.jpg"
+        map_path = "temp1.gif"
         
         if os.path.exists(map_path):
             st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
         else:
             st.error(f"Файл не найден по пути: {map_path}")
             # Заглушка, если файла нет
-            st.info("Здесь должна быть карта: 02_зима_нд.jpg")
+            st.info("Здесь должна быть карта: temp1.gif")
             
+    st.markdown("---")
+    st.markdown("### 🏆 Анализ атмосферных осадков")            
+
+    import streamlit as st
+    import streamlit.components.v1 as components
+
+# --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
+    rank_data1 = [
+        {"rank": 1, "year": 1944, "value": 73.5, "color": "#5D4037"},  # Темно-коричневый (экстремально сухо)
+        {"rank": 2, "year": 1975, "value": 77.0, "color": "#795548"},  # Коричневый
+        {"rank": 3, "year": 1974, "value": 78.3, "color": "#8D6E63"},  # Светло-коричневый
+        {"rank": 4, "year": 1995, "value": 78.8, "color": "#8D6E63"}, 
+        {"rank": 5, "year": 1991, "value": 78.9, "color": "#A1887F"},  # Серо-коричневый
+        {"rank": 6, "year": 2008, "value": 81.6, "color": "#A1887F"}, 
+        {"rank": 7, "year": 1955, "value": 82.4, "color": "#BCAAA4"},  # Песочный
+        {"rank": 8, "year": 1936, "value": 82.6, "color": "#BCAAA4"}, 
+        {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},  # Светло-песочный
+        {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
+    ]
+
+    st.markdown("---")
+    st.markdown("### 🏆 Самые сухие годы")
+    
+
+    # Создаем колонки
+    col_info, col_chart, col_map = st.columns([1, 1, 1], gap="large")
+
+    with col_info:
+        # Текстовый хайлайт
+        st.markdown("""
+            <div style="background-color: #fff5f5; padding: 20px; border-radius: 12px; border-left: 6px solid #d32f2f; margin-top: 10px;">
+                <h4 style="margin-top: 0; color: #d32f2f;">Беспрецедентный рост</h4>
+                <p style="font-size: 1rem; line-height: 1.5;">
+                    <span style="font-weight: 800; font-size: 1.2rem;">За последние 50 лет наблюдается слабая тенденция к увеличению годовых сумм атмосферных осадков на 2,5 мм/10 лет, в основном за счет осадков весеннего сезона. По территории Казахстана все тренды среднего годового и сезонного количества осадков статистически незначимы. </b>.
+                </p>
+                <p style="font-size: 0.9rem; color: #666;">
+                    Уменьшение осадков наблюдалось в центральных и южных регионах. Изменения максимальной продолжительности бездождных периодов с осадками менее 1 мм в сутки достигли 1–4 дней за десятилетие, как в сторону увеличения, так и в сторону уменьшения.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col_chart:
+        st.caption("Самые сухие годы в территории Казахстана за период 1941–2025 гг.")
+        
+        # Генерация HTML для инфографики
+        rows_html = ""
+        max_val = 2.96
+        for item in rank_data:
+            width = (item["value"] / max_val) * 100
+            rows_html += f"""
+            <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
+                <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
+                <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
+                <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
+                    <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
+                        <span style="color: white; font-size: 11px; font-weight: bold;">+{item['value']}°C</span>
+                    </div>
+                </div>
+            </div>
+            """
+                # Отрисовка через iframe для стабильности
+        components.html(f"""
+            <div style="padding-top: 5px;">
+                {rows_html}
+            </div>
+        """, height=350)
+ 
+            
+    with col_map:
+        # Путь к вашему изображению
+        map_path = "temp1.gif"
+        
+        if os.path.exists(map_path):
+            st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
+        else:
+            st.error(f"Файл не найден по пути: {map_path}")
+            # Заглушка, если файла нет
+            st.info("Здесь должна быть карта: temp1.gif")
             
 
+
+
+    # Основной заголовок секции
+    st.header("🔮 Изменение климата в будущем")
+
+    st.markdown("""
+    Изменение климата — это не просто сухие цифры прогнозов, а вызов, который определит облик нашей страны в ближайшие десятилетия. 
+    Ниже представлены инструменты и данные, позволяющие заглянуть в будущее Казахстана.
+    """)
+
+    # Создаем две колонки: левая для карты, правая для текста
+    col_map, col_text = st.columns([1.5, 1])
+
+    with col_map:
+        st.subheader("🗺️ Интерактивная карта прогнозов")
+        # Ссылка на инструмент Потсдамского института
+        pik_url = "http://10.0.2.121:8080/forecast"
+        
+        # Отображение карты через iframe
+        st.components.v1.iframe(pik_url, height=600, scrolling=True)
+        
+        st.caption("Данные предоставлены Потсдамским институтом изучения климатических изменений (PIK).")
+
+    with col_text:
+        # 1. Сценарии SSP
+        st.markdown("### 🌍 Выбор будущего (SSP)")
+        st.info("""
+        **Будущее не предопределено.** Оно зависит от пути, который выберет человечество (Shared Socioeconomic Pathways):
+        * **🌱 Зеленый путь (SSP1):** Быстрый переход на ВИЭ, резкое сокращение CO2.
+        * **⚖️ Средний путь (SSP2):** Развитие по текущему вектору.
+        * **🏭 Интенсивный путь (SSP5):** Активное использование угля и нефти.
+        """)
+
+        # 2. Модели CMIP6
+        st.markdown("### 💻 Математика климата (CMIP6)")
+        st.write("""
+        Мы используем **CMIP6** — «золотой стандарт» науки. Это сложнейшие модели ($GCM$), 
+        которые имитируют движение атмосферы и океанов на суперкомпьютерах.
+        """)
+
+        # 3. Специфика Казахстана
+        st.markdown("### 🇰🇿 Масштаб Казахстана")
+        st.warning("""
+        **Важно:** Казахстан прогревается в **1.5–2 раза быстрее**, чем планета в среднем. 
+        Мы применяем «даунскейлинг», чтобы перенести глобальные расчеты на наш рельеф.
+        """)
+
+    # Нижний блок: Прогноз аномалий (на всю ширину)
+    st.subheader("📉 Новая реальность к 2100 году")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("""
+        **🔥 Температура**
+        Где «волны жары» станут нормой и как изменится зимний режим?
+        """)
+    with c2:
+        st.markdown("""
+        **💧 Осадки**
+        В каких регионах усилится засуха, а где возможны паводки из-за таяния снегов?
+        """)
+
+    st.success("Эти данные помогают планировать развитие городов и сельского хозяйства Казахстана уже сегодня.")
+
+
+    st.markdown("---")
     st.subheader("📈 Климат областей")
     import streamlit as st
     import pandas as pd
@@ -6075,12 +6558,12 @@ with tabs[6]:
     # Вы можете дополнять этот словарь данными для каждой области
     ALL_REGIONS_DATABASE = {
         "Северо-Казахстанская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
+            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. Область является критически важным аграрным регионом, где продуктивность сельского хозяйства напрямую зависит от режима увлажнения и температурного режима в период вегетации. ",
             "stations": 7,
             "area": "97 993 км²",
-            "area_perc": "3.6%",
+            "area_perc": "3,6%",
             "temp_2025": 5.1,
-            "norm_temp": 1.8,
+            "norm_temp": 1.1,
             "anom_2025": 3.28,
             "precip_2025": 439.8,
             "prec_norm": "124.7%",
@@ -6096,785 +6579,670 @@ with tabs[6]:
             {
                 "title": "🌳 Лесостепная (~45%)",
                 "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
                 "title": "🌾 Степная (~55%)",
                 "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -15.5, "sp": 2.5, "su": 18.2, "au": 2.1, "y": 1.8},
+            "t_anom_2025": {"w": 5.98, "sp": 4.64, "su": 0.5, "au": 2.5, "y": 3.28},
+            "p_norm": {"w": 47.3, "sp": 65.6, "su": 152.6, "au": 87.1, "y": 352.6},
+            "p_anom_2025": {"w": 11.1, "sp": 51.2, "su": 22.5, "au": 1.6, "y": 87.3}
         },
         "Акмолинская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
+            "geo_text": "Акмолинская область расположена в центральной части Северного Казахстана. Климат региона резко континентальный и засушливый, с суровыми малоснежными зимами и коротким, но жарким летом. Территория находится в зоне активного земледелия, где ключевым фактором является наличие влаги в почве перед началом вегетации. ",
+            "stations": 8,
+            "area": "146 219 км²",
+            "area_perc": "5.4%",
+            "temp_2025": 5.4,
+            "norm_temp": 1.1,
+            "anom_2025": 3.31,
             "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "prec_norm": "121.4%",
+            "temp_extreme": {"max": "+23.6°С (июль 1998)", "min": "-30.2°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 5.4, "col": "#990000"},
+                {"year": 2023, "val": 4.7, "col": "#b30000"},
+                {"year": 2020, "val": 4.7, "col": "#d32f2f"},
+                {"year": 1983, "val": 4.1, "col": "#e57373"},
+                {"year": 2002, "val": 3.9, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Лесостепная (~30%)",
+                "desc": "Северная часть (район Борового, Кокшетау). Обилие озер и березовых лесов.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Степная (~70%)",
+                "desc": "Центральная и южная части. Открытые равнины, зона интенсивного зернового хозяйства.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -12.2, "sp": 6.2, "su": 21.1, "au": 5.7, "y": 5.4},
+            "t_anom_2025": {"w": 5.41, "sp": 5.03, "su": 0.62, "au": 2.48, "y": 3.31},
+            "p_norm": {"w": 47.5, "sp": 69.2, "su": 130.1, "au": 78.2, "y": 325.0},
+            "p_anom_2025": {"w": 19.9, "sp": 15.5, "su": 24.4, "au": 4.2, "y": 69.5}           
         },
         "Западно-Казахстанская": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Западно-Казахстанская область расположена на северо-западе страны, в пределах Прикаспийской низменности и Предуральского плато. Климат региона резко континентальный, с выраженным дефицитом влаги в летний период. Особенностью региона является крайне интенсивное весеннее потепление и высокая изменчивость увлажнения.",
+            "stations": 8,
+            "area": "151 339 км²",
+            "area_perc": "5.6%",
+            "temp_2025": 9.9,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.9,
+            "precip_2025": 265.5,
+            "prec_norm": "94.4%",
+            "temp_extreme": {"max": "+29.1°С (июль 2010)", "min": "-25.8°С (февраль 1954)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 9.9, "col": "#990000"},
+                {"year": 2023, "val": 9.3, "col": "#b30000"},
+                {"year": 1995, "val": 9.0, "col": "#d32f2f"},
+                {"year": 2020, "val": 8.9, "col": "#e57373"},
+                {"year": 2021, "val": 8.9, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌾 Степная (~40%)",
+                "desc": "Обводненная северная часть (бассейн реки Урал).",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
+                "title": "🌾 Полупустынная (~60%)",
                 "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -10.4, "sp": 7.0, "su": 22.1, "au": 6.6, "y": 6.3},
+            "t_anom_2025": {"w": 4.7, "sp": 4.1, "su": 1.2, "au": 3.8, "y": 3.5},
+            "p_norm": {"w": 65.5, "sp": 57.9, "su": 79.5, "au": 78.4, "y": 281.3},
+            "p_anom_2025": {"w": -21.8, "sp": 3.5, "su": -3.0, "au": -2.8, "y": -15.8}   
         },
         "Атырауская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Атырауская область расположена в Прикаспийской низменности, в зоне пустынь и полупустынь. Климат региона резко континентальный и крайне засушливый. Особенностью области является близость Каспийского моря, которое оказывает влияние на влажность воздуха, однако общая тенденция потепления ведет к усилению аридности (сухости) в летний период.",
+            "stations": 3,
+            "area": "118 631 км²",
+            "area_perc": "4.4%",
+            "temp_2025": 12.0,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.9,
+            "precip_2025": 146.7,
+            "prec_norm": "97.6%",
+            "temp_extreme": {"max": "+29.4°С (июль 2018)", "min": "-21.4°С (январь 1954)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2023, "val": 12.1, "col": "#990000"},
+                {"year": 2025, "val": 12.0, "col": "#b30000"},
+                {"year": 2021, "val": 11.7, "col": "#d32f2f"},
+                {"year": 2024, "val": 11.5, "col": "#e57373"},
+                {"year": 2022, "val": 11.4, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Полупустынная (~20%)",
+                "desc": "Северные окраины области, полынно-злаковая растительность.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 СПустынная (~80%)",
+                "desc": "Большая часть области, Прикаспийская низменность. Солончаки и пески.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -6.3, "sp": 9.7, "su": 24.0, "au": 9.0, "y": 9.1},
+            "t_anom_2025": {"w": 3.3, "sp": 1.2, "su": 3.5, "au": 1.6, "y": 3.0},
+            "p_norm": {"w": 62.2, "sp": 92.7, "su": 128.0, "au": 111.2, "y": 394.1},
+            "p_anom_2025": {"w": -0.6, "sp": -9.6, "su": 21.0, "au": -17.8, "y": -3.5}   
         },
         "Мангистауская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Мангистауская область — это регион с крайне суровыми пустынными условиями. Расположенный на восточном побережье Каспийского моря, он обладает наиболее аридным (засушливым) климатом в Казахстане. Ограниченность водных ресурсов и зависимость от Каспия делают регион крайне уязвимым к наблюдаемым изменениям климата. ",
+            "stations": 1,
+            "area": "165 642 км²",
+            "area_perc": "6.1%",
+            "temp_2025": 6.7,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.1,
+            "precip_2025": 118.5,
+            "prec_norm": "83.1%",
+            "temp_extreme": {"max": "+29.7°С (июль 2018)", "min": "-11.6°С (январь 1954)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2023, "val": 14.3, "col": "#990000"},
+                {"year": 2024, "val": 14.1, "col": "#b30000"},
+                {"year": 2022, "val": 14.0, "col": "#d32f2f"},
+                {"year": 2025, "val": 13.9, "col": "#e57373"},
+                {"year": 2004, "val": 13.8, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Морская прибрежная (~15%)",
+                "desc": "Узкая полоса вдоль Каспия. Относительно мягкая зима и высокая влажность воздуха.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Экстремально-пустынная (~85%)",
+                "desc": "Внутренние плато (Устюрт) и впадины. Зона жесточайшего дефицита влаги.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -0.9, "sp": 11.0, "su": 24.4, "au": 12.7, "y": 11.8},
+            "t_anom_2025": {"w": 1.9, "sp": 2.3, "su": 1.8, "au": 2.4, "y": 2.1},
+            "p_norm": {"w": 24.0, "sp": 46.7, "su": 34.6, "au": 37.3, "y": 142.6},
+            "p_anom_2025": {"w": 10.8, "sp": 5.4, "su": -24.4, "au": -20.9, "y": -24.1} 
         },
         "Актюбинская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Актюбинская область — обширный регион, объединяющий черты степной, полупустынной и пустынной зон. Климат резко континентальный, с суровой зимой и жарким летом. Регион является важным промышленным и сельскохозяйственным узлом, где изменение режима осадков напрямую влияет на продуктивность пастбищ и урожайность зерновых культур. ",
+            "stations": 12,
+            "area": "300 629 км²",
+            "area_perc": "11.0%",
+            "temp_2025": 8.5,
+            "norm_temp": 1.1,            
+            "anom_2025": 3.2,
+            "precip_2025": 258.8,
+            "prec_norm": "98.2%",
+            "temp_extreme": {"max": "+27.5°С (июль 1984)", "min": "-25.2°С (февраль 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 8.5, "col": "#990000"},
+                {"year": 2023, "val": 8.2, "col": "#b30000"},
+                {"year": 2020, "val": 7.5, "col": "#d32f2f"},
+                {"year": 2013, "val": 7.5, "col": "#e57373"},
+                {"year": 2021, "val": 7.4, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌾 Степная (~35%)",
+                "desc": "Северная часть. Ковыльные степи, более мягкое лето.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Полупустынная (~65%)",
+                "desc": "Центр и Юг. Полынные степи, переход к пескам Шалкара.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -12.3, "sp": 5.9, "su": 22.1, "au": 5.7, "y": 5.3},
+            "t_anom_2025": {"w": 4.7, "sp": 4.4, "su": 0.8, "au": 3.5, "y": 3.2},
+            "p_norm": {"w": 59.5, "sp": 64.1, "su": 67.8, "au": 72.2, "y": 263.6},
+            "p_anom_2025": {"w": -0.1, "sp": 5.2, "su": 11.8, "au": -32.3, "y": -4.8} 
         },
-        "Улытауская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+        "Область Ұлытау": {
+            "geo_text": "Область Ұлытау характеризуется резко континентальным, крайне засушливым климатом. Регион расположен в зоне полупустынь и пустынь Центрального Казахстана. Географическая удаленность от океанов и открытость северным ветрам обуславливают экстремальные перепады температур: от суровых морозов зимой до изнуряющей жары летом. ",
+            "stations": 3,
+            "area": "188 936 км²",
+            "area_perc": "6.9%",
+            "temp_2025": 8.1,
+            "norm_temp": 1.1,            
+            "anom_2025": 3.7,
+            "precip_2025": 153.8,
+            "prec_norm": "71.3%",
+            "temp_extreme": {"max": "+26.4°С (июль 2023)", "min": "-27.9°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 8.1, "col": "#990000"},
+                {"year": 2023, "val": 7.5, "col": "#b30000"},
+                {"year": 2013, "val": 6.8, "col": "#d32f2f"},
+                {"year": 1983, "val": 6.6, "col": "#e57373"},
+                {"year": 2022, "val": 6.5, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Полупустынная (~40%)",
+                "desc": "Северная часть мелкосопочника.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Пустынная (~60%)",
+                "desc": "Юг, переход в пустыню Бетпак-Дала.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -13.7, "sp": 5.3, "su": 21.5, "au": 4.6, "y": 4.4},
+            "t_anom_2025": {"w": 4.0, "sp": 4.2, "su": 1.8, "au": 3.3, "y": 3.7},
+            "p_norm": {"w": 52.6, "sp": 59.4, "su": 53.9, "au": 49.8, "y": 215.7},
+            "p_anom_2025": {"w": -16.0, "sp": -23.5, "su": -9.9, "au": -23.9, "y": -61.9}     
         },
         "Восточно-Казахстанская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
+            "geo_text": "Восточно-Казахстанская область отличается сложным рельефом, сочетающим высокогорья Алтая и обширные межгорные котловины. Это обуславливает высокую пестроту климата. Регион является «водной башней» страны, и изменение режима осадков здесь напрямую влияет на гидрологический режим крупнейших рек (Иртыш) и состояние ледников. ",
+            "stations": 9,
+            "area": "97 859 км²",
             "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "temp_2025": 4.9,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.2,
+            "precip_2025": 163.9,
+            "prec_norm": "117.7%",
+            "temp_extreme": {"max": "+23.7°С (июль 1974)", "min": "-28.4°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2023, "val": 5.2, "col": "#990000"},
+                {"year": 2020, "val": 4.9, "col": "#b30000"},
+                {"year": 2025, "val": 4.9, "col": "#d32f2f"},
+                {"year": 2015, "val": 4.8, "col": "#e57373"},
+                {"year": 2024, "val": 3.8, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Горно-лесная (~60%)",
+                "desc": "Алтайские горы, хвойные леса, высокая влажность..",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Степная / Сухостепная(~40%)",
+                "desc": "Предгорья и равнины (Прииртышье).",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -15.6, "sp": 3.6, "su": 19.1, "au": 3.7, "y": 2.7},
+            "t_anom_2025": {"w": 3.1, "sp": 3.4, "su": 1.5, "au": 0.7, "y": 2.2},
+            "p_norm": {"w": 62.2, "sp": 92.7, "su": 128.0, "au": 111.2, "y": 394.1},
+            "p_anom_2025": {"w": 10.5, "sp": 9.3, "su": 14.5, "au": 29.6, "y": 69.9}    
         },
-        "Абайская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+        "Область Абай": {
+            "geo_text": "Область Абай расположена в восточной части Казахстана. Рельеф региона разнообразен: от равнинных степей до мелкосопочника и горных хребтов. Климат резко континентальный. Регион подвержен влиянию как сибирских антициклонов зимой, так и жарких воздушных масс из Центральной Азии летом, что создает высокую амплитуду температур. ",
+            "stations": 11,
+            "area": "185 500 км²",
+            "area_perc": "6.8%",
+            "temp_2025": 6.1,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.5,
+            "precip_2025": 311.4,
+            "prec_norm": "108.4%",
+            "temp_extreme": {"max": "+24.3°С (июль 1974)", "min": "-27.7°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 6.1, "col": "#990000"},
+                {"year": 2023, "val": 6.0, "col": "#b30000"},
+                {"year": 2007, "val": 5.7, "col": "#d32f2f"},
+                {"year": 2002, "val": 5.7, "col": "#e57373"},
+                {"year": 2024, "val": 5.6, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌾 Степная (~45%)",
+                "desc": "Северная часть и мелкосопочник.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Полупустынная (~55%)",
+                "desc": "Юг, район озера Балхаш и Зайсанская впадина.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -14.3, "sp": 4.5, "su": 20.1, "au": 4.1, "y": 3.6},
+            "t_anom_2025": {"w": 3.3, "sp": 3.9, "su": 2.0, "au": 0.8, "y": 2.5},
+            "p_norm": {"w": 57.4, "sp": 68.1, "su": 86.6, "au": 75.2, "y": 287.3},
+            "p_anom_2025": {"w": 9.2, "sp": -4.4, "su": -1.4, "au": 22.9, "y": 24.1}      
         },
         "Костанайская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Костанайская область расположена в северной части Казахстана, преимущественно в степной и лесостепной зонах. Климат региона резко континентальный с выраженными сезонами. Благодаря равнинному рельефу территория открыта как для арктических вторжений, так и для жарких воздушных масс с юга, что обуславливает высокую межгодовую изменчивость климатических параметров. ",
+            "stations": 9,
+            "area": "196 001 км²",
+            "area_perc": "7.2%",
+            "temp_2025": 6.7,
+            "norm_temp": 1.1,            
+            "anom_2025": 3.51,
+            "precip_2025": 292.6,
+            "prec_norm": "104.3%",
+            "temp_extreme": {"max": "+25.6°С (июль 1998)", "min": "-29.3°С (февраль 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 6.5, "col": "#990000"},
+                {"year": 2023, "val": 5.6, "col": "#b30000"},
+                {"year": 2020, "val": 5.5, "col": "#d32f2f"},
+                {"year": 1983, "val": 5.2, "col": "#e57373"},
+                {"year": 2004, "val": 4.8, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Лесостепная (~25%)",
+                "desc": "Север (Узункольский, Мендыкаринский р-ны). Березовые колки, высокая влажность.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Степная (~75%)",
+                "desc": "Центр и Юг. Открытые равнины, черноземы и каштановые почвы.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -11.2, "sp": 6.2, "su": 21.1, "au": 5.7, "y": 5.4},
+            "t_anom_2025": {"w": 6.04, "sp": 5.0, "su": 0.71, "au": 3.14, "y": 3.51},
+            "p_norm": {"w": 48.8, "sp": 59.7, "su": 107.4, "au": 73.9, "y": 289.8},
+            "p_anom_2025": {"w": -11.6, "sp": 8.9, "su": 9.3, "au": -5.8, "y": 12.5}    
         },
         "Павлодарская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
+            "geo_text": "Павлодарская область расположена в северо-восточной части страны в пределах Западно-Сибирской равнины. Регион пересекает крупнейшая водная артерия — река Иртыш. Климат резко континентальный, характеризующийся продолжительной холодной зимой (с самыми низкими температурами в стране) и коротким, но жарким и сухим летом. ",
+            "stations": 5,
+            "area": "124 755 км²",
+            "area_perc": "4.6%",
+            "temp_2025": 5.4,
+            "norm_temp": 1.1,            
+            "anom_2025": 3.0,
             "precip_2025": 439.8,
             "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "temp_extreme": {"max": "+24.3°С (июль 1965)", "min": "-30.9°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 3.02, "col": "#990000"},
+                {"year": 2020, "val": 2.97, "col": "#b30000"},
+                {"year": 2023, "val": 2.64, "col": "#d32f2f"},
+                {"year": 1983, "val": 2.33, "col": "#e57373"},
+                {"year": 2002, "val": 2.28, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌾 Степная (~70%)",
+                "desc": "Север и центр. Разнотравные степи поймы Иртыша.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Сухостепная (~30%)",
+                "desc": "Южные районы, переход к полупустыне.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -15.5, "sp": 2.9, "su": 19.4, "au": 2.7, "y": 2.4},
+            "t_anom_2025": {"w": 5.2, "sp": 4.4, "su": 0.9, "au": 1.4, "y": 3.0},
+            "p_norm": {"w": 44.8, "sp": 55.0, "su": 120.7, "au": 72.3, "y": 292.8},
+            "p_anom_2025": {"w": 7.86, "sp": 3.68, "su": 46.7, "au": 32.7, "y": 94.54}    
         },
         "Алматинская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Алматинская область характеризуется сложным рельефом — от пустынь Прибалхашья до вечных снегов Заилийского Алатау. Это один из самых климатически разнообразных регионов, где сельское хозяйство и водоснабжение мегаполиса напрямую зависят от состояния горных ледников и сезонного распределения осадков.",
+            "stations": 9,
+            "area": "105 263 км²",
+            "area_perc": "3.9%",
+            "temp_2025": 9.5,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.73,
+            "precip_2025": 348.2,
+            "prec_norm": "72.4%",
+            "temp_extreme": {"max": "+23.9°С (июль 2015)", "min": "-16.5°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 9.46, "col": "#990000"},
+                {"year": 2023, "val": 8.86, "col": "#b30000"},
+                {"year": 2022, "val": 8.76, "col": "#d32f2f"},
+                {"year": 1997, "val": 8.76, "col": "#e57373"},
+                {"year": 2015, "val": 8.6, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Горная / Предгорная (~30%)",
+                "desc": "Юг и Восток. Заилийский Алатау, обилие рек.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Пустынно-степная(~70%)",
+                "desc": "Север (Прибалхашье). Пески, сухие равнины.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -7.0, "sp": 7.4, "su": 19.6, "au": 6.9, "y": 6.7},
+            "t_anom_2025": {"w": 1.76, "sp": 3.46, "su": 2.79, "au": 1.67, "y": 2.73},
+            "p_norm": {"w": 64.5, "sp": 177.5, "su": 138.2, "au": 100.8, "y": 481.0},
+            "p_anom_2025": {"w": 11.2, "sp": 21.9, "su": 73.3, "au": 31.0, "y": 132.8}     
         },
-        "Жетысуская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+        "Область Жетісу": {
+            "geo_text": "Область Жетісу — край «семи рек», сочетающий в себе высокогорные хребты, предгорные равнины и пустынные зоны Балхашской впадины. Климат региона резко континентальный, с выраженной высотной поясностью. Экономика региона тесно связана с водными ресурсами, формирующимися за счет таяния ледников и сезонных осадков.",
+            "stations": 8,
+            "area": "118 648 км²",
+            "area_perc": "4.4%",
+            "temp_2025": 9.0,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.43,
+            "precip_2025": 331.7,
+            "prec_norm": "86.4%",
+            "temp_extreme": {"max": "+24.8°С (июль 2023)", "min": "-4.9°С (январь 2022 г.)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 14.6, "col": "#990000"},
+                {"year": 2023, "val": 14.0, "col": "#b30000"},
+                {"year": 2022, "val": 13.7, "col": "#d32f2f"},
+                {"year": 2019, "val": 13.6, "col": "#e57373"},
+                {"year": 2021, "val": 13.6, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Высокогорная (~35%)",
+                "desc": "Хребты Джунгарского Алатау, ледники.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Пустынно-степная (~65%)",
+                "desc": "Балхаш-Алакольская низменность, сухие равнины.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -9.4, "sp": 7.9, "su": 20.9, "au": 7.0, "y": 6.6},
+            "t_anom_2025": {"w": 1.58, "sp": 4.03, "su": 2.56, "au": 2.20, "y": 2.93},
+            "p_norm": {"w": 73.0, "sp": 118.5, "su": 91.7, "au": 100.6, "y": 383.8},
+            "p_anom_2025": {"w": 2.9, "sp": 3.1, "su": -1.8, "au": -0.8, "y": 3.6}     
         },
         "Туркестанкая область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Туркестанская область характеризуется самым жарким в Казахстане резко континентальным климатом. Регион расположен на стыке пустыни Кызылкум и хребтов Тянь-Шаня. Основу экономики составляет орошаемое земледелие и хлопководство, что делает регион тотально зависимым от водных ресурсов и температурного режима.",
+            "stations": 9,
+            "area": "116 247 км²",
+            "area_perc": "4.3%",
+            "temp_2025": 14.2,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.93,
+            "precip_2025": 240.0,
+            "prec_norm": "55.1%",
+            "temp_extreme": {"max": "+29.7°С (июль 2019)", "min": "-12.9°С (февраль 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 14.6, "col": "#990000"},
+                {"year": 2023, "val": 14.0, "col": "#b30000"},
+                {"year": 2022, "val": 13.7, "col": "#d32f2f"},
+                {"year": 2019, "val": 13.6, "col": "#e57373"},
+                {"year": 2021, "val": 13.6, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Пустынная (~75%)",
+                "desc": "Западная часть (Кызылкум), жаркое сухое лето.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Предгорная (~25%)",
+                "desc": "Предгорная	Восток и Юго-восток (каштановые почвы).",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -11.2, "sp": 6.2, "su": 21.1, "au": 5.7, "y": 5.4},
+            "t_anom_2025": {"w": 1.58, "sp": 4.03, "su": 2.56, "au": 2.2, "y": 2.93},
+            "p_norm": {"w": 150.6, "sp": 167.4, "su": 24.3, "au": 94.0, "y": 436.3},
+            "p_anom_2025": {"w": -50.6, "sp": -106.8, "su": -15.8, "au": -67.5, "y": -196.0}   
         },
         "Кызылординская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
-            "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "geo_text": "Кызылординская область расположена в зоне пустынь Туранской низменности. Климат региона характеризуется экстремальной континентальностью, высокой солнечной радиацией и острым дефицитом влаги. Регион находится в зоне прямого влияния последствий высыхания Аральского моря, что усиливает процессы опустынивания и частоту соле-пылевых бурь. ",
+            "stations": 5,
+            "area": "226 019 км²",
+            "area_perc": "8.3%",
+            "temp_2025": 12.8,
+            "norm_temp": 1.1,            
+            "anom_2025": 3.5,
+            "precip_2025": 111.8,
+            "prec_norm": "79.1%",
+            "temp_extreme": {"max": "+30.4°С (июль 2019)", "min": "-20.7°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 12.82, "col": "#990000"},
+                {"year": 2023, "val": 12.74, "col": "#b30000"},
+                {"year": 2013, "val": 11.83, "col": "#d32f2f"},
+                {"year": 2016, "val": 11.78, "col": "#e57373"},
+                {"year": 2022, "val": 11.70, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 ЛПустынная (~90%)",
+                "desc": "Почти вся территория. Пустыня Кызылкум, зона Аральского бедствия.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Долина реки (~10%)",
+                "desc": "Пойма Сырдарьи. Тугайные леса и орошаемые земли.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -3.7, "sp": 15.8, "su": 27.5, "au": 11.3, "y": 12.8},
+            "t_anom_2025": {"w": 4.1, "sp": 5.3, "su": 2.0, "au": 2.4, "y": 3.5},
+            "p_norm": {"w": 40.0, "sp": 49.1, "su": 19.1, "au": 33.2, "y": 141.4},
+            "p_anom_2025": {"w": 6.5, "sp": 21.6, "su": 2.2, "au": 23.5, "y": 29.6}    
         },
         "Жамбылская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
+            "geo_text": "Жамбылская область расположена на юге Казахстана, в зоне полупустынь и пустынь, переходящих на юге в предгорья Тянь-Шаня. Климат региона резко континентальный и крайне засушливый. Особенностью является высокая зависимость сельского хозяйства от трансграничных рек и талых вод горных ледников, которые подвержены деградации из-за глобального потепления. ",
             "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "area": "144 264 км²",
+            "area_perc": "5.3%",
+            "temp_2025": 12.6,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.98,
+            "precip_2025": 138.4,
+            "prec_norm": "45.4%",
+            "temp_extreme": {"max": "+28.2°С (июль 2019)", "min": "-17.8°С (февораль 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 12.6, "col": "#990000"},
+                {"year": 2022, "val": 12.0, "col": "#b30000"},
+                {"year": 2023, "val": 11.9, "col": "#d32f2f"},
+                {"year": 2013, "val": 11.7, "col": "#e57373"},
+                {"year": 2018, "val": 11.7, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌳 Пустынная (~70%)",
+                "desc": "Северная часть (глинистая пустыня Бетпак-Дала и пески Мойынкум).",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Предгорно-горная (~30%)",
+                "desc": "Южная часть вдоль хребтов Киргизского Алатау. Зона поливного земледелия.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -11.2, "sp": 6.2, "su": 21.1, "au": 5.7, "y": 5.4},
+            "t_anom_2025": {"w": 2.40, "sp": 4.01, "su": 2.52, "au": 1.64, "y": 2.98},
+            "p_norm": {"w": 73.4, "sp": 119.2, "su": 38.1, "au": 74.0, "y": 304.7},
+            "p_anom_2025": {"w": -31.9, "sp": -79.8, "su": -15.4, "au": -44.9, "y": -116.3},      
         },
-        "Павлодарская область": {
-            "geo_text": "Северо-Казахстанская область расположена на севере Казахстана, занимая южную окраину Западно-Сибирской равнины. Климат региона резко континентальный, характеризующийся значительными температурными амплитудами. ",
+        "Карагандинская область": {
+            "geo_text": "Карагандинская область расположена в центральной части Казахского мелкосопочника (Сарыарка). Климат региона резко континентальный и крайне засушливый. Особенностью региона является высокая повторяемость пыльных бурь и метелей, а также резкие температурные скачки, обусловленные открытостью территории для арктических и сибирских воздушных масс. ",
             "stations": 7,
-            "area": "97 993 км²",
-            "area_perc": "3.6%",
-            "temp_2025": 5.1,
-            "norm_temp": 1.8,
-            "anom_2025": 3.28,
-            "precip_2025": 439.8,
-            "prec_norm": "124.7%",
-            "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
+            "area": "239 045 км²",
+            "area_perc": "8.8%",
+            "temp_2025": 6.3,
+            "norm_temp": 1.1,            
+            "anom_2025": 2.7,
+            "precip_2025": 224.4,
+            "prec_norm": "88.1%",
+            "temp_extreme": {"max": "+24.2°С (июль 1974)", "min": "-26.8°С (январь 1969)"},
             "top_years": [
-                {"year": 2025, "val": 5.09, "col": "#990000"},
-                {"year": 2020, "val": 4.98, "col": "#b30000"},
-                {"year": 2023, "val": 4.43, "col": "#d32f2f"},
-                {"year": 1983, "val": 4.01, "col": "#e57373"},
-                {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+                {"year": 2025, "val": 6.3, "col": "#990000"},
+                {"year": 2023, "val": 6.1, "col": "#b30000"},
+                {"year": 2013, "val": 5.5, "col": "#d32f2f"},
+                {"year": 2002, "val": 5.3, "col": "#e57373"},
+                {"year": 1983, "val": 5.3, "col": "#ef9a9a"}
             ],
             "zones": [
             {
-                "title": "🌳 Лесостепная (~45%)",
-                "desc": "Северная часть, обилие березовых колков и озер.",
-                "precip": "Повышенные (380-450 мм)",
+                "title": "🌾 Степная (~40%)",
+                "desc": "Север и Сарыарка. Мелкосопочник, умеренное увлажнение.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Степная (~55%)",
-                "desc": "Южная часть, открытые равнинные пространства.",
-                "precip": "Умеренные (320-380 мм)",
+                "title": "🌾 Полупустынная (~60%)",
+                "desc": "Южная часть. Сухие степи, высокая испаряемость.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
             }
-            ]      
+            ],
+            "t_norm": {"w": -13.4, "sp": 4.2, "su": 19.6, "au": 3.7, "y": 3.5},
+            "t_anom_2025": {"w": 2.9, "sp": 3.8, "su": 1.7, "au": 1.4, "y": 2.7},
+            "p_norm": {"w": 50.7, "sp": 64.6, "su": 77.4, "au": 61.9, "y": 254.6},
+            "p_anom_2025": {"w": 3.9, "sp": -20.2, "su": -4.0, "au": -12.1, "y": -30.2}            
         } 
 }
 
-    import pandas as pd
-    import plotly.graph_objects as go
-
-    # 1. Полный массив данных (1940-2025)
-    data_list = [
-        {"Год": 1940, "ЗКО": -0.445, "Атырау": -0.497, "Мангистау": 0.1, "Актюбинская": 0.25, "Карагандинская": -0.168, "Улытауская": 1.003, "ВКО": 0.177, "Абай": 0.2, "СКО": -0.626, "Акмола": -0.174, "Костанай": -0.087, "Павлодар": 0.092, "Алматиснкая": 1.443, "Жетысу": 0.89, "Туркестанская": 0.861, "Кызылординская": 0.672, "Жамбылская": 0.9},
-        {"Год": 1941, "ЗКО": -2.3, "Атырау": -0.794, "Мангистау": -0.458, "Актюбинская": -1.49, "Карагандинская": -0.196, "Улытауская": -0.194, "ВКО": 0.602, "Абай": 0.361, "СКО": -2.675, "Акмола": -1.904, "Костанай": -2.322, "Павлодар": -1.492, "Алматиснкая": -0.349, "Жетысу": 1.509, "Туркестанская": 1.369, "Кызылординская": 0.742, "Жамбылская": 1.505},
-        {"Год": 1942, "ЗКО": -2.904, "Атырау": -2.21, "Мангистау": -1.767, "Актюбинская": -1.837, "Карагандинская": -0.469, "Улытауская": -0.656, "ВКО": -0.259, "Абай": -0.107, "СКО": -1.356, "Акмола": -1.245, "Костанай": -1.733, "Павлодар": -0.24, "Алматиснкая": -0.532, "Жетысу": -0.343, "Туркестанская": -0.079, "Кызылординская": -0.023, "Жамбылская": -0.407},
-        {"Год": 1943, "ЗКО": -1.319, "Атырау": -0.937, "Мангистау": -0.933, "Актюбинская": -1.254, "Карагандинская": -1.587, "Улытауская": -1.8, "ВКО": -0.644, "Абай": -0.62, "СКО": -1.17, "Акмола": -1.282, "Костанай": -1.138, "Павлодар": -1.025, "Алматиснкая": -0.429, "Жетысу": -0.664, "Туркестанская": -1.118, "Кызылординская": -1.253, "Жамбылская": -1.151},
-        {"Год": 1944, "ЗКО": 0.291, "Атырау": 0.606, "Мангистау": 0.383, "Актюбинская": 0.613, "Карагандинская": 0.28, "Улытауская": 0.533, "ВКО": -0.815, "Абай": -0.627, "СКО": 0.235, "Акмола": 0.433, "Костанай": 0.509, "Павлодар": 0.119, "Алматиснкая": -0.652, "Жетысу": -0.62, "Туркестанская": 0.539, "Кызылординская": 0.788, "Жамбылская": 0.033},
-        {"Год": 1945, "ЗКО": -2.705, "Атырау": -2.186, "Мангистау": -1.85, "Актюбинская": -2.254, "Карагандинская": -0.96, "Улытауская": -1.481, "ВКО": -0.123, "Абай": -0.372, "СКО": -1.967, "Акмола": -1.643, "Костанай": -2.051, "Павлодар": -1.27, "Алматиснкая": -0.629, "Жетысу": -0.238, "Туркестанская": -0.827, "Кызылординская": -1.827, "Жамбылская": -1.118},
-        {"Год": 1946, "ЗКО": -0.263, "Атырау": 0.075, "Мангистау": 0, "Актюбинская": -0.304, "Карагандинская": -1.413, "Улытауская": -1.099, "ВКО": -0.501, "Абай": -0.608, "СКО": -1.154, "Акмола": -1.321, "Костанай": -0.961, "Павлодар": -0.978, "Алматиснкая": -0.265, "Жетысу": -0.516, "Туркестанская": -0.423, "Кызылординская": -0.352, "Жамбылская": -0.42},
-        {"Год": 1947, "ЗКО": -0.515, "Атырау": -0.044, "Мангистау": -0.058, "Актюбинская": -0.512, "Карагандинская": -0.959, "Улытауская": -0.578, "ВКО": -0.701, "Абай": -0.73, "СКО": -0.917, "Акмола": -0.905, "Костанай": -0.84, "Павлодар": -0.928, "Алматиснкая": -0.165, "Жетысу": -0.281, "Туркестанская": 0.17, "Кызылординская": 0.048, "Жамбылская": -0.263},
-        {"Год": 1948, "ЗКО": 0.736, "Атырау": 0.599, "Мангистау": 0.25, "Актюбинская": 0.669, "Карагандинская": -0.297, "Улытауская": 0.1, "ВКО": 0.677, "Абай": 0.402, "СКО": 0.157, "Акмола": 0.083, "Костанай": 0.457, "Павлодар": 0.228, "Алматиснкая": -1.073, "Жетысу": -0.106, "Туркестанская": -0.235, "Кызылординская": 0.63, "Жамбылская": -0.187},
-        {"Год": 1949, "ЗКО": -0.856, "Атырау": -1.117, "Мангистау": -1.033, "Актюбинская": -1.233, "Карагандинская": -1.598, "Улытауская": -1.736, "ВКО": -0.912, "Абай": -1.141, "СКО": -0.705, "Акмола": -1.13, "Костанай": -1.04, "Павлодар": -0.855, "Алматиснкая": -0.818, "Жетысу": -1.151, "Туркестанская": -1.746, "Кызылординская": -1.505, "Жамбылская": -1.432},
-        {"Год": 1950, "ЗКО": -1.604, "Атырау": -1.672, "Мангистау": -1.125, "Актюбинская": -1.785, "Карагандинская": -1.482, "Улытауская": -1.939, "ВКО": -1.807, "Абай": -1.619, "СКО": -1.589, "Акмола": -1.854, "Костанай": -1.795, "Павлодар": -1.542, "Алматиснкая": -0.738, "Жетысу": -1.083, "Туркестанская": -1.687, "Кызылординская": -2.055, "Жамбылская": -1.535},
-        {"Год": 1951, "ЗКО": -0.557, "Атырау": -0.814, "Мангистау": -0.342, "Актюбинская": -0.199, "Карагандинская": -0.427, "Улытауская": -0.664, "ВКО": -0.101, "Абай": -0.16, "СКО": -0.117, "Акмола": -0.258, "Костанай": -0.295, "Павлодар": 0.308, "Алматиснкая": -0.94, "Жетысу": -0.827, "Туркестанская": -0.944, "Кызылординская": -0.813, "Жамбылская": -1.413},
-        {"Год": 1952, "ЗКО": -0.873, "Атырау": -0.758, "Мангистау": -0.308, "Актюбинская": -0.528, "Карагандинская": -1.456, "Улытауская": -0.997, "ВКО": -2.02, "Абай": -1.886, "СКО": -1.13, "Акмола": -1.065, "Костанай": -0.908, "Павлодар": -1.3, "Алматиснкая": 0.149, "Жетысу": -1.463, "Туркестанская": -0.601, "Кызылординская": -0.683, "Жамбылская": -1.201},
-        {"Год": 1953, "ЗКО": -0.929, "Атырау": -0.475, "Мангистау": -0.433, "Актюбинская": -0.644, "Карагандинская": -0.27, "Улытауская": 0.067, "ВКО": 0.623, "Абай": 0.275, "СКО": -0.851, "Акмола": -0.431, "Костанай": -0.797, "Павлодар": 0.12, "Алматиснкая": -1.846, "Жетысу": 0.286, "Туркестанская": -0.226, "Кызылординская": 0.163, "Жамбылская": 0.051},
-        {"Год": 1954, "ЗКО": -1.594, "Атырау": -1.939, "Мангистау": -0.95, "Актюбинская": -1.582, "Карагандинская": -2.317, "Улытауская": -2.028, "ВКО": -2.488, "Абай": -2.426, "СКО": -2.262, "Акмола": -2.241, "Костанай": -1.845, "Павлодар": -2.798, "Алматиснкая": 0.017, "Жетысу": -2.043, "Туркестанская": -1.596, "Кызылординская": -1.722, "Жамбылская": -2.239},
-        {"Год": 1955, "ЗКО": 0.245, "Атырау": 0.275, "Мангистау": 0.683, "Актюбинская": 0.088, "Карагандинская": -0.03, "Улытауская": 0.308, "ВКО": 0.145, "Абай": 0.027, "СКО": -0.734, "Акмола": -0.211, "Костанай": -0.431, "Павлодар": 0.133, "Алматиснкая": 0.044, "Жетысу": -0.093, "Туркестанская": 0.605, "Кызылординская": 0.493, "Жамбылская": -0.03},
-        {"Год": 1956, "ЗКО": -2.182, "Атырау": -2.044, "Мангистау": -1.325, "Актюбинская": -1.399, "Карагандинская": -0.496, "Улытауская": -1.144, "ВКО": -1.305, "Абай": -0.863, "СКО": -1.327, "Акмола": -1.001, "Костанай": -1.371, "Павлодар": -0.818, "Алматиснкая": -0.923, "Жетысу": -0.153, "Туркестанская": -0.201, "Кызылординская": -0.782, "Жамбылская": -0.257},
-        {"Год": 1957, "ЗКО": 0.304, "Атырау": 0.146, "Мангистау": 0.767, "Актюбинская": -0.049, "Карагандинская": -0.868, "Улытауская": -0.942, "ВКО": -0.536, "Абай": -0.541, "СКО": 0.243, "Акмола": -0.298, "Костанай": -0.083, "Павлодар": -0.165, "Алматиснкая": -0.294, "Жетысу": -0.847, "Туркестанская": -1.406, "Кызылординская": -0.762, "Жамбылская": -1.13},
-        {"Год": 1958, "ЗКО": -0.26, "Атырау": -0.038, "Мангистау": -0.117, "Актюбинская": -0.455, "Карагандинская": -1.268, "Улытауская": -1.183, "ВКО": -1.08, "Абай": -0.946, "СКО": -0.487, "Акмола": -0.977, "Костанай": -0.562, "Павлодар": -0.994, "Алматиснкая": -0.754, "Жетысу": -0.449, "Туркестанская": -0.299, "Кызылординская": -0.12, "Жамбылская": -0.482},
-        {"Год": 1959, "ЗКО": -1.909, "Атырау": -1.799, "Мангистау": -1.558, "Актюбинская": -1.815, "Карагандинская": -1.236, "Улытауская": -1.403, "ВКО": -1.096, "Абай": -1.013, "СКО": -0.775, "Акмола": -0.953, "Костанай": -1.279, "Павлодар": -0.623, "Алматиснкая": -1.16, "Жетысу": -0.845, "Туркестанская": -0.819, "Кызылординская": -1.575, "Жамбылская": -1.01},
-        {"Год": 1960, "ЗКО": -0.755, "Атырау": -0.478, "Мангистау": -0.417, "Актюбинская": -1.583, "Карагандинская": -2.143, "Улытауская": -2.422, "ВКО": -1.986, "Абай": -2.015, "СКО": -1.705, "Акмола": -1.909, "Костанай": -1.592, "Павлодар": -2.073, "Алматиснкая": 0.194, "Жетысу": -1.582, "Туркестанская": -1.006, "Кызылординская": -1.475, "Жамбылская": -1.524},
-        {"Год": 1961, "ЗКО": 0.641, "Атырау": 0.828, "Мангистау": 0.475, "Актюбинская": 0.728, "Карагандинская": 0.205, "Улытауская": 0.069, "ВКО": -0.186, "Абай": -0.053, "СКО": 0.818, "Акмола": 0.496, "Костанай": 0.821, "Павлодар": 0.563, "Алматиснкая": 0.384, "Жетысу": -0.007, "Туркестанская": 0.555, "Кызылординская": 0.258, "Жамбылская": 0.444},
-        {"Год": 1962, "ЗКО": 1.065, "Атырау": 0.758, "Мангистау": 0.833, "Актюбинская": 0.801, "Карагандинская": 0.474, "Улытауская": 0.35, "ВКО": 1.083, "Абай": 1.001, "СКО": 1.751, "Акмола": 1.266, "Костанай": 1.194, "Павлодар": 1.05, "Алматиснкая": 0.919, "Жетысу": 0.532, "Туркестанская": -0.114, "Кызылординская": -0.002, "Жамбылская": 0.114},
-        {"Год": 1963, "ЗКО": -0.304, "Атырау": 0.228, "Мангистау": -0.108, "Актюбинская": 0.242, "Карагандинская": 0.968, "Улытауская": 1.189, "ВКО": 1.119, "Абай": 1.192, "СКО": 1.037, "Акмола": 1.158, "Костанай": 0.869, "Павлодар": 1.458, "Алматиснкая": -0.926, "Жетысу": 0.847, "Туркестанская": 0.745, "Кызылординская": 1.015, "Жамбылская": 0.767},
-        {"Год": 1964, "ЗКО": -1.249, "Атырау": -0.916, "Мангистау": -0.8, "Актюбинская": -1.31, "Карагандинская": -0.973, "Улытауская": -0.903, "ВКО": -0.337, "Абай": -0.621, "СКО": -1.0, "Акмола": -0.966, "Костанай": -1.018, "Павлодар": -0.392, "Алматиснкая": 0.521, "Жетысу": -1.144, "Туркестанская": -1.217, "Кызылординская": -0.995, "Жамбылская": -1.108},
-        {"Год": 1965, "ЗКО": 0, "Атырау": -0.414, "Мангистау": -0.55, "Актюбинская": 0.102, "Карагандинская": 0.364, "Улытауская": 0.511, "ВКО": 0.396, "Абай": 0.607, "СКО": 0.91, "Акмола": 0.841, "Костанай": 0.337, "Павлодар": 0.713, "Алматиснкая": 0.038, "Жетысу": 0.71, "Туркестанская": 0.436, "Кызылординская": 0.313, "Жамбылская": 0.645},
-        {"Год": 1966, "ЗКО": 1.09, "Атырау": 0.775, "Мангистау": 1.417, "Актюбинская": 0.396, "Карагандинская": -0.331, "Улытауская": 0.014, "ВКО": -1.422, "Абай": -1.191, "СКО": -1.15, "Акмола": -0.954, "Костанай": -0.599, "Павлодар": -1.522, "Алматиснкая": -0.614, "Жетысу": -0.02, "Туркестанская": 0.573, "Кызылординская": 0.395, "Жамбылская": 0.083},
-        {"Год": 1967, "ЗКО": 0.796, "Атырау": -0.006, "Мангистау": 0.1, "Актюбинская": 0.927, "Карагандинская": 0.113, "Улытауская": 0.003, "ВКО": -1.036, "Абай": -0.648, "СКО": 0.551, "Акмола": 0.486, "Костанай": 0.449, "Павлодар": 0.038, "Алматиснкая": -0.369, "Жетысу": -0.807, "Туркестанская": 0.005, "Кызылординская": -0.133, "Жамбылская": -0.401},
-        {"Год": 1968, "ЗКО": -0.778, "Атырау": -0.164, "Мангистау": 0.225, "Актюбинская": -0.526, "Карагандинская": -0.327, "Улытауская": -0.525, "ВКО": -0.419, "Абай": -0.564, "СКО": -0.856, "Акмола": -0.395, "Костанай": -0.594, "Павлодар": -0.87, "Алматиснкая": -1.689, "Жетысу": -0.385, "Туркестанская": -0.244, "Кызылординская": -0.635, "Жамбылская": -0.625},
-        {"Год": 1969, "ЗКО": -2.57, "Атырау": -1.722, "Мангистау": -1.775, "Актюбинская": -2.206, "Карагандинская": -2.115, "Улытауская": -2.078, "ВКО": -2.682, "Абай": -2.697, "СКО": -2.769, "Акмола": -2.719, "Костанай": -2.545, "Павлодар": -3.09, "Алматиснкая": -0.141, "Жетысу": -1.822, "Туркестанская": -1.882, "Кызылординская": -1.863, "Жамбылская": -2.23},
-        {"Год": 1970, "ЗКО": -0.438, "Атырау": 0.108, "Мангистау": 0.158, "Актюбинская": -0.568, "Карагандинская": -0.448, "Улытауская": -0.603, "ВКО": -0.634, "Абай": -0.633, "СКО": -0.465, "Акмола": -0.607, "Костанай": -0.405, "Павлодар": -0.698, "Алматиснкая": 0.465, "Жетысу": -0.31, "Туркестанская": 0.087, "Кызылординская": -0.147, "Жамбылская": -0.248},
-        {"Год": 1971, "ЗКО": 0.2, "Атырау": 0.294, "Мангистау": 0.692, "Актюбинская": 0.379, "Карагандинская": 0.32, "Улытауская": 0.567, "ВКО": 0.424, "Абай": 0.189, "СКО": 0.594, "Акмола": 0.446, "Костанай": 0.702, "Павлодар": 0.218, "Алматиснкая": -1.344, "Жетысу": 0.497, "Туркестанская": 0.737, "Кызылординская": 0.433, "Жамбылская": 0.54},
-        {"Год": 1972, "ЗКО": -0.419, "Атырау": -0.878, "Мангистау": -0.417, "Актюбинская": -1.24, "Карагандинская": -1.868, "Улытауская": -2.3, "ВКО": -0.731, "Абай": -1.347, "СКО": -1.698, "Акмола": -1.873, "Костанай": -1.469, "Павлодар": -1.508, "Алматиснкая": 0.383, "Жетысу": -1.405, "Туркестанская": -2.232, "Кызылординская": -2.003, "Жамбылская": -1.911},
-        {"Год": 1973, "ЗКО": 0.222, "Атырау": -0.069, "Мангистау": -0.517, "Актюбинская": -0.031, "Карагандинская": 0.451, "Улытауская": 0.114, "ВКО": 1, "Абай": 0.758, "SКО": -0.01, "Акмола": -0.073, "Костанай": -0.083, "Павлодар": 0.438, "Алматиснкая": -1.056, "Жетысу": 0.376, "Туркестанская": 0.143, "Кызылординская": -0.152, "Жамбылская": 0.501},
-        {"Год": 1974, "ЗКО": -0.001, "Атырау": -0.242, "Мангистау": -0.142, "Актюбинская": 0.117, "Карагандинская": -0.602, "Улытауская": -0.658, "ВКО": -0.813, "Абай": -0.814, "SКО": -0.51, "Акмола": -0.559, "Костанай": -0.208, "Павлодар": -1.148, "Алматиснкая": 0.184, "Жетысу": -1.049, "Туркестанская": -1.018, "Кызылординская": -1.103, "Жамбылская": -1.336},
-        {"Год": 1975, "ЗКО": 1.531, "Атырау": 1.294, "Мангистау": 0.967, "Актюбинская": 1.144, "Карагандинская": 0.79, "Улытауская": 0.778, "ВКО": 0.858, "Абай": 0.817, "SКО": 1.207, "Акмола": 1.1, "Костанай": 1.088, "Павлодар": 1.093, "Алматиснкая": -0.608, "Жетысу": 0.22, "Туркестанская": 0.517, "Кызылординская": 0.797, "Жамбылская": 0.546},
-        {"Год": 1976, "ЗКО": -2.216, "Атырау": -1.278, "Мангистау": -1.225, "Актюбинская": -1.903, "Карагандинская": -1.363, "Улытауская": -1.867, "ВКО": -0.984, "Абай": -1.061, "SКО": -1.487, "Акмола": -1.621, "Костанай": -2.026, "Павлодар": -1.125, "Алматиснкая": 0.325, "Жетысу": -0.656, "Туркестанская": -0.501, "Кызылординская": -1.347, "Жамбылская": -0.645},
-        {"Год": 1977, "ЗКО": 0.181, "Атырау": -0.05, "Мангистау": -0.275, "Актюбинская": 0.344, "Карагандинская": 0.336, "Улытауская": 0.289, "ВКО": 0.48, "Абай": 0.183, "SКО": 0.162, "Акмола": 0.185, "Костанай": -0.024, "Павлодар": 0.047, "Алматиснкая": 0.467, "Жетысу": 0.438, "Туркестанская": 0.308, "Кызылординская": 0.262, "Жамбылская": 0.318},
-        {"Год": 1978, "ЗКО": -0.878, "Атырау": -0.286, "Мангистау": -0.408, "Актюбинская": -0.511, "Карагандинская": 0.337, "Улытауская": -0.064, "ВКО": 0.905, "Абай": 0.868, "SКО": 0.249, "Акмола": 0.254, "Костанай": 0.051, "Павлодар": 0.552, "Алматиснкая": 0.065, "Жетысу": 0.608, "Туркестанская": -0.045, "Кызылординская": -0.262, "Жамбылская": 0.326},
-        {"Год": 1979, "ЗКО": 0.484, "Атырау": 1.125, "Мангистау": 0.9, "Актюбинская": 0.447, "Карагандинская": -0.119, "Улытауская": 0.469, "ВКО": -0.359, "Абай": -0.454, "SКО": -0.525, "Акмола": -0.421, "Костанай": -0.26, "Павлодар": -0.257, "Алматиснкая": 0.741, "Жетысу": 0.013, "Туркестанская": 0.281, "Кызылординская": 1.042, "Жамбылская": 0.185},
-        {"Год": 1980, "ЗКО": -0.807, "Атырау": -0.642, "Мангистау": -0.408, "Актюбинская": -0.79, "Карагандинская": 0.418, "Улытауская": 0.025, "ВКО": 0.313, "Абай": 0.429, "SКО": -0.665, "Акмола": -0.457, "Костанай": -0.946, "Павлодар": -0.288, "Алматиснкая": 0.184, "Жетысу": 0.771, "Туркестанская": 0.393, "Кызылординская": -0.438, "Жамбылская": 0.639},
-        {"Год": 1981, "ЗКО": 1.531, "Атырау": 1.294, "Мангистау": 0.967, "Актюбинская": 1.144, "Карагандинская": 0.79, "Улытауская": 0.778, "ВКО": 0.858, "Абай": 0.817, "SКО": 1.207, "Акмола": 1.1, "Костанай": 1.088, "Павлодар": 1.093, "Алматиснкая": 0.357, "Жетысу": 0.22, "Туркестанская": 0.517, "Кызылординская": 0.797, "Жамбылская": 0.546},
-        {"Год": 1982, "ЗКО": 0.356, "Атырау": -0.669, "Мангистау": -0.7, "Актюбинская": 0.1, "Карагандинская": 0.773, "Улытауская": 0.539, "ВКО": 1.54, "Абай": 1.49, "SКО": 1.027, "Акмола": 0.867, "Костанай": 0.711, "Павлодар": 1.415, "Алматиснкая": 1.241, "Жетысу": 0.586, "Туркестанская": -0.356, "Кызылординская": -0.082, "Жамбылская": 0.242},
-        {"Год": 1983, "ЗКО": 1.575, "Атырау": 1.456, "Мангистау": 0.575, "Актюбинская": 1.797, "Карагандинская": 1.745, "Улытауская": 2.189, "ВКО": 1.677, "Абай": 1.944, "SКО": 2.193, "Акмола": 2.056, "Костанай": 2.207, "Павлодар": 2.327, "Алматиснкая": -1.292, "Жетысу": 1.425, "Туркестанская": 1.186, "Кызылординская": 2.137, "Жамбылская": 1.599},
-        {"Год": 1984, "ЗКО": -0.193, "Атырау": -0.272, "Мангистау": -0.517, "Актюбинская": -0.481, "Карагандинская": -1.35, "Улытауская": -0.878, "ВКО": -2.18, "Абай": -1.993, "SКО": -1.285, "Акмола": -1.352, "Костанай": -0.619, "Павлодар": -1.708, "Алматиснкая": -0.255, "Жетысу": -1.442, "Туркестанская": -1.214, "Кызылординская": -1.072, "Жамбылская": -1.451},
-        {"Год": 1985, "ЗКО": -0.313, "Атырау": -0.558, "Мангистау": -0.775, "Актюбинская": -0.206, "Карагандинская": -0.235, "Улытауская": 0.139, "ВКО": -1.008, "Абай": -0.589, "SКО": -0.79, "Акмола": -0.619, "Костанай": -0.565, "Павлодар": -0.715, "Алматиснкая": 0.126, "Жетысу": -0.281, "Туркестанская": -0.008, "Кызылординская": 0.188, "Жамбылская": -0.186},
-        {"Год": 1986, "ЗКО": -0.414, "Атырау": 0.108, "Мангистау": 0.367, "Актюбинская": -0.245, "Карагандинская": -0.148, "Улытауская": -0.117, "ВКО": 0.017, "Абай": 0.229, "SКО": -0.705, "Акмола": -0.465, "Костанай": -0.565, "Павлодар": -0.437, "Алматиснкая": 0.581, "Жетысу": 0.176, "Туркестанская": 0.418, "Кызылординская": 0.117, "Жамбылская": 0.502},
-        {"Год": 1987, "ЗКО": -1.784, "Атырау": -1.292, "Мангистау": -0.717, "Актюбинская": -1.063, "Карагандинская": -0.207, "Улытауская": -0.289, "ВКО": -0.386, "Абай": -0.155, "SКО": -0.463, "Акмола": -0.645, "Костанай": -0.756, "Павлодар": -0.37, "Алматиснкая": 0.311, "Жетысу": 0.604, "Туркестанская": 0.397, "Кызылординская": -0.255, "Жамбылская": 0.651},
-        {"Год": 1988, "ЗКО": 0.046, "Атырау": 0.081, "Мангистау": 0.142, "Актюбинская": 0.372, "Карагандинская": 0.564, "Улытауская": 0.881, "ВКО": 0.144, "Абай": 0.232, "SКО": 0.785, "Акмола": 0.844, "Костанай": 0.638, "Павлодар": 0.643, "Алматинская": 0.059, "Жетысу": 0.184, "Туркестанская": 0.876, "Кызылординская": 0.878, "Жамбылская": 0.488},
-        {"Год": 1989, "ЗКО": 1.035, "Атырау": 1.172, "Мангистау": 0.825, "Актюбинская": 0.547, "Карагандинская": 0.731, "Улытауская": 1.242, "ВКО": 1.6, "Абай": 1.307, "SКО": 1.052, "Акмола": 0.952, "Костанай": 0.99, "Павлодар": 1.12, "Алматинская": 1.054, "Жетысу": 0.417, "Туркестанская": -0.03, "Кызылординская": 0.932, "Жамбылская": 0.28},
-        {"Год": 1990, "ЗКО": 0.892, "Атырау": 0.794, "Мангистау": 0.333, "Актюбинская": 0.892, "Карагандинская": 0.575, "Улытауская": 0.629, "ВКО": 1.556, "Абай": 1.32, "SКО": 1.564, "Акмола": 1.025, "Костанай": 1.302, "Павлодар": 1.382, "Алматинская": 0.656, "Жетысу": 0.97, "Туркестанская": 0.533, "Кызылординская": 0.932, "Жамбылская": 0.89},
-        {"Год": 1991, "ЗКО": 1.123, "Атырау": 1.056, "Мангистау": 0.667, "Актюбинская": 1.061, "Карагандинская": 0.85, "Улытауская": 0.922, "ВКО": 1.076, "Абай": 1.085, "SКО": 1.326, "Акмола": 1.246, "Костанай": 1.27, "Павлодар": 0.983, "Алматинская": 0.476, "Жетысу": 0.671, "Туркестанская": 0.107, "Кызылординская": 0.555, "Жамбылская": 0.539},
-        {"Год": 1992, "ЗКО": -0.066, "Атырау": 0.081, "Мангистау": -0.2, "Актюбинская": -0.49, "Карагандинская": -0.149, "Улытауская": -0.206, "ВКО": 0.352, "Абай": 0.48, "SКО": 0.008, "Акмола": -0.106, "Костанай": -0.315, "Павлодар": 0.352, "Алматинская": -0.471, "Жетысу": 0.464, "Туркестанская": 0.262, "Кызылординская": 0.223, "Жамбылская": 0.582},
-        {"Год": 1993, "ЗКО": -1.334, "Атырау": -1.231, "Мангистау": -1.4, "Актюбинская": -1.604, "Карагандинская": -1.574, "Улытауская": -1.403, "ВКО": -0.436, "Абай": -0.846, "SКО": -0.893, "Акмола": -1.156, "Костанай": -1.325, "Павлодар": -0.622, "Алматинская": 0.134, "Жетысу": -0.668, "Туркестанская": -0.956, "Кызылординская": -1.281, "Жамбылская": -0.565},
-        {"Год": 1994, "ЗКО": -1.147, "Атырау": -0.942, "Мангистау": -0.65, "Актюбинская": -1.166, "Карагандинская": 0.21, "Улытауская": 0.15, "ВКО": 0.976, "Абай": 0.701, "SКО": -0.457, "Акмола": -0.307, "Костанай": -0.459, "Павлодар": 0.453, "Алматинская": 0.594, "Жетысу": 0.217, "Туркестанская": -0.117, "Кызылординская": -0.442, "Жамбылская": 0.06},
-        {"Год": 1995, "ЗКО": 2.622, "Атырау": 2.232, "Мангистау": 1.542, "Актюбинская": 1.833, "Карагандинская": 0.721, "Улытауская": 1.488, "ВКО": 1.123, "Абай": 1.085, "SКО": 1.911, "Акмола": 1.636, "Костанай": 2.096, "Павлодар": 1.778, "Алматинская": -0.488, "Жетысу": 0.817, "Туркестанская": 0.856, "Кызылординская": 1.707, "Жамбылская": 0.819},
-        {"Год": 1996, "ЗКО": -0.387, "Атырау": -0.011, "Мангистау": 0.408, "Актюбинская": -0.956, "Карагандинская": -1.243, "Улытауская": -1.097, "ВКО": -0.433, "Абай": -0.457, "SКО": -1.387, "Акмола": -1.532, "Костанай": -1.425, "Павлодар": -1.255, "Алматинская": 1.356, "Жетысу": -0.426, "Туркестанская": -0.441, "Кызылординская": -0.582, "Жамбылская": -0.557},
-        {"Год": 1997, "ЗКО": 0.135, "Атырау": 0.192, "Мангистау": 0.283, "Актюбинская": 0.423, "Карагандинская": 1.523, "Улытауская": 1.658, "ВКО": 2.024, "Абай": 1.946, "SКО": 1.375, "Акмола": 1.517, "Костанай": 1.314, "Павлодар": 1.897, "Алматинская": 0.513, "Жетысу": 1.504, "Туркестанская": 0.885, "Кызылординская": 1.202, "Жамбылская": 1.264},
-        {"Год": 1998, "ЗКО": 0.471, "Атырау": 0.319, "Мангистау": 0.658, "Актюбинская": 0.199, "Карагандинская": 0.139, "Улытауская": 0.222, "ВКО": 0.554, "Абай": 0.361, "SКО": 0.327, "Акмола": 0.461, "Костанай": 0.894, "Павлодар": 0.247, "Алматинская": 0.976, "Жетысу": 0.458, "Туркестанская": 0.277, "Кызылординская": 0.103, "Жамбылская": 0.429},
-        {"Год": 1999, "ЗКО": 1.766, "Атырау": 1.564, "Мангистау": 1.458, "Актюбинская": 0.988, "Карагандинская": 0.517, "Улытауская": 1.153, "ВКО": 1.131, "Абай": 1.109, "SКО": 0.872, "Акмола": 0.826, "Костанай": 0.842, "Павлодар": 1.138, "Алматинская": 1.013, "Жетысу": 0.901, "Туркестанская": 1.007, "Кызылординская": 1.548, "Жамбылская": 1.256},
-        {"Год": 2000, "ЗКО": 1.641, "Атырау": 1.485, "Мангистау": 1.242, "Актюбинская": 0.987, "Карагандинская": 0.23, "Улытауская": 0.789, "ВКО": 0.467, "Абай": 0.623, "SКО": 0.808, "Акмола": 0.432, "Костанай": 0.984, "Павлодар": 0.348, "Алматинская": 0.997, "Жетысу": 0.758, "Туркестанская": 1.265, "Кызылординская": 1.647, "Жамбылская": 1.46},
-        {"Год": 2001, "ЗКО": 1.385, "Атырау": 1.293, "Мангистау": 1.033, "Актюбинская": 1.007, "Карагандинская": 0.646, "Улытауская": 1.306, "ВКО": 0.477, "Абай": 0.664, "SКО": 0.61, "Акмола": 1.13, "Костанай": 1.094, "Павлодар": 1.075, "Алматинская": 1.522, "Жетысу": 0.773, "Туркестанская": 1.186, "Кызылординская": 1.21, "Жамбылская": 0.985},
-        {"Год": 2002, "ЗКО": 1.069, "Атырау": 0.917, "Мангистау": 0.65, "Актюбинская": 1.012, "Карагандинская": 1.764, "Улытауская": 2.011, "ВКО": 1.998, "Абай": 2.083, "SКО": 1.329, "Акмола": 1.814, "Костанай": 1.525, "Павлодар": 2.278, "Алматинская": 0.137, "Жетысу": 1.71, "Туркестанская": 1.021, "Кызылординская": 1.617, "Жамбылская": 1.52},
-        {"Год": 2003, "ЗКО": 0.472, "Атырау": 0.478, "Мангистау": -0.05, "Актюбинская": 0.093, "Карагандинская": -0.044, "Улытауская": 0.208, "ВКО": 0.389, "Абай": 0.148, "SКО": 0.752, "Акмола": 0.443, "Костанай": 0.624, "Павлодар": 0.857, "Алматинская": 1.332, "Жетысу": -0.002, "Туркестанская": 0.477, "Кызылординская": 0.623, "Жамбылская": 0.511},
-        {"Год": 2004, "ЗКО": 1.978, "Атырау": 1.941, "Мангистау": 2.042, "Актюбинская": 1.915, "Карагандинская": 1.105, "Улытауская": 1.606, "ВКО": 1.019, "Абай": 1.165, "SКО": 1.451, "Акмола": 1.553, "Костанай": 1.857, "Павлодар": 1.262, "Алматинская": 1.02, "Жетысу": 1.278, "Туркестанская": 1.597, "Кызылординская": 2.303, "Жамбылская": 1.531},
-        {"Год": 2005, "ЗКО": 1.416, "Атырау": 1.845, "Мангистау": 1.233, "Актюбинская": 1.014, "Карагандинская": 1.245, "Улытауская": 1.489, "ВКО": 0.519, "Абай": 0.978, "SКО": 0.979, "Акмола": 0.967, "Костанай": 1.012, "Павлодар": 0.948, "Алматинская": 1.481, "Жетысу": 0.892, "Туркестанская": 1.166, "Кызылординская": 1.967, "Жамбылская": 0.987},
-        {"Год": 2006, "ЗКО": 0.925, "Атырау": 0.603, "Мангистау": 0.842, "Актюбинская": 1.268, "Карагандинская": 1.311, "Улытауская": 1.442, "ВКО": 1.322, "Абай": 1.495, "SКО": 0.61, "Акмола": 1.043, "Костанай": 1.331, "Павлодар": 0.803, "Алматинская": 1.478, "Жетысу": 1.546, "Туркестанская": 0.958, "Кызылординская": 1.192, "Жамбылская": 1.383},
-        {"Год": 2007, "ЗКО": 1.661, "Атырау": 1.75, "Мангистау": 1.767, "Актюбинская": 0.686, "Карагандинская": 1.329, "Улытауская": 1.389, "ВКО": 1.834, "Абай": 2.114, "SКО": 1.482, "Акмола": 1.394, "Костанай": 1.064, "Павлодар": 1.948, "Алматинская": 1.206, "Жетысу": 1.567, "Туркестанская": 1.062, "Кызылординская": 1.607, "Жамбылская": 1.565},
-        {"Год": 2008, "ЗКО": 1.559, "Атырау": 0.558, "Мангистау": 0.458, "Актюбинская": 1.549, "Карагандинская": 1.234, "Улытауская": 1.608, "ВКО": 1.381, "Абай": 1.476, "SКО": 1.777, "Акмола": 1.454, "Костанай": 1.805, "Павлодар": 1.623, "Алматинская": 0.764, "Жетысу": 1.43, "Туркестанская": 0.732, "Кызылординская": 1.142, "Жамбылская": 1.155},
-        {"Год": 2009, "ЗКО": 1.336, "Атырау": 0.742, "Мангистау": 0.892, "Актюбинская": 0.768, "Карагандинская": 0.292, "Улытауская": 0.819, "ВКО": 0.097, "Абай": 0.228, "SКО": 0.418, "Акмола": 0.325, "Костанай": 0.619, "Павлодар": -0.187, "Алматинская": 0.879, "Жетысу": 0.663, "Туркестанская": 0.919, "Кызылординская": 1.257, "Жамбылская": 1.004},
-        {"Год": 2010, "ЗКО": 2.258, "Атырау": 2.175, "Мангистау": 2.008, "Актюбинская": 2.034, "Карагандинская": 0.088, "Улытауская": 1.172, "ВКО": -0.793, "Абай": -0.809, "SКО": 0.296, "Акмола": 0.536, "Костанай": 1.196, "Павлодар": -0.803, "Алматинская": 0.386, "Жетысу": 0.584, "Туркестанская": 1.691, "Кызылординская": 1.898, "Жамбылская": 1.021},
-        {"Год": 2011, "ЗКО": -0.223, "Атырау": -0.058, "Мангистау": 0.4, "Актюбинская": -0.44, "Карагандинская": -0.096, "Улытауская": -0.053, "ВКО": 0.118, "Абай": 0.011, "SКО": -0.308, "Акмола": -0.222, "Костанай": -0.544, "Павлодар": 0.172, "Алматинская": 0.094, "Жетысу": -0.007, "Туркестанская": 0.404, "Кызылординская": 0.272, "Жамбылская": 0.185},
-        {"Год": 2012, "ЗКО": 1.756, "Атырау": 1.019, "Мангистау": 0.867, "Актюбинская": 1.746, "Карагандинская": -0.452, "Улытауская": 0.164, "ВКО": -0.465, "Абай": -0.533, "SКО": 0.463, "Акмола": 0.471, "Костанай": 1.022, "Павлодар": -0.182, "Алматинская": 1.707, "Жетысу": -0.376, "Туркестанская": 0.309, "Кызылординская": 0.712, "Жамбылская": 0.032},
-        {"Год": 2013, "ЗКО": 2.235, "Атырау": 1.944, "Мангистау": 1.658, "Актюбинская": 2.208, "Карагандинская": 1.895, "Улытауская": 2.422, "ВКО": 1.997, "Абай": 1.91, "SКО": 1.514, "Акмола": 1.528, "Костанай": 1.796, "Павлодар": 1.523, "Алматинская": 0.031, "Жетысу": 1.684, "Туркестанская": 1.669, "Кызылординская": 2.55, "Жамбылская": 2.033},
-        {"Год": 2014, "ЗКО": 0.434, "Атырау": 0.706, "Мангистау": 1.108, "Актюбинская": 0.274, "Карагандинская": -0.526, "Улытауская": -0.044, "ВКО": 0.587, "Абай": 0.25, "SКО": 0.086, "Акмола": -0.011, "Костанай": 0.499, "Павлодар": 0.363, "Алматинская": 1.863, "Жетысу": 0.131, "Туркестанская": -0.124, "Кызылординская": -0.298, "Жамбылская": -0.221},
-        {"Год": 2015, "ЗКО": 1.782, "Атырау": 1.447, "Мангистау": 1.425, "Актюбинская": 1.206, "Карагандинская": 1.408, "Улытауская": 1.928, "ВКО": 2.091, "Абай": 1.892, "SКО": 1.042, "Акмола": 1.249, "Костанай": 1.23, "Павлодар": 1.745, "Алматинская": 1.769, "Жетысу": 1.985, "Туркестанская": 1.6, "Кызылординская": 2.143, "Жамбылская": 1.932},
-        {"Год": 2016, "ЗКО": 1.808, "Атырау": 1.806, "Мангистау": 1.542, "Актюбинская": 1.757, "Карагандинская": 0.929, "Улытауская": 1.614, "ВКО": 1.246, "Абай": 1.033, "SКО": 0.933, "Акмола": 1.076, "Костанай": 1.255, "Павлодар": 1.093, "Алматинская": 1.316, "Жетысу": 1.503, "Туркестанская": 1.877, "Кызылординская": 2.5, "Жамбылская": 1.849},
-        {"Год": 2017, "ЗКО": 1.375, "Атырау": 1.617, "Мангистау": 1.758, "Актюбинская": 1.163, "Карагандинская": 1.094, "Улытауская": 1.267, "ВКО": 1.538, "Абай": 1.568, "SКО": 1.169, "Акмола": 1.475, "Костанай": 1.103, "Павлодар": 1.422, "Алматинская": 0.356, "Жетысу": 1.147, "Туркестанская": 1.079, "Кызылординская": 1.465, "Жамбылская": 1.088},
-        {"Год": 2018, "ЗКО": 0.62, "Атырау": 0.897, "Мангистау": 1.542, "Актюбинская": 0.239, "Карагандинская": -0.635, "Улытауская": -0.553, "ВКО": 0.104, "Абай": -0.081, "SКО": -0.693, "Акмола": -0.726, "Костанай": -0.3, "Павлодар": -0.788, "Алматинская": 1.682, "Жетысу": 0.16, "Туркестанская": 0.913, "Кызылординская": 0.37, "Жамбылская": 0.196},
-        {"Год": 2019, "ЗКО": 1.599, "Атырау": 1.811, "Мангистау": 1.667, "Актюбинская": 1.454, "Карагандинская": 0.957, "Улытауская": 1.172, "ВКО": 1.695, "Абай": 1.407, "SКО": 1.114, "Акмола": 1.13, "Костанай": 1.25, "Павлодар": 1.107, "Алматинская": 1.147, "Жетысу": 1.548, "Туркестанская": 1.909, "Кызылординская": 2.225, "Жамбылская": 2.012},
-        {"Год": 2020, "ЗКО": 2.546, "Атырау": 2.275, "Мангистау": 1.817, "Актюбинская": 2.228, "Карагандинская": 1.289, "Улытауская": 1.306, "ВКО": 2.213, "Абай": 1.893, "SКО": 3.163, "Акмола": 2.6, "Костанай": 2.547, "Павлодар": 2.968, "Алматинская": 1.592, "Жетысу": 1.229, "Туркестанская": 0.754, "Кызылординская": 1.758, "Жамбылская": 0.961},
-        {"Год": 2021, "ЗКО": 2.502, "Атырау": 2.627, "Мангистау": 2.039, "Актюбинская": 2.099, "Карагандинская": 1.132, "Улытауская": 1.48, "ВКО": 1.211, "Абай": 1.247, "SКО": 0.954, "Акмола": 1.02, "Костанай": 1.628, "Павлодар": 0.942, "Алматинская": 2.031, "Жетысу": 1.385, "Туркестанская": 1.893, "Кызылординская": 2.28, "Жамбылская": 1.585},
-        {"Год": 2022, "ЗКО": 2.118, "Атырау": 2.325, "Мангистау": 2.208, "Актюбинская": 1.599, "Карагандинская": 1.457, "Улытауская": 2.075, "ВКО": 1.823, "Абай": 1.78, "SКО": 1.349, "Акмола": 1.258, "Костанай": 1.254, "Павлодар": 1.202, "Алматинская": 2.128, "Жетысу": 1.914, "Туркестанская": 2.047, "Кызылординская": 2.415, "Жамбылская": 2.329},
-        {"Год": 2023, "ЗКО": 2.935, "Атырау": 3.019, "Мангистау": 2.475, "Актюбинская": 2.905, "Карагандинская": 2.504, "Улытауская": 3.108, "ВКО": 2.496, "Абай": 2.417, "SКО": 2.619, "Акмола": 2.651, "Костанай": 2.608, "Павлодар": 2.635, "Алматинская": 1.726, "Жетысу": 2.114, "Туркестанская": 2.352, "Кызылординская": 3.46, "Жамбылская": 2.258},
-        {"Год": 2024, "ЗКО": 2.092, "Атырау": 2.353, "Мангистау": 2.256, "Актюбинская": 1.667, "Карагандинская": 1.396, "Улытауская": 1.911, "ВКО": 2.067, "Абай": 2.032, "SКО": 1.265, "Акмола": 1.225, "Костанай": 1.446, "Павлодар": 1.634, "Алматинская": 2.726, "Жетысу": 1.678, "Туркестанская": 1.535, "Кызылординская": 2.301, "Жамбылская": 1.643},
-        {"Год": 2025, "ЗКО": 3.511, "Атырау": 2.906, "Мангистау": 2.1, "Актюбинская": 3.226, "Карагандинская": 2.744, "Улытауская": 3.653, "ВКО": 2.197, "Абай": 2.543, "SКО": 3.276, "Акмола": 3.309, "Костанай": 3.515, "Павлодар": 3.025, "Алматинская": None, "Жетысу": 2.494, "Туркестанская": 2.926, "Кызылординская": 3.537, "Жамбылская": 2.977}
-    ]
-
-    df_anom = pd.DataFrame(data_list)
-
-    # 2. Маппинг (соответствие) названий
-    column_mapping = {
-        "Западно-Казахстанская область": "ЗКО",
-        "Атырауская область": "Атырау",
-        "Мангистауская область": "Мангистау",
-        "Актюбинская область": "Актюбинская",
-        "Карагандинская область": "Карагандинская",
-        "Улытауская область": "Улытауская",
-        "Восточно-Казахстанская область": "ВКО",
-        "Область Абай": "Абай",
-        "Северо-Казахстанская область": "СКО",
-        "Акмолинская область": "Акмола",
-        "Костанайская область": "Костанай",
-        "Павлодарская область": "Павлодар",
-        "Алматинская область": "Алматинская",
-        "Область Жетысу": "Жетысу",
-        "Туркестанская область": "Туркестанская",
-        "Кызылординская область": "Кызылординская",
-        "Жамбылская область": "Жамбылская"
-    }
 
 
-    # 1. Создаем переменную (убедитесь, что имя совпадает!)
-    selected_name = st.selectbox("Выберите область Казахстана:", list(ALL_REGIONS_DATABASE.keys()))
+    @st.cache_data
+    def load_all_data():
+        # Попытка загрузить файлы по их реальным именам из репозитория
+        try:
+            # Вариант 1 (из последних загрузок)
+            df_temp = pd.read_excel("Summary_Anom_T_1941-2025.xlsx")
+            df_precip = pd.read_excel("Summary_Anom_R_1941-2025.xlsx")
+# 2. ОБЯЗАТЕЛЬНО блок EXCEPT (именно его не хватает)
+        except FileNotFoundError:
+            # Если не нашли, пробуем старые названия (для страховки)
+            try:
+                df_temp = pd.read_csv("Summary_Anom_T_1941-2025.xlsx - Temp.csv")
+                df_precip = pd.read_csv("Summary_Anom_R_1941-2025.xlsx - Sheet1.csv")
+            except:
+                st.error("Файлы данных не найдены! Проверьте названия в репозитории.")
+                return None, None, {}
 
-    # 2. Извлекаем данные (эта строка тоже должна использовать selected_name)
-    reg = ALL_REGIONS_DATABASE[selected_name]
+        mapping = {
+            "Абайская область": {"col_t": "АБАЙ.ОБЛ", "col_p": "Абайск.обл"},
+            "Акмолинская область": {"col_t": "АКМОЛ.ОБЛ", "col_p": "Акм обл"},
+            "Актюбинская область": {"col_t": "АКТЮБИН.ОБЛ", "col_p": "Актю обл"},
+            "Алматинская область": {"col_t": "АЛМАТИН.ОБЛ", "col_p": "Алмат обл"},
+            "Атырауская область": {"col_t": "АТЫРАУ.ОБЛ", "col_p": "Атыр обл"},
+            "Восточно-Казахстанская область": {"col_t": "ВКО", "col_p": "ВКО"},
+            "Жамбылская область": {"col_t": "ЖАМБЫЛ.ОБЛ", "col_p": "жамб обл"},
+            "Жетысуская область": {"col_t": "ЖЕТЫСУ.ОБЛ", "col_p": "Жетысус обл"},
+            "Западно-Казахстанская область": {"col_t": "ЗКО", "col_p": "ЗКО"},
+            "Карагандинская область": {"col_t": "КАРАГ.ОБЛ", "col_p": "Караг обл"},
+            "Костанайская область": {"col_t": "КОСТ.ОБЛ", "col_p": "Кост обл"},
+            "Кызылординская область": {"col_t": "КЫЗЫЛ.ОБЛ", "col_p": "КЗО"},
+            "Мангистауская область": {"col_t": "МАНГИС.ОБЛ", "col_p": "Мангист обл"},
+            "Павлодарская область": {"col_t": "ПАВЛ.ОБЛ", "col_p": "Павл обл"},
+            "Северо-Казахстанская область": {"col_t": "СКО", "col_p": "СКО"},
+            "Туркестанская область": {"col_t": "ТУРКЕСТ.ОБЛ", "col_p": "Турк обл"},
+            "Улытауская область": {"col_t": "УЛЫТАУ.ОБЛ", "col_p": "Улытау обл"},
+            "Казахстан (в целом)": {"col_t": "КАЗАХСТАН", "col_p": "Казахстан"}
+        }
+
+        return df_temp, df_precip, mapping
     
-    # --- 4. КАРТОЧКИ ПОКАЗАТЕЛЕЙ (ДИНАМИЧЕСКИЕ) ---
-    c1, c2, c3, c4 = st.columns(4)
+    df_temp, df_precip, name_mapping = load_all_data()    
 
-    # 1. Территория
-    c1.metric(
-        label="Территория", 
-        value=reg['area'], 
-        delta=f"{reg['area_perc']} от РК", 
-        delta_color="off"
-    )
-
-    # 2. Температура (с принудительным преобразованием в float для вычислений)
-    temp_val = float(reg['temp_2025'])
-    norm_val = float(reg['norm_temp'])
-    diff = temp_val - norm_val
-
-    c2.metric(
-        label="Температура 2025", 
-        value=f"{temp_val} °С", 
-        delta=f"{diff:+.2f} °С к норме", # Автоматически добавит '+' или '-'
-        delta_color="inverse" # Красный цвет при потеплении (так как это риск)
-    )
-
-    # 3. Аномалия
-    c3.metric(
-        label="Аномалия", 
-        value=f"+{reg['anom_2025']} °С", 
-        delta="Ранг №1 в истории",
-        delta_color="normal"
-    )
-
-    # 4. Осадки
-    c4.metric(
-        label="Осадки 2025", 
-        value=f"{reg['precip_2025']} мм", 
-        delta=f"{reg['prec_norm']} от нормы",
-        delta_color="off"
-    )
-
-    # --- 3. КЛИМАТИЧЕСКИЕ ЗОНЫ (ДИНАМИЧЕСКИЕ) ---
-    st.markdown("### 🗺️ Климатические зоны области")
-
-    # Берем список зон для выбранной области
-    region_zones = reg.get("zones", [])
-
-    if region_zones:
-        # Создаем колонки динамически по количеству зон
-        cols = st.columns(len(region_zones))
-        
-        for idx, zone in enumerate(region_zones):
-            with cols[idx]:
-                st.markdown(f"""
-                    <div style="background: white; border: 1px solid #e6e9ef; border-radius: 12px; padding: 15px; height: 100%;">
-                        <h4 style="color:{zone['color']}; margin-top:0;">{zone['title']}</h4>
-                        <p style="font-size:0.9rem; color:#555;">{zone['desc']}</p>
-                        <div style="background:{zone['bg']}; padding:8px; border-radius:6px; font-size:0.85rem;">
-                            <b>Осадки:</b> {zone['precip']}
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-    else:
-        st.info("Информация о климатических зонах для данного региона уточняется.")
-    
-    
-    import plotly.express as px
-    import plotly.graph_objects as go
-    import pandas as pd
-    import streamlit as st
-
+      
     def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
         st.subheader(title)
         st.caption(subtitle)
         
-       
-        # 2. Основной график (Столбцы + Линия тренда)
+        # Создаем график
         fig_chart = go.Figure()
         
-        # Определяем цвета столбцов: красный если > 0, синий если < 0
+        # Определяем цвета столбцов
         colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in df[column_name]]
         
-        # Добавляем столбцы аномалий
         fig_chart.add_trace(go.Bar(
             x=df['Год'], 
             y=df[column_name], 
@@ -6883,56 +7251,98 @@ with tabs[6]:
             name='Ежегодная аномалия'
         ))
         
-        # Считаем скользящее среднее (Тренд)
-        sma_col = df[column_name].rolling(window=10, min_periods=1, center=True).mean()
+        # Тренд (скользящее среднее)
+        sma = df[column_name].rolling(window=10, min_periods=1, center=True).mean()
         fig_chart.add_trace(go.Scatter(
-            x=df['Год'], 
-            y=sma_col, 
-            mode='lines', 
-            line=dict(color='#222', width=2.5), 
-            name='10-летнее среднее'
+            x=df['Год'], y=sma, mode='lines', 
+            line=dict(color='#222', width=2), name='Тренд'
         ))
 
-        fig_chart.update_layout(
-            height=320, 
-            margin=dict(l=0, r=0, t=10, b=10),
-            showlegend=True, 
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=True, gridcolor='#f0f0f0', dtick=20),
-            yaxis=dict(title=f"Аномалия ({unit})", showgrid=True, gridcolor='#f0f0f0', zeroline=True, zerolinecolor='#ccc')
-        )
         st.plotly_chart(fig_chart, use_container_width=True)
+    
+# --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
 
-    # --- ПРИМЕР ВЫЗОВА В КОЛОНКАХ ---
+    # 1. Выбор области (используем ключи из твоей базы ALL_REGIONS_DATABASE)
+    selected_name = st.selectbox("Выберите область Казахстана:", list(ALL_REGIONS_DATABASE.keys()))
 
-    # Допустим, ты уже создал DataFrame из словаря, как мы обсуждали ранее:
-    # df_anom = pd.DataFrame(data_anom) 
+    # 2. Получаем данные по области из статической базы (площадь, описание зон и т.д.)
+    reg = ALL_REGIONS_DATABASE[selected_name]
 
-    col_l, col_r = st.columns(2)
+    # 3. Связываем выбор пользователя с названиями колонок в CSV через mapping
+    region_cols = name_mapping.get(selected_name)
 
-    with col_l:
-        render_climate_charts(
-            df_anom, "СКО", 
-            "Температура воздуха", 
-            "Графическое представление аномалий температуры (отклонение от нормы).",
-            'RdBu_r', ['#d32f2f', '#1f77b4'], "°C"
+    if region_cols:
+        col_t = region_cols['col_t']
+        col_p = region_cols['col_p']
+        
+    
+        # Извлекаем последние данные (2025 год) для карточек
+        # df_temp и df_precip должны быть загружены заранее
+        current_temp_anom = df_temp[col_t].iloc[-1]
+        current_precip_anom = df_precip[col_p].iloc[-1]
+        
+        # Расчет текущей температуры: Норма + Аномалия
+        temp_2025 = float(reg['norm_temp']) + current_temp_anom
+
+        # --- 4. ОБНОВЛЕННЫЕ КАРТОЧКИ ---
+        c1, c2, c3, c4 = st.columns(4)
+
+        # Карточка 1: Территория (без изменений)
+        c1.metric("Территория", reg['area'], delta=f"{reg['area_perc']} от РК", delta_color="off")
+
+        # Карточка 2: Температура (динамическая из CSV)
+        c2.metric(
+            label="Температура 2025", 
+            value=f"{temp_2025:.1f} °С", 
+            delta=f"{current_temp_anom:+.2f} °С к норме",
+            delta_color="inverse"
         )
 
-    # Вместо "Осадки_СКО" используй точное имя из твоего словаря
-    with col_r:
-        render_climate_charts(
-            df_anom, "СКО", 
-            "Осадки", 
-            "Графическое представление аномалийосадков (отклонение от нормы).",
-            'BrBG', ['#2e7d32', '#8d6e63'], "мм"
+        # Карточка 3: Аномалия (динамическая из CSV)
+        c3.metric(
+            label="Текущая аномалия", 
+            value=f"{current_temp_anom:+.2f} °С", 
+            delta="Ранг №1" if current_temp_anom > 2.0 else "Выше нормы",
+            delta_color="normal"
         )
 
+        # Карточка 4: Осадки (динамическая из CSV)
+        c4.metric(
+            label="Осадки 2025", 
+            value=f"{current_precip_anom:+.1f} %", 
+            delta="отклонение",
+            delta_color="off"
+        )
+    
 
-    # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
-    st.markdown("### 📊 Климатические тренды")
+        
+        # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
+        st.markdown("---")
+            # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
+        st.markdown("### 📊 Климатические тренды")
+        
+        
+        col_l, col_r = st.columns(2)
 
+        with col_l:
+            render_climate_charts(
+                df_temp, col_t, 
+                "Температура воздуха", 
+                "Аномалии температуры (°C)",
+                'RdBu_r',                
+                ['#d32f2f', '#1f77b4'], "°C"
+            )
+
+        with col_r:
+            render_climate_charts(
+                df_precip, col_p, 
+                "Осадки", 
+                "Отклонение осадков от нормы (%)", 
+                'BrBG',                
+                ['#2e7d32', '#8d6e63'], "%"
+            )
+        
+ 
     # Стили для горизонтального отображения трендов
     st.markdown("""
         <style>
@@ -6989,89 +7399,92 @@ with tabs[6]:
         </div>
     """, unsafe_allow_html=True)
 
-    
-     # --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА (В ОДНУ СТРОКУ) ---
+    st.markdown("---")    
+# --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА ---
     st.markdown("### 📉 Статистический анализ")
 
-    # Создаем две основные колонки для Температуры и Осадков
+    # Получаем данные региона (reg уже определен выше через selected_name)
+    tn = reg.get('t_norm', {"w": 0, "sp": 0, "su": 0, "au": 0, "y": 0})
+    pn = reg.get('p_norm', {"w": 0, "sp": 0, "su": 0, "au": 0, "y": 0})
+
+    # Расчет значений 2025 года на основе аномалии из CSV
+    # Температура: Норма + Аномалия
+    t25 = {k: v + current_temp_anom for k, v in tn.items()}
+    # Осадки: Норма * (1 + % аномалии / 100)
+    p25 = {k: v * (1 + current_precip_anom / 100) for k, v in pn.items()}
+
     col_main_temp, col_main_precip = st.columns(2, gap="large")
 
     # --- ЛЕВАЯ КОЛОНКА: ТЕМПЕРАТУРА ---
     with col_main_temp:
         st.subheader("🌡️ Температурный режим")
-        
-        # Внутреннее разделение для таблицы и рейтинга
         t_col1, t_col2 = st.columns([1.6, 1])
         
         with t_col1:
-            st.markdown("**Сезонные температуры (СКО)**")
-            temp_data = {
+            st.markdown(f"**Сезонные показатели (°C)**")
+            temp_df = pd.DataFrame({
                 "Период": ["Норма", "2025"],
-                "Зима": ["-15.5", "-9.5"],
-                "Весна": ["2.5", "7.2"],
-                "Лето": ["18.2", "18.7"],
-                "Осень": ["2.1", "4.8"],
-                "Год": ["1.8", "5.1"]
-            }
-            st.table(pd.DataFrame(temp_data))
-            st.caption("💡 Макс: +24°С (1989), Мин: -29.8°С (1969)")
+                "Зима": [f"{tn['w']}", f"{t25['w']:.1f}"],
+                "Весна": [f"{tn['sp']}", f"{t25['sp']:.1f}"],
+                "Лето": [f"{tn['su']}", f"{t25['su']:.1f}"],
+                "Осень": [f"{tn['au']}", f"{t25['au']:.1f}"],
+                "Год": [f"{tn['y']}", f"{t25['y']:.1f}"]
+            })
+            st.table(temp_df)
+            extreme = reg.get('temp_extreme', {"max": "н/д", "min": "н/д"})
+            st.caption(f"💡 Макс: {extreme['max']}, Мин: {extreme['min']}")
 
         with t_col2:
             st.markdown("**🏆 Топ лет**")
-            sko_ranks = [
-                {"y": 2025, "v": 5.09, "c": "#990000"},
-                {"y": 2020, "v": 4.98, "c": "#b30000"},
-                {"y": 2023, "v": 4.43, "c": "#d32f2f"},
-                {"y": 1983, "v": 4.01, "c": "#e57373"},
-                {"y": 1995, "v": 3.73, "c": "#ef9a9a"}
-            ]
-            rows_html = "".join([f"""
-                <div style="display:flex; align-items:center; margin-bottom:8px; height:20px;">
-                    <div style="width:35px; font-size:10px; font-weight:bold;">{item['y']}</div>
-                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px;">
-                        <div style="width:{(item['v']/5.09)*100}%; background:{item['c']}; height:100%; border-radius:2px;"></div>
-                    </div>
-                    <div style="width:35px; text-align:right; font-size:10px; font-weight:bold; margin-left:5px;">{item['v']}°</div>
-                </div>""" for item in sko_ranks])
-            components.html(f'<div style="font-family:sans-serif; padding-top:10px;">{rows_html}</div>', height=160)
+            # Используем данные ТОП-5 из вашего словаря
+            top_data = reg.get('top_years', [])
+            if top_data:
+                max_val = max([item['val'] for item in top_data])
+                rows_html = "".join([f"""
+                    <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                        <div style="width:35px; font-size:11px; font-weight:bold;">{item['year']}</div>
+                        <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
+                            <div style="width:{(item['val']/max_val)*100}%; background:{item['col']}; height:100%; border-radius:2px;"></div>
+                        </div>
+                        <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{item['val']:.1f}°</div>
+                    </div>""" for item in top_data])
+                st.components.v1.html(rows_html, height=160)
 
     # --- ПРАВАЯ КОЛОНКА: ОСАДКИ ---
     with col_main_precip:
         st.subheader("💧 Режим увлажнения")
-        
         p_col1, p_col2 = st.columns([1.6, 1])
         
         with p_col1:
-            st.markdown("**Сезонные осадки, мм (СКО)**")
-            prec_data = {
+            st.markdown(f"**Сезонные осадки (мм)**")
+            prec_df = pd.DataFrame({
                 "Период": ["Норма", "2025"],
-                "Зима": ["47.3", "58.4"],
-                "Весна": ["65.6", "116.8"],
-                "Лето": ["152.6", "175.1"],
-                "Осень": ["87.1", "88.7"],
-                "Год": ["352.6", "439.9"]
-            }
-            st.table(pd.DataFrame(prec_data))
+                "Зима": [f"{pn['w']}", f"{p25['w']:.0f}"],
+                "Весна": [f"{pn['sp']}", f"{p25['sp']:.0f}"],
+                "Лето": [f"{pn['su']}", f"{p25['su']:.0f}"],
+                "Осень": [f"{pn['au']}", f"{p25['au']:.0f}"],
+                "Год": [f"{pn['y']}", f"{p25['y']:.0f}"]
+            })
+            st.table(prec_df)
+            st.caption(f"Процент от нормы: {current_precip_anom + 100:.1f}%")
 
         with p_col2:
-            st.markdown("**🏆 Топ лет**")
-            sko_ranks = [
-                {"y": 2025, "v": 5.09, "c": "#990000"},
-                {"y": 2020, "v": 4.98, "c": "#b30000"},
-                {"y": 2023, "v": 4.43, "c": "#d32f2f"},
-                {"y": 1983, "v": 4.01, "c": "#e57373"},
-                {"y": 1995, "v": 3.73, "c": "#ef9a9a"}
-            ]
-            rows_html = "".join([f"""
-                <div style="display:flex; align-items:center; margin-bottom:8px; height:20px;">
-                    <div style="width:35px; font-size:10px; font-weight:bold;">{item['y']}</div>
-                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px;">
-                        <div style="width:{(item['v']/5.09)*100}%; background:{item['c']}; height:100%; border-radius:2px;"></div>
+            st.markdown("**🏆 Рекорды осадков**")
+            # Здесь можно либо добавить prec_top_years в базу, либо считать из CSV
+            top_p = df_precip[['Год', col_p]].sort_values(by=col_p, ascending=False).head(5)
+            max_p = top_p[col_p].max()
+            p_html = "".join([f"""
+                <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                    <div style="width:35px; font-size:11px; font-weight:bold;">{int(row['Год'])}</div>
+                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
+                        <div style="width:{(row[col_p]/max_p)*100}%; background:#2e7d32; height:100%; border-radius:2px;"></div>
                     </div>
-                    <div style="width:35px; text-align:right; font-size:10px; font-weight:bold; margin-left:5px;">{item['v']}°</div>
-                </div>""" for item in sko_ranks])
-            components.html(f'<div style="font-family:sans-serif; padding-top:10px;">{rows_html}</div>', height=160)
-
+                    <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{row[col_p]:.0f}%</div>
+                </div>""" for _, row in top_p.iterrows()])
+            st.components.v1.html(p_html, height=160)
+            
+            
+        
 
     st.markdown("### 🚨 Основные климатические риски")
 

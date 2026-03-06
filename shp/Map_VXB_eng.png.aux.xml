@@ -1,0 +1,17 @@
+<PAMDataset>
+  <Metadata>
+    <MDI key="Author">Нургалым Серикбай</MDI>
+    <MDI key="Created">2023-02-09T17:23:09</MDI>
+    <MDI key="Creator">QGIS 3.22.15-Białowieża</MDI>
+    <MDI key="Keywords"></MDI>
+    <MDI key="Producer">QGIS 3.22.15-Białowieża</MDI>
+    <MDI key="Subject"></MDI>
+    <MDI key="Title"></MDI>
+  </Metadata>
+  <Metadata domain="IMAGE_STRUCTURE">
+    <MDI key="INTERLEAVE">PIXEL</MDI>
+  </Metadata>
+  <Metadata domain="Esri">
+    <MDI key="PyramidResamplingType">NEAREST</MDI>
+  </Metadata>
+</PAMDataset>
