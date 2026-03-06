@@ -7097,7 +7097,7 @@ with tabs[6]:
     reg = ALL_REGIONS_DATABASE[selected_name]
 
     # 3. Связываем выбор пользователя с названиями колонок в CSV через mapping
-    region_cols = mapping.get(selected_name)
+    region_cols = name_mapping.get(selected_name)
 
     if region_cols:
         col_t = region_cols['col_t']
