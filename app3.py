@@ -6439,15 +6439,15 @@ with tabs[6]:
                 </div>
             """, unsafe_allow_html=True)
 
-        with col_chart:
-            st.caption("Самые сухие годы в Казахстане (1941–2025 гг.)")
+    with col_chart:
+        st.caption("Самые сухие годы в Казахстане (1941–2025 гг.)")
             
             # Генерация HTML
-            rows_html = ""
+        rows_html = ""
             # Находим максимум для масштабирования (в осадках это обычно около 100%)
-            max_val = max([item["value"] for item in rank_data1]) 
+        max_val = max([item["value"] for item in rank_data1]) 
             
-            for item in rank_data1:
+        for item in rank_data1:
                 width = (item["value"] / max_val) * 100
                 rows_html += f"""
                 <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
@@ -6461,7 +6461,7 @@ with tabs[6]:
                 </div>
                 """
             
-            components.html(f"<div style='padding-top: 5px;'>{rows_html}</div>", height=350)
+    components.html(f"<div style='padding-top: 5px;'>{rows_html}</div>", height=350)
             
                 
     with col_map:
