@@ -3396,25 +3396,26 @@ with tabs[2]:
     # --- КОНФИГУРАЦИЯ СТРАНИЦЫ ---
     st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
 
-    # --- КАСТОМНЫЙ CSS ДЛЯ СТИЛИЗАЦИИ ---
+    # --- КАСТОМНЫЙ CSS ---
     st.markdown("""
     <style>
+        /* Уменьшенный главный заголовок без подчеркивания */
         .main-title {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
             text-align: center;
             color: #1b5e20;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #1b5e20;
-            padding-bottom: 10px;
+            margin-bottom: 25px;
         }
-        .section-header {
-            background-color: #2e7d32;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+        /* Заголовки разделов: меньше размер, без фона, просто жирный текст с линией */
+        .section-header-new {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
         }
         .description-card {
             background-color: #f8f9fa;
@@ -3426,7 +3427,7 @@ with tabs[2]:
         .desc-title {
             font-weight: bold;
             color: #1b5e20;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: block;
         }
         .desc-text {
@@ -3446,59 +3447,33 @@ with tabs[2]:
     with col_map2:
         st.image("Рисунок2.jpg", caption="Прогноз запасов продуктивной влаги", use_container_width=True)
 
-    # --- 2. МЕТОДОЛОГИЯ (4 СТОЛБЦА) ---
-    st.markdown('<div class="section-header">📑 Методология и содержание прогнозов</div>', unsafe_allow_html=True)
+    # --- 2. МЕТОДОЛОГИЯ ---
+    st.markdown('<div class="section-header-new">📑 Методология и содержание прогнозов</div>', unsafe_allow_html=True)
 
     m1, m2, m3, m4 = st.columns(4)
-
     with m1:
         st.markdown("""<div class="description-card">
             <span class="desc-title">1. Урожайность пшеницы</span>
-            <p class="desc-text">Модели А.Н. Полевой и CGMS. Сведения об ожидаемой урожайности яровых и озимых в разрезе районов по пунктам наблюдения.</p>
+            <p class="desc-text">Модели А.Н. Полевой и CGMS. Прогноз содержит сведения об ожидаемой урожайности яровых зерновых культур в разрезе районов.</p>
         </div>""", unsafe_allow_html=True)
-
     with m2:
         st.markdown("""<div class="description-card">
             <span class="desc-title">2. Технические культуры</span>
-            <p class="desc-text">Подсолнечник, кукуруза и сахарная свекла. Модели А.Н. Полевой. Расчет на основе агрометеорологических и климатических данных.</p>
+            <p class="desc-text">Подсолнечник, кукуруза и сахарная свекла. Модель А.Н. Полевой. Сведения об ожидаемой урожайности по пунктам наблюдения.</p>
         </div>""", unsafe_allow_html=True)
-
     with m3:
         st.markdown("""<div class="description-card">
             <span class="desc-title">3. Сроки созревания</span>
-            <p class="desc-text">Методика А.А. Шиголева. Прогноз наступления фаз «колошения» и «восковой спелости» яровых зерновых культур.</p>
+            <p class="desc-text">Методика А.А. Шиголева. Сведения о фазах «колошения» и «восковой спелости» яровых зерновых культур.</p>
         </div>""", unsafe_allow_html=True)
-
     with m4:
         st.markdown("""<div class="description-card">
             <span class="desc-title">4. Запасы влаги</span>
-            <p class="desc-text">Методика Л.А. Разумовой. Сведения об ожидаемых запасах влаги к началу весны (недостаточное, удовлетворительное, оптимальное).</p>
+            <p class="desc-text">Методика Л.А. Разумовой. Ожидаемые запасы влаги к началу весны (недостаточное, удовлетворительное и оптимальное).</p>
         </div>""", unsafe_allow_html=True)
 
-    # --- 3. КАЛЕНДАРЬ ФЕРМЕРА ---
-    st.markdown('<div class="section-header">📅 Календарь фермера (Цикл работ)</div>', unsafe_allow_html=True)
-
-    months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
-    calendar_data = {
-        "культура": ["озимая.пш.", "яровая.пш.", "кукуруза", "рис", "подсолнечник", "Сах. свекла"],
-        "Январь": ["В","","","","",""], "Февраль": ["В","","","","",""], "Март": ["В","","","","",""],
-        "Апрель": ["В","","","","","П"], "Май": ["В","П","П","П","П","В"], "Июнь": ["У","В","В","В","В","В"],
-        "Июль": ["У","В","В","В","В","В"], "Август": ["","В","В","В","В","В"], "Сентябрь": ["","У","У","У","В","У"],
-        "Октябрь": ["П","","","","У",""], "Ноябрь": ["В","","","","",""], "Декабрь": ["В","","","","",""]
-    }
-    df_cal = pd.DataFrame(calendar_data)
-
-    def style_calendar(val):
-        base = "color: black; font-weight: 900; font-size: 16px; text-align: center;"
-        if val == "П": return f"{base} background-color: #5d8a33;"
-        if val == "В": return f"{base} background-color: #bcd9ea;"
-        if val == "У": return f"{base} background-color: #ffda66;"
-        return ""
-
-    st.table(df_cal.style.applymap(style_calendar, subset=months))
-
     # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ ---
-    st.markdown('<div class="section-header">📊 Интерактивная оправдываемость прогнозов (2025)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header-new">📊 Интерактивная оправдываемость прогнозов (2025)</div>', unsafe_allow_html=True)
 
     def create_chart(labels, values, title, color):
         fig = go.Figure(go.Bar(x=labels, y=values, text=values, textposition='auto', marker_color=color))
@@ -3512,24 +3487,19 @@ with tabs[2]:
     with c1:
         st.plotly_chart(create_chart(reg_main, [92, 80, 82, 84, 82, 68, 78, 84], "Яровая пшеница", "#2e7d32"), use_container_width=True)
         st.plotly_chart(create_chart(reg_main, [50, 100, 88, 90, 88, 100, 90, 82], "Сроки созревания", "#689f38"), use_container_width=True)
-        st.plotly_chart(create_chart(reg_south[:2], [74, 35], "Сахарная свекла", "#bf360c"), use_container_width=True)
-
     with c2:
         st.plotly_chart(create_chart(reg_main, [98, 100, 94, 93, 95, 89, 72, 57], "Запасы влаги", "#0277bd"), use_container_width=True)
         st.plotly_chart(create_chart(reg_south, [87, 69, 86], "Кукуруза", "#f9a825"), use_container_width=True)
-        st.plotly_chart(create_chart(["Кост.", "Павл.", "ВКО"], [72, 71, 80], "Подсолнечник", "#ef6c00"), use_container_width=True)
 
     # --- 5. ФИНАЛЬНЫЙ СВОДНЫЙ ГРАФИК ---
-    st.markdown('<div class="section-header">📈 Сводный анализ оправдываемости</div>', unsafe_allow_width=True)
+    st.markdown('<div class="section-header-new">📈 Сводный анализ оправдываемости</div>', unsafe_allow_html=True)
 
     summary_fig = go.Figure()
     summary_fig.add_trace(go.Bar(name='Пшеница', x=reg_main, y=[92, 80, 82, 84, 82, 68, 78, 84], marker_color='#2e7d32'))
     summary_fig.add_trace(go.Bar(name='Влага', x=reg_main, y=[98, 100, 94, 93, 95, 89, 72, 57], marker_color='#0277bd'))
+    summary_fig.update_layout(barmode='group', height=400, margin=dict(t=20))
 
-    summary_fig.update_layout(barmode='group', height=450, xaxis_title="Области", yaxis_title="Процент (%)")
     st.plotly_chart(summary_fig, use_container_width=True)
-
-    st.success("Данные подготовлены на основе фактической оправдываемости РГП 'Казгидромет' за 2025 год.")
 
 
         
