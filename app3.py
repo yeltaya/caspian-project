@@ -3612,7 +3612,7 @@ with tabs[3]:
     </style>
     """, unsafe_allow_html=True)
     
-        st.markdown("""
+    st.markdown("""
         <style>
             .report-text {
                 font-size: 16px;
@@ -3643,7 +3643,7 @@ with tabs[3]:
                 box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
             }
         </style>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 
     # --- РАЗДЕЛ 2: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
