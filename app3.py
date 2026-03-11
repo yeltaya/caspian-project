@@ -3611,6 +3611,40 @@ with tabs[3]:
         }
     </style>
     """, unsafe_allow_html=True)
+    
+        st.markdown("""
+    <style>
+        .report-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            text-align: justify;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-top: 10px;
+        }
+        .hydro-group-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0d47a1;
+            margin-top: 20px;
+        }
+        .highlight-blue {
+            color: #1565c0;
+            font-weight: bold;
+        }
+        .stage-card {
+            background-color: #ffffff;
+            border-left: 5px solid #0d47a1;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 
     # --- РАЗДЕЛ 2: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
     st.markdown('<div class="predictor-header">🍂 Осеннее увлажнение (сентябрь–октябрь)</div>', unsafe_allow_html=True)
@@ -3645,60 +3679,58 @@ with tabs[3]:
         st.image("Без названия (4).jpeg", use_container_width=True)
         st.markdown('<div class="map-caption">2) Отклонение от нормы за холодный период, %</div>', unsafe_allow_html=True)
 
-    # Дополнительная карта (если требуется, например, промерзание почвы из "Без названия.jpeg")
-    if st.checkbox("Показать дополнительные данные (промерзание почвы)"):
-        st.image("Без названия.jpeg", caption="Глубина промерзания почвы на текущую дату", use_container_width=True)
+    st.markdown("""
+    <div class="report-text">
+        В ряде западных и восточных областей (преимущественно в <b>Западно-Казахстанской, Мангыстауской, Павлодарской, 
+        Восточно-Казахстанской областях, области Абай, на востоке Карагандинской и севере области Жетісу</b>) наблюдаются 
+        показатели осеннего увлажнения выше нормы. В отдельных точках (особенно в высокогорных зонах) зафиксированы 
+        значения <span class="highlight-blue">более 150 мм</span>, указывающие на существенное переувлажнение.
+        <br><br>
+        В то же время на севере, центре, юге (<b>Актюбинская, Улытауская, Жамбылская, Туркестанская, Кызылординская 
+        области</b>, а также большая часть <b>Атырауской, Костанайской, Акмолинской, Северо-Казахстанской, Алматинской</b> и 
+        восточной части Карагандинской областей) преобладают ниже норм или умеренные уровни влаги – с минимальными 
+        значениям <span class="highlight-blue"><25 мм</span>.
+    </div>
+    """, unsafe_allow_html=True)
+
+    # --- НОВЫЙ БЛОК: ГИДРОЛОГИЧЕСКИЙ РЕЖИМ ---
+    st.markdown('<div class="section-header-hydro">📊 Особенности гидрологического режима рек Казахстана</div>', unsafe_allow_html=True)
+
+    st.write("Гидрологический режим рек Казахстана делится на две группы по высотным зонам: **равнинные** и **горные**.")
+
+    tab1, tab2 = st.tabs(["🌾 Равнинные реки", "🏔️ Горные реки"])
+
+    with tab1:
+        st.markdown("""
+        <div class="report-text">
+            Поверхностный сток на равнинных территориях формируется <b>исключительно за счет талых снеговых вод</b>. 
+            Основным фактором весеннего стока являются накопленные осадки за холодный период года.
+            <br><br>
+            📅 <b>Период половодья:</b> с третьей декады марта по третью декаду апреля. 
+            <i>Случаи дружного таяния снега в феврале месяце исторически не наблюдались.</i>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with tab2:
+        st.write("Паводки на горных реках проходят в **3 этапа** в зависимости от высоты:")
         
+        st.markdown("""
+        <div class="stage-card">
+            <b>I этап: Низкогорье (H ≤ 1000 м)</b><br>
+            ⏱ С третьей декады марта по третью декаду апреля. <br>
+            ⚠️ <span style="color: #d32f2f;">Повышенный риск затопления</span> в связи с особенностями рельефа.
+        </div>
+        <div class="stage-card">
+            <b>II этап: Среднегорье (H = 1000 ÷ 2000 м)</b><br>
+            ⏱ С первой декады мая по первую декаду июля.
+        </div>
+        <div class="stage-card">
+            <b>III этап: Высокогорье (H ≥ 2000 м)</b><br>
+            ⏱ Со второй декады июля по первую декаду сентября.
+        </div>
+        """, unsafe_allow_html=True)
     
     
-    
-    
-
-    # 2. КАРТЫ (ДЛЯ ВИЗУАЛИЗАЦИИ)
-    col_map1, col_map2 = st.columns(2)
-    with col_map1:
-        st.info("🗺️ **Прогноз объема стока половодья**")
-        st.image("https://via.placeholder.com/800x500.png?text=Карта+объема+стока", use_container_width=True)
-
-    with col_map2:
-        st.info("⚠️ **Риски подтоплений**")
-        st.image("https://via.placeholder.com/800x500.png?text=Карта+рисков", use_container_width=True)
-
-    # 3. ГРАФИК ОПРАВДЫВАЕМОСТИ
-    st.markdown('<div class="section-header-hydro">📊 Оправдываемость гидрологических прогнозов по бассейнам</div>', unsafe_allow_html=True)
-
-    def create_hydro_chart(labels, values, color):
-        # Автоматический перенос строк для названий бассейнов
-        formatted_labels = [label.replace(" ", "<br>") for label in labels]
-        
-        fig = go.Figure(go.Bar(
-            x=formatted_labels,
-            y=values,
-            text=values,
-            textposition='inside',
-            insidetextanchor='middle',
-            textfont=dict(size=22, color="white", family="Arial Black"),
-            marker_color=color,
-            width=0.7
-        ))
-        
-        fig.update_layout(
-            plot_bgcolor="white",
-            height=500,
-            margin=dict(l=10, r=10, t=20, b=120),
-            showlegend=False,
-            yaxis=dict(range=[0, 105], visible=False, fixedrange=True),
-            xaxis=dict(tickfont=dict(size=15, color="black"), automargin=True)
-        )
-        return fig
-
-    basins = ["Урало-Каспийский", "Иртышский", "Есильский", "Нура-Сарысу", "Балхаш-Алакольский", "Арало-Сырдарьинский"]
-    accuracy = [89, 94, 91, 88, 92, 95]
-
-    st.plotly_chart(create_hydro_chart(basins, accuracy, "#0288d1"), use_container_width=True, config={'displayModeBar': False})
-
- 
- 
     
     
 
