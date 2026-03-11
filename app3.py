@@ -7171,8 +7171,7 @@ with tabs[6]:
             st.caption("Карта аномалий")
         
             
-
-
+    st.divider()
 
     # Основной заголовок секции
     st.header("🔮 Изменение климата в будущем")
@@ -7265,6 +7264,13 @@ with tabs[6]:
                 {"year": 2023, "val": 4.43, "col": "#d32f2f"},
                 {"year": 1983, "val": 4.01, "col": "#e57373"},
                 {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
+            ],
+            top_precip_years = [
+                {"year": 2010, "val": 239.04, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1975, "val": 248.90, "col": "#2e7d32"},
+                {"year": 1965, "val": 253.16, "col": "#4caf50"},
+                {"year": 1651, "val": 255.49, "col": "#81c784"},
+                {"year": 1991, "val": 160.34, "col": "#a5d6a7"}
             ],
             "zones": [
             {
@@ -8005,7 +8011,36 @@ with tabs[6]:
             delta_color="off"
         )
     
+# --- 5. ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКОВ ОБЛАСТИ ---
+        # Извлекаем топ лет и рекорды осадков именно для выбранной области
+        region_top_years = reg.get("top_years", [])
+        region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
 
+        st.markdown("---") # Разделитель
+        
+        # Создаем две колонки для графиков статистики
+        col_stat_t, col_stat_p = st.columns(2)
+
+        with col_stat_t:
+            st.markdown(f"##### 🌡️ Топ лет: {selected_name} (аномалии)")
+            if region_top_years:
+                # Вызываем функцию (убедись, что она определена выше в коде)
+                temp_html = generate_compact_bars(region_top_years, unit="°C")
+                components.html(f"<div style='padding-top:10px;'>{temp_html}</div>", height=150)
+            else:
+                st.info("Данные по температурным рекордам отсутствуют")
+
+        with col_stat_p:
+            st.markdown(f"##### 💧 Рекорды осадков: {selected_name}")
+            if region_precip_records:
+                # Вызываем функцию для осадков в мм
+                precip_html = generate_compact_bars(region_precip_records, unit=" мм")
+                components.html(f"<div style='padding-top:10px;'>{precip_html}</div>", height=150)
+            else:
+                st.info("Данные по рекордам осадков отсутствуют")
+                
+                
+                
         
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
         st.markdown("---")
