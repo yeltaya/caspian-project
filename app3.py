@@ -3453,52 +3453,93 @@ with tabs[2]:
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown("""<div class="description-card">
-            <span class="desc-title">1. Урожайность пшеницы</span>
-            <p class="desc-text">Модели А.Н. Полевой и CGMS. Прогноз содержит сведения об ожидаемой урожайности яровых зерновых культур в разрезе районов.</p>
+            <span class="desc-title">Прогноз урожайности яровой и озимой пшеницы </span>
+            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой и CGMS.Расчёты выполняются на основе агрометеорологических, статистических и климатических данных.Прогноз содержит сведения об ожидаемой урожайности яровых зерновых культур в разрезе районов по пунктам наблюдения.</p>
         </div>""", unsafe_allow_html=True)
     with m2:
         st.markdown("""<div class="description-card">
-            <span class="desc-title">2. Технические культуры</span>
-            <p class="desc-text">Подсолнечник, кукуруза и сахарная свекла. Модель А.Н. Полевой. Сведения об ожидаемой урожайности по пунктам наблюдения.</p>
+            <span class="desc-title">Прогноз урожайности подсолнечника, кукурузы на зерно и сахарной свеклы</span>
+            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой.Расчёты выполняются на основе агрометеорологических, статистических и климатических данных.Прогноз содержит сведения об ожидаемой урожайности в разрезе районов по пунктам наблюдения.</p>
         </div>""", unsafe_allow_html=True)
     with m3:
         st.markdown("""<div class="description-card">
-            <span class="desc-title">3. Сроки созревания</span>
-            <p class="desc-text">Методика А.А. Шиголева. Сведения о фазах «колошения» и «восковой спелости» яровых зерновых культур.</p>
-        </div>""", unsafe_allow_html=True)
-    with m4:
-        st.markdown("""<div class="description-card">
-            <span class="desc-title">4. Запасы влаги</span>
-            <p class="desc-text">Методика Л.А. Разумовой. Ожидаемые запасы влаги к началу весны (недостаточное, удовлетворительное и оптимальное).</p>
-        </div>""", unsafe_allow_html=True)
+            <span class="desc-title">Прогноз сроков созревания</span>
+            <p class="desc-text">Рассчитывается по методике А.А Шиголева. Прогноз содержит сведения о наступлении фаз «колошения» и «восковой спелости» яровых зерновых культур в разрезе районов по пунктам наблюдения.
+    </p>
+            </div>""", unsafe_allow_html=True)
+        with m4:
+            st.markdown("""<div class="description-card">
+                <span class="desc-title">Прогноз запасов влаги в почве </span>
+                <p class="desc-text">Рассчитывается  по методике Л.А.Разумовой. Прогноз содержит сведения об ожидаемых запасах влаги в почве к началу весны по территории Казахстана (влажность почвы оценивается по категории: недостаточное, удовлетворительное и оптимальное) в разрезе районов по пунктам наблюдения.
+    </p>
+            </div>""", unsafe_allow_html=True)
 
-    # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ ---
-    st.markdown('<div class="section-header-new">📊 Интерактивная оправдываемость прогнозов (2025)</div>', unsafe_allow_html=True)
+    # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ (ПОЛНЫЙ СПИСОК) ---
+    st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
 
     def create_chart(labels, values, title, color):
-        fig = go.Figure(go.Bar(x=labels, y=values, text=values, textposition='auto', marker_color=color))
-        fig.update_layout(title=title, yaxis=dict(range=[0, 110]), height=300, margin=dict(l=10, r=10, t=40, b=10))
+        fig = go.Figure(go.Bar(
+            x=labels, 
+            y=values, 
+            text=values, 
+            textposition='auto', 
+            marker_color=color,
+            hovertemplate="Область: %{x}<br>Оправдываемость: %{y}%<extra></extra>"
+        ))
+        fig.update_layout(
+            title=dict(text=title, font=dict(size=16)),
+            yaxis=dict(range=[0, 110], title="%"),
+            height=320, 
+            margin=dict(l=10, r=10, t=50, b=10)
+        )
         return fig
 
+    # Регионы
     reg_main = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
     reg_south = ["Алмат.", "Жамбыл.", "Туркест."]
 
-    c1, c2 = st.columns(2)
-    with c1:
+    # --- СТРОКА 1: Две основные культуры (2 колонки) ---
+    r1_c1, r1_c2 = st.columns(2)
+    with r1_c1:
         st.plotly_chart(create_chart(reg_main, [92, 80, 82, 84, 82, 68, 78, 84], "Яровая пшеница", "#2e7d32"), use_container_width=True)
-        st.plotly_chart(create_chart(reg_main, [50, 100, 88, 90, 88, 100, 90, 82], "Сроки созревания", "#689f38"), use_container_width=True)
-    with c2:
-        st.plotly_chart(create_chart(reg_main, [98, 100, 94, 93, 95, 89, 72, 57], "Запасы влаги", "#0277bd"), use_container_width=True)
+    with r1_c2:
+        st.plotly_chart(create_chart(reg_main, [98, 100, 94, 93, 95, 89, 72, 57], "Запасы влаги в почве", "#0277bd"), use_container_width=True)
+
+    # --- СТРОКА 2: Технические и спец. культуры (3 колонки) ---
+    r2_c1, r2_c2, r2_c3 = st.columns(3)
+    with r2_c1:
+        # Кукуруза (Алмат, Жамб, Турк)
         st.plotly_chart(create_chart(reg_south, [87, 69, 86], "Кукуруза", "#f9a825"), use_container_width=True)
+    with r2_c2:
+        # Сахарная свекла (Алмат, Жамб)
+        st.plotly_chart(create_chart(reg_south[:2], [74, 35], "Сахарная свекла", "#bf360c"), use_container_width=True)
+    with r2_c3:
+        # Подсолнечник (Кост, Павл, ВКО)
+        st.plotly_chart(create_chart(["Кост.", "Павл.", "ВКО"], [72, 71, 80], "Подсолнечник", "#ef6c00"), use_container_width=True)
 
-    # --- 5. ФИНАЛЬНЫЙ СВОДНЫЙ ГРАФИК ---
-    st.markdown('<div class="section-header-new">📈 Сводный анализ оправдываемости</div>', unsafe_allow_html=True)
+    # --- СТРОКА 3: Дополнительные прогнозы (2 колонки) ---
+    r3_c1, r3_c2 = st.columns(2)
+    with r3_c1:
+        st.plotly_chart(create_chart(reg_main, [50, 100, 88, 90, 88, 100, 90, 82], "Сроки созревания", "#689f38"), use_container_width=True)
+    with r3_c2:
+        # Озимая пшеница (Алмат, Жамб)
+        st.plotly_chart(create_chart(reg_south[:2], [88, 83], "Озимая пшеница", "#1b5e20"), use_container_width=True)
 
-    summary_fig = go.Figure()
-    summary_fig.add_trace(go.Bar(name='Пшеница', x=reg_main, y=[92, 80, 82, 84, 82, 68, 78, 84], marker_color='#2e7d32'))
-    summary_fig.add_trace(go.Bar(name='Влага', x=reg_main, y=[98, 100, 94, 93, 95, 89, 72, 57], marker_color='#0277bd'))
-    summary_fig.update_layout(barmode='group', height=400, margin=dict(t=20))
+    # --- СТРОКА 4: Общий итог (1 колонка) ---
+    st.markdown('<div class="section-header-new">📈 Сводный анализ оправдываемости по всем направлениям</div>', unsafe_allow_html=True)
 
+    # Создаем финальный сводный график (группировка по культурам)
+    summary_labels = ["Яр. пшеница", "Оз. пшеница", "Влага", "Кукуруза", "Свекла", "Подсолнечник", "Созревание"]
+    summary_values = [81, 85, 87, 81, 55, 74, 87] # Средние значения оправдываемости по РК
+
+    summary_fig = go.Figure(go.Bar(
+        x=summary_labels,
+        y=summary_values,
+        text=summary_values,
+        textposition='auto',
+        marker_color=['#2e7d32', '#1b5e20', '#0277bd', '#f9a825', '#bf360c', '#ef6c00', '#689f38']
+    ))
+    summary_fig.update_layout(height=400, yaxis_title="Средний % по стране")
     st.plotly_chart(summary_fig, use_container_width=True)
 
 
