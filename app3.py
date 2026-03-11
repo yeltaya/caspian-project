@@ -5655,52 +5655,45 @@ with tabs[4]:
 
     def show_water_resources_block():
         st.write("---")
-        # Заголовок блока в соответствии с материалами исследования
         st.header("🌊 ОЦЕНКА ИЗМЕНЕНИЯ СТОКА РЕК КАЗАХСТАНА НА ПЕРСПЕКТИВУ ДО 2050 ГОДА")
         
         col_method, col_scenarios = st.columns([1.2, 1], gap="large")
         
         with col_method:
             st.subheader("📊 Материалы и методы исследования")
-            # Данные из предоставленных материалов исследования
             st.markdown("""
             * **Данные наблюдений**: Данные государственной наблюдательной сети Казахстана.
             * **Климатические архивы**: Глобальный климатический архив **Terra Climate**.
-            * **Прогнозные модели**: Данные по осадкам по **23 моделям** общей циркуляции атмосферы и океана (МОЦАО) до 2050 г..
-            * **Группа CMIP5**: Модели, используемые Межправительственной группой экспертов по оценке изменения климата (**МГЭИК**).
-            * **Базисный период**: Оценка изменений рассчитана относительно нормы стока за **1930-2019 гг.**.
+            * **Прогнозные модели**: Данные по осадкам по **23 моделям** (МОЦАО) до 2050 г.
+            * **Группа CMIP5**: Модели Межправительственной группы экспертов по изменению климата (**МГЭИК**).
+            * **Базисный период**: Оценка рассчитана относительно нормы стока за **1930-2019 гг.**.
             """)
 
         with col_scenarios:
             st.subheader("🌡️ Климатические сценарии")
-            
-            # HTML-верстка для имитации графических элементов со скриншота
             st.markdown("""
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ff4b4b;">
                     <div style="min-width: 60px; font-weight: bold; color: #ff4b4b; font-size: 0.8em;">RCP 8.5</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Жесткий» сценарий:</b> Быстрый рост антропогенных выбросов и значительное потепление.</div>
+                    <div style="margin-left: 10px; color: #333;"><b>«Жесткий» сценарий:</b> Быстрый рост выбросов.</div>
                 </div>
                 <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ffa500;">
                     <div style="min-width: 60px; font-weight: bold; color: #ffa500; font-size: 0.8em;">RCP 4.5</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Умеренно жесткий»:</b> Умеренно быстрый рост выбросов.</div>
+                    <div style="margin-left: 10px; color: #333;"><b>«Умеренно жесткий»:</b> Умеренный рост выбросов.</div>
                 </div>
                 <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #28a745;">
                     <div style="min-width: 60px; font-weight: bold; color: #28a745; font-size: 0.8em;">RCP 2.6</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Мягкий» сценарий:</b> Замедление роста выбросов с последующим их снижением.</div>
+                    <div style="margin-left: 10px; color: #333;"><b>«Мягкий» сценарий:</b> Снижение выбросов.</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-        # Информация по бассейнам из документа
         st.markdown("---")
-        st.success("""
-        **БАЛКАШ-АЛАКОЛЬСКИЙ БАССЕЙН** В результате оценки изменения стока к 2050 г. ожидается **увеличение стока** относительно нормы (29.9 км³).
-        """)
+        st.success("**БАЛКАШ-АЛАКОЛЬСКИЙ БАССЕЙН**: ожидается **увеличение стока** (29.9 км³) к 2050 г.")
 
-    # ВНИМАНИЕ: Обязательно вызовите функцию в конце файла
+    # --- ВАЖНЫЙ МОМЕНТ: ПРАВИЛЬНЫЙ ВЫЗОВ ---
     if __name__ == "__main__":
-    show_water_resources_block()
+        show_water_resources_block() # <-- Проверьте, что здесь есть 4 пробела (отступ)
     
     
 
