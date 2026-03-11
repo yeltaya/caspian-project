@@ -2524,7 +2524,7 @@ with tabs[1]:
         st.markdown("""
             <div class="forecast-card">
                 <div class="icon">🔭</div>
-                <div class="title">Консультативные прогнозы</div>
+                <div class="title">Долгосрочные прогнозы</div>
                 <div class="description">Прогнозы на декаду, месяц и сезон.</div>
             </div>
         """, unsafe_allow_html=True)
@@ -7119,28 +7119,37 @@ with tabs[6]:
             """, unsafe_allow_html=True)
 
     with col_chart:
-        st.caption("Самые сухие годы в Казахстане (1941–2025 гг.)")
-            
-            # Генерация HTML
+        # Заголовок лучше сделать через markdown с нулевым отступом снизу
+        st.markdown("<p style='margin-bottom: -10px; font-size: 0.8rem; color: #666;'>Самые сухие годы в Казахстане (1941–2025 гг.)</p>", unsafe_allow_html=True)
+        
+        # Генерация HTML
         rows_html = ""
-            # Находим максимум для масштабирования (в осадках это обычно около 100%)
         max_val = max([item["value"] for item in rank_data1]) 
-            
+        
         for item in rank_data1:
-                width = (item["value"] / max_val) * 100
-                rows_html += f"""
-                <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
-                    <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
-                    <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
-                    <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
-                        <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
-                            <span style="color: white; font-size: 11px; font-weight: bold;">{item['value']}%</span>
-                        </div>
+            width = (item["value"] / max_val) * 100
+            rows_html += f"""
+            <div style="display: flex; align-items: center; margin-bottom: 4px; height: 24px; font-family: sans-serif;">
+                <div style="width: 20px; font-size: 10px; font-weight: bold; color: #888;">{item['rank']}</div>
+                <div style="width: 40px; font-size: 11px; font-weight: 600; color: #333;">{item['year']}</div>
+                <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
+                    <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px; transition: width 0.5s;">
+                        <span style="color: white; font-size: 10px; font-weight: bold;">{item['value']}%</span>
                     </div>
                 </div>
-                """
-            
-    components.html(f"<div style='padding-top: 5px;'>{rows_html}</div>", height=350)
+            </div>
+            """
+        
+        # Оборачиваем всё в контейнер с минимальным padding-top
+        full_html = f"""
+        <div style="margin: 0; padding-top: 0px;">
+            {rows_html}
+        </div>
+        """
+        
+        # Уменьшите высоту height, если графики прижаты к низу iframe
+        components.html(full_html, height=310)
+        
             
                 
     with col_map:
