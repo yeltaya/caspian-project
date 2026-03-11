@@ -3525,138 +3525,71 @@ with tabs[2]:
         # Озимая пшеница (Алмат, Жамб, Турк)
         st.plotly_chart(create_chart(reg_south[:2], [80, 85, 81], "Озимая пшеница", "#1b5e20"), use_container_width=True)
 
+    import streamlit as st
+    import plotly.graph_objects as go
 
-    # Настройка стилей (уменьшенные заголовки без фона)
-    st.markdown("""
-    <style>
-        .section-header-new {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2e7d32;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    def show_summary_accuracy_chart():
+        # Заголовок раздела
+        st.markdown("### 📈 Оправдываемость агрометеорологических прогнозов по видам")
 
-    def create_chart(labels, values, title, color):
-        fig = go.Figure(go.Bar(
-            x=labels, 
-            y=values, 
-            text=values, 
-            textposition='auto', 
-            marker_color=color,
-            hovertemplate="Область: %{x}<br>Оправдываемость: %{y}%<extra></extra>"
-        ))
-        fig.update_layout(
-            title=dict(text=title, font=dict(size=16)),
-            yaxis=dict(range=[0, 110], title="%"),
-            height=320, 
-            margin=dict(l=10, r=10, t=50, b=10)
-        )
-        return fig
-
-    # --- ДАННЫЕ С ПОСЛЕДНЕГО СКРИНШОТА ---
-
-    # Регионы для засухи
-    reg_drought = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "Улытау", "Абай", "ВКО"]
-    # Регионы для урожайности
-    reg_yield = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
-
-    st.markdown('<div class="section-header-new">☀️ Оправдываемость прогнозов засухи и урожайности</div>', unsafe_allow_html=True)
-
-    # --- СТРОКА 1: Засуха и Общая урожайность (2 колонки) ---
-    r1_c1, r1_c2 = st.columns(2)
-
-    with r1_c1:
-        # Данные: 100, 100, 93, 100, 100, 100, 100, 100, 100, 100
-        st.plotly_chart(create_chart(
-            reg_drought, 
-            [100, 100, 93, 100, 100, 100, 100, 100, 100, 100], 
-            "Прогноз засухи (SPI)", 
-            "#fbc02d"
-        ), use_container_width=True)
-
-    with r1_c2:
-        # Данные: 92, 80, 82, 84, 82, 68, 78, 84
-        st.plotly_chart(create_chart(
-            reg_yield, 
-            [92, 80, 82, 84, 82, 68, 78, 84], 
-            "Урожайность яровой пшеницы", 
-            "#43a047"
-        ), use_container_width=True)
-
-    # --- СТРОКА 2: Сроки созревания и другие (3 колонки для компактности) ---
-    r2_c1, r2_c2, r2_c3 = st.columns(3)
-
-    with r2_c1:
-        # Данные: 50, 100, 88, 90, 88, 100, 90, 82
-        st.plotly_chart(create_chart(
-            reg_yield, 
-            [50, 100, 88, 90, 88, 100, 90, 82], 
+        # Данные из скриншота
+        categories = [
+            "Засуха", 
+            "Запасы влаги", 
             "Сроки созревания", 
-            "#8bc34a"
-        ), use_container_width=True)
+            "Яровая пшеница", 
+            "Кукуруза", 
+            "Подсолнечник", 
+            "Сахарная свекла"
+        ]
+        
+        values = [99, 87, 87, 81, 81, 74, 55]
+        
+        # Цвета, максимально близкие к оригиналу
+        colors = [
+            "#FBC02D", # Засуха (желтый)
+            "#1976D2", # Влага (синий)
+            "#8BC34A", # Созревание (светло-зеленый)
+            "#388E3C", # Пшеница (зеленый)
+            "#F9A825", # Кукуруза (темно-желтый/оранжевый)
+            "#F57C00", # Подсолнечник (оранжевый)
+            "#D84315"  # Свекла (красный)
+        ]
 
-    with r2_c2:
-        # Данные по кукурузе (Алмат, Жамб, Турк): 87, 69, 86
-        st.plotly_chart(create_chart(
-            ["Алмат.", "Жамбыл.", "Туркест."], 
-            [87, 69, 86], 
-            "Урожайность кукурузы", 
-            "#ffa000"
-        ), use_container_width=True)
+        # Создание графика
+        fig = go.Figure(data=[
+            go.Bar(
+                x=categories,
+                y=values,
+                text=values, # Текст внутри/над барами
+                textposition='outside',
+                marker_color=colors,
+                cliponaxis=False # Чтобы текст над высоким баром не обрезался
+            )
+        ])
 
-    with r2_c3:
-        # Данные по подсолнечнику (Кост, Павл, ВКО): 72, 71, 80
-        st.plotly_chart(create_chart(
-            ["Кост.", "Павл.", "ВКО"], 
-            [72, 71, 80], 
-            "Урожайность подсолнечника", 
-            "#fb8c00"
-        ), use_container_width=True)
+        # Настройка внешнего вида
+        fig.update_layout(
+            plot_bgcolor="white", # Белый фон как на скрине
+            yaxis=dict(
+                title="Оправдываемость (%)",
+                range=[0, 110],
+                gridcolor="#F0F0F0" # Светлая сетка
+            ),
+            xaxis=dict(
+                tickfont=dict(size=13, color="black")
+            ),
+            margin=dict(l=20, r=20, t=50, b=20),
+            height=450,
+            showlegend=False
+        )
 
-    # --- СТРОКА 3: Влага и Свекла (2 колонки) ---
-    r3_c1, r3_c2 = st.columns(2)
+        # Отображение в Streamlit
+        st.plotly_chart(fig, use_container_width=True)
 
-    with r3_c1:
-        # Данные: 98, 100, 94, 93, 95, 89, 72, 57
-        st.plotly_chart(create_chart(
-            reg_yield, 
-            [98, 100, 94, 93, 95, 89, 72, 57], 
-            "Запасы влаги в почве", 
-            "#1976d2"
-        ), use_container_width=True)
+    # Запуск функции
+    show_summary_accuracy_chart()
 
-    with r3_c2:
-        # Данные по сахарной свекле (Алмат, Жамб): 74, 35
-        st.plotly_chart(create_chart(
-            ["Алмат.", "Жамбыл."], 
-            [74, 35], 
-            "Урожайность сах. свеклы", 
-            "#d84315"
-        ), use_container_width=True)
-
-    # --- СТРОКА 4: Общий итог (1 колонка) ---
-    st.markdown('<div class="section-header-new">📊 Средняя оправдываемость по всем видам прогнозов</div>', unsafe_allow_html=True)
-
-    summary_data = {
-        "Вид прогноза": ["Засуха", "Влага", "Созревание", "Пшеница", "Кукуруза", "Подсолнечник", "Свекла"],
-        "Средний %": [99, 87, 87, 81, 81, 74, 55]
-    }
-    df_sum = pd.DataFrame(summary_data)
-
-    fig_sum = go.Figure(go.Bar(
-        x=df_sum["Вид прогноза"],
-        y=df_sum["Средний %"],
-        text=df_sum["Средний %"],
-        textposition='auto',
-        marker_color=['#fbc02d', '#1976d2', '#8bc34a', '#43a047', '#ffa000', '#fb8c00', '#d84315']
-    ))
-    fig_sum.update_layout(height=400, margin=dict(t=20))
-    st.plotly_chart(fig_sum, use_container_width=True)
 
 
         
