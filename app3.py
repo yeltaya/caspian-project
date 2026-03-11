@@ -3752,92 +3752,42 @@ with tabs[3]:
         </div>
         """, unsafe_allow_html=True)
     
-    import streamlit as st
-    import geopandas as gpd
-    import plotly.express as px
-    import pandas as pd
-    import os
-
-    # 1. Данные по рискам и описания (согласно карте и тексту из image_e33682.png)
-    # Цвета: Высокий - #f9a03f (оранжевый), Средний - #f9f080 (желтый), Низкий - #90ee90 (зеленый)
-    FLOOD_CONFIG = {
-        "Высокий риск": {
-            "color": "#f9a03f",
-            "regions_en": ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay"],
-            "desc": "Ожидается интенсивное снеготаяние и формирование значительного стока."
-        },
-        "Средний риск": {
-            "color": "#f9f080",
-            "regions_en": ["Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu"],
-            "desc": "Возможны локальные подтопления при резком повышении температурного фона."
-        },
-        "Низкий риск": {
-            "color": "#90ee90",
-            "regions_en": ["Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
-            "desc": "Обстановка стабильная, уровни воды в пределах нормы."
-        }
-    }
-
-    # Подготовка DataFrame для маппинга
-    data_rows = []
-    for risk_label, info in FLOOD_CONFIG.items():
-        for reg_en in info["regions_en"]:
-            data_rows.append({
-                "ADM1_EN": reg_en,
-                "Risk_Label": risk_label,
-                "Color": info["color"],
-                "Description": info["desc"]
-            })
-    df_stats = pd.DataFrame(data_rows)
-
-    @st.cache_data
-    def load_geo_data():
-        # Загрузка вашего SHP файла
-        gdf = gpd.read_file("kaz 17 obl.shp")
-        # Объединение с данными рисков
-        merged = gdf.merge(df_stats, on='ADM1_EN', how='left')
-        return merged.to_crs(epsg=4326)
-
-    # --- ИНТЕРФЕЙС ---
-    st.title("Мониторинг паводковых рисков Казахстана")
-
-    map_data = load_geo_data()
-    col_left, col_right = st.columns([1.6, 1], gap="large")
-
+# --- ИСПРАВЛЕННЫЙ БЛОК КАРТЫ ---
     with col_left:
         st.markdown("#### Карта предварительной оценки")
         
-# --- ИСПРАВЛЕННЫЙ БЛОК КАРТЫ ---
-
+        # Используем интерфейс геометрии для предотвращения ValueError
         fig_map = px.choropleth(
             map_data,
-            geojson=map_data.geometry,
+            geojson=map_data.__geo_interface__,
             locations=map_data.index,
             color="Risk_Label",
-            # Используем точные цвета с ваших скриншотов
+            # Цвета точно по вашим образцам
             color_discrete_map={
                 "Высокий риск": "#f9a03f",  # Оранжевый
                 "Средний риск": "#f9f080",  # Желтый
                 "Низкий риск": "#90ee90"    # Зеленый
             },
-            hover_name="Region_RU",
-            projection="mercator" # Используем меркатор для плоского вида
+            # Убедитесь, что в SHP файле есть колонка ADM1_EN для hover
+            hover_name="ADM1_EN", 
+            # Удаляем projection из конструктора, настроим его через update_geos
         )
 
-        # Настройка внешнего вида (убираем фон карты мира)
+        # Настройка внешнего вида для эффекта "белого листа" как на фото
         fig_map.update_geos(
-            visible=False, 
-            resolution=50,
-            showcountries=False, 
+            visible=False,          # Скрывает внешние страны и океаны
             showcoastlines=False,
             showland=False,
-            fitbounds="locations" # Автоматически зумим только на Казахстан
+            showocean=False,
+            showlakes=False,
+            fitbounds="locations",  # Фокус только на Казахстане
+            projection_type="mercator"
         )
 
         fig_map.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
             height=600,
-            paper_bgcolor="white", # Белый фон как на фото
+            paper_bgcolor="white",  # Белый фон как на ваших скриншотах
             plot_bgcolor="white",
             showlegend=True,
             legend=dict(
@@ -3850,47 +3800,10 @@ with tabs[3]:
             )
         )
 
-        
-        # Обработка выбора (on_select требует Streamlit 1.35+)
+        # Отображение
         selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
-
-    with col_right:
-        if selected and "selection" in selected and len(selected["selection"]["point_indices"]) > 0:
-            idx = selected["selection"]["point_indices"][0]
-            row = map_data.iloc[idx]
-            
-            st.subheader(f"📍 Регион: {row['ADM1_EN']}")
-            
-            # Индикатор уровня риска
-            st.markdown(f"""
-                <div style="padding:15px; border-radius:10px; background-color:{row['Color']}; color:black; text-align:center; font-weight:bold; border: 1px solid #ccc;">
-                    СТАТУС: {row['Risk_Label'].upper()}
-                </div>
-            """, unsafe_allow_html=True)
-            
-            st.write("---")
-            st.markdown("### 📝 Аналитическая справка")
-            st.info(row['Description'])
-            
-            # Здесь можно добавить дополнительные графики или метрики для региона
-            st.metric("Прогноз стока", "Выше нормы" if row['Risk_Label'] == "Высокий риск" else "В норме")
-        else:
-            st.info("Выберите область на карте для получения детальной информации по паводкам.")
-            
-            
-        # --- ТЕКСТОВЫЙ БЛОК (из вашего описания) ---
-    st.markdown("""
-    <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
-        <h4>📝 Оценка паводко-опасных регионов</h4>
-        <p>Предварительная оценка дана на основе анализа осеннего увлажнения, снегозапасов и ледовых режимов:</p>
-        <ul>
-            <li><b>С повышенными рисками:</b> Акмолинская, СКО, Карагандинская, ВКО и область Абай.</li>
-            <li><b>Со средними рисками:</b> Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.</li>
-            <li><b>С низкими рисками:</b> Атырауская, Мангыстауская, Кызылординская и Жамбылская области.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
+        
+        
             
 
     
