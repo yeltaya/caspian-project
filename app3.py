@@ -3291,6 +3291,18 @@ with tabs[2]:
         
         st.success("**AgroData** — актуальная информация всегда под рукой.")
         st.info("Прогнозы охватывают все ключевые зерносеющие регионы Казахстана.")
+            
+            st.markdown("""
+                    <div style="background: #f1f8e9; padding: 20px; border-radius: 15px; border: 1px dashed #2e7d32; text-align: center;">
+                        <h5 style="color: #1b5e20; margin-bottom: 15px;">📲 Приложение AgroData</h5>
+                        <img src="https://img.icons8.com/ios/100/2e7d32/qr-code--v1.png" width="100">
+                        <p style="font-size: 0.8em; margin-top: 10px; color: #455a64;">Доступ к фактическим данным для фермеров в режиме реального времени</p>
+                        <a href="https://agrodata.kazhydromet.kz" target="_blank" style="text-decoration: none;">
+                            <button style="background: #2e7d32; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Открыть портал</button>
+                        </a>
+                    </div>
+                """, unsafe_allow_html=True)
+                
 
     with col2:
         st.subheader("📅 График выпуска агрометеорологических прогнозов")
