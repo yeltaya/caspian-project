@@ -7002,7 +7002,8 @@ with tabs[6]:
             },
             "h-precip-box"
         )
-            
+
+    
     import streamlit as st
     import streamlit.components.v1 as components
 
@@ -7089,8 +7090,11 @@ with tabs[6]:
         
         
     st.divider()
-    st.markdown("---")
+
+
     st.markdown("### 🏆 Анализ влажности")
+    
+    col_info2, col_chart2, col_map2 = st.columns([1, 1, 1], gap="large")
     
     # --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
     rank_data_precip = [
@@ -7106,11 +7110,8 @@ with tabs[6]:
         {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
     ]
     
-    
-    
-
-   
-    with col_info:
+ 
+    with col_info2:
             st.markdown("""
                 <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
                     <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
@@ -7123,7 +7124,7 @@ with tabs[6]:
             """, unsafe_allow_html=True)
 
         
-    with col_chart:
+    with col_chart2:
         # Заголовок для выравнивания
         st.markdown("<div style='height: 20px; font-size: 0.8rem; color: gray;'>Самые сухие годы в Казахстане (1941–2025 гг.)</div>", unsafe_allow_html=True)
         
@@ -7149,7 +7150,7 @@ with tabs[6]:
         components.html(f"<div style='margin-top: 5px;'>{rows_html}</div>", height=320)
         
         
-    with col_map:
+    with col_map2:
         map_path = "Precipitation.gif"
         
         if os.path.exists(map_path):
