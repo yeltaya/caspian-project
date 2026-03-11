@@ -7101,67 +7101,71 @@ with tabs[6]:
     ]
   
 
-    # Создаем колонки
+        # Создаем колонки
+    # Создаем колонки с одинаковым выравниванием
     col_info, col_chart, col_map = st.columns([1, 1, 1], gap="large")
 
     with col_info:
-            # Текстовый хайлайт в коричневых тонах (стиль засухи)
-            st.markdown("""
-                <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 10px;">
-                    <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
-                    <p style="font-size: 1rem; line-height: 1.5;">
-                        <span style="font-weight: 800; font-size: 1.2rem;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению годовых сумм осадков на 2,5 мм/10 лет, однако в южных регионах сохраняется риск засушливости.
-                    </p>
-                    <p style="font-size: 0.9rem; color: #6d4c41;">
-                        Наиболее сухие периоды зафиксированы в 1944 и 1975 годах. Статистика показывает, что рост осадков весной не всегда компенсирует летний дефицит влаги.
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
+        # Добавляем margin-top: 0, чтобы блок не прыгал вниз
+        st.markdown("""
+            <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
+                <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
+                <p style="font-size: 0.95rem; line-height: 1.4;">
+                    <span style="font-weight: 800;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению...
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
     with col_chart:
-        # Заголовок лучше сделать через markdown с нулевым отступом снизу
-        st.markdown("<p style='margin-bottom: -10px; font-size: 0.8rem; color: #666;'>Самые сухие годы в Казахстане (1941–2025 гг.)</p>", unsafe_allow_html=True)
+        # Заголовок пишем прямо в HTML или через markdown БЕЗ отступов
+        st.markdown("<div style='height: 20px; font-size: 0.8rem; color: gray;'>Самые сухие годы в Казахстане (1941–2025 гг.)</div>", unsafe_allow_html=True)
         
-        # Генерация HTML
         rows_html = ""
         max_val = max([item["value"] for item in rank_data1]) 
-        
         for item in rank_data1:
             width = (item["value"] / max_val) * 100
             rows_html += f"""
-            <div style="display: flex; align-items: center; margin-bottom: 4px; height: 24px; font-family: sans-serif;">
-                <div style="width: 20px; font-size: 10px; font-weight: bold; color: #888;">{item['rank']}</div>
-                <div style="width: 40px; font-size: 11px; font-weight: 600; color: #333;">{item['year']}</div>
+            <div style="display: flex; align-items: center; margin-bottom: 6px; height: 26px; font-family: sans-serif;">
+                <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
+                <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
                 <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
-                    <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px; transition: width 0.5s;">
-                        <span style="color: white; font-size: 10px; font-weight: bold;">{item['value']}%</span>
+                    <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
+                        <span style="color: white; font-size: 11px; font-weight: bold;">{item['value']}%</span>
                     </div>
                 </div>
             </div>
             """
+        # Уменьшаем height до 320, чтобы убрать пустоту снизу
+        components.html(f"<div style='margin-top: 10px;'>{rows_html}</div>", height=320)
+
+    with col_map:
+        # Чтобы карта была на одном уровне с графиком, можно добавить пустой блок для компенсации заголовка
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        if os.path.exists(map_path):
+            st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
         
-        # Оборачиваем всё в контейнер с минимальным padding-top
-        full_html = f"""
-        <div style="margin: 0; padding-top: 0px;">
-            {rows_html}
-        </div>
-        """
-        
-        # Уменьшите высоту height, если графики прижаты к низу iframe
-        components.html(full_html, height=310)
         
             
                 
     with col_map:
-        # Путь к вашему изображению
-        map_path = "temp1.gif"
+        # 1. Создаем пустой "отступ", чтобы карта была на одном уровне с графиком
+        # Высота 20px обычно соответствует высоте заголовка в соседней колонке
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         
         if os.path.exists(map_path):
-            st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
+            # 2. Выводим изображение БЕЗ стандартного caption (чтобы он не толкал блок)
+            st.image(map_path, use_container_width=True)
+            
+            # 3. Добавляем подпись вручную с минимальным отступом сверху
+            st.markdown("""
+                <div style="text-align: center; color: gray; font-size: 0.8rem; margin-top: -10px;">
+                    Карта аномалий: Зима (анализ данных)
+                </div>
+            """, unsafe_allow_html=True)
         else:
-            st.error(f"Файл не найден по пути: {map_path}")
-            # Заглушка, если файла нет
+            st.error(f"Файл не найден: {map_path}")
             st.info("Здесь должна быть карта: temp1.gif")
+            
             
 
 
