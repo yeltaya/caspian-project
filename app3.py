@@ -3613,37 +3613,37 @@ with tabs[3]:
     """, unsafe_allow_html=True)
     
         st.markdown("""
-    <style>
-        .report-text {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            text-align: justify;
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            margin-top: 10px;
-        }
-        .hydro-group-header {
-            font-size: 18px;
-            font-weight: bold;
-            color: #0d47a1;
-            margin-top: 20px;
-        }
-        .highlight-blue {
-            color: #1565c0;
-            font-weight: bold;
-        }
-        .stage-card {
-            background-color: #ffffff;
-            border-left: 5px solid #0d47a1;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-        }
-    </style>
-    """, unsafe_allow_html=True)
+        <style>
+            .report-text {
+                font-size: 16px;
+                line-height: 1.6;
+                color: #333;
+                text-align: justify;
+                background-color: #f9f9f9;
+                padding: 15px;
+                border-radius: 8px;
+                border: 1px solid #e0e0e0;
+                margin-top: 10px;
+            }
+            .hydro-group-header {
+                font-size: 18px;
+                font-weight: bold;
+                color: #0d47a1;
+                margin-top: 20px;
+            }
+            .highlight-blue {
+                color: #1565c0;
+                font-weight: bold;
+            }
+            .stage-card {
+                background-color: #ffffff;
+                border-left: 5px solid #0d47a1;
+                padding: 10px 15px;
+                margin-bottom: 10px;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+            }
+        </style>
+        """, unsafe_allow_html=True)
 
 
     # --- РАЗДЕЛ 2: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
