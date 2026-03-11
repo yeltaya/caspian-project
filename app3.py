@@ -3534,93 +3534,103 @@ with tabs[3]:
     import streamlit as st
     import plotly.graph_objects as go
 
-    # --- СТИЛИЗАЦИЯ (такая же, как в агро-блоке для единообразия) ---
+    # --- СТИЛИЗАЦИЯ ---
     st.markdown("""
     <style>
         .section-header-hydro {
             font-size: 22px;
             font-weight: bold;
-            color: #01579b; /* Синий цвет для гидрологии */
+            color: #01579b;
             margin-top: 30px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             border-bottom: 2px solid #01579b;
             padding-bottom: 5px;
         }
-        .info-card-hydro {
+        .methodology-box {
+            background-color: #f0f7f9;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #b3e5fc;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .methodology-box ul {
+            margin-bottom: 10px;
+        }
+        .calendar-box {
             background-color: #e1f5fe;
             padding: 15px;
-            border-left: 5px solid #01579b;
-            border-radius: 5px;
+            border-left: 5px solid #0288d1;
+            margin-top: 10px;
         }
     </style>
     """, unsafe_allow_html=True)
 
-    # 1. ЗАГОЛОВОК И КАРТЫ
-    st.markdown('<div class="section-header-hydro">🌊 Гидрологические прогнозы на весенний период 2026</div>', unsafe_allow_html=True)
+    # 1. ЗАГОЛОВОК И ВВОДНАЯ ИНФОРМАЦИЯ
+    st.markdown('<div class="section-header-hydro">🌊 Гидрологические прогнозы</div>', unsafe_allow_html=True)
 
+    st.markdown("""
+    <div class="methodology-box">
+        Гидрологические прогнозы составляются на основании различных факторов, таких как <b>осеннее увлажнение почвы, запаса воды в снеге, сумма осадков за зиму и глубина промерзания почвы</b>. 
+        Гидропрогнозисты также используют сезонные и месячные синоптические прогнозы, основанные на методе подбора года-аналога, включая прогноз суммы осадков и средней температуры воздуха. 
+        <br><br>
+        <b>При составлении гидрологических прогнозов применяются следующие методики:</b>
+        <ul>
+            <li>Множественная регрессия;</li>
+            <li>Численные модели HBV и SWIM.</li>
+        </ul>
+        <div class="calendar-box">
+            <b>📅 График выпуска прогнозов:</b><br>
+            • <b>Предварительный прогноз:</b> выпускается к 5 февраля (по состоянию на 1 февраля).<br>
+            • <b>Основной прогноз:</b> выпускается к 5 марта (по состоянию на 1 марта).<br>
+            <i>В дальнейшем прогнозы по равнинной территории обновляются еженедельно.</i>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 2. КАРТЫ (ДЛЯ ВИЗУАЛИЗАЦИИ)
     col_map1, col_map2 = st.columns(2)
     with col_map1:
-        # Здесь предполагается загрузка карты паводкоопасных регионов
-        st.info("🗺️ **Карта ожидаемого объема стока**")
-        st.image("https://via.placeholder.com/800x600.png?text=Карта+водности+рек+РК", caption="Прогноз объема стока половодья", use_container_width=True)
+        st.info("🗺️ **Прогноз объема стока половодья**")
+        st.image("https://via.placeholder.com/800x500.png?text=Карта+объема+стока", use_container_width=True)
 
     with col_map2:
-        st.info("⚠️ **Карта рисков подтоплений**")
-        st.image("https://via.placeholder.com/800x600.png?text=Риски+паводков", caption="Районы с высоким риском паводков", use_container_width=True)
+        st.info("⚠️ **Риски подтоплений**")
+        st.image("https://via.placeholder.com/800x500.png?text=Карта+рисков", use_container_width=True)
 
-    # 2. МЕТОДОЛОГИЯ (Кратко)
-    st.markdown("### 📝 Методология гидрологического мониторинга")
-    m_col1, m_col2 = st.columns(2)
+    # 3. ГРАФИК ОПРАВДЫВАЕМОСТИ
+    st.markdown('<div class="section-header-hydro">📊 Оправдываемость гидрологических прогнозов по бассейнам</div>', unsafe_allow_html=True)
 
-    with m_col1:
-        st.markdown("""<div class="info-card-hydro">
-            <b>Прогноз весеннего половодья:</b><br>
-            Рассчитывается на основе снегозапасов, глубины промерзания почвы и осеннего увлажнения. 
-            Включает данные по основным речным бассейнам (Есиль, Нура, Тобол и др.).
-        </div>""", unsafe_allow_html=True)
-
-    with m_col2:
-        st.markdown("""<div class="info-card-hydro">
-            <b>Оперативные прогнозы:</b><br>
-            Выпускаются с апреля по июнь. Включают краткосрочные уведомления об опасных уровнях воды (штормовые предупреждения).
-        </div>""", unsafe_allow_html=True)
-
-    # 3. ИНТЕРАКТИВНЫЙ ГРАФИК ОПРАВДЫВАЕМОСТИ (Аналогично вашим прошлым запросам)
-    st.markdown('<div class="section-header-hydro">📊 Оправдываемость гидрологических прогнозов (по бассейнам)</div>', unsafe_allow_html=True)
-
-    def create_hydro_chart(labels, values, title, color):
-        # Добавляем <br> для переноса названий бассейнов
+    def create_hydro_chart(labels, values, color):
+        # Автоматический перенос строк для названий бассейнов
         formatted_labels = [label.replace(" ", "<br>") for label in labels]
         
         fig = go.Figure(go.Bar(
             x=formatted_labels,
             y=values,
-            text=[f"{v}%" for v in values],
+            text=values,
             textposition='inside',
             insidetextanchor='middle',
-            textfont=dict(size=18, color="white", family="Arial Black"),
-            marker_color=color
+            textfont=dict(size=22, color="white", family="Arial Black"),
+            marker_color=color,
+            width=0.7
         ))
         
         fig.update_layout(
             plot_bgcolor="white",
-            height=450,
-            margin=dict(l=10, r=10, t=50, b=100),
-            yaxis=dict(range=[0, 110], visible=False),
-            xaxis=dict(tickfont=dict(size=14, color="black"))
+            height=500,
+            margin=dict(l=10, r=10, t=20, b=120),
+            showlegend=False,
+            yaxis=dict(range=[0, 105], visible=False, fixedrange=True),
+            xaxis=dict(tickfont=dict(size=15, color="black"), automargin=True)
         )
         return fig
 
-    # Данные по бассейнам (примерные показатели Казгидромета)
     basins = ["Урало-Каспийский", "Иртышский", "Есильский", "Нура-Сарысу", "Балхаш-Алакольский", "Арало-Сырдарьинский"]
-    accuracy_values = [89, 94, 91, 88, 92, 95]
+    accuracy = [89, 94, 91, 88, 92, 95]
 
-    st.plotly_chart(create_hydro_chart(basins, accuracy_values, "Оправдываемость стока половодья по бассейнам рек", "#0288d1"), use_container_width=True)
-
-    # 4. ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ
-    st.warning("ℹ️ **Примечание:** Гидрологические бюллетени обновляются ежедневно в период активного снеготаяния.")
-
-
+    st.plotly_chart(create_hydro_chart(basins, accuracy, "#0288d1"), use_container_width=True, config={'displayModeBar': False})
 
  
  
