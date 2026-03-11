@@ -2524,7 +2524,7 @@ with tabs[1]:
         st.markdown("""
             <div class="forecast-card">
                 <div class="icon">🔭</div>
-                <div class="title">Консультативные прогнозы</div>
+                <div class="title">Долгосрочные прогнозы</div>
                 <div class="description">Прогнозы на декаду, месяц и сезон.</div>
             </div>
         """, unsafe_allow_html=True)
@@ -5653,6 +5653,51 @@ with tabs[4]:
                 """, icon="⚠️")
                 
 
+    def show_water_resources_block():
+        st.write("---")
+        st.header("🌊 ОЦЕНКА ИЗМЕНЕНИЯ СТОКА РЕК КАЗАХСТАНА НА ПЕРСПЕКТИВУ ДО 2050 ГОДА")
+        
+        col_method, col_scenarios = st.columns([1.2, 1], gap="large")
+        
+        with col_method:
+            st.subheader("📊 Материалы и методы исследования")
+            st.markdown("""
+            * **Данные наблюдений**: Данные государственной наблюдательной сети Казахстана.
+            * **Климатические архивы**: Глобальный климатический архив **Terra Climate**.
+            * **Прогнозные модели**: Данные по осадкам по **23 моделям** (МОЦАО) до 2050 г.
+            * **Группа CMIP5**: Модели Межправительственной группы экспертов по изменению климата (**МГЭИК**).
+            * **Базисный период**: Оценка рассчитана относительно нормы стока за **1930-2019 гг.**.
+            """)
+
+        with col_scenarios:
+            st.subheader("🌡️ Климатические сценарии")
+            st.markdown("""
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ff4b4b;">
+                    <div style="min-width: 60px; font-weight: bold; color: #ff4b4b; font-size: 0.8em;">RCP 8.5</div>
+                    <div style="margin-left: 10px; color: #333;"><b>«Жесткий» сценарий:</b> Быстрый рост выбросов.</div>
+                </div>
+                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ffa500;">
+                    <div style="min-width: 60px; font-weight: bold; color: #ffa500; font-size: 0.8em;">RCP 4.5</div>
+                    <div style="margin-left: 10px; color: #333;"><b>«Умеренно жесткий»:</b> Умеренный рост выбросов.</div>
+                </div>
+                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #28a745;">
+                    <div style="min-width: 60px; font-weight: bold; color: #28a745; font-size: 0.8em;">RCP 2.6</div>
+                    <div style="margin-left: 10px; color: #333;"><b>«Мягкий» сценарий:</b> Снижение выбросов.</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("---")
+        st.success("**БАЛКАШ-АЛАКОЛЬСКИЙ БАССЕЙН**: ожидается **увеличение стока** (29.9 км³) к 2050 г.")
+
+    # --- ВАЖНЫЙ МОМЕНТ: ПРАВИЛЬНЫЙ ВЫЗОВ ---
+    if __name__ == "__main__":
+        show_water_resources_block() # <-- Проверьте, что здесь есть 4 пробела (отступ)
+    
+    
+
+
   
 
 # --- Твой основной контент по Каспию идет во вкладку №5 (индекс 5) ---
@@ -7036,7 +7081,7 @@ with tabs[6]:
             st.info("Здесь должна быть карта: temp1.gif")
             
     st.markdown("---")
-    st.markdown("### 🏆 Анализ атмосферных осадков")            
+      
 
     import streamlit as st
     import streamlit.components.v1 as components
@@ -7055,52 +7100,49 @@ with tabs[6]:
         {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
     ]
   
-
-    # Создаем колонки
+    st.markdown("### 🏆 Анализ атмосферных осадков")      
+    
+        # Создаем колонки
+    # Создаем колонки с одинаковым выравниванием
     col_info, col_chart, col_map = st.columns([1, 1, 1], gap="large")
 
     with col_info:
-            # Текстовый хайлайт в коричневых тонах (стиль засухи)
-            st.markdown("""
-                <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 10px;">
-                    <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
-                    <p style="font-size: 1rem; line-height: 1.5;">
-                        <span style="font-weight: 800; font-size: 1.2rem;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению годовых сумм осадков на 2,5 мм/10 лет, однако в южных регионах сохраняется риск засушливости.
-                    </p>
-                    <p style="font-size: 0.9rem; color: #6d4c41;">
-                        Наиболее сухие периоды зафиксированы в 1944 и 1975 годах. Статистика показывает, что рост осадков весной не всегда компенсирует летний дефицит влаги.
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
+        # Добавляем margin-top: 0, чтобы блок не прыгал вниз
+        st.markdown("""
+            <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
+                <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
+                <p style="font-size: 0.95rem; line-height: 1.4;">
+                    <span style="font-weight: 800;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению...
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
     with col_chart:
-        st.caption("Самые сухие годы в Казахстане (1941–2025 гг.)")
-            
-            # Генерация HTML
         rows_html = ""
-            # Находим максимум для масштабирования (в осадках это обычно около 100%)
-        max_val = max([item["value"] for item in rank_data1]) 
-            
-        for item in rank_data1:
-                width = (item["value"] / max_val) * 100
-                rows_html += f"""
-                <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
-                    <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
-                    <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
-                    <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
-                        <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
-                            <span style="color: white; font-size: 11px; font-weight: bold;">{item['value']}%</span>
-                        </div>
+        max_val = 85.5
+        for item in rank_data:
+            width = (item["value"] / max_val) * 100
+            rows_html += f"""
+            <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
+                <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
+                <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
+                <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
+                    <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
+                        <span style="color: white; font-size: 11px; font-weight: bold;">+{item['value']}°C</span>
                     </div>
                 </div>
-                """
-            
-    components.html(f"<div style='padding-top: 5px;'>{rows_html}</div>", height=350)
-            
-                
+            </div>
+            """
+                # Отрисовка через iframe для стабильности
+        components.html(f"""
+            <div style="padding-top: 5px;">
+                {rows_html}
+            </div>
+        """, height=350)
+        
     with col_map:
         # Путь к вашему изображению
-        map_path = "temp1.gif"
+        map_path = "Precipitation.gif"
         
         if os.path.exists(map_path):
             st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
@@ -7108,6 +7150,8 @@ with tabs[6]:
             st.error(f"Файл не найден по пути: {map_path}")
             # Заглушка, если файла нет
             st.info("Здесь должна быть карта: temp1.gif")
+            
+    st.markdown("---")
             
 
 
