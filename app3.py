@@ -7073,14 +7073,19 @@ with tabs[6]:
         map_path = "temp1.gif"
         
         if os.path.exists(map_path):
-            # Читаем файл в бинарном режиме
+            # Чтобы HTML увидел файл, он должен быть доступен (например, в папке со скриптом)
+            # Но проще всего вывести через st.image(contents) как выше.
+            # Если все же нужен HTML:
+            import base64
             with open(map_path, "rb") as f:
-                contents = f.read()
+                data_url = base64.b64encode(f.read()).decode("utf-8")
             
-            # Передаем байты вместо пути к файлу
-            st.image(contents, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
-        else:
-            st.error(f"Файл не найден: {map_path}")
+            st.markdown(
+                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%;">',
+                unsafe_allow_html=True,
+            )
+            st.caption("Карта аномалий: Зима (анализ данных)")
+        
         
 
     import streamlit as st
@@ -7112,7 +7117,8 @@ with tabs[6]:
             <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
                 <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
                 <p style="font-size: 0.95rem; line-height: 1.4;">
-                    <span style="font-weight: 800;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению...
+                    <span style="font-weight: 800;">За последние 50 лет наблюдается слабая тенденция к увеличению годовых сумм атмосферных осадков на 2,5 мм/10 лет, в основном за счет осадков весеннего сезона. По территории Казахстана все тренды среднего годового и сезонного количества осадков статистически незначимы. 
+Уменьшение осадков наблюдалось в центральных и южных регионах. Изменения максимальной продолжительности бездождных периодов с осадками менее 1 мм в сутки достигли 1–4 дней за десятилетие, как в сторону увеличения, так и в сторону уменьшения.
                 </p>
             </div>
         """, unsafe_allow_html=True)
