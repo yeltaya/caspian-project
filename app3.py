@@ -3332,6 +3332,67 @@ with tabs[2]:
 
     st.divider()
 
+    def show_farmer_calendar():
+        st.markdown("### 📅 Календарь фермера")
+        
+        # 1. Подготовка данных
+        months = [
+            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", 
+            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+        ]
+        
+        crops = ["озимая.пш.", "яровая.пш.", "кукуруза", "рис", "подсолнечник", "Сах. свекла"]
+        
+        # Создаем пустую матрицу
+        data = pd.DataFrame("", index=crops, columns=months)
+        
+        # Заполняем данными согласно вашему скриншоту
+        # Озимая пшеница
+        data.loc["озимая.пш.", ["Январь", "Февраль", "Март", "Апрель", "Май", "Ноябрь", "Декабрь"]] = "В"
+        data.loc["озимая.пш.", ["Июнь", "Июль"]] = "У"
+        data.loc["озимая.пш.", "Октябрь"] = "П"
+        
+        # Яровые и другие (Май - Посев)
+        spring_crops = ["яровая.пш.", "кукуруза", "рис", "подсолнечник"]
+        data.loc[spring_crops, "Май"] = "П"
+        data.loc[spring_crops, ["Июнь", "Июль", "Август"]] = "В"
+        data.loc["подсолнечник", "Сентябрь"] = "В"
+        
+        # Уборка яровых
+        data.loc[["яровая.пш.", "кукуруза", "рис"], "Сентябрь"] = "У"
+        data.loc["подсолнечник", "Октябрь"] = "У"
+        
+        # Сахарная свекла
+        data.loc["Сах. свекла", "Апрель"] = "П"
+        data.loc["Сах. свекла", ["Май", "Июнь", "Июль", "Август"]] = "В"
+        data.loc["Сах. свекла", "Сентябрь"] = "У"
+
+        # 2. Функция для раскраски ячеек (CSS)
+        def style_calendar(val):
+            if val == "П": # Посев
+                return "background-color: #5d8a33; color: white; text-align: center; font-weight: bold;"
+            elif val == "В": # Вегетация
+                return "background-color: #bcd9ea; color: #5d8a33; text-align: center; font-weight: bold;"
+            elif val == "У": # Уборка
+                return "background-color: #ffda66; color: white; text-align: center; font-weight: bold;"
+            return "background-color: white;"
+
+        # 3. Отображение стилизованной таблицы
+        styled_df = data.style.applymap(style_calendar)
+        
+        st.dataframe(styled_df, use_container_width=True, height=250)
+
+        # 4. Легенда (интерактивные подсказки)
+        col1, col2, col3 = st.columns(3)
+        col1.markdown("🟩 **П** — Посев")
+        col2.markdown("🟦 **В** — Вегетационный период")
+        col3.markdown("🟨 **У** — Уборка урожая")
+
+    # Вызов функции
+    show_farmer_calendar()
+
+
+
 
     # Имитация интерактивной части (как на ваших слайдах с картами)
     st.subheader("📍 Актуальная информация по регионам")
