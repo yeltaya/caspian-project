@@ -7101,8 +7101,11 @@ with tabs[6]:
         {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},
         {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
     ]
-        st.markdown("---")
-        st.markdown("### 🏆 Анализ влажности")
+    
+    
+    
+st.markdown("---")
+st.markdown("### 🏆 Анализ влажности")
         
     with col_chart:
         # Заголовок для выравнивания
