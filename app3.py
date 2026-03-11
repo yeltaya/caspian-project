@@ -7084,80 +7084,67 @@ with tabs[6]:
                 f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%;">',
                 unsafe_allow_html=True,
             )
-            st.caption("Карта аномалий: Зима (анализ данных)")
+            st.caption("Карта аномалий")
         
         
 
-    import streamlit as st
-    import streamlit.components.v1 as components
-
-# --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
-    rank_data1 = [
-        {"rank": 1, "year": 1944, "value": 73.5, "color": "#5D4037"},  # Темно-коричневый (экстремально сухо)
-        {"rank": 2, "year": 1975, "value": 77.0, "color": "#795548"},  # Коричневый
-        {"rank": 3, "year": 1974, "value": 78.3, "color": "#8D6E63"},  # Светло-коричневый
-        {"rank": 4, "year": 1995, "value": 78.8, "color": "#8D6E63"}, 
-        {"rank": 5, "year": 1991, "value": 78.9, "color": "#A1887F"},  # Серо-коричневый
-        {"rank": 6, "year": 2008, "value": 81.6, "color": "#A1887F"}, 
-        {"rank": 7, "year": 1955, "value": 82.4, "color": "#BCAAA4"},  # Песочный
-        {"rank": 8, "year": 1936, "value": 82.6, "color": "#BCAAA4"}, 
-        {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},  # Светло-песочный
+    # --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
+    rank_data_precip = [
+        {"rank": 1, "year": 1944, "value": 73.5, "color": "#5D4037"},
+        {"rank": 2, "year": 1975, "value": 77.0, "color": "#795548"},
+        {"rank": 3, "year": 1974, "value": 78.3, "color": "#8D6E63"},
+        {"rank": 4, "year": 1995, "value": 78.8, "color": "#8D6E63"},
+        {"rank": 5, "year": 1991, "value": 78.9, "color": "#A1887F"},
+        {"rank": 6, "year": 2008, "value": 81.6, "color": "#A1887F"},
+        {"rank": 7, "year": 1955, "value": 82.4, "color": "#BCAAA4"},
+        {"rank": 8, "year": 1936, "value": 82.6, "color": "#BCAAA4"},
+        {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},
         {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
     ]
-  
-    st.markdown("### 🏆 Анализ атмосферных осадков")      
-    
-        # Создаем колонки
-    # Создаем колонки с одинаковым выравниванием
-    col_info, col_chart, col_map = st.columns([1, 1, 1], gap="large")
-
-    with col_info:
-        # Добавляем margin-top: 0, чтобы блок не прыгал вниз
-        st.markdown("""
-            <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
-                <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
-                <p style="font-size: 0.95rem; line-height: 1.4;">
-                    <span style="font-weight: 800;">За последние 50 лет наблюдается слабая тенденция к увеличению годовых сумм атмосферных осадков на 2,5 мм/10 лет, в основном за счет осадков весеннего сезона. По территории Казахстана все тренды среднего годового и сезонного количества осадков статистически незначимы. 
-Уменьшение осадков наблюдалось в центральных и южных регионах. Изменения максимальной продолжительности бездождных периодов с осадками менее 1 мм в сутки достигли 1–4 дней за десятилетие, как в сторону увеличения, так и в сторону уменьшения.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
 
     with col_chart:
+        # Заголовок для выравнивания
+        st.markdown("<div style='height: 20px; font-size: 0.8rem; color: gray;'>Самые сухие годы в Казахстане (1941–2025 гг.)</div>", unsafe_allow_html=True)
+        
         rows_html = ""
-        max_val = 85.5
-        for item in rank_data:
-            width = (item["value"] / max_val) * 100
+        # Для осадков лучше использовать 100 как максимум, чтобы видеть долю от нормы
+        max_val_precip = 100 
+        
+        # ВНИМАНИЕ: используем rank_data_precip
+        for item in rank_data_precip:
+            width = (item["value"] / max_val_precip) * 100
             rows_html += f"""
-            <div style="display: flex; align-items: center; margin-bottom: 6px; height: 28px; font-family: sans-serif;">
+            <div style="display: flex; align-items: center; margin-bottom: 6px; height: 26px; font-family: sans-serif;">
                 <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
                 <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
                 <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
                     <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
-                        <span style="color: white; font-size: 11px; font-weight: bold;">+{item['value']}°C</span>
+                        <span style="color: white; font-size: 11px; font-weight: bold;">{item['value']}%</span>
                     </div>
                 </div>
             </div>
             """
-                # Отрисовка через iframe для стабильности
-        components.html(f"""
-            <div style="padding-top: 5px;">
-                {rows_html}
-            </div>
-        """, height=350)
+        
+        components.html(f"<div style='margin-top: 5px;'>{rows_html}</div>", height=320)
+        
         
     with col_map:
-        # Путь к вашему изображению
         map_path = "Precipitation.gif"
         
         if os.path.exists(map_path):
-            st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
-        else:
-            st.error(f"Файл не найден по пути: {map_path}")
-            # Заглушка, если файла нет
-            st.info("Здесь должна быть карта: temp1.gif")
+            # Чтобы HTML увидел файл, он должен быть доступен (например, в папке со скриптом)
+            # Но проще всего вывести через st.image(contents) как выше.
+            # Если все же нужен HTML:
+            import base64
+            with open(map_path, "rb") as f:
+                data_url = base64.b64encode(f.read()).decode("utf-8")
             
-    st.markdown("---")
+            st.markdown(
+                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%;">',
+                unsafe_allow_html=True,
+            )
+            st.caption("Карта аномалий")
+        
             
 
 
