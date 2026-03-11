@@ -3528,78 +3528,79 @@ with tabs[2]:
     import streamlit as st
     import plotly.graph_objects as go
 
-    def show_final_identical_chart():
-        # Данные в точном порядке как на скриншоте
-        data = {
-            "Засуха": 99,
-            "Запасы влаги": 87,
-            "Сроки созревания": 87,
-            "Яровая пшеница": 81,
-            "Кукуруза": 81,
-            "Подсолнечник": 74,
-            "Сахарная свекла": 55
-        }
-
-        # Цвета подобраны по пикселям вашего изображения
-        colors = [
-            "#FFEB3B", # Желтый (Засуха)
-            "#2196F3", # Ярко-синий (Влага)
-            "#8BC34A", # Салатовый (Созревание)
-            "#4CAF50", # Зеленый (Пшеница)
-            "#FFC107", # Янтарный (Кукуруза)
-            "#FF9800", # Оранжевый (Подсолнечник)
-            "#F44336"  # Красный (Свекла)
-        ]
-
-        # Форматируем названия для переноса (чтобы текст не слипался)
-        labels = [label.replace(" ", "<br>") for label in data.keys()]
-        values = list(data.values())
-
-        fig = go.Figure()
-
-        fig.add_trace(go.Bar(
-            x=labels,
-            y=values,
-            text=values,
-            textposition='inside',      # Цифры внутри
-            insidetextanchor='middle', # Центрирование по вертикали
-            textfont=dict(
-                size=24,                # Крупный размер
-                color="white",          # Белый цвет
-                family="Arial Black"    # Максимально жирный шрифт
-            ),
-            marker_color=colors,
-            width=0.8                   # Ширина столбцов
+    # Функция для создания компактных графиков по областям
+    def create_region_chart(labels, values, title, color):
+        fig = go.Figure(go.Bar(
+            x=labels, 
+            y=values, 
+            text=values, 
+            textposition='auto', 
+            marker_color=color,
+            hovertemplate="Область: %{x}<br>Оправдываемость: %{y}%<extra></extra>"
         ))
-
         fig.update_layout(
-            # Белый фон без лишних линий
-            plot_bgcolor="white",
-            paper_bgcolor="white",
-            # Высота и отступы (снизу больше места для подписей)
-            height=600,
-            margin=dict(l=10, r=10, t=50, b=150),
-            showlegend=False,
-            # Настройка осей
-            yaxis=dict(
-                visible=False,          # Скрываем шкалу слева как на фото
-                range=[0, 110],         # Запас сверху для красоты
-                fixedrange=True
-            ),
-            xaxis=dict(
-                tickfont=dict(size=16, color="black", family="Arial"),
-                fixedrange=True,
-                automargin=True
-            )
+            title=dict(text=title, font=dict(size=16)),
+            yaxis=dict(range=[0, 110], visible=True, ticksuffix="%"),
+            height=300, 
+            margin=dict(l=10, r=10, t=50, b=40),
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
         )
+        return fig
 
-        # Отображение в Streamlit (убираем интерактивную панель Plotly для чистоты вида)
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+    st.markdown("### 📊 Оправдываемость прогнозов в разрезе областей")
 
-    # Заголовок как на слайде
-    st.markdown("<h3 style='text-align: center;'>Оправдываемость агрометеорологических прогнозов по видам</h3>", unsafe_allow_html=True)
-    show_final_identical_chart()
+    # Данные строго по вашему скриншоту (где не сеют — данных нет)
+    reg_main = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
+    reg_south = ["Алмат.", "Жамбыл.", "Туркест."]
 
+    # Строка 1: Пшеница и Влага (Основные зерносеющие регионы)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(create_region_chart(
+            reg_main, [92, 80, 82, 84, 82, 68, 78, 84], 
+            "Яровая пшеница", "#4CAF50"
+        ), use_container_width=True)
+    with col2:
+        st.plotly_chart(create_region_chart(
+            reg_main, [98, 100, 94, 93, 95, 89, 72, 57], 
+            "Запасы влаги в почве", "#2196F3"
+        ), use_container_width=True)
+
+    # Строка 2: Технические культуры (Только там, где они растут)
+    col3, col4, col5 = st.columns(3)
+    with col3:
+        st.plotly_chart(create_region_chart(
+            reg_south, [87, 69, 86], 
+            "Кукуруза", "#FFC107"
+        ), use_container_width=True)
+    with col4:
+        # Только Алматинская и Жамбылская
+        st.plotly_chart(create_region_chart(
+            ["Алмат.", "Жамбыл."], [74, 35], 
+            "Сахарная свекла", "#F44336"
+        ), use_container_width=True)
+    with col5:
+        # Костанайская, Павлодарская, ВКО
+        st.plotly_chart(create_region_chart(
+            ["Кост.", "Павл.", "ВКО"], [72, 71, 80], 
+            "Подсолнечник", "#FF9800"
+        ), use_container_width=True)
+
+    # Строка 3: Прочие прогнозы
+    col6, col7 = st.columns(2)
+    with col6:
+        st.plotly_chart(create_region_chart(
+            reg_main, [50, 100, 88, 90, 88, 100, 90, 82], 
+            "Сроки созревания", "#8BC34A"
+        ), use_container_width=True)
+    with col7:
+        # Южные регионы для озимой пшеницы
+        st.plotly_chart(create_region_chart(
+            ["Алмат.", "Жамбыл."], [88, 83], 
+            "Озимая пшеница", "#1B5E20"
+        ), use_container_width=True)
+        
 
         
         
