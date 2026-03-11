@@ -3244,9 +3244,9 @@ with tabs[2]:
     st.markdown("""
     <style>
         .forecast-item {
-            margin-bottom: 12px;
-            padding: 8px;
-            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 6px;
+            border-radius: 3px;
             transition: 0.3s;
         }
         .forecast-item:hover {
@@ -3271,8 +3271,8 @@ with tabs[2]:
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .big-number {
-            font-size: 64px;
-            font-weight: 800;
+            font-size: 56px;
+            font-weight: 600;
             line-height: 1;
         }
     </style>
