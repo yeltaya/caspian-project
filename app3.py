@@ -3752,109 +3752,52 @@ with tabs[3]:
         </div>
         """, unsafe_allow_html=True)
     
-import streamlit as st
-import geopandas as gpd
-import plotly.express as px
-import pandas as pd
-import os
 
-# 1. Настройка рисков и цветов (цвета взяты из ваших примеров)
-FLOOD_CONFIG = {
-    "Высокий риск": {
-        "color": "#f9a03f",  # Оранжевый
-        "regions_en": ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay"],
-        "desc": "Высокий риск: Ожидается интенсивное снеготаяние, глубокое промерзание почвы и формирование значительного стока."
-    },
-    "Средний риск": {
-        "color": "#f9f080",  # Желтый
-        "regions_en": ["Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu"],
-        "desc": "Средний риск: Возможны локальные подтопления при резком повышении температурного фона и таянии снега в руслах рек."
-    },
-    "Низкий риск": {
-        "color": "#90ee90",  # Зеленый
-        "regions_en": ["Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
-        "desc": "Низкий риск: Обстановка стабильная, уровни воды в пределах нормы, риски подтоплений минимальны."
-    }
-}
-
-# 2. Подготовка данных для сопоставления с картой
-data_rows = []
-for risk_label, info in FLOOD_CONFIG.items():
-    for reg_en in info["regions_en"]:
-        data_rows.append({
-            "ADM1_EN": reg_en,
-            "Risk_Label": risk_label,
-            "Color": info["color"],
-            "Description": info["desc"]
-        })
-df_stats = pd.DataFrame(data_rows)
-
-@st.cache_data
-def load_geo_data():
-    # Загрузка SHP файла (убедитесь, что все 4 файла лежат в корне GitHub)
-    if os.path.exists("kaz 17 obl.shp"):
-        gdf = gpd.read_file("kaz 17 obl.shp")
-        # Объединение геометрии с нашими данными по рискам
-        merged = gdf.merge(df_stats, on='ADM1_EN', how='left')
-        return merged.to_crs(epsg=4326)
-    else:
-        st.error("Файл 'kaz 17 obl.shp' не найден в репозитории.")
-        return None
-
-    import streamlit as st
-    import geopandas as gpd
-    import plotly.express as px
-    import pandas as pd
-    import os
-
-    # 1. Настройка данных (Цвета как на ваших фото)
+    # 1. Определение конфигурации рисков и цветов на основе изображения
     FLOOD_CONFIG = {
-        "Высокий риск": {
-            "color": "#f9a03f",
+        "высокий риск": {
+            "color": "#f9a03f",  # Оранжевый
             "regions_en": ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay"],
             "desc": "Высокий риск: Ожидается интенсивное снеготаяние и формирование значительного стока."
         },
-        "Средний риск": {
-            "color": "#f9f080",
+        "средний риск": {
+            "color": "#f9f080",  # Желтый
             "regions_en": ["Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu"],
-            "desc": "Средний риск: Возможны локальные подтопления при резком повышении температур."
+            "desc": "Средний риск: Возможны подтопления при резком повышении температур."
         },
-        "Низкий риск": {
-            "color": "#90ee90",
+        "низкий риск": {
+            "color": "#90ee90",  # Зеленый
             "regions_en": ["Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
-            "desc": "Низкий риск: Обстановка стабильная, риски минимальны."
+            "desc": "Низкий риск: Обстановка стабильная."
         }
     }
 
-    # Маппинг для данных
+    # Подготовка данных для сопоставления
     data_rows = []
     for risk_label, info in FLOOD_CONFIG.items():
         for reg_en in info["regions_en"]:
-            data_rows.append({"ADM1_EN": reg_en, "Risk_Label": risk_label, "Color": info["color"], "Description": info["desc"]})
+            data_rows.append({
+                "ADM1_EN": reg_en,
+                "Risk_Label": risk_label,
+                "Color": info["color"],
+                "Description": info["desc"]
+            })
     df_stats = pd.DataFrame(data_rows)
 
     @st.cache_data
     def load_geo_data():
-        # Проверка наличия файла
-        if not os.path.exists("kaz 17 obl.shp"):
-            st.error("❌ Файл 'kaz 17 obl.shp' не найден. Проверьте GitHub!")
-            return None
-        
-        gdf = gpd.read_file("kaz 17 obl.shp")
-        
-        # САМОДИАГНОСТИКА: если карты нет, мы увидим колонки
-        if 'ADM1_EN' not in gdf.columns:
-            st.warning(f"⚠️ Колонки 'ADM1_EN' нет. Доступные колонки: {list(gdf.columns)}")
-            # Пробуем угадать колонку (например, NAME_1)
-            name_col = 'NAME_1' if 'NAME_1' in gdf.columns else gdf.columns[0]
+        # Загрузка SHP файла (названия колонок согласно image_e33682.png)
+        if os.path.exists("kaz 17 obl.shp"):
+            gdf = gpd.read_file("kaz 17 obl.shp")
+            # Объединение геометрии с данными рисков по колонке ADM1_EN
+            merged = gdf.merge(df_stats, on='ADM1_EN', how='left')
+            return merged.to_crs(epsg=4326)
         else:
-            name_col = 'ADM1_EN'
-
-        merged = gdf.merge(df_stats, left_on=name_col, right_on='ADM1_EN', how='left')
-        return merged.to_crs(epsg=4326)
+            st.error("Файл 'kaz 17 obl.shp' не найден в репозитории.")
+            return None
 
     # --- ИНТЕРФЕЙС ---
-    st.title("🌊 Мониторинг паводковых рисков")
+    st.title("🌊 Мониторинг паводковых рисков Казахстана")
 
     map_data = load_geo_data()
 
@@ -3862,31 +3805,37 @@ def load_geo_data():
         col_left, col_right = st.columns([1.6, 1], gap="large")
 
         with col_left:
-            # Отрисовка через Choropleth (ГИС-вид на белом фоне)
+            st.markdown("#### Карта предварительной оценки")
+            
+            # Создание карты
             fig_map = px.choropleth(
                 map_data,
-                geojson=map_data.__geo_interface__,
+                geojson=map_data.__geo_interface__, # Использование интерфейса для исключения ошибок
                 locations=map_data.index,
                 color="Risk_Label",
                 color_discrete_map={
-                    "Высокий риск": "#f9a03f",
-                    "Средний риск": "#f9f080",
-                    "Низкий риск": "#90ee90"
+                    "высокий риск": "#f9a03f",
+                    "средний риск": "#f9f080",
+                    "низкий риск": "#90ee90"
                 },
-                hover_name="ADM1_EN"
+                hover_name="ADM1_EN",
+                labels={'Risk_Label': 'Статус'}
             )
 
+            # Настройка "чистого" ГИС-вида как на фото
             fig_map.update_geos(
-                visible=False, 
-                fitbounds="locations", 
-                bgcolor="white"
+                visible=False,          # Скрывает стандартную карту мира
+                fitbounds="locations",  # Фокус только на территории Казахстана
+                showframe=True,
+                framecolor="#d0d0d0"
             )
 
             fig_map.update_layout(
                 margin={"r":0,"t":0,"l":0,"b":0},
-                height=500,
-                paper_bgcolor="white",
+                height=550,
+                paper_bgcolor="white",  # Белый фон как в источнике
                 plot_bgcolor="white",
+                showlegend=True,
                 legend=dict(orientation="h", yanchor="bottom", y=0.01, xanchor="right", x=0.99, title_text="")
             )
 
@@ -3897,23 +3846,29 @@ def load_geo_data():
                 idx = selected["selection"]["point_indices"][0]
                 row = map_data.iloc[idx]
                 st.subheader(f"📍 {row['ADM1_EN']}")
-                st.markdown(f'<div style="padding:15px; border-radius:10px; background-color:{row["Color"]}; color:black; text-align:center; font-weight:bold;">{row["Risk_Label"].upper()}</div>', unsafe_allow_html=True)
+                st.markdown(f"""
+                    <div style="padding:15px; border-radius:10px; background-color:{row['Color']}; color:black; text-align:center; font-weight:bold; border: 1px solid #ccc;">
+                        УРОВЕНЬ РИСКА: {row['Risk_Label'].upper()}
+                    </div>
+                """, unsafe_allow_html=True)
+                st.write("---")
                 st.info(row['Description'])
             else:
-                st.info("Нажмите на область на карте для деталей.")
+                st.info("Выберите область на карте для получения информации.")
 
-    # --- ТЕКСТОВЫЙ БЛОК (Всегда отображается) ---
+    # --- СТАТИЧНЫЙ БЛОК (согласно Saved Information) ---
     st.markdown("---")
     st.markdown("""
-    <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
-        <h4>📋 Сводка по регионам</h4>
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
+        <h4>📋 Оценка паводко-опасных регионов</h4>
         <ul>
-            <li><b>Высокий риск:</b> Акмолинская, СКО, Карагандинская, ВКО, Абай.</li>
-            <li><b>Средний риск:</b> Костанайская, ЗКО, Актюбинская, Улытау, Павлодарская, Туркестанская, Алматинская, Жетісу.</li>
-            <li><b>Низкий риск:</b> Атырауская, Мангыстауская, Кызылординская, Жамбылская.</li>
+            <li><b>С повышенными рисками:</b> Акмолинская, СКО, Карагандинская, ВКО и область Абай.</li>
+            <li><b>Со средними рисками:</b> Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.</li>
+            <li><b>С низкими рисками:</b> Атырауская, Мангыстауская, Кызылординская и Жамбылская области.</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
+
 
 
         
