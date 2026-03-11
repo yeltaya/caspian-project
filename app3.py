@@ -7070,18 +7070,18 @@ with tabs[6]:
    
             
     with col_map:
-        # Путь к вашему изображению
         map_path = "temp1.gif"
         
         if os.path.exists(map_path):
-            st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
-        else:
-            st.error(f"Файл не найден по пути: {map_path}")
-            # Заглушка, если файла нет
-            st.info("Здесь должна быть карта: temp1.gif")
+            # Читаем файл в бинарном режиме
+            with open(map_path, "rb") as f:
+                contents = f.read()
             
-    st.markdown("---")
-      
+            # Передаем байты вместо пути к файлу
+            st.image(contents, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
+        else:
+            st.error(f"Файл не найден: {map_path}")
+        
 
     import streamlit as st
     import streamlit.components.v1 as components
