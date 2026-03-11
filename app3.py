@@ -3239,76 +3239,88 @@ with tabs[2]:
     # Настройка страницы
     st.set_page_config(layout="wide")
 
-    # Кастомный CSS для стилизации
+
+    # Добавляем стили для меток дат
     st.markdown("""
     <style>
+        .forecast-item {
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .forecast-item:hover {
+            background-color: #f0f2f6;
+        }
+        .date-tag {
+            display: inline-block;
+            background-color: #e1f5fe;
+            color: #01579b;
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+            font-weight: 600;
+        }
         .agro-card {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 5px solid #2e7d32;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .big-number {
-            font-size: 48px;
-            font-weight: bold;
-            color: #2e7d32;
+            font-size: 64px;
+            font-weight: 800;
             line-height: 1;
-        }
-        .forecast-label {
-            font-size: 18px;
-            font-weight: 500;
-            color: #333;
-        }
-        .source-box {
-            background-color: #e8f5e9;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px dashed #2e7d32;
         }
     </style>
     """, unsafe_allow_html=True)
 
-    # Заголовок блока
-    st.title("🌾 Агрометеорологические прогнозы")
-
-    col1, col2 = st.columns([1, 3])
+    # Основной блок
+    col1, col2 = st.columns([1, 2.5])
 
     with col1:
-        # Акцент на цифре 10
         st.markdown("""
         <div class="agro-card">
             <div class="big-number">10</div>
-            <div class="forecast-label">Наименований прогнозов</div>
+            <div style="font-size: 1.1rem; margin-top: 10px;">Наименований<br>прогнозов</div>
         </div>
         """, unsafe_allow_html=True)
         
-        st.info("Доступно в мобильном приложении **AgroData** и на сайте **Казгидромет**.")
+        st.success("**AgroData** — актуальная информация всегда под рукой.")
+        st.info("Прогнозы охватывают все ключевые зерносеющие регионы Казахстана.")
 
     with col2:
-        st.markdown("### Виды предоставляемых прогнозов")
+        st.subheader("📅 График выпуска агрометеорологических прогнозов")
         
-        # Список прогнозов в виде колонок для экономии места
-        sub_col1, sub_col2 = st.columns(2)
-        
-        forecasts = [
-            "💧 Запасы продуктивной влаги в почве",
-            "☀️ Прогноз засухи",
-            "🌾 Сроки созревания яровой пшеницы",
-            "🍂 Сроки созревания озимой пшеницы",
-            "🌻 Сроки созревания подсолнечника",
-            "🌽 Сроки созревания кукурузы",
-            "🍭 Сроки созревания сахарной свеклы",
-            "🚜 Условия уборки зерновых культур"
+        # Структурируем данные
+        forecast_data = [
+            ("💧 Прогноз запасов продуктивной влаги (ЗПВ)", "25 марта, 25 апреля"),
+            ("🌱 Оптимальные сроки сева яровых", "25 марта, 25 апреля"),
+            ("☀️ Прогноз засухи (на основе SPI)", "Апр, Май, Июнь"),
+            ("🌾 Сроки созревания яровых зерновых", "15 июня, 15 июля"),
+            ("📈 Урожайность яровых зерновых", "15 июля, 15 августа"),
+            ("🏔️ Урожайность озимых (Алм. и Жамб. обл.)", "15 мая, 15 июня"),
+            ("🌽 Урожайность подсолнечника, свеклы и кукурузы", "15 июля, 15 августа"),
+            ("🚜 Условия уборки зерновых культур", "август-сентябрь")
         ]
         
-        for i, forecast in enumerate(forecasts):
-            if i < 4:
-                sub_col1.markdown(f"**{forecast}**")
-            else:
-                sub_col2.markdown(f"**{forecast}**")
+        # Вывод в две колонки внутри основной колонки
+        sub_col1, sub_col2 = st.columns(2)
+        
+        for i, (name, date) in enumerate(forecast_data):
+            target_col = sub_col1 if i % 2 == 0 else sub_col2
+            target_col.markdown(f"""
+            <div class="forecast-item">
+                <strong>{name}</strong><br>
+                <span class="date-tag">📅 {date}</span>
+            </div>
+            """, unsafe_allow_html=True)
 
     st.divider()
+
 
     # Имитация интерактивной части (как на ваших слайдах с картами)
     st.subheader("📍 Актуальная информация по регионам")
