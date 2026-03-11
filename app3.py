@@ -3528,68 +3528,68 @@ with tabs[2]:
     import streamlit as st
     import plotly.graph_objects as go
 
-    def show_summary_accuracy_chart():
-        # Заголовок раздела
-        st.markdown("### 📈 Оправдываемость агрометеорологических прогнозов по видам")
+    def show_identical_accuracy_chart():
+        # Заголовок
+        st.markdown("<h3 style='text-align: center; color: #1b5e20;'>Оправдываемость агрометеорологических прогнозов по видам</h3>", unsafe_allow_html=True)
 
-        # Данные из скриншота
-        categories = [
-            "Засуха", 
-            "Запасы влаги", 
-            "Сроки созревания", 
-            "Яровая пшеница", 
-            "Кукуруза", 
-            "Подсолнечник", 
-            "Сахарная свекла"
-        ]
-        
-        values = [99, 87, 87, 81, 81, 74, 55]
-        
-        # Цвета, максимально близкие к оригиналу
+        # Данные строго в порядке со скриншота
+        data = {
+            "Засуха": 99,
+            "Запасы влаги": 87,
+            "Сроки созревания": 87,
+            "Яровая пшеница": 81,
+            "Кукуруза": 81,
+            "Подсолнечник": 74,
+            "Сахарная свекла": 55
+        }
+
+        # Цвета со скриншота
         colors = [
-            "#FBC02D", # Засуха (желтый)
-            "#1976D2", # Влага (синий)
-            "#8BC34A", # Созревание (светло-зеленый)
-            "#388E3C", # Пшеница (зеленый)
-            "#F9A825", # Кукуруза (темно-желтый/оранжевый)
-            "#F57C00", # Подсолнечник (оранжевый)
-            "#D84315"  # Свекла (красный)
+            "#FFEB3B", # Засуха (Яркий желтый)
+            "#1E88E5", # Запасы влаги (Синий)
+            "#9CCC65", # Сроки созревания (Светло-зеленый)
+            "#43A047", # Яровая пшеница (Зеленый)
+            "#FFB300", # Кукуруза (Золотистый)
+            "#FB8C00", # Подсолнечник (Оранжевый)
+            "#E53935"  # Сахарная свекла (Красный)
         ]
 
-        # Создание графика
-        fig = go.Figure(data=[
-            go.Bar(
-                x=categories,
-                y=values,
-                text=values, # Текст внутри/над барами
-                textposition='outside',
-                marker_color=colors,
-                cliponaxis=False # Чтобы текст над высоким баром не обрезался
-            )
-        ])
+        fig = go.Figure()
 
-        # Настройка внешнего вида
+        fig.add_trace(go.Bar(
+            x=list(data.keys()),
+            y=list(data.values()),
+            text=list(data.values()), # Значения процентов
+            textposition='inside',      # Текст внутри столбца
+            insidetextanchor='middle', # Центрирование текста внутри
+            textfont=dict(size=18, color="white", family="Arial Black"), # Крупный белый жирный шрифт
+            marker_color=colors,
+            width=0.7 # Ширина столбцов
+        ))
+
+        # Настройка идентичного стиля
         fig.update_layout(
-            plot_bgcolor="white", # Белый фон как на скрине
+            plot_bgcolor="rgba(0,0,0,0)", # Прозрачный фон
+            paper_bgcolor="rgba(0,0,0,0)",
+            margin=dict(l=20, r=20, t=20, b=100), # Отступы для длинных названий снизу
+            height=500,
+            showlegend=False,
             yaxis=dict(
-                title="Оправдываемость (%)",
-                range=[0, 110],
-                gridcolor="#F0F0F0" # Светлая сетка
+                showgrid=True,
+                gridcolor="#F0F0F0",
+                range=[0, 105],
+                visible=False # Убираем боковую шкалу как на скрине (если нужно оставить, удалите эту строку)
             ),
             xaxis=dict(
-                tickfont=dict(size=13, color="black")
-            ),
-            margin=dict(l=20, r=20, t=50, b=20),
-            height=450,
-            showlegend=False
+                tickangle=0, # Прямой текст
+                tickfont=dict(size=14, color="black", family="Arial")
+            )
         )
 
-        # Отображение в Streamlit
-        st.plotly_chart(fig, use_container_width=True)
+        # Отображаем
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-    # Запуск функции
-    show_summary_accuracy_chart()
-
+    show_identical_accuracy_chart()
 
 
         
