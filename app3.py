@@ -3807,27 +3807,49 @@ with tabs[3]:
     with col_left:
         st.markdown("#### Карта предварительной оценки")
         
-        # Создание интерактивной карты Plotly
-        fig_map = px.choropleth_mapbox(
-            map_data, 
-            geojson=map_data.geometry, 
+# --- ИСПРАВЛЕННЫЙ БЛОК КАРТЫ ---
+
+        fig_map = px.choropleth(
+            map_data,
+            geojson=map_data.geometry,
             locations=map_data.index,
             color="Risk_Label",
-            # Используем точные категории для раскраски
+            # Используем точные цвета с ваших скриншотов
             color_discrete_map={
-                "Высокий риск": "#f9a03f",
-                "Средний риск": "#f9f080",
-                "Низкий риск": "#90ee90"
+                "Высокий риск": "#f9a03f",  # Оранжевый
+                "Средний риск": "#f9f080",  # Желтый
+                "Низкий риск": "#90ee90"    # Зеленый
             },
-            mapbox_style="carto-positron", 
-            zoom=3.5, 
-            center={"lat": 48.0, "lon": 67.0},
-            opacity=0.8,
-            hover_name="ADM1_EN",
-            hover_data={"Risk_Label": True}
+            hover_name="Region_RU",
+            projection="mercator" # Используем меркатор для плоского вида
         )
-        
-        fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, height=500, showlegend=False)
+
+        # Настройка внешнего вида (убираем фон карты мира)
+        fig_map.update_geos(
+            visible=False, 
+            resolution=50,
+            showcountries=False, 
+            showcoastlines=False,
+            showland=False,
+            fitbounds="locations" # Автоматически зумим только на Казахстан
+        )
+
+        fig_map.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0},
+            height=600,
+            paper_bgcolor="white", # Белый фон как на фото
+            plot_bgcolor="white",
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=0.01,
+                xanchor="right",
+                x=0.99,
+                title_text=""
+            )
+        )
+
         
         # Обработка выбора (on_select требует Streamlit 1.35+)
         selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
