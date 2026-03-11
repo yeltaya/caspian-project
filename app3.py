@@ -3524,16 +3524,108 @@ with tabs[2]:
     with r3_c2:
         # Озимая пшеница (Алмат, Жамб, Турк)
         st.plotly_chart(create_chart(reg_south[:2], [80, 85, 81], "Озимая пшеница", "#1b5e20"), use_container_width=True)
-
-
-        
-        
-    
-    
+  
  
 
 with tabs[3]:
     st.title("Гидрологические прогнозы")
+    
+
+    import streamlit as st
+    import plotly.graph_objects as go
+
+    # --- СТИЛИЗАЦИЯ (такая же, как в агро-блоке для единообразия) ---
+    st.markdown("""
+    <style>
+        .section-header-hydro {
+            font-size: 22px;
+            font-weight: bold;
+            color: #01579b; /* Синий цвет для гидрологии */
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #01579b;
+            padding-bottom: 5px;
+        }
+        .info-card-hydro {
+            background-color: #e1f5fe;
+            padding: 15px;
+            border-left: 5px solid #01579b;
+            border-radius: 5px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # 1. ЗАГОЛОВОК И КАРТЫ
+    st.markdown('<div class="section-header-hydro">🌊 Гидрологические прогнозы на весенний период 2026</div>', unsafe_allow_html=True)
+
+    col_map1, col_map2 = st.columns(2)
+    with col_map1:
+        # Здесь предполагается загрузка карты паводкоопасных регионов
+        st.info("🗺️ **Карта ожидаемого объема стока**")
+        st.image("https://via.placeholder.com/800x600.png?text=Карта+водности+рек+РК", caption="Прогноз объема стока половодья", use_container_width=True)
+
+    with col_map2:
+        st.info("⚠️ **Карта рисков подтоплений**")
+        st.image("https://via.placeholder.com/800x600.png?text=Риски+паводков", caption="Районы с высоким риском паводков", use_container_width=True)
+
+    # 2. МЕТОДОЛОГИЯ (Кратко)
+    st.markdown("### 📝 Методология гидрологического мониторинга")
+    m_col1, m_col2 = st.columns(2)
+
+    with m_col1:
+        st.markdown("""<div class="info-card-hydro">
+            <b>Прогноз весеннего половодья:</b><br>
+            Рассчитывается на основе снегозапасов, глубины промерзания почвы и осеннего увлажнения. 
+            Включает данные по основным речным бассейнам (Есиль, Нура, Тобол и др.).
+        </div>""", unsafe_allow_html=True)
+
+    with m_col2:
+        st.markdown("""<div class="info-card-hydro">
+            <b>Оперативные прогнозы:</b><br>
+            Выпускаются с апреля по июнь. Включают краткосрочные уведомления об опасных уровнях воды (штормовые предупреждения).
+        </div>""", unsafe_allow_html=True)
+
+    # 3. ИНТЕРАКТИВНЫЙ ГРАФИК ОПРАВДЫВАЕМОСТИ (Аналогично вашим прошлым запросам)
+    st.markdown('<div class="section-header-hydro">📊 Оправдываемость гидрологических прогнозов (по бассейнам)</div>', unsafe_allow_html=True)
+
+    def create_hydro_chart(labels, values, title, color):
+        # Добавляем <br> для переноса названий бассейнов
+        formatted_labels = [label.replace(" ", "<br>") for label in labels]
+        
+        fig = go.Figure(go.Bar(
+            x=formatted_labels,
+            y=values,
+            text=[f"{v}%" for v in values],
+            textposition='inside',
+            insidetextanchor='middle',
+            textfont=dict(size=18, color="white", family="Arial Black"),
+            marker_color=color
+        ))
+        
+        fig.update_layout(
+            plot_bgcolor="white",
+            height=450,
+            margin=dict(l=10, r=10, t=50, b=100),
+            yaxis=dict(range=[0, 110], visible=False),
+            xaxis=dict(tickfont=dict(size=14, color="black"))
+        )
+        return fig
+
+    # Данные по бассейнам (примерные показатели Казгидромета)
+    basins = ["Урало-Каспийский", "Иртышский", "Есильский", "Нура-Сарысу", "Балхаш-Алакольский", "Арало-Сырдарьинский"]
+    accuracy_values = [89, 94, 91, 88, 92, 95]
+
+    st.plotly_chart(create_hydro_chart(basins, accuracy_values, "Оправдываемость стока половодья по бассейнам рек", "#0288d1"), use_container_width=True)
+
+    # 4. ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ
+    st.warning("ℹ️ **Примечание:** Гидрологические бюллетени обновляются ежедневно в период активного снеготаяния.")
+
+
+
+ 
+ 
+    
+    
 
   # ВОДНЫЕ РЕСУРСЫ
 with tabs[4]:
