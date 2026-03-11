@@ -3628,8 +3628,11 @@ with tabs[3]:
         </div>
         """, unsafe_allow_html=True)
 
-    # Инфографика высотных зон и паводков
+    st.divider()
         
+    # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ РЯДОМ) ---
+    st.markdown('<div class="predictor-header">📊 Гидрологические прогнозы на 2026 г.</div>', unsafe_allow_html=True)
+
 
     # --- СТИЛИЗАЦИЯ ЗАГОЛОВКОВ ---
     st.markdown("""
@@ -3749,49 +3752,91 @@ with tabs[3]:
         </div>
         """, unsafe_allow_html=True)
     
-    
-    
 
-    # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ) ---
-    st.markdown('<div class="predictor-header">📊 Особенности гидрологического режима рек Казахстана</div>', unsafe_allow_html=True)
+    # --- СТИЛИЗАЦИЯ ---
+    st.markdown("""
+    <style>
+        .risk-header {
+            font-size: 22px; font-weight: bold; color: #b71c1c;
+            margin-top: 30px; border-bottom: 2px solid #b71c1c; padding-bottom: 5px;
+        }
+        .risk-card {
+            padding: 15px; border-radius: 8px; margin-bottom: 10px; color: white; font-weight: bold;
+        }
+        .high-risk { background-color: #ef6c00; } /* Оранжевый */
+        .medium-risk { background-color: #fbc02d; color: black; } /* Желтый */
+        .low-risk { background-color: #66bb6a; } /* Зеленый */
+    </style>
+    """, unsafe_allow_html=True)
 
-    st.write("Гидрологический режим рек Казахстана можно разделить на две группы по высотным зонам: **равнинные** и **горные**.")
+    # --- ДАННЫЕ И ЛОГИКА ---
+    st.markdown('<div class="risk-header">🚩 Паводко-опасные регионы (Предварительная оценка)</div>', unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["🌾 Равнинные реки", "🏔️ Горные реки"])
+    st.write("""
+    Анализируя показатели осеннего увлажнения почвы, величины выпавших осадков за холодный период, 
+    глубину промерзания почвы, наличие ледяной корки, а также ледовые режимы рек, дана оценка рисков:
+    """)
 
-    with tab1:
-        st.markdown("""
-        <div class="report-text">
-            Поверхностный сток на равнинных территориях формируется <b>исключительно за счет талых снеговых вод</b>. 
-            В связи с этим, основным фактором формирования весеннего стока на рассматриваемой территории 
-            являются накопленные осадки за холодный период года. 
-            <br><br>
-            📅 <b>Сроки половодья:</b> По данным многолетних наблюдений основной объем половодья на равнинных реках 
-            проходит в период с <b>третьей декады марта по третью декаду апреля</b>. 
-            Случаи дружного таяния снега в феврале месяце исторически не наблюдались.
-        </div>
-        """, unsafe_allow_html=True)
+    # Данные для интерактивной карты (упрощенные координаты центров областей)
+    regions = {
+        "Акмолинская": {"coords": [51.16, 71.44], "risk": "Высокий"},
+        "Северо-Казахстанская": {"coords": [54.87, 69.15], "risk": "Высокий"},
+        "Карагандинская": {"coords": [49.80, 73.08], "risk": "Высокий"},
+        "Восточно-Казахстанская": {"coords": [49.95, 82.61], "risk": "Высокий"},
+        "Абай": {"coords": [50.41, 80.25], "risk": "Высокий"},
+        "Костанайская": {"coords": [53.21, 63.63], "risk": "Средний"},
+        "Западно-Казахстанская": {"coords": [51.23, 51.36], "risk": "Средний"},
+        "Актюбинская": {"coords": [50.28, 57.16], "risk": "Средний"},
+        "Улытау": {"coords": [47.80, 67.70], "risk": "Средний"},
+        "Павлодарская": {"coords": [52.30, 76.95], "risk": "Средний"},
+        "Туркестанская": {"coords": [42.50, 68.30], "risk": "Средний"},
+        "Алматинская": {"coords": [43.22, 76.85], "risk": "Средний"},
+        "Жетісу": {"coords": [45.01, 78.37], "risk": "Средний"},
+        "Атырауская": {"coords": [47.11, 51.91], "risk": "Низкий"},
+        "Мангыстауская": {"coords": [43.64, 51.17], "risk": "Низкий"},
+        "Кызылординская": {"coords": [44.84, 65.50], "risk": "Низкий"},
+        "Жамбылская": {"coords": [44.90, 71.39], "risk": "Низкий"}
+    }
 
-    with tab2:
-        st.write("Паводки на горных реках проходят в **3 этапа**:")
+    def get_color(risk):
+        if risk == "Высокий": return "#ef6c00"
+        if risk == "Средний": return "#fbc02d"
+        return "#66bb6a"
+
+    col_map, col_text = st.columns([2, 1])
+
+    with col_map:
+        # Создание карты
+        m = folium.Map(location=[48.01, 66.92], zoom_start=4, tiles="cartodbpositron")
         
-        st.markdown("""
-        <div class="stage-card">
-            <b>I этап: Низкогорье (Н ≤ 1000 м)</b><br>
-            ⏱ <i>Третья декада марта — третья декада апреля.</i><br>
-            ⚠️ <span style="color: #d32f2f; font-weight: bold;">Повышенный риск затопления</span> в связи с особенностями рельефа.
-        </div>
-        <div class="stage-card">
-            <b>II этап: Среднегорье (Н = 1000 ÷ 2000 м)</b><br>
-            ⏱ <i>Первая декада мая — первая декада июля.</i>
-        </div>
-        <div class="stage-card">
-            <b>III этап: Высокогорье (Н ≥ 2000 м)</b><br>
-            ⏱ <i>Вторая декада июля — первая декада сентября.</i>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    
+        for name, info in regions.items():
+            folium.CircleMarker(
+                location=info["coords"],
+                radius=10,
+                popup=f"Область: {name}<br>Риск: {info['risk']}",
+                color=get_color(info["risk"]),
+                fill=True,
+                fill_color=get_color(info["risk"]),
+                fill_opacity=0.7
+            ).add_to(m)
+        
+        st_folium(m, width=700, height=450)
+
+    with col_text:
+        st.markdown('<div class="risk-card high-risk">🔥 Высокий риск</div>', unsafe_allow_html=True)
+        st.caption("Акмолинская, СКО, Карагандинская, ВКО, Абай")
+        
+        st.markdown('<div class="risk-card medium-risk">⚠️ Средний риск</div>', unsafe_allow_html=True)
+        st.caption("Костанайская, ЗКО, Актюбинская, Улытау, Павлодарская, Туркестанская, Алматинская, Жетісу")
+        
+        st.markdown('<div class="risk-card low-risk">✅ Низкий риск</div>', unsafe_allow_html=True)
+        st.caption("Атырауская, Мангыстауская, Кызылординская, Жамбылская")
+
+    # Статическое изображение для подстраховки (как в вашем файле)
+    with st.expander("Посмотреть статическую карту рисков"):
+        st.image("Без названия.jpeg", use_container_width=True)
+        
+
     
     
     
