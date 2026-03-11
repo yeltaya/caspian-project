@@ -3753,66 +3753,50 @@ with tabs[3]:
         """, unsafe_allow_html=True)
     
     import streamlit as st
-    import pandas as pd
     import geopandas as gpd
     import folium
     from streamlit_folium import st_folium
 
-    # 1. Данные по рискам из вашего текста и рисунка
+    # 1. Словарь рисков (убедитесь, что названия регионов в точности как в файле)
     risk_mapping = {
         "Высокий": {
-            "color": "#ef6c00", # Оранжевый
+            "color": "#ef6c00", 
             "regions": ["Акмолинская", "Северо-Казахстанская", "Карагандинская", "Восточно-Казахстанская", "Абай"]
         },
         "Средний": {
-            "color": "#fbc02d", # Желтый
+            "color": "#fbc02d", 
             "regions": ["Костанайская", "Западно-Казахстанская", "Актюбинская", "Улытау", "Павлодарская", "Туркестанская", "Алматинская", "Жетісу"]
         },
         "Низкий": {
-            "color": "#66bb6a", # Зеленый
+            "color": "#66bb6a", 
             "regions": ["Атырауская", "Мангыстауская", "Кызылординская", "Жамбылская"]
         }
     }
 
-    # Описания для Popup
-    descriptions = {
-        "Акмолинская": "Повышенный риск: глубокое промерзание почвы и высокие снегозапасы.",
-        "Северо-Казахстанская": "Ожидается интенсивное снеготаяние и разлив малых рек.",
-        "Карагандинская": "Риск формирования склонового стока и ледовых заторов.",
-        "Восточно-Казахстанская": "Горные реки с риском паводков во всех трех фазах.",
-        "Абай": "Существенное осеннее переувлажнение почвы.",
-        "Западно-Казахстанская": "Риск зависит от трансграничного стока реки Урал.",
-        "Туркестанская": "Угроза паводков преимущественно в предгорных районах."
-    }
-
     @st.cache_data
-    def load_and_map_data():
-        # Загрузка границ из вашего GitHub
+    def load_fixed_map():
+        # Загружаем файлы. Все они должны быть в корне или по указанному пути
         gdf = gpd.read_file("kaz 17 obl.shp")
         
-        # --- ВАЖНО: Посмотрите на экран после запуска. ---
-        # Там появится список колонок. Найдите ту, где названия областей.
-        # Если это не 'NAME_1', замените 'NAME_1' ниже на ваше название.
-        name_col = 'NAME_1' 
+        # ВЫВОД КОЛОНОК ДЛЯ ПРОВЕРКИ (удалите после настройки)
+        st.write("Доступные колонки в вашем файле:", gdf.columns.tolist())
         
-        # Функция для определения цвета и риска на основе названия области
-        def get_risk_info(row_name):
-            for risk_level, info in risk_mapping.items():
-                if row_name in info["regions"]:
-                    return risk_level, info["color"]
-            return "Не определен", "#808080"
+        # Автоматический поиск колонки с названиями (пробуем частые варианты)
+        potential_cols = ['NAME_1', 'NAME_RU', 'ADM1_RU', 'name']
+        name_col = next((c for c in potential_cols if c in gdf.columns), gdf.columns[0])
+        
+        # Привязка цвета
+        def get_color(name):
+            for risk, info in risk_mapping.items():
+                if name in info["regions"]:
+                    return info["color"]
+            return "#808080" # Серый, если название не совпало
 
-        # Применяем данные к карте
-        gdf['risk_level'], gdf['fill_color'] = zip(*gdf[name_col].apply(get_risk_info))
-        gdf['description'] = gdf[name_col].map(lambda x: descriptions.get(x, "Данные уточняются по мере развития половодья."))
-        
+        gdf['fill_color'] = gdf[name_col].apply(get_color)
         return gdf.to_crs(epsg=4326), name_col
 
     try:
-        final_gdf, name_column = load_and_map_data()
-
-        st.markdown("### 🗺️ Интерактивная карта паводкоопасных регионов")
-        st.caption(f"Используется колонка геоданных: {name_column}")
+        final_gdf, active_col = load_fixed_map()
 
         m = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
 
@@ -3824,18 +3808,14 @@ with tabs[3]:
                 'weight': 1,
                 'fillOpacity': 0.7
             },
-            highlight_function=lambda x: {'weight': 3, 'fillOpacity': 0.85},
-            tooltip=folium.GeoJsonTooltip(fields=[name_column, 'risk_level'], aliases=['Область:', 'Риск:']),
-            popup=folium.GeoJsonPopup(fields=[name_column, 'risk_level', 'description'], aliases=['Регион:', 'Уровень риска:', 'Информация:'])
+            tooltip=folium.GeoJsonTooltip(fields=[active_col], aliases=['Область:'])
         ).add_to(m)
 
         st_folium(m, width=900, height=550)
 
     except Exception as e:
-        st.error(f"Ошибка: {e}. Проверьте, что в GitHub лежат все файлы (.shp, .shx, .dbf, .prj)")
-        
-        
-
+        st.error(f"Ошибка при чтении или отрисовке: {e}")
+    
     # --- ТЕКСТОВЫЙ БЛОК (из вашего описания) ---
     st.markdown("""
     <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
