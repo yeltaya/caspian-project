@@ -3589,7 +3589,47 @@ with tabs[3]:
     </div>
     """, unsafe_allow_html=True)
     
-    
+    # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ РЯДОМ) ---
+    st.markdown('<div class="predictor-header">📊 Особенности гидрологического режима рек Казахстана</div>', unsafe_allow_html=True)
+
+    # Создаем две колонки для отображения блоков рядом
+    col_plain, col_mountain = st.columns(2)
+
+    with col_plain:
+        st.markdown("### 🌾 Равнинные реки")
+        st.markdown("""
+        <div class="report-text" style="height: 100%; border-top: 5px solid #fbc02d;">
+            Поверхностный сток формируется <b>исключительно за счет талых снеговых вод</b>. 
+            Основной фактор — накопленные осадки за холодный период.
+            <br><br>
+            📅 <b>Сроки половодья:</b><br>
+            <b>3-я декада марта — 3-я декада апреля.</b>
+            <br><i>Дружного таяния снега в феврале исторически не наблюдалось.</i>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_mountain:
+        st.markdown("### 🏔️ Горные реки")
+        st.markdown("""
+        <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #e0e0e0; border-top: 5px solid #0d47a1;">
+            <div class="stage-card" style="margin-bottom: 8px; padding: 8px;">
+                <b>I этап: Низкогорье (Н ≤ 1000 м)</b><br>
+                ⏱ <i>Конец марта — конец апреля.</i><br>
+                ⚠️ <span style="color: #d32f2f; font-weight: bold;">Высокий риск затопления.</span>
+            </div>
+            <div class="stage-card" style="margin-bottom: 8px; padding: 8px;">
+                <b>II этап: Среднегорье (Н 1000-2000 м)</b><br>
+                ⏱ <i>Начало мая — начало июля.</i>
+            </div>
+            <div class="stage-card" style="margin-bottom: 0px; padding: 8px;">
+                <b>III этап: Высокогорье (Н ≥ 2000 м)</b><br>
+                ⏱ <i>Середина июля — начало сентября.</i>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Инфографика высотных зон и паводков
+        
 
     # --- СТИЛИЗАЦИЯ ЗАГОЛОВКОВ ---
     st.markdown("""
@@ -3645,8 +3685,6 @@ with tabs[3]:
         </style>
     """, unsafe_allow_html=True)
 
-
-    import streamlit as st
 
     # --- РАЗДЕЛ: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
     st.markdown('<div class="predictor-header">🍂 Осеннее увлажнение (сентябрь–октябрь)</div>', unsafe_allow_html=True)
