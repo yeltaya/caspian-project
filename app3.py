@@ -3343,7 +3343,7 @@ with tabs[2]:
         ]
         
         calendar_data = {
-            "культура": ["озимая.пш.", "яровая.пш.", "кукуруза", "рис", "подсолнечник", "Сах. свекла"],
+            "культура": ["озимая.пшеница", "яровая.пшеница", "кукуруза", "рис", "подсолнечник", "сахарная свекла"],
             "Январь": ["В", "", "", "", "", ""],
             "Февраль": ["В", "", "", "", "", ""],
             "Март": ["В", "", "", "", "", ""],
@@ -3393,26 +3393,145 @@ with tabs[2]:
     show_enhanced_farmer_calendar()
 
 
+    # --- КОНФИГУРАЦИЯ СТРАНИЦЫ ---
+    st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
 
-
-    # Имитация интерактивной части (как на ваших слайдах с картами)
-    st.subheader("📍 Актуальная информация по регионам")
-    tab1, tab2 = st.tabs(["Карта увлажнения", "Сроки сева"])
-
-    with tab1:
-        st.image("https://via.placeholder.com/800x400.png?text=Карта+запасов+влаги+в+почве", 
-                 caption="Прогноз запасов продуктивной влаги в метровом слое почвы")
-        # Здесь можно вставить реальную карту через folium или plotly
-
-    with tab2:
-        st.write("Календарь фермера: Оптимальные сроки для начала весенне-полевых работ.")
-        # Можно добавить таблицу из вашего слайда №8
-        data = {
-            "Культура": ["Яровая пш.", "Кукуруза", "Рис", "Подсолнечник"],
-            "Май": ["Посев", "Посев", "Посев", "Посев"],
-            "Июнь": ["Вегетация", "Вегетация", "Вегетация", "Вегетация"]
+    # --- КАСТОМНЫЙ CSS ДЛЯ СТИЛИЗАЦИИ ---
+    st.markdown("""
+    <style>
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            color: #1b5e20;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #1b5e20;
+            padding-bottom: 10px;
         }
-        st.table(data)
+        .section-header {
+            background-color: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .description-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 5px solid #2e7d32;
+            border-radius: 5px;
+            height: 100%;
+        }
+        .desc-title {
+            font-weight: bold;
+            color: #1b5e20;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .desc-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # --- 1. ЗАГОЛОВОК И КАРТЫ ---
+    st.markdown('<div class="main-title">Агрометеорологические прогнозы перед началом весенне-полевых работ 2026 года</div>', unsafe_allow_html=True)
+
+    col_map1, col_map2 = st.columns(2)
+    with col_map1:
+        st.image("Рисунок1.jpg", caption="Оптимальные сроки сева зерновых культур", use_container_width=True)
+    with col_map2:
+        st.image("Рисунок2.jpg", caption="Прогноз запасов продуктивной влаги", use_container_width=True)
+
+    # --- 2. МЕТОДОЛОГИЯ (4 СТОЛБЦА) ---
+    st.markdown('<div class="section-header">📑 Методология и содержание прогнозов</div>', unsafe_allow_html=True)
+
+    m1, m2, m3, m4 = st.columns(4)
+
+    with m1:
+        st.markdown("""<div class="description-card">
+            <span class="desc-title">1. Урожайность пшеницы</span>
+            <p class="desc-text">Модели А.Н. Полевой и CGMS. Сведения об ожидаемой урожайности яровых и озимых в разрезе районов по пунктам наблюдения.</p>
+        </div>""", unsafe_allow_html=True)
+
+    with m2:
+        st.markdown("""<div class="description-card">
+            <span class="desc-title">2. Технические культуры</span>
+            <p class="desc-text">Подсолнечник, кукуруза и сахарная свекла. Модели А.Н. Полевой. Расчет на основе агрометеорологических и климатических данных.</p>
+        </div>""", unsafe_allow_html=True)
+
+    with m3:
+        st.markdown("""<div class="description-card">
+            <span class="desc-title">3. Сроки созревания</span>
+            <p class="desc-text">Методика А.А. Шиголева. Прогноз наступления фаз «колошения» и «восковой спелости» яровых зерновых культур.</p>
+        </div>""", unsafe_allow_html=True)
+
+    with m4:
+        st.markdown("""<div class="description-card">
+            <span class="desc-title">4. Запасы влаги</span>
+            <p class="desc-text">Методика Л.А. Разумовой. Сведения об ожидаемых запасах влаги к началу весны (недостаточное, удовлетворительное, оптимальное).</p>
+        </div>""", unsafe_allow_html=True)
+
+    # --- 3. КАЛЕНДАРЬ ФЕРМЕРА ---
+    st.markdown('<div class="section-header">📅 Календарь фермера (Цикл работ)</div>', unsafe_allow_html=True)
+
+    months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
+    calendar_data = {
+        "культура": ["озимая.пш.", "яровая.пш.", "кукуруза", "рис", "подсолнечник", "Сах. свекла"],
+        "Январь": ["В","","","","",""], "Февраль": ["В","","","","",""], "Март": ["В","","","","",""],
+        "Апрель": ["В","","","","","П"], "Май": ["В","П","П","П","П","В"], "Июнь": ["У","В","В","В","В","В"],
+        "Июль": ["У","В","В","В","В","В"], "Август": ["","В","В","В","В","В"], "Сентябрь": ["","У","У","У","В","У"],
+        "Октябрь": ["П","","","","У",""], "Ноябрь": ["В","","","","",""], "Декабрь": ["В","","","","",""]
+    }
+    df_cal = pd.DataFrame(calendar_data)
+
+    def style_calendar(val):
+        base = "color: black; font-weight: 900; font-size: 16px; text-align: center;"
+        if val == "П": return f"{base} background-color: #5d8a33;"
+        if val == "В": return f"{base} background-color: #bcd9ea;"
+        if val == "У": return f"{base} background-color: #ffda66;"
+        return ""
+
+    st.table(df_cal.style.applymap(style_calendar, subset=months))
+
+    # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ ---
+    st.markdown('<div class="section-header">📊 Интерактивная оправдываемость прогнозов (2025)</div>', unsafe_allow_html=True)
+
+    def create_chart(labels, values, title, color):
+        fig = go.Figure(go.Bar(x=labels, y=values, text=values, textposition='auto', marker_color=color))
+        fig.update_layout(title=title, yaxis=dict(range=[0, 110]), height=300, margin=dict(l=10, r=10, t=40, b=10))
+        return fig
+
+    reg_main = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
+    reg_south = ["Алмат.", "Жамбыл.", "Туркест."]
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.plotly_chart(create_chart(reg_main, [92, 80, 82, 84, 82, 68, 78, 84], "Яровая пшеница", "#2e7d32"), use_container_width=True)
+        st.plotly_chart(create_chart(reg_main, [50, 100, 88, 90, 88, 100, 90, 82], "Сроки созревания", "#689f38"), use_container_width=True)
+        st.plotly_chart(create_chart(reg_south[:2], [74, 35], "Сахарная свекла", "#bf360c"), use_container_width=True)
+
+    with c2:
+        st.plotly_chart(create_chart(reg_main, [98, 100, 94, 93, 95, 89, 72, 57], "Запасы влаги", "#0277bd"), use_container_width=True)
+        st.plotly_chart(create_chart(reg_south, [87, 69, 86], "Кукуруза", "#f9a825"), use_container_width=True)
+        st.plotly_chart(create_chart(["Кост.", "Павл.", "ВКО"], [72, 71, 80], "Подсолнечник", "#ef6c00"), use_container_width=True)
+
+    # --- 5. ФИНАЛЬНЫЙ СВОДНЫЙ ГРАФИК ---
+    st.markdown('<div class="section-header">📈 Сводный анализ оправдываемости</div>', unsafe_allow_width=True)
+
+    summary_fig = go.Figure()
+    summary_fig.add_trace(go.Bar(name='Пшеница', x=reg_main, y=[92, 80, 82, 84, 82, 68, 78, 84], marker_color='#2e7d32'))
+    summary_fig.add_trace(go.Bar(name='Влага', x=reg_main, y=[98, 100, 94, 93, 95, 89, 72, 57], marker_color='#0277bd'))
+
+    summary_fig.update_layout(barmode='group', height=450, xaxis_title="Области", yaxis_title="Процент (%)")
+    st.plotly_chart(summary_fig, use_container_width=True)
+
+    st.success("Данные подготовлены на основе фактической оправдываемости РГП 'Казгидромет' за 2025 год.")
+
+
         
         
     
