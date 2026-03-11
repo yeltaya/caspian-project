@@ -3753,7 +3753,13 @@ with tabs[3]:
         """, unsafe_allow_html=True)
     
 
-    # 1. Определение конфигурации рисков и цветов на основе изображения
+    import streamlit as st
+    import geopandas as gpd
+    import plotly.express as px
+    import pandas as pd
+    import os
+
+    # 1. Конфигурация рисков и цветов согласно вашему макету
     FLOOD_CONFIG = {
         "высокий риск": {
             "color": "#f9a03f",  # Оранжевый
@@ -3772,7 +3778,7 @@ with tabs[3]:
         }
     }
 
-    # Подготовка данных для сопоставления
+    # Подготовка данных
     data_rows = []
     for risk_label, info in FLOOD_CONFIG.items():
         for reg_en in info["regions_en"]:
@@ -3786,17 +3792,13 @@ with tabs[3]:
 
     @st.cache_data
     def load_geo_data():
-        # Загрузка SHP файла (названия колонок согласно image_e33682.png)
         if os.path.exists("kaz 17 obl.shp"):
             gdf = gpd.read_file("kaz 17 obl.shp")
-            # Объединение геометрии с данными рисков по колонке ADM1_EN
+            # Важно: ADM1_EN должен совпадать с именами в колонках файла
             merged = gdf.merge(df_stats, on='ADM1_EN', how='left')
             return merged.to_crs(epsg=4326)
-        else:
-            st.error("Файл 'kaz 17 obl.shp' не найден в репозитории.")
-            return None
+        return None
 
-    # --- ИНТЕРФЕЙС ---
     st.title("🌊 Мониторинг паводковых рисков Казахстана")
 
     map_data = load_geo_data()
@@ -3807,10 +3809,10 @@ with tabs[3]:
         with col_left:
             st.markdown("#### Карта предварительной оценки")
             
-            # Создание карты
-            fig_map = px.choropleth(
+            # Используем mapbox для корректного отображения слоев
+            fig_map = px.choropleth_mapbox(
                 map_data,
-                geojson=map_data.__geo_interface__, # Использование интерфейса для исключения ошибок
+                geojson=map_data.__geo_interface__,
                 locations=map_data.index,
                 color="Risk_Label",
                 color_discrete_map={
@@ -3818,25 +3820,18 @@ with tabs[3]:
                     "средний риск": "#f9f080",
                     "низкий риск": "#90ee90"
                 },
-                hover_name="ADM1_EN",
-                labels={'Risk_Label': 'Статус'}
-            )
-
-            # Настройка "чистого" ГИС-вида как на фото
-            fig_map.update_geos(
-                visible=False,          # Скрывает стандартную карту мира
-                fitbounds="locations",  # Фокус только на территории Казахстана
-                showframe=True,
-                framecolor="#d0d0d0"
+                mapbox_style="carto-positron", # Светлая подложка как на скриншотах
+                center={"lat": 48.0, "lon": 67.0},
+                zoom=3.5,
+                opacity=0.7,
+                hover_name="ADM1_EN"
             )
 
             fig_map.update_layout(
                 margin={"r":0,"t":0,"l":0,"b":0},
                 height=550,
-                paper_bgcolor="white",  # Белый фон как в источнике
-                plot_bgcolor="white",
                 showlegend=True,
-                legend=dict(orientation="h", yanchor="bottom", y=0.01, xanchor="right", x=0.99, title_text="")
+                legend=dict(orientation="h", yanchor="bottom", y=0.01, xanchor="right", x=0.99)
             )
 
             selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
@@ -3847,16 +3842,15 @@ with tabs[3]:
                 row = map_data.iloc[idx]
                 st.subheader(f"📍 {row['ADM1_EN']}")
                 st.markdown(f"""
-                    <div style="padding:15px; border-radius:10px; background-color:{row['Color']}; color:black; text-align:center; font-weight:bold; border: 1px solid #ccc;">
+                    <div style="padding:15px; border-radius:10px; background-color:{row['Color']}; color:black; text-align:center; font-weight:bold;">
                         УРОВЕНЬ РИСКА: {row['Risk_Label'].upper()}
                     </div>
                 """, unsafe_allow_html=True)
-                st.write("---")
                 st.info(row['Description'])
             else:
                 st.info("Выберите область на карте для получения информации.")
 
-    # --- СТАТИЧНЫЙ БЛОК (согласно Saved Information) ---
+    # Сводный блок информации
     st.markdown("---")
     st.markdown("""
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
@@ -3868,6 +3862,7 @@ with tabs[3]:
         </ul>
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
