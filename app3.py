@@ -3332,64 +3332,65 @@ with tabs[2]:
 
     st.divider()
 
-    def show_farmer_calendar():
+
+    def show_enhanced_farmer_calendar():
         st.markdown("### 📅 Календарь фермера")
         
-        # 1. Подготовка данных
+        # 1. Подготовка данных (теперь "культура" — это обычный столбец)
         months = [
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", 
             "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
         ]
         
-        crops = ["озимая.пш.", "яровая.пш.", "кукуруза", "рис", "подсолнечник", "Сах. свекла"]
+        calendar_data = {
+            "культура": ["озимая.пш.", "яровая.пш.", "кукуруза", "рис", "подсолнечник", "Сах. свекла"],
+            "Январь": ["В", "", "", "", "", ""],
+            "Февраль": ["В", "", "", "", "", ""],
+            "Март": ["В", "", "", "", "", ""],
+            "Апрель": ["В", "", "", "", "", "П"],
+            "Май": ["В", "П", "П", "П", "П", "В"],
+            "Июнь": ["У", "В", "В", "В", "В", "В"],
+            "Июль": ["У", "В", "В", "В", "В", "В"],
+            "Август": ["", "В", "В", "В", "В", "В"],
+            "Сентябрь": ["", "У", "У", "У", "В", "У"],
+            "Октябрь": ["П", "", "", "", "У", ""],
+            "Ноябрь": ["В", "", "", "", "", ""],
+            "Декабрь": ["В", "", "", "", "", ""]
+        }
         
-        # Создаем пустую матрицу
-        data = pd.DataFrame("", index=crops, columns=months)
-        
-        # Заполняем данными согласно вашему скриншоту
-        # Озимая пшеница
-        data.loc["озимая.пш.", ["Январь", "Февраль", "Март", "Апрель", "Май", "Ноябрь", "Декабрь"]] = "В"
-        data.loc["озимая.пш.", ["Июнь", "Июль"]] = "У"
-        data.loc["озимая.пш.", "Октябрь"] = "П"
-        
-        # Яровые и другие (Май - Посев)
-        spring_crops = ["яровая.пш.", "кукуруза", "рис", "подсолнечник"]
-        data.loc[spring_crops, "Май"] = "П"
-        data.loc[spring_crops, ["Июнь", "Июль", "Август"]] = "В"
-        data.loc["подсолнечник", "Сентябрь"] = "В"
-        
-        # Уборка яровых
-        data.loc[["яровая.пш.", "кукуруза", "рис"], "Сентябрь"] = "У"
-        data.loc["подсолнечник", "Октябрь"] = "У"
-        
-        # Сахарная свекла
-        data.loc["Сах. свекла", "Апрель"] = "П"
-        data.loc["Сах. свекла", ["Май", "Июнь", "Июль", "Август"]] = "В"
-        data.loc["Сах. свекла", "Сентябрь"] = "У"
+        df = pd.DataFrame(calendar_data)
 
-        # 2. Функция для раскраски ячеек (CSS)
-        def style_calendar(val):
+        # 2. Функция для стилизации
+        def style_cells(val):
+            # Базовый стиль для всех заполненных ячеек: крупный черный шрифт
+            base_style = "color: black; font-weight: 900; font-size: 16px; text-align: center;"
+            
             if val == "П": # Посев
-                return "background-color: #5d8a33; color: white; text-align: center; font-weight: bold;"
+                return f"{base_style} background-color: #5d8a33;"
             elif val == "В": # Вегетация
-                return "background-color: #bcd9ea; color: #5d8a33; text-align: center; font-weight: bold;"
+                return f"{base_style} background-color: #bcd9ea;"
             elif val == "У": # Уборка
-                return "background-color: #ffda66; color: white; text-align: center; font-weight: bold;"
-            return "background-color: white;"
+                return f"{base_style} background-color: #ffda66;"
+            return ""
 
-        # 3. Отображение стилизованной таблицы
-        styled_df = data.style.applymap(style_calendar)
-        
-        st.dataframe(styled_df, use_container_width=True, height=250)
+        # Применяем стили ко всем столбцам, кроме первого ("культура")
+        styled_df = df.style.applymap(style_cells, subset=months)
 
-        # 4. Легенда (интерактивные подсказки)
-        col1, col2, col3 = st.columns(3)
-        col1.markdown("🟩 **П** — Посев")
-        col2.markdown("🟦 **В** — Вегетационный период")
-        col3.markdown("🟨 **У** — Уборка урожая")
+        # 3. Отображение
+        # Используем статичную таблицу или dataframe. 
+        # Для максимального контроля над шрифтом в заголовках лучше всего подходит st.table
+        st.table(styled_df)
 
-    # Вызов функции
-    show_farmer_calendar()
+        # 4. Легенда
+        st.markdown("""
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 10px;">
+            <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 20px; height: 20px; background: #5d8a33; border-radius: 4px;"></div><b>П</b> — Посев</div>
+            <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 20px; height: 20px; background: #bcd9ea; border-radius: 4px;"></div><b>В</b> — Вегетация</div>
+            <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 20px; height: 20px; background: #ffda66; border-radius: 4px;"></div><b>У</b> — Уборка</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    show_enhanced_farmer_calendar()
 
 
 
