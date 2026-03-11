@@ -7137,15 +7137,7 @@ with tabs[6]:
             """
         # Уменьшаем height до 320, чтобы убрать пустоту снизу
         components.html(f"<div style='margin-top: 10px;'>{rows_html}</div>", height=320)
-
-    with col_map:
-        # Чтобы карта была на одном уровне с графиком, можно добавить пустой блок для компенсации заголовка
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        if os.path.exists(map_path):
-            st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
-        
-        
-            
+          
                 
     with col_map:
         # 1. Создаем пустой "отступ", чтобы карта была на одном уровне с графиком
