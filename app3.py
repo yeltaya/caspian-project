@@ -3588,6 +3588,71 @@ with tabs[3]:
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
+    
+
+    # --- СТИЛИЗАЦИЯ ЗАГОЛОВКОВ ---
+    st.markdown("""
+    <style>
+        .predictor-header {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0d47a1;
+            margin-top: 25px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #bbdefb;
+        }
+        .map-caption {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # --- РАЗДЕЛ 2: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
+    st.markdown('<div class="predictor-header">🍂 Осеннее увлажнение (сентябрь–октябрь)</div>', unsafe_allow_html=True)
+    st.write("Данные показатели являются ключевыми предикторами для формирования весеннего стока и запасов влаги в почве.")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Используем ваше фото: Сумма осадков (сентябрь-октябрь)
+        st.image("Без названия (1).jpeg", use_container_width=True)
+        st.markdown('<div class="map-caption">1) Суммы осадков за осенний период, мм</div>', unsafe_allow_html=True)
+
+    with col2:
+        # Используем ваше фото: Отклонение от нормы
+        st.image("Без названия (2).jpeg", use_container_width=True)
+        st.markdown('<div class="map-caption">2) Отклонение от нормы, %</div>', unsafe_allow_html=True)
+
+
+    # --- РАЗДЕЛ 3: ОСАДКИ ЗА ХОЛОДНЫЙ ПЕРИОД ---
+    st.markdown('<div class="predictor-header">❄️ Количество осадков за холодный период</div>', unsafe_allow_html=True)
+    st.write("Анализ накопления влаги в виде снежного покрова и осадков в зимние месяцы.")
+
+    col3, col4 = st.columns(2)
+
+    with col3:
+        # Используем ваше фото: Суммы за холодный период
+        st.image("Без названия (3).jpeg", use_container_width=True)
+        st.markdown('<div class="map-caption">1) Суммы осадков за холодный период, мм</div>', unsafe_allow_html=True)
+
+    with col4:
+        # Используем ваше фото: Отклонение от нормы (холодный период)
+        st.image("Без названия (4).jpeg", use_container_width=True)
+        st.markdown('<div class="map-caption">2) Отклонение от нормы за холодный период, %</div>', unsafe_allow_html=True)
+
+    # Дополнительная карта (если требуется, например, промерзание почвы из "Без названия.jpeg")
+    if st.checkbox("Показать дополнительные данные (промерзание почвы)"):
+        st.image("Без названия.jpeg", caption="Глубина промерзания почвы на текущую дату", use_container_width=True)
+        
+    
+    
+    
+    
 
     # 2. КАРТЫ (ДЛЯ ВИЗУАЛИЗАЦИИ)
     col_map1, col_map2 = st.columns(2)
