@@ -7124,15 +7124,18 @@ with tabs[6]:
             """, unsafe_allow_html=True)
 
         
+    # 2. КОЛОНКА С ГРАФИКОМ
     with col_chart2:
-        # Заголовок для выравнивания
-        st.markdown("<div style='height: 20px; font-size: 0.8rem; color: gray;'>Самые сухие годы в Казахстане (1941–2025 гг.)</div>", unsafe_allow_html=True)
+        # Крупный заголовок как в верхнем блоке
+        st.markdown("""
+            <div style="font-size: 1.1rem; font-weight: 600; color: #555; margin-bottom: 15px; font-family: sans-serif;">
+                Самые сухие годы в Казахстане <span style="font-weight: 400; font-size: 0.9rem; color: #888;">(1941–2025 гг.)</span>
+            </div>
+        """, unsafe_allow_html=True)
         
         rows_html = ""
-        # Для осадков лучше использовать 100 как максимум, чтобы видеть долю от нормы
-        max_val_precip = 100 
+        max_val_precip = 100 # База для процентов
         
-        # ВНИМАНИЕ: используем rank_data_precip
         for item in rank_data_precip:
             width = (item["value"] / max_val_precip) * 100
             rows_html += f"""
@@ -7147,8 +7150,8 @@ with tabs[6]:
             </div>
             """
         
-        components.html(f"<div style='margin-top: 5px;'>{rows_html}</div>", height=320)
-        
+        components.html(f"<div style='margin-top: 5px;'>{rows_html}</div>", height=340)
+              
         
     with col_map2:
         map_path = "Precipitation.gif"
