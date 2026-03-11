@@ -3235,6 +3235,104 @@ with tabs[1]:
 
 with tabs[2]:
     st.title("Агрометеорологические прогнозы")
+    
+    # Настройка страницы
+    st.set_page_config(layout="wide")
+
+    # Кастомный CSS для стилизации
+    st.markdown("""
+    <style>
+        .agro-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 5px solid #2e7d32;
+            margin-bottom: 20px;
+        }
+        .big-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2e7d32;
+            line-height: 1;
+        }
+        .forecast-label {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        .source-box {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #2e7d32;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Заголовок блока
+    st.title("🌾 Агрометеорологические прогнозы")
+
+    col1, col2 = st.columns([1, 3])
+
+    with col1:
+        # Акцент на цифре 10
+        st.markdown("""
+        <div class="agro-card">
+            <div class="big-number">10</div>
+            <div class="forecast-label">Наименований прогнозов</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.info("Доступно в мобильном приложении **AgroData** и на сайте **Казгидромет**.")
+
+    with col2:
+        st.markdown("### Виды предоставляемых прогнозов")
+        
+        # Список прогнозов в виде колонок для экономии места
+        sub_col1, sub_col2 = st.columns(2)
+        
+        forecasts = [
+            "💧 Запасы продуктивной влаги в почве",
+            "☀️ Прогноз засухи",
+            "🌾 Сроки созревания яровой пшеницы",
+            "🍂 Сроки созревания озимой пшеницы",
+            "🌻 Сроки созревания подсолнечника",
+            "🌽 Сроки созревания кукурузы",
+            "🍭 Сроки созревания сахарной свеклы",
+            "🚜 Условия уборки зерновых культур"
+        ]
+        
+        for i, forecast in enumerate(forecasts):
+            if i < 4:
+                sub_col1.markdown(f"**{forecast}**")
+            else:
+                sub_col2.markdown(f"**{forecast}**")
+
+    st.divider()
+
+    # Имитация интерактивной части (как на ваших слайдах с картами)
+    st.subheader("📍 Актуальная информация по регионам")
+    tab1, tab2 = st.tabs(["Карта увлажнения", "Сроки сева"])
+
+    with tab1:
+        st.image("https://via.placeholder.com/800x400.png?text=Карта+запасов+влаги+в+почве", 
+                 caption="Прогноз запасов продуктивной влаги в метровом слое почвы")
+        # Здесь можно вставить реальную карту через folium или plotly
+
+    with tab2:
+        st.write("Календарь фермера: Оптимальные сроки для начала весенне-полевых работ.")
+        # Можно добавить таблицу из вашего слайда №8
+        data = {
+            "Культура": ["Яровая пш.", "Кукуруза", "Рис", "Подсолнечник"],
+            "Май": ["Посев", "Посев", "Посев", "Посев"],
+            "Июнь": ["Вегетация", "Вегетация", "Вегетация", "Вегетация"]
+        }
+        st.table(data)
+        
+        
+    
+    
+ 
 
 with tabs[3]:
     st.title("Гидрологические прогнозы")
