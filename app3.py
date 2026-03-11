@@ -3756,99 +3756,106 @@ with tabs[3]:
     import geopandas as gpd
     import plotly.express as px
     import pandas as pd
+    import os
 
-    # 1. Настройка данных (аналог DESCRIPTIONS и df_stats из вашего примера)
-    FLOOD_DESCRIPTIONS = {
-        "Akmola": "Акмолинская область: Высокий риск. Ожидается значительный подъем уровня воды на реках Есиль, Нура и их притоках из-за высокого влагозапаса.",
-        "North Kazakhstan": "СКО: Высокий риск. Опасность подтопления пойменных участков реки Есиль. Глубина промерзания почвы выше нормы.",
-        "Karaganda": "Карагандинская область: Высокий риск. Прогнозируется формирование интенсивного склонового стока в бассейнах рек Нура и Шерубай-Нура.",
-        "East Kazakhstan": "ВКО: Высокий риск. Сочетание снеготаяния и весенних дождей может вызвать резкие подъемы уровней на горных реках.",
-        "Abay": "Область Абай: Высокий риск. В зоне угрозы населенные пункты в бассейнах рек Иртыш и Чаган.",
-        "Atyrau": "Атырауская область: Низкий риск. Мониторинг ведется преимущественно по трансграничному стоку реки Урал.",
-        # ... добавьте остальные по аналогии с ADM1_EN
+    # 1. Данные по рискам и описания (согласно карте и тексту из image_e33682.png)
+    # Цвета: Высокий - #f9a03f (оранжевый), Средний - #f9f080 (желтый), Низкий - #90ee90 (зеленый)
+    FLOOD_CONFIG = {
+        "Высокий риск": {
+            "color": "#f9a03f",
+            "regions_en": ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay"],
+            "desc": "Ожидается интенсивное снеготаяние и формирование значительного стока."
+        },
+        "Средний риск": {
+            "color": "#f9f080",
+            "regions_en": ["Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu"],
+            "desc": "Возможны локальные подтопления при резком повышении температурного фона."
+        },
+        "Низкий риск": {
+            "color": "#90ee90",
+            "regions_en": ["Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
+            "desc": "Обстановка стабильная, уровни воды в пределах нормы."
+        }
     }
 
-    # Данные для раскраски и метрик
-    df_flood_stats = pd.DataFrame({
-        'ADM1_EN': ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay", "Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu", "Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
-        'Region_RU': ["Акмолинская", "СКО", "Карагандинская", "ВКО", "Абай", "Костанайская", "ЗКО", "Актюбинская", "Улытау", "Павлодарская", "Туркестанская", "Алматинская", "Жетісу", "Атырауская", "Мангыстауская", "Кызылординская", "Жамбылская"],
-        'Risk_Level': [3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1], # 3-Высокий, 2-Средний, 1-Низкий
-        'Risk_Label': ["Высокий", "Высокий", "Высокий", "Высокий", "Высокий", "Средний", "Средний", "Средний", "Средний", "Средний", "Средний", "Средний", "Средний", "Низкий", "Низкий", "Низкий", "Низкий"]
-    })
+    # Подготовка DataFrame для маппинга
+    data_rows = []
+    for risk_label, info in FLOOD_CONFIG.items():
+        for reg_en in info["regions_en"]:
+            data_rows.append({
+                "ADM1_EN": reg_en,
+                "Risk_Label": risk_label,
+                "Color": info["color"],
+                "Description": info["desc"]
+            })
+    df_stats = pd.DataFrame(data_rows)
 
     @st.cache_data
     def load_geo_data():
+        # Загрузка вашего SHP файла
         gdf = gpd.read_file("kaz 17 obl.shp")
-        # Объединяем геометрию со статистикой по колонке ADM1_EN
-        merged = gdf.merge(df_flood_stats, on='ADM1_EN', how='left')
+        # Объединение с данными рисков
+        merged = gdf.merge(df_stats, on='ADM1_EN', how='left')
         return merged.to_crs(epsg=4326)
 
     # --- ИНТЕРФЕЙС ---
-    st.markdown('<div class="predictor-header">🚩 Паводковая обстановка по регионам</div>', unsafe_allow_html=True)
+    st.title("Мониторинг паводковых рисков Казахстана")
 
     map_data = load_geo_data()
     col_left, col_right = st.columns([1.6, 1], gap="large")
 
     with col_left:
-        st.markdown("##### Карта прогнозируемых рисков")
+        st.markdown("#### Карта предварительной оценки")
         
-        # Создаем карту через Plotly (как в вашем примере)
+        # Создание интерактивной карты Plotly
         fig_map = px.choropleth_mapbox(
             map_data, 
             geojson=map_data.geometry, 
             locations=map_data.index,
-            color="Risk_Level",
-            color_continuous_scale=["#66bb6a", "#fbc02d", "#ef6c00"], # Зеленый -> Желтый -> Оранжевый
+            color="Risk_Label",
+            # Используем точные категории для раскраски
+            color_discrete_map={
+                "Высокий риск": "#f9a03f",
+                "Средний риск": "#f9f080",
+                "Низкий риск": "#90ee90"
+            },
             mapbox_style="carto-positron", 
             zoom=3.5, 
             center={"lat": 48.0, "lon": 67.0},
-            opacity=0.7, 
-            hover_name="Region_RU",
-            hover_data={"Risk_Label": True, "Risk_Level": False}
+            opacity=0.8,
+            hover_name="ADM1_EN",
+            hover_data={"Risk_Label": True}
         )
         
-        fig_map.update_layout(
-            margin={"r":0,"t":0,"l":0,"b":0}, 
-            height=500, 
-            coloraxis_showscale=False
-        )
+        fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, height=500, showlegend=False)
         
-        # Ключевой момент: обработка выбора на карте
+        # Обработка выбора (on_select требует Streamlit 1.35+)
         selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
 
     with col_right:
-        # Проверяем, выбрана ли область
         if selected and "selection" in selected and len(selected["selection"]["point_indices"]) > 0:
             idx = selected["selection"]["point_indices"][0]
             row = map_data.iloc[idx]
             
-            # Динамическая информация в правой колонке
-            st.subheader(f"📍 {row['Region_RU']} область")
+            st.subheader(f"📍 Регион: {row['ADM1_EN']}")
             
-            # Визуальный индикатор риска
-            risk_color = "#ef6c00" if row['Risk_Level'] == 3 else ("#fbc02d" if row['Risk_Level'] == 2 else "#66bb6a")
+            # Индикатор уровня риска
             st.markdown(f"""
-                <div style="padding:10px; border-radius:5px; background-color:{risk_color}; color:white; text-align:center; font-weight:bold;">
-                    УРОВЕНЬ РИСКА: {row['Risk_Label'].upper()}
+                <div style="padding:15px; border-radius:10px; background-color:{row['Color']}; color:black; text-align:center; font-weight:bold; border: 1px solid #ccc;">
+                    СТАТУС: {row['Risk_Label'].upper()}
                 </div>
             """, unsafe_allow_html=True)
             
             st.write("---")
             st.markdown("### 📝 Аналитическая справка")
-            # Берем описание из словаря по ключу ADM1_EN
-            description = FLOOD_DESCRIPTIONS.get(row['ADM1_EN'], "Информация по данному региону обновляется. Следите за ежедневными гидрологическими бюллетенями.")
-            st.write(description)
+            st.info(row['Description'])
             
-            # Можно добавить дополнительные метрики
-            if row['Risk_Level'] == 3:
-                st.warning("Рекомендуется усилить контроль за состоянием гидротехнических сооружений.")
-                
+            # Здесь можно добавить дополнительные графики или метрики для региона
+            st.metric("Прогноз стока", "Выше нормы" if row['Risk_Label'] == "Высокий риск" else "В норме")
         else:
-            # Если ничего не выбрано
-            st.info("Нажмите на интересующую область на карте, чтобы получить подробную информацию о паводковых рисках.")
-            st.image("Без названия.jpeg", caption="Обзорная схема рисков", use_container_width=True)
-
-
+            st.info("Выберите область на карте для получения детальной информации по паводкам.")
+            
+            
         # --- ТЕКСТОВЫЙ БЛОК (из вашего описания) ---
     st.markdown("""
     <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
