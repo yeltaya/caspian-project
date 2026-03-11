@@ -3528,11 +3528,8 @@ with tabs[2]:
     import streamlit as st
     import plotly.graph_objects as go
 
-    def show_identical_accuracy_chart():
-        # Заголовок
-        st.markdown("<h3 style='text-align: center; color: #1b5e20;'>Оправдываемость агрометеорологических прогнозов по видам</h3>", unsafe_allow_html=True)
-
-        # Данные строго в порядке со скриншота
+    def show_final_identical_chart():
+        # Данные в точном порядке как на скриншоте
         data = {
             "Засуха": 99,
             "Запасы влаги": 87,
@@ -3543,53 +3540,65 @@ with tabs[2]:
             "Сахарная свекла": 55
         }
 
-        # Цвета со скриншота
+        # Цвета подобраны по пикселям вашего изображения
         colors = [
-            "#FFEB3B", # Засуха (Яркий желтый)
-            "#1E88E5", # Запасы влаги (Синий)
-            "#9CCC65", # Сроки созревания (Светло-зеленый)
-            "#43A047", # Яровая пшеница (Зеленый)
-            "#FFB300", # Кукуруза (Золотистый)
-            "#FB8C00", # Подсолнечник (Оранжевый)
-            "#E53935"  # Сахарная свекла (Красный)
+            "#FFEB3B", # Желтый (Засуха)
+            "#2196F3", # Ярко-синий (Влага)
+            "#8BC34A", # Салатовый (Созревание)
+            "#4CAF50", # Зеленый (Пшеница)
+            "#FFC107", # Янтарный (Кукуруза)
+            "#FF9800", # Оранжевый (Подсолнечник)
+            "#F44336"  # Красный (Свекла)
         ]
+
+        # Форматируем названия для переноса (чтобы текст не слипался)
+        labels = [label.replace(" ", "<br>") for label in data.keys()]
+        values = list(data.values())
 
         fig = go.Figure()
 
         fig.add_trace(go.Bar(
-            x=list(data.keys()),
-            y=list(data.values()),
-            text=list(data.values()), # Значения процентов
-            textposition='inside',      # Текст внутри столбца
-            insidetextanchor='middle', # Центрирование текста внутри
-            textfont=dict(size=18, color="white", family="Arial Black"), # Крупный белый жирный шрифт
+            x=labels,
+            y=values,
+            text=values,
+            textposition='inside',      # Цифры внутри
+            insidetextanchor='middle', # Центрирование по вертикали
+            textfont=dict(
+                size=24,                # Крупный размер
+                color="white",          # Белый цвет
+                family="Arial Black"    # Максимально жирный шрифт
+            ),
             marker_color=colors,
-            width=0.7 # Ширина столбцов
+            width=0.8                   # Ширина столбцов
         ))
 
-        # Настройка идентичного стиля
         fig.update_layout(
-            plot_bgcolor="rgba(0,0,0,0)", # Прозрачный фон
-            paper_bgcolor="rgba(0,0,0,0)",
-            margin=dict(l=20, r=20, t=20, b=100), # Отступы для длинных названий снизу
-            height=500,
+            # Белый фон без лишних линий
+            plot_bgcolor="white",
+            paper_bgcolor="white",
+            # Высота и отступы (снизу больше места для подписей)
+            height=600,
+            margin=dict(l=10, r=10, t=50, b=150),
             showlegend=False,
+            # Настройка осей
             yaxis=dict(
-                showgrid=True,
-                gridcolor="#F0F0F0",
-                range=[0, 105],
-                visible=False # Убираем боковую шкалу как на скрине (если нужно оставить, удалите эту строку)
+                visible=False,          # Скрываем шкалу слева как на фото
+                range=[0, 110],         # Запас сверху для красоты
+                fixedrange=True
             ),
             xaxis=dict(
-                tickangle=0, # Прямой текст
-                tickfont=dict(size=14, color="black", family="Arial")
+                tickfont=dict(size=16, color="black", family="Arial"),
+                fixedrange=True,
+                automargin=True
             )
         )
 
-        # Отображаем
+        # Отображение в Streamlit (убираем интерактивную панель Plotly для чистоты вида)
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-    show_identical_accuracy_chart()
+    # Заголовок как на слайде
+    st.markdown("<h3 style='text-align: center;'>Оправдываемость агрометеорологических прогнозов по видам</h3>", unsafe_allow_html=True)
+    show_final_identical_chart()
 
 
         
