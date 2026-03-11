@@ -3754,91 +3754,102 @@ with tabs[3]:
     
     import streamlit as st
     import geopandas as gpd
-    import folium
-    from streamlit_folium import st_folium
+    import plotly.express as px
+    import pandas as pd
 
-    # --- ЦВЕТОВАЯ ГАММА И ПРИВЯЗКА К EN НАЗВАНИЯМ (из image_11.png) ---
-    # Ключами являются названия из колонки ADM1_EN вашего SHP-файла.
-    # Значения цветов и русских названий — из image_11.png и вашего текста.
-    flood_risk_config = {
-        # ВЫСОКИЙ РИСК (Оранжевый)
-        "Akmola": {"color": "#ef6c00", "name_ru": "Акмолинская", "risk": "Высокий"},
-        "North Kazakhstan": {"color": "#ef6c00", "name_ru": "Северо-Казахстанская", "risk": "Высокий"},
-        "Karaganda": {"color": "#ef6c00", "name_ru": "Карагандинская", "risk": "Высокий"},
-        "East Kazakhstan": {"color": "#ef6c00", "name_ru": "Восточно-Казахстанская", "risk": "Высокий"},
-        "Abay": {"color": "#ef6c00", "name_ru": "Абай", "risk": "Высокий"},
-        
-        # СРЕДНИЙ РИСК (Желтый)
-        "Kostanay": {"color": "#fbc02d", "name_ru": "Костанайская", "risk": "Средний"},
-        "West Kazakhstan": {"color": "#fbc02d", "name_ru": "Западно-Казахстанская", "risk": "Средний"},
-        "Aktobe": {"color": "#fbc02d", "name_ru": "Актюбинская", "risk": "Средний"},
-        "Ulytau": {"color": "#fbc02d", "name_ru": "Улытау", "risk": "Средний"},
-        "Pavlodar": {"color": "#fbc02d", "name_ru": "Павлодарская", "risk": "Средний"},
-        "Turkestan": {"color": "#fbc02d", "name_ru": "Туркестанская", "risk": "Средний"},
-        "Almaty": {"color": "#fbc02d", "name_ru": "Алматинская", "risk": "Средний"},
-        "Zhetysu": {"color": "#fbc02d", "name_ru": "Жетісу", "risk": "Средний"}, # Проверьте написание в SHP, может быть 'Zhetysu'
-        
-        # НИЗКИЙ РИСК (Зеленый)
-        "Atyrau": {"color": "#66bb6a", "name_ru": "Атырауская", "risk": "Низкий"},
-        "Mangystau": {"color": "#66bb6a", "name_ru": "Мангыстауская", "risk": "Низкий"},
-        "Kyzylorda": {"color": "#66bb6a", "name_ru": "Кызылординская", "risk": "Низкий"},
-        "Zhambyl": {"color": "#66bb6a", "name_ru": "Жамбылская", "risk": "Низкий"}
+    # 1. Настройка данных (аналог DESCRIPTIONS и df_stats из вашего примера)
+    FLOOD_DESCRIPTIONS = {
+        "Akmola": "Акмолинская область: Высокий риск. Ожидается значительный подъем уровня воды на реках Есиль, Нура и их притоках из-за высокого влагозапаса.",
+        "North Kazakhstan": "СКО: Высокий риск. Опасность подтопления пойменных участков реки Есиль. Глубина промерзания почвы выше нормы.",
+        "Karaganda": "Карагандинская область: Высокий риск. Прогнозируется формирование интенсивного склонового стока в бассейнах рек Нура и Шерубай-Нура.",
+        "East Kazakhstan": "ВКО: Высокий риск. Сочетание снеготаяния и весенних дождей может вызвать резкие подъемы уровней на горных реках.",
+        "Abay": "Область Абай: Высокий риск. В зоне угрозы населенные пункты в бассейнах рек Иртыш и Чаган.",
+        "Atyrau": "Атырауская область: Низкий риск. Мониторинг ведется преимущественно по трансграничному стоку реки Урал.",
+        # ... добавьте остальные по аналогии с ADM1_EN
     }
 
+    # Данные для раскраски и метрик
+    df_flood_stats = pd.DataFrame({
+        'ADM1_EN': ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay", "Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu", "Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
+        'Region_RU': ["Акмолинская", "СКО", "Карагандинская", "ВКО", "Абай", "Костанайская", "ЗКО", "Актюбинская", "Улытау", "Павлодарская", "Туркестанская", "Алматинская", "Жетісу", "Атырауская", "Мангыстауская", "Кызылординская", "Жамбылская"],
+        'Risk_Level': [3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1], # 3-Высокий, 2-Средний, 1-Низкий
+        'Risk_Label': ["Высокий", "Высокий", "Высокий", "Высокий", "Высокий", "Средний", "Средний", "Средний", "Средний", "Средний", "Средний", "Средний", "Средний", "Низкий", "Низкий", "Низкий", "Низкий"]
+    })
+
     @st.cache_data
-    def load_colored_map():
-        # 1. Загрузка файла (убедитесь, что пути верны для GitHub)
+    def load_geo_data():
         gdf = gpd.read_file("kaz 17 obl.shp")
+        # Объединяем геометрию со статистикой по колонке ADM1_EN
+        merged = gdf.merge(df_flood_stats, on='ADM1_EN', how='left')
+        return merged.to_crs(epsg=4326)
+
+    # --- ИНТЕРФЕЙС ---
+    st.markdown('<div class="predictor-header">🚩 Паводковая обстановка по регионам</div>', unsafe_allow_html=True)
+
+    map_data = load_geo_data()
+    col_left, col_right = st.columns([1.6, 1], gap="large")
+
+    with col_left:
+        st.markdown("##### Карта прогнозируемых рисков")
         
-        # 2. Определение целевой колонки (как на image_10.png)
-        target_col = 'ADM1_EN'
+        # Создаем карту через Plotly (как в вашем примере)
+        fig_map = px.choropleth_mapbox(
+            map_data, 
+            geojson=map_data.geometry, 
+            locations=map_data.index,
+            color="Risk_Level",
+            color_continuous_scale=["#66bb6a", "#fbc02d", "#ef6c00"], # Зеленый -> Желтый -> Оранжевый
+            mapbox_style="carto-positron", 
+            zoom=3.5, 
+            center={"lat": 48.0, "lon": 67.0},
+            opacity=0.7, 
+            hover_name="Region_RU",
+            hover_data={"Risk_Label": True, "Risk_Level": False}
+        )
         
-        # ПРОВЕРКА: Если колонки ADM1_EN нет, код выдаст ошибку
-        if target_col not in gdf.columns:
-            st.error(f"Колонка {target_col} не найдена. Доступны: {list(gdf.columns)}")
-            return None
+        fig_map.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0}, 
+            height=500, 
+            coloraxis_showscale=False
+        )
+        
+        # Ключевой момент: обработка выбора на карте
+        selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
 
-        # 3. Применение цветов и русских названий
-        gdf['fill_color'] = gdf[target_col].map(lambda x: flood_risk_config.get(x, {}).get('color', '#808080'))
-        gdf['name_ru'] = gdf[target_col].map(lambda x: flood_risk_config.get(x, {}).get('name_ru', x)) # Русский или EN, если нет в словаре
-        gdf['risk_status'] = gdf[target_col].map(lambda x: flood_risk_config.get(x, {}).get('risk', 'Неизвестно'))
-
-        # 4. Перевод в проекцию WGS84 для Folium
-        return gdf.to_crs(epsg=4326)
-
-    try:
-        final_gdf = load_colored_map()
-
-        if final_gdf is not None:
-            st.markdown("### 🗺️ Интерактивная карта паводковых рисков рек Казахстана")
+    with col_right:
+        # Проверяем, выбрана ли область
+        if selected and "selection" in selected and len(selected["selection"]["point_indices"]) > 0:
+            idx = selected["selection"]["point_indices"][0]
+            row = map_data.iloc[idx]
             
-            # Создание базовой карты (центрирование на Казахстане)
-            m = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
+            # Динамическая информация в правой колонке
+            st.subheader(f"📍 {row['Region_RU']} область")
+            
+            # Визуальный индикатор риска
+            risk_color = "#ef6c00" if row['Risk_Level'] == 3 else ("#fbc02d" if row['Risk_Level'] == 2 else "#66bb6a")
+            st.markdown(f"""
+                <div style="padding:10px; border-radius:5px; background-color:{risk_color}; color:white; text-align:center; font-weight:bold;">
+                    УРОВЕНЬ РИСКА: {row['Risk_Label'].upper()}
+                </div>
+            """, unsafe_allow_html=True)
+            
+            st.write("---")
+            st.markdown("### 📝 Аналитическая справка")
+            # Берем описание из словаря по ключу ADM1_EN
+            description = FLOOD_DESCRIPTIONS.get(row['ADM1_EN'], "Информация по данному региону обновляется. Следите за ежедневными гидрологическими бюллетенями.")
+            st.write(description)
+            
+            # Можно добавить дополнительные метрики
+            if row['Risk_Level'] == 3:
+                st.warning("Рекомендуется усилить контроль за состоянием гидротехнических сооружений.")
+                
+        else:
+            # Если ничего не выбрано
+            st.info("Нажмите на интересующую область на карте, чтобы получить подробную информацию о паводковых рисках.")
+            st.image("Без названия.jpeg", caption="Обзорная схема рисков", use_container_width=True)
 
-            # Отрисовка полигонов с цветами
-            folium.GeoJson(
-                final_gdf,
-                style_function=lambda x: {
-                    'fillColor': x['properties']['fill_color'],
-                    'color': 'white',  # Цвет границ
-                    'weight': 1,
-                    'fillOpacity': 0.7  # Прозрачность как на рисунке
-                },
-                highlight_function=lambda x: {'weight': 3, 'fillOpacity': 0.9},
-                tooltip=folium.GeoJsonTooltip(
-                    fields=['name_ru', 'risk_status'], 
-                    aliases=['Область:', 'Статус риска:'],
-                    localize=True
-                )
-            ).add_to(m)
 
-            # Отображение
-            st_folium(m, width=900, height=500)
-
-    except Exception as e:
-        st.error(f"Ошибка при загрузке или отрисовке: {e}. Убедитесь, что на GitHub лежат все 4 файла (.shp, .shx, .dbf, .prj)")
-        
-    # --- ТЕКСТОВЫЙ БЛОК (из вашего описания) ---
+        # --- ТЕКСТОВЫЙ БЛОК (из вашего описания) ---
     st.markdown("""
     <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
         <h4>📝 Оценка паводко-опасных регионов</h4>
