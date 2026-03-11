@@ -7089,6 +7089,8 @@ with tabs[6]:
         
         
     st.divider()
+    st.markdown("---")
+    st.markdown("### 🏆 Анализ влажности")
     
     # --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
     rank_data_precip = [
@@ -7106,8 +7108,7 @@ with tabs[6]:
     
     
     
-    st.markdown("---")
-    st.markdown("### 🏆 Анализ влажности")
+
    
     with col_info:
             st.markdown("""
