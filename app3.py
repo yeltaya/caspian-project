@@ -7101,7 +7101,9 @@ with tabs[6]:
         {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},
         {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
     ]
-
+        st.markdown("---")
+        st.markdown("### 🏆 Анализ влажности")
+        
     with col_chart:
         # Заголовок для выравнивания
         st.markdown("<div style='height: 20px; font-size: 0.8rem; color: gray;'>Самые сухие годы в Казахстане (1941–2025 гг.)</div>", unsafe_allow_html=True)
