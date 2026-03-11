@@ -7104,8 +7104,8 @@ with tabs[6]:
     
     
     
-st.markdown("---")
-st.markdown("### 🏆 Анализ влажности")
+    st.markdown("---")
+    st.markdown("### 🏆 Анализ влажности")
         
     with col_chart:
         # Заголовок для выравнивания
