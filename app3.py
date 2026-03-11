@@ -5700,7 +5700,7 @@ with tabs[4]:
 
     # ВНИМАНИЕ: Обязательно вызовите функцию в конце файла
     if __name__ == "__main__":
-        show_water_resources_block()
+    show_water_resources_block()
     
     
 
