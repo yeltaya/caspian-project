@@ -3757,65 +3757,87 @@ with tabs[3]:
     import folium
     from streamlit_folium import st_folium
 
-    # 1. Словарь рисков (убедитесь, что названия регионов в точности как в файле)
-    risk_mapping = {
-        "Высокий": {
-            "color": "#ef6c00", 
-            "regions": ["Акмолинская", "Северо-Казахстанская", "Карагандинская", "Восточно-Казахстанская", "Абай"]
-        },
-        "Средний": {
-            "color": "#fbc02d", 
-            "regions": ["Костанайская", "Западно-Казахстанская", "Актюбинская", "Улытау", "Павлодарская", "Туркестанская", "Алматинская", "Жетісу"]
-        },
-        "Низкий": {
-            "color": "#66bb6a", 
-            "regions": ["Атырауская", "Мангыстауская", "Кызылординская", "Жамбылская"]
-        }
+    # --- ЦВЕТОВАЯ ГАММА И ПРИВЯЗКА К EN НАЗВАНИЯМ (из image_11.png) ---
+    # Ключами являются названия из колонки ADM1_EN вашего SHP-файла.
+    # Значения цветов и русских названий — из image_11.png и вашего текста.
+    flood_risk_config = {
+        # ВЫСОКИЙ РИСК (Оранжевый)
+        "Akmola": {"color": "#ef6c00", "name_ru": "Акмолинская", "risk": "Высокий"},
+        "North Kazakhstan": {"color": "#ef6c00", "name_ru": "Северо-Казахстанская", "risk": "Высокий"},
+        "Karaganda": {"color": "#ef6c00", "name_ru": "Карагандинская", "risk": "Высокий"},
+        "East Kazakhstan": {"color": "#ef6c00", "name_ru": "Восточно-Казахстанская", "risk": "Высокий"},
+        "Abay": {"color": "#ef6c00", "name_ru": "Абай", "risk": "Высокий"},
+        
+        # СРЕДНИЙ РИСК (Желтый)
+        "Kostanay": {"color": "#fbc02d", "name_ru": "Костанайская", "risk": "Средний"},
+        "West Kazakhstan": {"color": "#fbc02d", "name_ru": "Западно-Казахстанская", "risk": "Средний"},
+        "Aktobe": {"color": "#fbc02d", "name_ru": "Актюбинская", "risk": "Средний"},
+        "Ulytau": {"color": "#fbc02d", "name_ru": "Улытау", "risk": "Средний"},
+        "Pavlodar": {"color": "#fbc02d", "name_ru": "Павлодарская", "risk": "Средний"},
+        "Turkestan": {"color": "#fbc02d", "name_ru": "Туркестанская", "risk": "Средний"},
+        "Almaty": {"color": "#fbc02d", "name_ru": "Алматинская", "risk": "Средний"},
+        "Zhetysu": {"color": "#fbc02d", "name_ru": "Жетісу", "risk": "Средний"}, # Проверьте написание в SHP, может быть 'Zhetysu'
+        
+        # НИЗКИЙ РИСК (Зеленый)
+        "Atyrau": {"color": "#66bb6a", "name_ru": "Атырауская", "risk": "Низкий"},
+        "Mangystau": {"color": "#66bb6a", "name_ru": "Мангыстауская", "risk": "Низкий"},
+        "Kyzylorda": {"color": "#66bb6a", "name_ru": "Кызылординская", "risk": "Низкий"},
+        "Zhambyl": {"color": "#66bb6a", "name_ru": "Жамбылская", "risk": "Низкий"}
     }
 
     @st.cache_data
-    def load_fixed_map():
-        # Загружаем файлы. Все они должны быть в корне или по указанному пути
+    def load_colored_map():
+        # 1. Загрузка файла (убедитесь, что пути верны для GitHub)
         gdf = gpd.read_file("kaz 17 obl.shp")
         
-        # ВЫВОД КОЛОНОК ДЛЯ ПРОВЕРКИ (удалите после настройки)
-        st.write("Доступные колонки в вашем файле:", gdf.columns.tolist())
+        # 2. Определение целевой колонки (как на image_10.png)
+        target_col = 'ADM1_EN'
         
-        # Автоматический поиск колонки с названиями (пробуем частые варианты)
-        potential_cols = ['NAME_1', 'NAME_RU', 'ADM1_RU', 'name']
-        name_col = next((c for c in potential_cols if c in gdf.columns), gdf.columns[0])
-        
-        # Привязка цвета
-        def get_color(name):
-            for risk, info in risk_mapping.items():
-                if name in info["regions"]:
-                    return info["color"]
-            return "#808080" # Серый, если название не совпало
+        # ПРОВЕРКА: Если колонки ADM1_EN нет, код выдаст ошибку
+        if target_col not in gdf.columns:
+            st.error(f"Колонка {target_col} не найдена. Доступны: {list(gdf.columns)}")
+            return None
 
-        gdf['fill_color'] = gdf[name_col].apply(get_color)
-        return gdf.to_crs(epsg=4326), name_col
+        # 3. Применение цветов и русских названий
+        gdf['fill_color'] = gdf[target_col].map(lambda x: flood_risk_config.get(x, {}).get('color', '#808080'))
+        gdf['name_ru'] = gdf[target_col].map(lambda x: flood_risk_config.get(x, {}).get('name_ru', x)) # Русский или EN, если нет в словаре
+        gdf['risk_status'] = gdf[target_col].map(lambda x: flood_risk_config.get(x, {}).get('risk', 'Неизвестно'))
+
+        # 4. Перевод в проекцию WGS84 для Folium
+        return gdf.to_crs(epsg=4326)
 
     try:
-        final_gdf, active_col = load_fixed_map()
+        final_gdf = load_colored_map()
 
-        m = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
+        if final_gdf is not None:
+            st.markdown("### 🗺️ Интерактивная карта паводковых рисков рек Казахстана")
+            
+            # Создание базовой карты (центрирование на Казахстане)
+            m = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
 
-        folium.GeoJson(
-            final_gdf,
-            style_function=lambda x: {
-                'fillColor': x['properties']['fill_color'],
-                'color': 'black',
-                'weight': 1,
-                'fillOpacity': 0.7
-            },
-            tooltip=folium.GeoJsonTooltip(fields=[active_col], aliases=['Область:'])
-        ).add_to(m)
+            # Отрисовка полигонов с цветами
+            folium.GeoJson(
+                final_gdf,
+                style_function=lambda x: {
+                    'fillColor': x['properties']['fill_color'],
+                    'color': 'white',  # Цвет границ
+                    'weight': 1,
+                    'fillOpacity': 0.7  # Прозрачность как на рисунке
+                },
+                highlight_function=lambda x: {'weight': 3, 'fillOpacity': 0.9},
+                tooltip=folium.GeoJsonTooltip(
+                    fields=['name_ru', 'risk_status'], 
+                    aliases=['Область:', 'Статус риска:'],
+                    localize=True
+                )
+            ).add_to(m)
 
-        st_folium(m, width=900, height=550)
+            # Отображение
+            st_folium(m, width=900, height=500)
 
     except Exception as e:
-        st.error(f"Ошибка при чтении или отрисовке: {e}")
-    
+        st.error(f"Ошибка при загрузке или отрисовке: {e}. Убедитесь, что на GitHub лежат все 4 файла (.shp, .shx, .dbf, .prj)")
+        
     # --- ТЕКСТОВЫЙ БЛОК (из вашего описания) ---
     st.markdown("""
     <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
