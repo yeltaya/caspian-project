@@ -3758,78 +3758,79 @@ with tabs[3]:
     import folium
     from streamlit_folium import st_folium
 
-    # 1. Подготовка данных (словарь рисков)
-    data_rows = [
-        {"NAME_RU": "Акмолинская", "risk": "Высокий", "color": "#ef6c00", "desc": "Повышенный риск из-за глубокого промерзания почвы и снегозапасов."},
-        {"NAME_RU": "Северо-Казахстанская", "risk": "Высокий", "color": "#ef6c00", "desc": "Ожидается интенсивное снеготаяние и разлив малых рек."},
-        {"NAME_RU": "Карагандинская", "risk": "Высокий", "color": "#ef6c00", "desc": "Риск формирования склонового стока и ледовых заторов."},
-        {"NAME_RU": "Восточно-Казахстанская", "risk": "Высокий", "color": "#ef6c00", "desc": "Горные реки с риском паводков во всех трех фазах."},
-        {"NAME_RU": "Абай", "risk": "Высокий", "color": "#ef6c00", "desc": "Значительное осеннее переувлажнение почвы."},
-        {"NAME_RU": "Костанайская", "risk": "Средний", "color": "#fbc02d", "desc": "Средний риск, возможны локальные подтопления."},
-        {"NAME_RU": "Западно-Казахстанская", "risk": "Средний", "color": "#fbc02d", "desc": "Зависит от трансграничного стока реки Урал."},
-        {"NAME_RU": "Актюбинская", "risk": "Средний", "color": "#fbc02d", "desc": "Возможен быстрый подъем воды на малых реках."},
-        {"NAME_RU": "Улытау", "risk": "Средний", "color": "#fbc02d", "desc": "Прогноз умеренный, требуется мониторинг русел."},
-        {"NAME_RU": "Павлодарская", "risk": "Средний", "color": "#fbc02d", "desc": "Риск зависит от объемов сбросов водохранилищ."},
-        {"NAME_RU": "Туркестанская", "risk": "Средний", "color": "#fbc02d", "desc": "Угроза преимущественно в предгорных районах."},
-        {"NAME_RU": "Алматинская", "risk": "Средний", "color": "#fbc02d", "desc": "Средний риск в период таяния среднегорья."},
-        {"NAME_RU": "Жетісу", "risk": "Средний", "color": "#fbc02d", "desc": "Контроль состояния горных рек в мае-июне."},
-        {"NAME_RU": "Атырауская", "risk": "Низкий", "color": "#66bb6a", "desc": "Низкие показатели осеннего увлажнения."},
-        {"NAME_RU": "Мангыстауская", "risk": "Низкий", "color": "#66bb6a", "desc": "Минимальный риск паводковых явлений."},
-        {"NAME_RU": "Кызылординская", "risk": "Низкий", "color": "#66bb6a", "desc": "Стабильный ледовый режим, риски минимальны."},
-        {"NAME_RU": "Жамбылская", "risk": "Низкий", "color": "#66bb6a", "desc": "Прогноз в пределах многолетних норм."}
-    ]
-    df_risks = pd.DataFrame(data_rows)
+    # 1. Словарь рисков (ключи должны быть на русском, как мы их отображаем)
+    risk_dict = {
+        "Акмолинская": {"risk": "Высокий", "color": "#ef6c00", "desc": "Глубокое промерзание почвы и высокие снегозапасы."},
+        "Северо-Казахстанская": {"risk": "Высокий", "color": "#ef6c00", "desc": "Интенсивное снеготаяние, разлив малых рек."},
+        "Карагандинская": {"risk": "Высокий", "color": "#ef6c00", "desc": "Риск формирования склонового стока."},
+        "Восточно-Казахстанская": {"risk": "Высокий", "color": "#ef6c00", "desc": "Риск паводков во всех трех фазах."},
+        "Абай": {"risk": "Высокий", "color": "#ef6c00", "desc": "Существенное осеннее переувлажнение."},
+        "Костанайская": {"risk": "Средний", "color": "#fbc02d", "desc": "Возможны локальные подтопления."},
+        "Западно-Казахстанская": {"risk": "Средний", "color": "#fbc02d", "desc": "Зависит от стока реки Урал."},
+        "Актюбинская": {"risk": "Средний", "color": "#fbc02d", "desc": "Подъем воды на малых реках."},
+        "Улытау": {"risk": "Средний", "color": "#fbc02d", "desc": "Требуется мониторинг русел рек."},
+        "Павлодарская": {"risk": "Средний", "color": "#fbc02d", "desc": "Зависит от сбросов водохранилищ."},
+        "Туркестанская": {"risk": "Средний", "color": "#fbc02d", "desc": "Угроза в предгорных районах."},
+        "Алматинская": {"risk": "Средний", "color": "#fbc02d", "desc": "Риск в период таяния среднегорья."},
+        "Жетісу": {"risk": "Средний", "color": "#fbc02d", "desc": "Контроль горных рек в мае-июне."},
+        "Атырауская": {"risk": "Низкий", "color": "#66bb6a", "desc": "Низкое осеннее увлажнение."},
+        "Мангыстауская": {"risk": "Низкий", "color": "#66bb6a", "desc": "Минимальный риск паводков."},
+        "Кызылординская": {"risk": "Низкий", "color": "#66bb6a", "desc": "Стабильный ледовый режим."},
+        "Жамбылская": {"risk": "Низкий", "color": "#66bb6a", "desc": "Прогноз в пределах нормы."}
+    }
 
-    # 2. Загрузка и объединение данных
     @st.cache_data
-    def get_combined_data():
-        # Загружаем геометрию
+    def load_and_fix_gdf():
+        # Загружаем файл
         gdf = gpd.read_file("kaz 17 obl.shp")
         
-        # ПРОВЕРКА: убедитесь, что колонка в SHP называется 'NAME_RU' 
-        # Если она называется по-другому, замените в строке ниже
-        combined = gdf.merge(df_risks, on="NAME_RU", how="left")
+        # Ищем колонку, в которой лежат названия областей
+        # Проверяем самые частые варианты имен колонок
+        possible_cols = ['NAME_RU', 'NAME_1', 'ADM1_RU', 'name', 'Shape_Area'] 
+        name_col = None
         
-        # Убеждаемся, что координаты в формате WGS84 для Folium
-        if combined.crs != "EPSG:4326":
-            combined = combined.to_crs("EPSG:4326")
-        return combined
+        for col in gdf.columns:
+            if col in possible_cols or 'NAME' in col.upper():
+                name_col = col
+                break
+                
+        if not name_col:
+            st.error(f"Не удалось найти колонку с названиями. Доступные колонки: {list(gdf.columns)}")
+            return None
+
+        # Добавляем данные о рисках в GeoDataFrame
+        gdf['risk'] = gdf[name_col].map(lambda x: risk_dict.get(x, {}).get('risk', 'Неизвестно'))
+        gdf['color'] = gdf[name_col].map(lambda x: risk_dict.get(x, {}).get('color', '#808080'))
+        gdf['desc'] = gdf[name_col].map(lambda x: risk_dict.get(x, {}).get('desc', 'Нет данных'))
+        gdf['display_name'] = gdf[name_col] # Сохраняем для отображения
+
+        # Принудительно переводим в нужную проекцию для Folium
+        return gdf.to_crs(epsg=4326)
 
     try:
-        final_gdf = get_combined_data()
+        final_gdf = load_and_fix_gdf()
 
-        st.markdown("### 🗺️ Интерактивная карта прогноза рисков")
-        
-        # Создаем базовую карту
-        m = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
+        if final_gdf is not None:
+            st.markdown("### 🗺️ Карта паводковых рисков")
+            
+            m = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
 
-        # Добавляем полигоны
-        folium.GeoJson(
-            final_gdf,
-            style_function=lambda x: {
-                'fillColor': x['properties']['color'] if x['properties']['color'] else '#grey',
-                'color': 'white',
-                'weight': 1,
-                'fillOpacity': 0.7
-            },
-            highlight_function=lambda x: {'weight': 3, 'fillOpacity': 0.9},
-            tooltip=folium.GeoJsonTooltip(
-                fields=['NAME_RU', 'risk'],
-                aliases=['Область:', 'Уровень риска:'],
-                localize=True
-            ),
-            popup=folium.GeoJsonPopup(
-                fields=['NAME_RU', 'risk', 'desc'],
-                aliases=['Регион:', 'Статус:', 'Описание:'],
-                labels=True
-            )
-        ).add_to(m)
+            folium.GeoJson(
+                final_gdf,
+                style_function=lambda x: {
+                    'fillColor': x['properties']['color'],
+                    'color': 'white',
+                    'weight': 1,
+                    'fillOpacity': 0.7
+                },
+                highlight_function=lambda x: {'weight': 3, 'fillOpacity': 0.8},
+                tooltip=folium.GeoJsonTooltip(fields=['display_name', 'risk'], aliases=['Область:', 'Риск:']),
+                popup=folium.GeoJsonPopup(fields=['display_name', 'risk', 'desc'], aliases=['Область:', 'Риск:', 'Описание:'])
+            ).add_to(m)
 
-        st_folium(m, width=900, height=500)
-
+            st_folium(m, width=900, height=500)
     except Exception as e:
-        st.error(f"Ошибка: {e}. Проверьте, что в GitHub лежат файлы .shp, .shx, .dbf и .prj")
-        
+        st.error(f"Произошла ошибка: {e}")
 
     # --- ТЕКСТОВЫЙ БЛОК (из вашего описания) ---
     st.markdown("""
