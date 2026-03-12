@@ -8016,14 +8016,12 @@ with tabs[6]:
         region_top_years = reg.get("top_years", [])
         region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
 
-        st.markdown("---") # Разделитель
-            
+           
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
         st.markdown("---")
             # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
-        st.markdown("### 📊 Климатические тренды")
-        
-        
+        st.markdown("### 📊 Климатические тренды")      
+     
         col_l, col_r = st.columns(2)
 
         with col_l:
@@ -8172,18 +8170,29 @@ with tabs[6]:
 
         with p_col2:
             st.markdown("**🏆 Рекорды осадков**")
-            # Здесь можно либо добавить prec_top_years в базу, либо считать из CSV
-            top_p = df_precip[['Год', col_p]].sort_values(by=col_p, ascending=False).head(5)
-            max_p = top_p[col_p].max()
-            p_html = "".join([f"""
-                <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
-                    <div style="width:35px; font-size:11px; font-weight:bold;">{int(row['Год'])}</div>
-                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
-                        <div style="width:{(row[col_p]/max_p)*100}%; background:#2e7d32; height:100%; border-radius:2px;"></div>
-                    </div>
-                    <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{row[col_p]:.0f}%</div>
-                </div>""" for _, row in top_p.iterrows()])
-            st.components.v1.html(p_html, height=160)
+            
+            # 1. Получаем список из базы (тот, что вы прислали)
+            records = reg.get("top_precip_years", [])
+            
+            if records:
+                # 2. Находим максимум для масштабирования полосок
+                max_val = max([r['val'] for r in records]) if records else 1
+                
+                # 3. Генерируем HTML, используя данные из списка
+                p_html = "".join([f"""
+                    <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                        <div style="width:40px; font-size:11px; font-weight:bold; color:#333;">{r['year']}</div>
+                        <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 8px;">
+                            <div style="width:{(r['val']/max_val)*100}%; background:{r['col']}; height:100%; border-radius:2px;"></div>
+                        </div>
+                        <div style="width:50px; text-align:right; font-size:11px; font-weight:bold; color:#333;">{r['val']:.0f} мм</div>
+                    </div>""" for r in records])
+                
+                # 4. Выводим результат
+                st.components.v1.html(f"<div style='margin-top:10px;'>{p_html}</div>", height=160)
+            else:
+                st.info("Данные о рекордах отсутствуют")
+        
             
             
         
