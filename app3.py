@@ -8019,7 +8019,7 @@ with tabs[6]:
         st.markdown("---") # Разделитель
  
 
-import streamlit.components.v1 as components
+    import streamlit.components.v1 as components
         # Создаем две колонки для графиков статистики
     col_stat_t, col_stat_p = st.columns(2)
 
