@@ -8221,6 +8221,56 @@ with tabs[6]:
         ))
 
         st.plotly_chart(fig_chart, use_container_width=True)
+        
+        
+    st.markdown("### 🗺️ Природно-климатические зоны")
+
+    # 1. Данные
+    zones = reg.get("land_zones", [])
+
+    # 2. Создаем две колонки: слева Карта+Шкала, справа Карточки
+    col_left, col_right = st.columns([2.5, 1])
+
+    with col_left:
+        # Объединяем карту и шкалу в один блок
+        try:
+            # Основная карта
+            st.image("Natural Zones.jpeg", use_container_width=True)
+            
+            # Шкала (легенда) под картой с ограничением ширины, чтобы не была огромной
+            st.image("Клим_зоны_Шкала.jpeg", width=250) 
+            
+        except Exception as e:
+            st.error(f"Не удалось загрузить изображения: {e}")
+
+    with col_right:
+        # Добавляем небольшой отступ сверху, чтобы карточки были на уровне карты
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        
+        if zones:
+            for zone in zones:
+                st.markdown(f"""
+                    <div style="
+                        background-color: {zone['bg']}; 
+                        border-radius: 10px; 
+                        padding: 15px; 
+                        border-left: 5px solid {zone['color']};
+                        margin-bottom: 15px;
+                        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+                    ">
+                        <div style="color: {zone['color']}; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                            {zone['title']}
+                        </div>
+                        <div style="color: #555; font-size: 12px; line-height: 1.4;">
+                            {zone['desc']}
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("Данные по зонам отсутствуют")
+        
+    
+    
     
 # --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
 
@@ -8308,41 +8358,7 @@ with tabs[6]:
                 ['#2e7d32', '#8d6e63'], "%"
             )
         
- 
-    st.markdown("### 🗺️ Природно-климатические зоны")
 
-    # Получаем данные зон для выбранной области
-    zones = reg.get("land_zones", [])
-
-    if zones:
-        # Создаем колонки динамически по количеству зон
-        cols = st.columns(len(zones))
-        
-        for i, zone in enumerate(zones):
-            with cols[i]:
-                st.markdown(f"""
-                    <div style="
-                        background-color: {zone['bg']}; 
-                        border-radius: 12px; 
-                        padding: 20px; 
-                        border-top: 5px solid {zone['color']};
-                        height: 100%;
-                        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                    ">
-                        <h4 style="color: {zone['color']}; margin-top: 0; font-size: 1.1rem;">
-                            {zone['title']}
-                        </h4>
-                        <p style="color: #444; font-size: 0.9rem; line-height: 1.4; margin-bottom: 0;">
-                            {zone['desc']}
-                        </p>
-                    </div>
-                """, unsafe_allow_html=True)
-    else:
-        st.info("Информация о ландшафтных зонах уточняется.")
-
-    st.markdown("<br>", unsafe_allow_html=True) # Небольшой отступ снизу
-    
- 
  
     # Извлекаем значения из базы (с заглушками, если данных нет)
     t_val = reg.get("trend_temp", "н/д")
