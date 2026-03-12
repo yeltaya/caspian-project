@@ -8074,8 +8074,8 @@ with tabs[6]:
                 components.html(precip_html, height=180)
             else:
                 st.info("Данные по рекордам осадков отсутствуют")
-    else:
-    st.error(f"Колонки для региона '{selected_name}' не найдены в mapping.")
+        else:
+        st.error(f"Колонки для региона '{selected_name}' не найдены в mapping.")
     
                 
                 
