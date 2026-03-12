@@ -8282,54 +8282,57 @@ with tabs[6]:
  
     st.markdown("### 🗺️ Природно-климатические зоны")
 
-    # Убедитесь, что 'reg' — это словарь данных для выбранной области
-    # Если ваша переменная называется 'data', оставьте 'data'
+    # Получаем данные
     zones = reg.get("zones", []) 
 
-    col_left, col_right = st.columns([2.5, 1])
+    # Используем пропорцию 2:1, чтобы карта была меньше, а правая панель с текстом — шире
+    col_left, col_right = st.columns([2, 1])
 
     with col_left:
         try:
-            # Отображаем основную карту
+            # Отображаем карту. Чтобы она была меньше по высоте, можно обернуть её в контейнер 
+            # или просто позволить колонке задать размер.
             st.image("Natural Zones.jpeg", use_container_width=True)
-            # Отображаем шкалу (легенду)
-            st.image("Клим_зоны_Шкала.jpeg", width=250) 
         except Exception as e:
-            st.error(f"Не удалось загрузить изображения ландшафта: {e}")
+            st.error(f"Ошибка карты: {e}")
 
     with col_right:
-        # Вертикальный отступ для выравнивания с верхом карты
-        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        try:
+            # Переносим шкалу (легенду) сюда, чтобы она была перед текстом
+            st.image("Клим_зоны_Шкала.jpeg", use_container_width=True)
+        except:
+            pass
+
+        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
         
         if zones:
             for zone in zones:
-                # Используем .get() с цветами по умолчанию, чтобы не было ошибок
                 z_bg = zone.get('bg', '#f8f9fa')
                 z_col = zone.get('color', '#333')
                 z_title = zone.get('title', 'Зона')
                 z_desc = zone.get('desc', '')
 
+                # Увеличили font-size для заголовка (18px) и текста (15px)
                 st.markdown(f"""
                     <div style="
                         background-color: {z_bg}; 
-                        border-radius: 10px; 
-                        padding: 15px; 
-                        border-left: 5px solid {z_col};
+                        border-radius: 12px; 
+                        padding: 18px; 
+                        border-left: 6px solid {z_col};
                         margin-bottom: 15px;
-                        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
                     ">
-                        <div style="color: {z_col}; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                        <div style="color: {z_col}; font-weight: 800; font-size: 18px; margin-bottom: 8px;">
                             {z_title}
                         </div>
-                        <div style="color: #555; font-size: 12px; line-height: 1.4;">
+                        <div style="color: #333; font-size: 15px; line-height: 1.5; font-weight: 450;">
                             {z_desc}
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
         else:
-            # Если zones пустой или ключа нет
-            st.info("Для данной области подробные данные по зонам уточняются.")
-        
+            st.info("Данные по зонам уточняются.")
+            
             
  
  
