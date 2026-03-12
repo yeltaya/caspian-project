@@ -7265,7 +7265,7 @@ with tabs[6]:
                 {"year": 1983, "val": 4.01, "col": "#e57373"},
                 {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
             ],
-            top_precip_years = [
+            "top_precip_years": [
                 {"year": 2010, "val": 239.04, "col": "#1b5e20"}, # Темно-зеленый
                 {"year": 1975, "val": 248.90, "col": "#2e7d32"},
                 {"year": 1965, "val": 253.16, "col": "#4caf50"},
