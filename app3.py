@@ -7929,7 +7929,7 @@ with tabs[6]:
     
     df_temp, df_precip, name_mapping = load_all_data()    
 
-      
+    from utils import generate_compact_bars   
     def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
         st.subheader(title)
         st.caption(subtitle)
@@ -8024,18 +8024,18 @@ with tabs[6]:
         with col_stat_t:
             st.markdown(f"##### 🌡️ Топ лет: {selected_name} (аномалии)")
             if region_top_years:
-                # Вызываем функцию (убедись, что она определена выше в коде)
                 temp_html = generate_compact_bars(region_top_years, unit="°C")
-                components.html(f"<div style='padding-top:10px;'>{temp_html}</div>", height=150)
+                components.html(f"<div style='padding-top:10px;'>{temp_html}</div>", height=180)
             else:
                 st.info("Данные по температурным рекордам отсутствуют")
 
         with col_stat_p:
             st.markdown(f"##### 💧 Рекорды осадков: {selected_name}")
             if region_precip_records:
-                # Вызываем функцию для осадков в мм
+                # Передаем ваши данные со словарями
                 precip_html = generate_compact_bars(region_precip_records, unit=" мм")
-                components.html(f"<div style='padding-top:10px;'>{precip_html}</div>", height=150)
+                # Увеличил height до 180, так как 5 строк могут не влезть в 150 с учетом отступов
+                components.html(f"<div style='padding-top:10px;'>{precip_html}</div>", height=180)
             else:
                 st.info("Данные по рекордам осадков отсутствуют")
                 
