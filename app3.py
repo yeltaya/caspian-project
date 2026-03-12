@@ -7929,7 +7929,7 @@ with tabs[6]:
     
     df_temp, df_precip, name_mapping = load_all_data()    
 
-    from utils import generate_compact_bars   
+     
     def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
         st.subheader(title)
         st.caption(subtitle)
