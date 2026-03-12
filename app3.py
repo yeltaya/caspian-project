@@ -8366,8 +8366,8 @@ with tabs[6]:
 
     st.markdown("### 🚨 Основные климатические риски")
 
+    # Определение функции (если она еще не определена выше)
     def risk_box(title, text, level, color):
-        # level — число от 0 до 100
         st.markdown(f"""
             <div style="background: white; border-left: 5px solid {color}; padding: 15px; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -8381,13 +8381,19 @@ with tabs[6]:
             </div>
         """, unsafe_allow_html=True)
 
-    risk_box("🔥 Экстремальные температуры", "Рост 0.36 °С за 10 лет. 2025 год — рекорд (+5.09 °С).", 95, "#d32f2f")
-    risk_box("🌾 Засухи и дефицит влаги", "Снижение осадков в июне и октябре. Угроза урожаю.", 70, "#f57c00")
-    risk_box("🌊 Весенние паводки", "Рост осадков весной (+6.1 мм/10 лет) провоцирует наводнения.", 45, "#1976d2")
+    # --- ДИНАМИЧЕСКИЙ ВЫВОД РИСКОВ ---
+    # Берем данные из текущей области 'reg'
+    region_risks = reg.get("risks", [])
+
+    if region_risks:
+        for r in region_risks:
+            risk_box(r['title'], r['text'], r['level'], r['color'])
+    else:
+        st.info("Данные по климатическим рискам для этого региона уточняются.")
 
     # --- 6. ОБЩИЙ ВЫВОД ---
-    st.info("💡 **Общие выводы:** Интенсивное потепление в СКО опережает среднемировые темпы. Несмотря на рост годовых осадков, их неравномерное распределение (дефицит летом при избытке весной) требует адаптации агротехнологий.")
-
+    conclusion = reg.get("final_conclusion", "Анализ данных продолжается.")
+    st.info(f"💡 **Общие выводы:** {conclusion}")
 
 
 
