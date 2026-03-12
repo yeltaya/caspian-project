@@ -8018,60 +8018,37 @@ with tabs[6]:
 
         st.markdown("---") # Разделитель
  
-    # Вставьте это в начало app3.py
-    def generate_compact_bars(data, unit=""):
-        if not data:
-            return ""
-        
-        # Расчет максимума для масштабирования
-        try:
-            vals = [abs(float(item.get("val", 0))) for item in data]
-            max_val = max(vals) if vals else 1
-        except:
-            max_val = 1
-            
-        html = "<div style='font-family: sans-serif; font-size: 12px;'>"
-        for item in data:
-            year = item.get("year", "Н/Д")
-            val = item.get("val", 0)
-            color = item.get("col", "#1b5e20")
-            width = (abs(val) / max_val) * 65 
-            
-            html += f"""
-            <div style='display: flex; align-items: center; margin-bottom: 6px;'>
-                <div style='width: 45px; font-weight: bold;'>{year}</div>
-                <div style='flex-grow: 1; background-color: #f0f2f6; height: 12px; border-radius: 4px; margin: 0 8px;'>
-                    <div style='width: {width}%; background-color: {color}; height: 100%; border-radius: 4px;'></div>
-                </div>
-                <div style='width: 65px; text-align: right;'>{val}{unit}</div>
-            </div>
-            """
-        html += "</div>"
-        return html
-    
- 
+
+import streamlit.components.v1 as components
         # Создаем две колонки для графиков статистики
     col_stat_t, col_stat_p = st.columns(2)
 
     with col_stat_t:
         st.markdown(f"##### 🌡️ Топ лет: {selected_name} (аномалии)")
-        if region_top_years:
-            temp_html = generate_compact_bars(region_top_years, unit="°C")
-            components.html(f"<div style='padding-top:10px;'>{temp_html}</div>", height=180)
+        # Проверяем, что это список и он не пуст
+        if isinstance(region_top_years, list) and len(region_top_years) > 0:
+            try:
+                temp_html = generate_compact_bars(region_top_years, unit="°C")
+                components.html(f"<div style='padding-top:10px;'>{temp_html}</div>", height=180)
+            except Exception as e:
+                st.error(f"Ошибка отрисовки температур: {e}")
         else:
             st.info("Данные по температурным рекордам отсутствуют")
 
     with col_stat_p:
         st.markdown(f"##### 💧 Рекорды осадков: {selected_name}")
-        if region_precip_records:
-            # Передаем ваши данные со словарями
-            precip_html = generate_compact_bars(region_precip_records, unit=" мм")
-            # Увеличил height до 180, так как 5 строк могут не влезть в 150 с учетом отступов
-            components.html(f"<div style='padding-top:10px;'>{precip_html}</div>", height=180)
+        # Проверяем, что это список и он не пуст
+        if isinstance(region_precip_records, list) and len(region_precip_records) > 0:
+            try:
+                precip_html = generate_compact_bars(region_precip_records, unit=" мм")
+                components.html(f"<div style='padding-top:10px;'>{precip_html}</div>", height=180)
+            except Exception as e:
+                st.error(f"Ошибка отрисовки осадков: {e}")
         else:
             st.info("Данные по рекордам осадков отсутствуют")
+        
                 
-                
+              
                 
         
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
