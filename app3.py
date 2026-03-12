@@ -8330,18 +8330,18 @@ with tabs[6]:
  
 # --- 5. ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКОВ ОБЛАСТИ ---
         # Извлекаем топ лет и рекорды осадков именно для выбранной области
-        region_top_years = reg.get("top_years", [])
-        region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
+    region_top_years = reg.get("top_years", [])
+    region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
 
            
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
-        st.markdown("---")
+    st.markdown("---")
             # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
-        st.markdown("### 📊 Климатические тренды")      
+    st.markdown("### 📊 Климатические тренды")      
      
-        col_l, col_r = st.columns(2)
+    col_l, col_r = st.columns(2)
 
-        with col_l:
+    with col_l:
             render_climate_charts(
                 df_temp, col_t, 
                 "Температура воздуха", 
@@ -8350,14 +8350,14 @@ with tabs[6]:
                 ['#d32f2f', '#1f77b4'], "°C"
             )
 
-        with col_r:
+    with col_r:
             render_climate_charts(
                 df_precip, col_p, 
                 "Осадки", 
                 "Отклонение осадков от нормы (%)", 
                 'BrBG',                
                 ['#2e7d32', '#8d6e63'], "%"
-            )
+        )
         
  
     # Извлекаем значения из базы (с заглушками, если данных нет)
