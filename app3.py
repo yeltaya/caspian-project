@@ -8017,40 +8017,7 @@ with tabs[6]:
         region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
 
         st.markdown("---") # Разделитель
- 
-
-    import streamlit.components.v1 as components
-        # Создаем две колонки для графиков статистики
-    col_stat_t, col_stat_p = st.columns(2)
-
-    with col_stat_t:
-        st.markdown(f"##### 🌡️ Топ лет: {selected_name} (аномалии)")
-        # Проверяем, что это список и он не пуст
-        if isinstance(region_top_years, list) and len(region_top_years) > 0:
-            try:
-                temp_html = generate_compact_bars(region_top_years, unit="°C")
-                components.html(f"<div style='padding-top:10px;'>{temp_html}</div>", height=180)
-            except Exception as e:
-                st.error(f"Ошибка отрисовки температур: {e}")
-        else:
-            st.info("Данные по температурным рекордам отсутствуют")
-
-    with col_stat_p:
-        st.markdown(f"##### 💧 Рекорды осадков: {selected_name}")
-        # Проверяем, что это список и он не пуст
-        if isinstance(region_precip_records, list) and len(region_precip_records) > 0:
-            try:
-                precip_html = generate_compact_bars(region_precip_records, unit=" мм")
-                components.html(f"<div style='padding-top:10px;'>{precip_html}</div>", height=180)
-            except Exception as e:
-                st.error(f"Ошибка отрисовки осадков: {e}")
-        else:
-            st.info("Данные по рекордам осадков отсутствуют")
-        
-                
-              
-                
-        
+            
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
         st.markdown("---")
             # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
