@@ -8223,54 +8223,7 @@ with tabs[6]:
         st.plotly_chart(fig_chart, use_container_width=True)
         
         
-    st.markdown("### 🗺️ Природно-климатические зоны")
-
-    # 1. Данные
-    zones = data.get("zones", [])
-
-    # 2. Создаем две колонки: слева Карта+Шкала, справа Карточки
-    col_left, col_right = st.columns([2.5, 1])
-
-    with col_left:
-        # Объединяем карту и шкалу в один блок
-        try:
-            # Основная карта
-            st.image("Natural Zones.jpeg", use_container_width=True)
-            
-            # Шкала (легенда) под картой с ограничением ширины, чтобы не была огромной
-            st.image("Клим_зоны_Шкала.jpeg", width=250) 
-            
-        except Exception as e:
-            st.error(f"Не удалось загрузить изображения: {e}")
-
-    with col_right:
-        # Добавляем небольшой отступ сверху, чтобы карточки были на уровне карты
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-        
-        if zones:
-            for zone in zones:
-                st.markdown(f"""
-                    <div style="
-                        background-color: {zone['bg']}; 
-                        border-radius: 10px; 
-                        padding: 15px; 
-                        border-left: 5px solid {zone['color']};
-                        margin-bottom: 15px;
-                        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-                    ">
-                        <div style="color: {zone['color']}; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
-                            {zone['title']}
-                        </div>
-                        <div style="color: #555; font-size: 12px; line-height: 1.4;">
-                            {zone['desc']}
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.info("Данные по зонам отсутствуют")
-        
-    
-    
+   
     
 # --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
 
@@ -8326,6 +8279,54 @@ with tabs[6]:
             delta_color="off"
         )
   
+ 
+     st.markdown("### 🗺️ Природно-климатические зоны")
+
+    # 1. Данные
+    zones = data.get("zones", [])
+
+    # 2. Создаем две колонки: слева Карта+Шкала, справа Карточки
+    col_left, col_right = st.columns([2.5, 1])
+
+    with col_left:
+        # Объединяем карту и шкалу в один блок
+        try:
+            # Основная карта
+            st.image("Natural Zones.jpeg", use_container_width=True)
+            
+            # Шкала (легенда) под картой с ограничением ширины, чтобы не была огромной
+            st.image("Клим_зоны_Шкала.jpeg", width=250) 
+            
+        except Exception as e:
+            st.error(f"Не удалось загрузить изображения: {e}")
+
+    with col_right:
+        # Добавляем небольшой отступ сверху, чтобы карточки были на уровне карты
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        
+        if zones:
+            for zone in zones:
+                st.markdown(f"""
+                    <div style="
+                        background-color: {zone['bg']}; 
+                        border-radius: 10px; 
+                        padding: 15px; 
+                        border-left: 5px solid {zone['color']};
+                        margin-bottom: 15px;
+                        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+                    ">
+                        <div style="color: {zone['color']}; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                            {zone['title']}
+                        </div>
+                        <div style="color: #555; font-size: 12px; line-height: 1.4;">
+                            {zone['desc']}
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("Данные по зонам отсутствуют")
+            
+ 
  
 # --- 5. ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКОВ ОБЛАСТИ ---
         # Извлекаем топ лет и рекорды осадков именно для выбранной области
