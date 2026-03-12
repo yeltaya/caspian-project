@@ -7927,55 +7927,52 @@ with tabs[6]:
 
         return df_temp, df_precip, mapping
     
-Вот полный, структурированный блок кода для вашего приложения на Streamlit. Я объединил определение функций, логику обработки данных и интерфейс, чтобы у вас не возникало ошибок NameError или проблем с типами данных.
 
-Убедитесь, что этот код находится в основном файле вашего приложения (например, app.py).
 
-Python
-import streamlit as st
-import streamlit.components.v1 as components
-import plotly.graph_objects as go
-import pandas as pd
+    import streamlit as st
+    import streamlit.components.v1 as components
+    import plotly.graph_objects as go
+    import pandas as pd
 
-# =========================================================
-# 1. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (Должны быть в начале)
-# =========================================================
+    # =========================================================
+    # 1. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (Должны быть в начале)
+    # =========================================================
 
-def generate_compact_bars(data, unit=""):
-    """
-    Генерирует компактные горизонтальные бары на HTML.
-    Ожидает список словарей: [{"year": 2010, "val": 239.04, "col": "#1b5e20"}, ...]
-    """
-    if not data:
-        return "<div style='color:gray; font-size:12px;'>Нет данных</div>"
-    
-    # Находим максимум для масштабирования полосок
-    try:
-        max_val = max([abs(float(item.get("val", 0))) for item in data])
-        if max_val == 0: max_val = 1
-    except:
-        max_val = 1
-    
-    html = "<div style='font-family: sans-serif; font-size: 12px; color: #31333F;'>"
-    for item in data:
-        year = item.get("year", "Н/Д")
-        val = item.get("val", 0)
-        color = item.get("col", "#cbd5e0") # Цвет из вашей базы данных
-        
-        # Расчет ширины (65% контейнера под полоску)
-        width = (abs(val) / max_val) * 65 
-        
-        html += f"""
-        <div style='display: flex; align-items: center; margin-bottom: 6px;'>
-            <div style='width: 45px; font-weight: bold; font-size: 11px;'>{year}</div>
-            <div style='flex-grow: 1; background-color: #f0f2f6; height: 14px; border-radius: 4px; margin: 0 8px;'>
-                <div style='width: {width}%; background-color: {color}; height: 100%; border-radius: 4px;'></div>
-            </div>
-            <div style='width: 65px; text-align: right; font-size: 11px;'>{val}{unit}</div>
-        </div>
+    def generate_compact_bars(data, unit=""):
         """
-    html += "</div>"
-    return html
+        Генерирует компактные горизонтальные бары на HTML.
+        Ожидает список словарей: [{"year": 2010, "val": 239.04, "col": "#1b5e20"}, ...]
+        """
+        if not data:
+            return "<div style='color:gray; font-size:12px;'>Нет данных</div>"
+        
+        # Находим максимум для масштабирования полосок
+        try:
+            max_val = max([abs(float(item.get("val", 0))) for item in data])
+            if max_val == 0: max_val = 1
+        except:
+            max_val = 1
+        
+        html = "<div style='font-family: sans-serif; font-size: 12px; color: #31333F;'>"
+        for item in data:
+            year = item.get("year", "Н/Д")
+            val = item.get("val", 0)
+            color = item.get("col", "#cbd5e0") # Цвет из вашей базы данных
+            
+            # Расчет ширины (65% контейнера под полоску)
+            width = (abs(val) / max_val) * 65 
+            
+            html += f"""
+            <div style='display: flex; align-items: center; margin-bottom: 6px;'>
+                <div style='width: 45px; font-weight: bold; font-size: 11px;'>{year}</div>
+                <div style='flex-grow: 1; background-color: #f0f2f6; height: 14px; border-radius: 4px; margin: 0 8px;'>
+                    <div style='width: {width}%; background-color: {color}; height: 100%; border-radius: 4px;'></div>
+                </div>
+                <div style='width: 65px; text-align: right; font-size: 11px;'>{val}{unit}</div>
+            </div>
+            """
+        html += "</div>"
+        return html
 
     def render_climate_charts(df, column_name, title, subtitle, bar_colors, unit):
         """Отрисовка основного графика Plotly"""
