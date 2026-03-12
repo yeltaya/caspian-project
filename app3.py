@@ -7927,156 +7927,118 @@ with tabs[6]:
 
         return df_temp, df_precip, mapping
     
+    df_temp, df_precip, name_mapping = load_all_data()    
 
-
-    import streamlit as st
-    import streamlit.components.v1 as components
-    import plotly.graph_objects as go
-    import pandas as pd
-
-    # =========================================================
-    # 1. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (Должны быть в начале)
-    # =========================================================
-
-    def generate_compact_bars(data, unit=""):
-        """
-        Генерирует компактные горизонтальные бары на HTML.
-        Ожидает список словарей: [{"year": 2010, "val": 239.04, "col": "#1b5e20"}, ...]
-        """
-        if not data:
-            return "<div style='color:gray; font-size:12px;'>Нет данных</div>"
-        
-        # Находим максимум для масштабирования полосок
-        try:
-            max_val = max([abs(float(item.get("val", 0))) for item in data])
-            if max_val == 0: max_val = 1
-        except:
-            max_val = 1
-        
-        html = "<div style='font-family: sans-serif; font-size: 12px; color: #31333F;'>"
-        for item in data:
-            year = item.get("year", "Н/Д")
-            val = item.get("val", 0)
-            color = item.get("col", "#cbd5e0") # Цвет из вашей базы данных
-            
-            # Расчет ширины (65% контейнера под полоску)
-            width = (abs(val) / max_val) * 65 
-            
-            html += f"""
-            <div style='display: flex; align-items: center; margin-bottom: 6px;'>
-                <div style='width: 45px; font-weight: bold; font-size: 11px;'>{year}</div>
-                <div style='flex-grow: 1; background-color: #f0f2f6; height: 14px; border-radius: 4px; margin: 0 8px;'>
-                    <div style='width: {width}%; background-color: {color}; height: 100%; border-radius: 4px;'></div>
-                </div>
-                <div style='width: 65px; text-align: right; font-size: 11px;'>{val}{unit}</div>
-            </div>
-            """
-        html += "</div>"
-        return html
-
-    def render_climate_charts(df, column_name, title, subtitle, bar_colors, unit):
-        """Отрисовка основного графика Plotly"""
+    from utils import generate_compact_bars   
+    def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
         st.subheader(title)
         st.caption(subtitle)
         
+        # Создаем график
         fig_chart = go.Figure()
         
-        # Цвета: bar_colors[0] для положительных, bar_colors[1] для отрицательных
+        # Определяем цвета столбцов
         colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in df[column_name]]
         
         fig_chart.add_trace(go.Bar(
             x=df['Год'], 
             y=df[column_name], 
             marker_color=colors, 
-            opacity=0.7, 
-            name=f'Аномалия ({unit})'
+            opacity=0.6, 
+            name='Ежегодная аномалия'
         ))
         
-        # Тренд (скользящее среднее 10 лет)
+        # Тренд (скользящее среднее)
         sma = df[column_name].rolling(window=10, min_periods=1, center=True).mean()
         fig_chart.add_trace(go.Scatter(
             x=df['Год'], y=sma, mode='lines', 
-            line=dict(color='#222', width=2.5), name='Тренд (10 лет)'
+            line=dict(color='#222', width=2), name='Тренд'
         ))
 
-        fig_chart.update_layout(
-            margin=dict(l=20, r=20, t=20, b=20),
-            height=350,
-            showlegend=False
-        )
         st.plotly_chart(fig_chart, use_container_width=True)
+    
+# --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
 
-    # =========================================================
-    # 2. ОСНОВНАЯ ЛОГИКА ПРИЛОЖЕНИЯ
-    # =========================================================
-
-    # Предполагаем, что load_all_data() и ALL_REGIONS_DATABASE определены выше или импортированы
-    df_temp, df_precip, name_mapping = load_all_data()
-
-    # 1. Выбор области
+    # 1. Выбор области (используем ключи из твоей базы ALL_REGIONS_DATABASE)
     selected_name = st.selectbox("Выберите область Казахстана:", list(ALL_REGIONS_DATABASE.keys()))
 
-    # 2. Получаем данные из вашей базы
+    # 2. Получаем данные по области из статической базы (площадь, описание зон и т.д.)
     reg = ALL_REGIONS_DATABASE[selected_name]
+
+    # 3. Связываем выбор пользователя с названиями колонок в CSV через mapping
     region_cols = name_mapping.get(selected_name)
 
     if region_cols:
         col_t = region_cols['col_t']
         col_p = region_cols['col_p']
         
-        # Извлекаем последние данные (fillna для защиты от ошибок)
-        current_temp_anom = df_temp[col_t].fillna(0).iloc[-1]
-        current_precip_anom = df_precip[col_p].fillna(0).iloc[-1]
+    
+        # Извлекаем последние данные (2025 год) для карточек
+        # df_temp и df_precip должны быть загружены заранее
+        current_temp_anom = df_temp[col_t].iloc[-1]
+        current_precip_anom = df_precip[col_p].iloc[-1]
         
-        # Расчет текущей температуры
-        try:
-            norm_temp = float(reg.get('norm_temp', 0))
-            temp_2025 = norm_temp + current_temp_anom
-        except:
-            temp_2025 = 0
+        # Расчет текущей температуры: Норма + Аномалия
+        temp_2025 = float(reg['norm_temp']) + current_temp_anom
 
-        # --- 3. МЕТРИКИ (КАРТОЧКИ) ---
+        # --- 4. ОБНОВЛЕННЫЕ КАРТОЧКИ ---
         c1, c2, c3, c4 = st.columns(4)
+
+        # Карточка 1: Территория (без изменений)
         c1.metric("Территория", reg['area'], delta=f"{reg['area_perc']} от РК", delta_color="off")
-        c2.metric("Температура 2025", f"{temp_2025:.1f} °С", delta=f"{current_temp_anom:+.2f} °С", delta_color="inverse")
-        c3.metric("Текущая аномалия", f"{current_temp_anom:+.2f} °С", delta="Ранг №1" if current_temp_anom > 2.0 else "Выше нормы")
-        c4.metric("Осадки 2025", f"{current_precip_anom:+.1f} %", delta="от нормы", delta_color="off")
 
-        st.markdown("---")
-
-        # --- 4. ОСНОВНЫЕ ГРАФИКИ (PLOTLY) ---
-        render_climate_charts(
-            df_temp, col_t, "Динамика температурных аномалий", 
-            "Отклонение от нормы (°C)", ["#ff4b4b", "#0068c9"], "°C"
+        # Карточка 2: Температура (динамическая из CSV)
+        c2.metric(
+            label="Температура 2025", 
+            value=f"{temp_2025:.1f} °С", 
+            delta=f"{current_temp_anom:+.2f} °С к норме",
+            delta_color="inverse"
         )
 
-        st.markdown("---")
+        # Карточка 3: Аномалия (динамическая из CSV)
+        c3.metric(
+            label="Текущая аномалия", 
+            value=f"{current_temp_anom:+.2f} °С", 
+            delta="Ранг №1" if current_temp_anom > 2.0 else "Выше нормы",
+            delta_color="normal"
+        )
 
-        # --- 5. КОМПАКТНЫЕ РЕКОРДЫ (HTML) ---
-        # Проверьте ключи в вашей базе! Используем те, что вы прислали.
-        region_top_years = reg.get("top_years", [])
-        region_precip_records = reg.get("top_precip_years", []) # Ключ из вашего примера
-
-        col_stat_t, col_stat_p = st.columns(2)
-
-        with col_stat_t:
-            st.markdown(f"##### 🌡️ Топ лет (аномалии): {selected_name}")
-            if region_top_years:
-                temp_html = generate_compact_bars(region_top_years, unit="°C")
-                components.html(temp_html, height=180)
-            else:
-                st.info("Данные по температурным рекордам отсутствуют")
-
-        with col_stat_p:
-            st.markdown(f"##### 💧 Рекорды осадков: {selected_name}")
-            if region_precip_records:
-                precip_html = generate_compact_bars(region_precip_records, unit=" мм")
-                components.html(precip_html, height=180)
-            else:
-                st.info("Данные по рекордам осадков отсутствуют")
-        else:
-        st.error(f"Колонки для региона '{selected_name}' не найдены в mapping.")
+        # Карточка 4: Осадки (динамическая из CSV)
+        c4.metric(
+            label="Осадки 2025", 
+            value=f"{current_precip_anom:+.1f} %", 
+            delta="отклонение",
+            delta_color="off"
+        )
     
+# --- 5. ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКОВ ОБЛАСТИ ---
+        # Извлекаем топ лет и рекорды осадков именно для выбранной области
+        region_top_years = reg.get("top_years", [])
+        region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
+
+        st.markdown("---") # Разделитель
+        
+        # Создаем две колонки для графиков статистики
+    col_stat_t, col_stat_p = st.columns(2)
+
+    with col_stat_t:
+        st.markdown(f"##### 🌡️ Топ лет: {selected_name} (аномалии)")
+        if region_top_years:
+            temp_html = generate_compact_bars(region_top_years, unit="°C")
+            components.html(f"<div style='padding-top:10px;'>{temp_html}</div>", height=180)
+        else:
+            st.info("Данные по температурным рекордам отсутствуют")
+
+    with col_stat_p:
+        st.markdown(f"##### 💧 Рекорды осадков: {selected_name}")
+        if region_precip_records:
+            # Передаем ваши данные со словарями
+            precip_html = generate_compact_bars(region_precip_records, unit=" мм")
+            # Увеличил height до 180, так как 5 строк могут не влезть в 150 с учетом отступов
+            components.html(f"<div style='padding-top:10px;'>{precip_html}</div>", height=180)
+        else:
+            st.info("Данные по рекордам осадков отсутствуют")
+                
                 
                 
         
