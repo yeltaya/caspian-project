@@ -8017,7 +8017,39 @@ with tabs[6]:
         region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
 
         st.markdown("---") # Разделитель
+ 
+    # Вставьте это в начало app3.py
+    def generate_compact_bars(data, unit=""):
+        if not data:
+            return ""
         
+        # Расчет максимума для масштабирования
+        try:
+            vals = [abs(float(item.get("val", 0))) for item in data]
+            max_val = max(vals) if vals else 1
+        except:
+            max_val = 1
+            
+        html = "<div style='font-family: sans-serif; font-size: 12px;'>"
+        for item in data:
+            year = item.get("year", "Н/Д")
+            val = item.get("val", 0)
+            color = item.get("col", "#1b5e20")
+            width = (abs(val) / max_val) * 65 
+            
+            html += f"""
+            <div style='display: flex; align-items: center; margin-bottom: 6px;'>
+                <div style='width: 45px; font-weight: bold;'>{year}</div>
+                <div style='flex-grow: 1; background-color: #f0f2f6; height: 12px; border-radius: 4px; margin: 0 8px;'>
+                    <div style='width: {width}%; background-color: {color}; height: 100%; border-radius: 4px;'></div>
+                </div>
+                <div style='width: 65px; text-align: right;'>{val}{unit}</div>
+            </div>
+            """
+        html += "</div>"
+        return html
+    
+ 
         # Создаем две колонки для графиков статистики
     col_stat_t, col_stat_p = st.columns(2)
 
