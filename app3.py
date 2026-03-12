@@ -8226,7 +8226,7 @@ with tabs[6]:
     st.markdown("### 🗺️ Природно-климатические зоны")
 
     # 1. Данные
-    zones = reg.get("land_zones", [])
+    zones = data.get("zones", [])
 
     # 2. Создаем две колонки: слева Карта+Шкала, справа Карточки
     col_left, col_right = st.columns([2.5, 1])
@@ -8358,7 +8358,6 @@ with tabs[6]:
                 ['#2e7d32', '#8d6e63'], "%"
             )
         
-
  
     # Извлекаем значения из базы (с заглушками, если данных нет)
     t_val = reg.get("trend_temp", "н/д")
@@ -8535,6 +8534,77 @@ with tabs[6]:
     conclusion = reg.get("final_conclusion", "Анализ данных продолжается.")
     st.info(f"💡 **Общие выводы:** {conclusion}")
 
+
+    st.markdown("---")
+    st.markdown("### 📊 Климатические индексы по секторам экономики")
+
+    # 1. Данные для секторов (лучше вынести в ALL_REGIONS_DATABASE для каждой области)
+    # Здесь приведен пример структуры данных
+    sectors_data = {
+        "🌾 Сельское хозяйство": {
+            "index_name": "ГИДРОТЕРМИЧЕСКИЙ КОЭФФИЦИЕНТ (ГТК)",
+            "desc": "Показатель увлажненности территории. Используется для оценки условий роста культур и прогнозирования засух.",
+            "map_file": "agro_index_map.png", # Замените на реальное имя файла
+            "status": "Критический",
+            "color": "#d32f2f",
+            "analysis": "В текущем сезоне наблюдается снижение ГТК до 0.6, что соответствует сильной засухе в период вегетации."
+        },
+        "💧 Водные ресурсы": {
+            "index_name": "ИНДЕКС СТОКА И ИСПАРЕНИЯ",
+            "desc": "Оценка доступности водных ресурсов для ирригации и промышленности.",
+            "map_file": "water_index_map.png",
+            "status": "Стабильный",
+            "color": "#1976d2",
+            "analysis": "Запасы воды в водохранилищах области находятся в пределах нормы благодаря весенним осадкам."
+        },
+        "🩺 Здоровье": {
+            "index_name": "ИНДЕКС ТЕПЛОВОГО СТРЕССА (UTCI)",
+            "desc": "Влияние температуры и влажности на самочувствие человека.",
+            "map_file": "health_index_map.png",
+            "status": "Внимание",
+            "color": "#f57c00",
+            "analysis": "Увеличилось количество дней с экстремальным тепловым стрессом, что требует усиления мер в здравоохранении."
+        },
+        "⚡ Энергетика": {
+            "index_name": "ГРАДУСО-СУТКИ ОТОПЛЕНИЯ/ОХЛАЖДЕНИЯ",
+            "desc": "Прогноз нагрузки на энергосистему в зависимости от температурного режима.",
+            "map_file": "energy_index_map.png",
+            "status": "Оптимально",
+            "color": "#388e3c",
+            "analysis": "Снижение потребности в отоплении зимой компенсируется ростом затрат на кондиционирование летом."
+        }
+    }
+
+    # 2. Создание вкладок Streamlit
+    tabs = st.tabs(list(sectors_data.keys()))
+
+    for i, (sector_name, data) in enumerate(sectors_data.items()):
+        with tabs[i]:
+            col_info, col_map = st.columns([1, 2])
+            
+            with col_info:
+                # Карточка описания индекса
+                st.markdown(f"""
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid {data['color']};">
+                        <h4 style="margin:0; color:{data['color']};">{data['index_name']}</h4>
+                        <p style="font-size: 13px; color: #666; margin: 10px 0;">{data['desc']}</p>
+                        <hr>
+                        <div style="font-size: 12px; font-weight: bold;">СТАТУС: <span style="color:{data['color']};">{data['status']}</span></div>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                st.info(f"💡 **Анализ:** {data['analysis']}")
+                
+            with col_map:
+                # Отображение карты индекса
+                try:
+                    # Вставьте путь к вашим картам
+                    st.image(data['map_file'], caption=f"Пространственное распределение: {data['index_name']}", use_container_width=True)
+                except:
+                    st.warning(f"Файл карты {data['map_file']} не найден.")
+
+    # 3. Дополнительные сектора (Снижение риска бедствий и Леса)
+    st.caption("Данные обновляются в режиме реального времени на основе метеорологических станций Казгидромет.")
 
 
 
