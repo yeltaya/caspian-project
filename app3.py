@@ -7073,7 +7073,7 @@ with tabs[5]:
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                min-height: 300px;
+                min-height: 150px;
                 padding: 40px;
                 background-color: #ffffff;
                 font-family: 'Montserrat', sans-serif;
@@ -7101,7 +7101,7 @@ with tabs[5]:
 
             .highlight {
                 color: #3B82F6;
-                font-weight: 600;
+                font-weight: 300;
             }
         </style>
 
