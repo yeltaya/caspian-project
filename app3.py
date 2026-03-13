@@ -7110,6 +7110,17 @@ with tabs[5]:
     st.divider()
 
     st.markdown("""
+        <style>
+            /* Убираем стандартную линию под h2, которую добавляет Streamlit */
+            .stMarkdown h2 {
+                border-bottom: none !important;
+            }
+            /* Убираем подчеркивание ссылок при наведении */
+            a:hover {
+                text-decoration: none !important;
+            }
+        </style>
+        
         <div style="
             background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
             border-radius: 30px; 
@@ -7118,67 +7129,32 @@ with tabs[5]:
             text-align: center; 
             font-family: 'Montserrat', sans-serif;
             max-width: 900px;
-            margin: 40px auto;
+            margin: 60px auto;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         ">
-            <div style="margin-bottom: 20px;">
-                <span style="font-size: 3rem; display: block; margin-bottom: 10px;">🇰🇿</span>
+            <div style="margin-bottom: 25px;">
+                <span style="font-size: 3.5rem; display: block; margin-bottom: 15px;">🇰🇿</span>
                 <h2 style="
                     color: #1E293B; 
                     font-weight: 800; 
                     font-size: 2.2rem; 
                     margin: 0;
-                    border: none;
                     line-height: 1.2;
+                    letter-spacing: -0.5px;
                 ">Будущее Каспийского моря</h2>
             </div>
 
             <p style="
                 color: #475569; 
-                font-size: 1.15rem; 
-                max-width: 750px; 
-                margin: 0 auto 35px auto; 
+                font-size: 1.1rem; 
+                max-width: 700px; 
+                margin: 0 auto 40px auto; 
                 line-height: 1.7;
             ">
                 Сохранение экосистемы Каспия требует скоординированных усилий всех прикаспийских государств. 
-                Постоянный мониторинг уровня моря и ледового режима является критически важным для 
+                Постоянный мониторинг является критически важным для 
                 <b>безопасности инфраструктуры</b> и <b>экономики региона</b>.
             </p>
-
-            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 40px;">
-                <a href="https://www.kazhydromet.kz" target="_blank" style="text-decoration: none;">
-                    <div style="
-                        background: #3B82F6; 
-                        color: white; 
-                        padding: 14px 28px; 
-                        border-radius: 12px; 
-                        font-weight: 600; 
-                        font-size: 1rem;
-                        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
-                    ">🌐 Данные Казгидромет</div>
-                </a>
-                <a href="#" style="text-decoration: none;">
-                    <div style="
-                        background: #F1F5F9; 
-                        color: #1E293B; 
-                        padding: 14px 28px; 
-                        border-radius: 12px; 
-                        font-weight: 600; 
-                        font-size: 1rem;
-                        border: 1px solid #E2E8F0;
-                    ">📄 Полный отчет (PDF)</div>
-                </a>
-            </div>
-
-            <div style="
-                border-top: 1px solid #E2E8F0;
-                padding-top: 25px;
-                color: #94A3B8;
-                font-size: 0.85rem;
-            ">
-                <p style="margin: 0;">Данные мониторинга актуальны на <b>2026 год</b></p>
-                <p style="margin: 5px 0 0 0;">Разработано для научно-исследовательского центра РГП «Казгидромет»</p>
-            </div>
         </div>
     """, unsafe_allow_html=True)
 
