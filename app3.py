@@ -3496,7 +3496,7 @@ with tabs[1]:
                 border: 1px solid #eef0f2;
                 text-align: center;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                height: 180px; /* Уменьшили высоту, т.к. нет фото */
+                height: 200px; /* Уменьшили высоту, т.к. нет фото */
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-start;
