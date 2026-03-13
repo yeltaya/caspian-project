@@ -6994,9 +6994,9 @@ with tabs[5]:
             height=450, margin=dict(l=0,r=0,t=10,b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             hovermode="x unified",
-            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=10)),
-            yaxis=dict(title="м БС", gridcolor='#E2E8F0', range=[-35, -26]),
-            xaxis=dict(showgrid=False, dtick=5)
+            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=14)),
+            yaxis=dict(title="м БС", gridcolor='#E2E8F0', range=[-35, -26], tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, dtick=5, tickfont=dict(size=12))
         )
         
         # Линия раздела (начало прогноза)
