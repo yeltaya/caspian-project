@@ -3155,15 +3155,20 @@ with tabs[1]:
         show_forecast_process()
     
  
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    import os
+
     # --- НАСТРОЙКИ ПУТЕЙ ---
-    # Предполагаем, что файлы лежат в папке 'data' в корне проекта
-    DATA_DIR = "data" 
-    if not os.path.exists(DATA_DIR):
-        os.makedirs(DATA_DIR)
+    # "." означает текущую папку, где лежит ваш скрипт
+    DATA_DIR = "." 
 
     # --- ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
     def get_available_regions(directory):
+        # Берем файлы .csv, но исключаем системные или временные файлы, если они есть
         files = [f for f in os.listdir(directory) if f.endswith('.csv')]
+        # Создаем словарь {Имя_Области: Полный_Путь}
         return {f.replace('.csv', ''): os.path.join(directory, f) for f in files}
 
     # --- СТИЛИ (CSS) ---
@@ -3197,61 +3202,64 @@ with tabs[1]:
     """, unsafe_allow_html=True)
 
     # --- ОСНОВНОЙ ИНТЕРФЕЙС ---
-    st.title("Прогноз погоды на Апрель")
+    st.title("Прогноз на Апрель")
 
-    # Получаем список областей из папки
+    # Получаем список файлов из текущей директории
     regions_dict = get_available_regions(DATA_DIR)
 
     if not regions_dict:
-        st.warning(f"Пожалуйста, добавьте CSV файлы в папку '{DATA_DIR}'")
+        st.error("CSV файлы не найдены в корневой папке проекта.")
     else:
-        # Выбор области
-        selected_region_name = st.selectbox("выберите область для просмотра прогноза:", list(regions_dict.keys()))
+        # Селектбокс для выбора области
+        selected_region_name = st.selectbox("Выберите область:", sorted(list(regions_dict.keys())))
         
-        # Загрузка данных выбранного файла
-        file_path = regions_dict[selected_region_name]
-        df = pd.read_csv(file_path, sep=';')
+        # Чтение выбранного файла
+        # Используем sep=';' так как в ваших данных разделитель точка с запятой
+        df = pd.read_csv(regions_dict[selected_region_name], sep=';')
 
-        # Контент в две колонки
         col_left, col_right = st.columns([1.2, 1.3], gap="large")
 
         with col_left:
             st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
             
-            # Карточки (данные можно также подтягивать из файла, если они там есть)
+            # Динамический расчет показателей на основе файла
+            avg_norm = df['норма'].mean()
+            max_temp = df['max'].max()
+            min_temp = df['min'].min()
+
             st.markdown(f"""
             <div style="display: flex; gap: 10px;">
                 <div class="big-climate-card" style="flex: 1;">
                     <div class="section-title">🌡️ Температура</div>
-                    <div class="info-item">🔹 Ср. за месяц: <span class="val-bold">{df['норма'].mean():.1f}°С</span></div>
-                    <div class="info-item">🔹 Макс. пик: <span class="val-bold">{df['max'].max():.1f}°С</span></div>
+                    <div class="info-item">🔹 Средняя норма: <span class="val-bold">{avg_norm:.1f}°С</span></div>
+                    <div class="info-item">🔹 Пик месяца: <span class="val-bold">{max_temp:.1f}°С</span></div>
                 </div>
                 <div class="big-climate-card" style="flex: 1;">
-                    <div class="section-title">🔥 Экстремумы</div>
-                    <div class="info-item">🔴 Рекорд тепла: <span class="val-bold">+{df['max'].max() + 2:.1f}°С</span></div>
-                    <div class="info-item">🔵 Рекорд холода: <span class="val-bold">{df['min'].min() - 2:.1f}°С</span></div>
+                    <div class="section-title">❄️ Экстремумы</div>
+                    <div class="info-item">🔴 Максимум: <span class="val-bold">{max_temp}°С</span></div>
+                    <div class="info-item">🔵 Минимум: <span class="val-bold">{min_temp}°С</span></div>
                 </div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <div class="big-climate-card" style="flex: 1;">
                     <div class="section-title">💧 Осадки</div>
-                    <div class="info-item">📅 Прогноз: <span class="val-bold">Около нормы</span></div>
-                    <div class="info-item">📅 Вид: <span class="val-bold">Дождь</span></div>
+                    <div class="info-item">📅 Характер: <span class="val-bold">Смешанные</span></div>
+                    <div class="info-item">📅 Тренд: <span class="val-bold">Около нормы</span></div>
                 </div>
-                <div class="big-climate-card" style="flex: 1; border-left: 5px solid #3498db;">
-                    <div class="section-title">⛈️ Явления</div>
-                    <div class="info-item">⚡ Грозы: <span class="val-bold">Вероятны</span></div>
-                    <div class="info-item">🌬️ Ветер: <span class="val-bold">Усиление до 12 м/с</span></div>
+                <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
+                    <div class="section-title">🌬️ Явления</div>
+                    <div class="info-item">🚩 Ветер: <span class="val-bold">Усиление</span></div>
+                    <div class="info-item">⚡ Грозы: <span class="val-bold">Возможны</span></div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
         with col_right:
-            st.markdown(f"#### 📊 График прогноза")
+            st.markdown("#### 📊 График прогноза")
             
             fig = go.Figure()
 
-            # Зона между max и min (коридор значений)
+            # Область диапазона (Max/Min)
             fig.add_trace(go.Scatter(
                 x=df['День'], y=df['max'],
                 mode='lines', line=dict(width=0),
@@ -3260,44 +3268,40 @@ with tabs[1]:
             fig.add_trace(go.Scatter(
                 x=df['День'], y=df['min'],
                 mode='lines', line=dict(width=0),
-                fill='tonexty', fillcolor='rgba(0, 100, 255, 0.15)',
-                showlegend=True, name='Диапазон (min-max)'
+                fill='tonexty', fillcolor='rgba(0, 100, 255, 0.1)',
+                showlegend=True, name='Коридор (min-max)'
             ))
 
-            # Линия нормы
+            # Линия нормы (зеленая пунктирная)
             fig.add_trace(go.Scatter(
                 x=df['День'], y=df['норма'],
-                mode='lines', line=dict(color='green', dash='dash', width=2),
+                mode='lines', line=dict(color='green', dash='dash'),
                 name='Норма'
             ))
 
-            # Линия среднего значения (Прогноз)
+            # Линия среднего прогноза (красная)
             fig.add_trace(go.Scatter(
                 x=df['День'], y=df['Ср.зн.'],
                 mode='lines+markers', line=dict(color='#e74c3c', width=3),
-                marker=dict(size=7),
+                marker=dict(size=6),
                 name='Средний прогноз'
             ))
 
             fig.update_layout(
-                margin=dict(l=0, r=0, t=20, b=0),
+                margin=dict(l=0, r=0, t=30, b=0),
                 height=450,
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 xaxis=dict(title="Числа апреля", tickmode='linear', dtick=2),
                 yaxis=dict(title="Температура °C"),
                 hovermode="x unified",
-                plot_bgcolor='white'
+                plot_bgcolor='rgba(0,0,0,0)'
             )
             
-            fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='#f0f0f0')
-            fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='#f0f0f0')
-
             st.plotly_chart(fig, use_container_width=True)
+            
+        
 
     st.divider()
-
-
-
 
  
    
