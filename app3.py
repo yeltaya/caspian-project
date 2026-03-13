@@ -5688,86 +5688,86 @@ with tabs[4]:
             </div>
             """, unsafe_allow_html=True)
 
-import streamlit as st
-import pandas as pd
+    import streamlit as st
+    import pandas as pd
 
-# 1. Функция для отрисовки карточки бассейна
-def draw_basin_card(name, norm_text, df_plot, highlights):
-    """
-    name: Название бассейна
-    norm_text: Текст описания прогноза
-    df_plot: DataFrame с данными для графика
-    highlights: Словарь со средними значениями
-    """
-    with st.container():
-        # Стилизация рамки карточки
-        st.markdown(f"""
-            <div style="border: 1px solid #e6e9ef; border-radius: 10px; padding: 20px; background-color: #ffffff; margin-bottom: 20px;">
-                <h4 style="color: #1f77b4; margin-top: 0;">{name}</h4>
-                <p style="font-size: 15px; line-height: 1.5; color: #333;">{norm_text}</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # График
-        st.write("**Прогноз стока по сценариям RCP (км³):**")
-        st.line_chart(df_plot)
-        
-        # Хайлайты (Средние значения)
-        st.write("**Среднее значение стока (км³):**")
-        h_cols = st.columns(3)
-        scenarios = ["RCP 2.6", "RCP 4.5", "RCP 8.5"]
-        colors = ["#28a745", "#f39c12", "#d32f2f"] # Зеленый, Оранжевый, Красный
-        
-        for i, (scen, val) in enumerate(highlights.items()):
-            with h_cols[i]:
-                st.markdown(f"""
-                    <div style="text-align: center; padding: 10px; border-radius: 5px; background: #f0f2f6;">
-                        <div style="font-size: 10px; color: #666;">{scen}</div>
-                        <div style="font-size: 16px; font-weight: bold; color: {colors[i]};">{val}</div>
-                    </div>
-                """, unsafe_allow_html=True)
+    # 1. Функция для отрисовки карточки бассейна
+    def draw_basin_card(name, norm_text, df_plot, highlights):
+        """
+        name: Название бассейна
+        norm_text: Текст описания прогноза
+        df_plot: DataFrame с данными для графика
+        highlights: Словарь со средними значениями
+        """
+        with st.container():
+            # Стилизация рамки карточки
+            st.markdown(f"""
+                <div style="border: 1px solid #e6e9ef; border-radius: 10px; padding: 20px; background-color: #ffffff; margin-bottom: 20px;">
+                    <h4 style="color: #1f77b4; margin-top: 0;">{name}</h4>
+                    <p style="font-size: 15px; line-height: 1.5; color: #333;">{norm_text}</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # График
+            st.write("**Прогноз стока по сценариям RCP (км³):**")
+            st.line_chart(df_plot)
+            
+            # Хайлайты (Средние значения)
+            st.write("**Среднее значение стока (км³):**")
+            h_cols = st.columns(3)
+            scenarios = ["RCP 2.6", "RCP 4.5", "RCP 8.5"]
+            colors = ["#28a745", "#f39c12", "#d32f2f"] # Зеленый, Оранжевый, Красный
+            
+            for i, (scen, val) in enumerate(highlights.items()):
+                with h_cols[i]:
+                    st.markdown(f"""
+                        <div style="text-align: center; padding: 10px; border-radius: 5px; background: #f0f2f6;">
+                            <div style="font-size: 10px; color: #666;">{scen}</div>
+                            <div style="font-size: 16px; font-weight: bold; color: {colors[i]};">{val}</div>
+                        </div>
+                    """, unsafe_allow_html=True)
 
-    # --- ОСНОВНОЙ БЛОК ПРИЛОЖЕНИЯ ---
-    st.markdown("### 💧 Прогноз водных ресурсов по бассейнам")
+        # --- ОСНОВНОЙ БЛОК ПРИЛОЖЕНИЯ ---
+        st.markdown("### 💧 Прогноз водных ресурсов по бассейнам")
 
-    # 2. Подготовка данных для Балкаш-Алакольского бассейна
-    data_balhash = {
-        "2022-2030": [33.50, 33.30, 33.40],
-        "2031-2040": [32.80, 32.70, 33.60],
-        "2041-2050": [33.30, 32.80, 33.70]
-    }
-    df_balhash = pd.DataFrame(
-        data_balhash, 
-        index=["RCP 2.6", "RCP 4.5", "RCP 8.5"]
-    ).T # Транспонируем для графика
+        # 2. Подготовка данных для Балкаш-Алакольского бассейна
+        data_balhash = {
+            "2022-2030": [33.50, 33.30, 33.40],
+            "2031-2040": [32.80, 32.70, 33.60],
+            "2041-2050": [33.30, 32.80, 33.70]
+        }
+        df_balhash = pd.DataFrame(
+            data_balhash, 
+            index=["RCP 2.6", "RCP 4.5", "RCP 8.5"]
+        ).T # Транспонируем для графика
 
-    highlights_balhash = {
-        "RCP 2.6": 33.20,
-        "RCP 4.5": 32.93,
-        "RCP 8.5": 33.57
-    }
+        highlights_balhash = {
+            "RCP 2.6": 33.20,
+            "RCP 4.5": 32.93,
+            "RCP 8.5": 33.57
+        }
 
-    # 3. Создание сетки (2 столбца)
-    col1, col2 = st.columns(2)
+        # 3. Создание сетки (2 столбца)
+        col1, col2 = st.columns(2)
 
-    with col1:
-        draw_basin_card(
-            "БАЛКАШ – АЛАКОЛЬСКИЙ БАССЕЙН",
-            "В результате оценки изменения стока к 2050 г. ожидается <b>увеличение</b> относительно нормы (29,9 км³).",
-            df_balhash,
-            highlights_balhash
-        )
+        with col1:
+            draw_basin_card(
+                "БАЛКАШ – АЛАКОЛЬСКИЙ БАССЕЙН",
+                "В результате оценки изменения стока к 2050 г. ожидается <b>увеличение</b> относительно нормы (29,9 км³).",
+                df_balhash,
+                highlights_balhash
+            )
 
-    with col2:
-        # Здесь можно вызвать функцию для другого бассейна (например, Арало-Сырдарьинский)
-        # Пока продублируем для наглядности сетки
-        draw_basin_card(
-            "ПРИМЕР ВТОРОГО БАССЕЙНА",
-            "Краткое описание прогноза изменения стока для демонстрации второго столбца.",
-            df_balhash, # Замените на другие данные
-            highlights_balhash
-        )
-        
+        with col2:
+            # Здесь можно вызвать функцию для другого бассейна (например, Арало-Сырдарьинский)
+            # Пока продублируем для наглядности сетки
+            draw_basin_card(
+                "ПРИМЕР ВТОРОГО БАССЕЙНА",
+                "Краткое описание прогноза изменения стока для демонстрации второго столбца.",
+                df_balhash, # Замените на другие данные
+                highlights_balhash
+            )
+            
         
 
 
