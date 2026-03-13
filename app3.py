@@ -7050,117 +7050,95 @@ with tabs[5]:
         # 4. Отображение в Streamlit
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-        st.markdown("""
-            <div style="border: 1px solid #e2e8f0; border-radius: 15px; padding: 10px; background: #f8fafc; margin-top: 10px;">
-                <p style="font-size: 0.85rem; color: #475569; text-align: center; margin: 0;">
-                    💡 <b>Интерактивность:</b> Наведите на график, чтобы увидеть точные значения. Кликните на название станции в легенде, чтобы скрыть её.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
      
 
     # Описание прогнозов
     st.markdown("""
-        <div style="margin-bottom: 30px; color: #475569; line-height: 1.6;">
-            Согласно международным климатическим моделям, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. 
+        <div style="margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
+            <p style="font-size: 1.15rem; border-left: 4px solid #3B82F6; padding-left: 15px;">
+                Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. Ниже представлены прогнозы до 2100 года:
+            </p>
         </div>
     """, unsafe_allow_html=True)
 
     # Горизонтальные плашки прогноза
     f_col1, f_col2, f_col3 = st.columns(3)
 
+    # Общий стиль для карточек (задаем переменные для удобства)
+    card_style = """
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        padding: 25px; 
+        border-radius: 24px; 
+        height: 280px; 
+        color: white; 
+        font-family: 'Montserrat', sans-serif; 
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    """
+
     with f_col1:
-        st.markdown("""
-            <div class="forecast-card" style="background: linear-gradient(135deg, #34D399 0%, #059669 100%);">
-                <div class="fc-year">Оптимистичный (SSP1-2.6)</div>
-                <div class="fc-value">-9<span class="fc-unit">метров</span></div>
-                <div class="fc-desc">Стабилизация климата и сохранение текущего притока рек.</div>
+        st.markdown(f"""
+            <div style="{card_style} background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Оптимистичный</div>
+                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP1-2.6</div>
+                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-9<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
+                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Стабилизация климата и сохранение текущего притока рек.</div>
             </div>
         """, unsafe_allow_html=True)
 
     with f_col2:
-        st.markdown("""
-            <div class="forecast-card" style="background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);">
-                <div class="fc-year">Умеренный (SSP2-4.5)</div>
-                <div class="fc-value">-14<span class="fc-unit">метров</span></div>
-                <div class="fc-desc">Продолжение потепления и частичное обмеление северной части.</div>
+        st.markdown(f"""
+            <div style="{card_style} background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
+                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Умеренный</div>
+                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP2-4.5</div>
+                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-14<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
+                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Продолжение потепления и частичное обмеление северной части.</div>
             </div>
         """, unsafe_allow_html=True)
 
     with f_col3:
-        st.markdown("""
-            <div class="forecast-card" style="background: linear-gradient(135deg, #F87171 0%, #DC2626 100%);">
-                <div class="fc-year">Пессимистичный (SSP5-8.5)</div>
-                <div class="fc-value">-18<span class="fc-unit">метров</span></div>
-                <div class="fc-desc">Критическое испарение и полная трансформация экосистемы.</div>
+        st.markdown(f"""
+            <div style="{card_style} background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
+                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Пессимистичный</div>
+                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP5-8.5</div>
+                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-18<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
+                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Критическое испарение и полная трансформация экосистемы.</div>
             </div>
         """, unsafe_allow_html=True)
 
     st.divider()
-    
-    
-    # --- БЛОК: ПОСЛЕДСТВИЯ И ВЫЗОВЫ ---
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown('<div class="promo-bold" style="text-align: center;">🚨 Ключевые риски при снижении уровня</div>', unsafe_allow_html=True)
 
-    risk_c1, risk_c2, risk_c3, risk_c4 = st.columns(4)
+    st.markdown("<br><br>", unsafe_allow_html=True) # Отступ от предыдущего контента
 
-    risks = [
-        {"icon": "🚢", "title": "Транспорт", "text": "Ограничение работы портов и судоходных каналов."},
-        {"icon": "🐟", "title": "Биоресурсы", "text": "Уничтожение мест нереста осетровых рыб."},
-        {"icon": "🏙️", "title": "Инфраструктура", "text": "Нарушение работы водозаборов прибрежных городов."},
-        {"icon": "🌫️", "title": "Экология", "text": "Пыльные бури с обнаженного дна (солончаки)."}
-    ]
-
-    for i, col in enumerate([risk_c1, risk_c2, risk_c3, risk_c4]):
-        with col:
-            st.markdown(f"""
-                <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; border: 1px solid #E2E8F0; min-height: 200px;">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">{risks[i]['icon']}</div>
-                    <div style="font-weight: 800; color: #1E293B; margin-bottom: 5px;">{risks[i]['title']}</div>
-                    <div style="font-size: 0.85rem; color: #64748B;">{risks[i]['text']}</div>
-                </div>
-            """, unsafe_allow_html=True)
-
-        # 7. РЕГЛАМЕНТЫ (TABS)
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.subheader("📋 Научно-методологическая база")
-        
-    rt1, rt2, rt3 = st.tabs(["💧 Водный мониторинг", "🌬️ Воздушный бассейн", "🛰️ Технологии"])
-        
-    with rt1:
-            c1, c2 = st.columns([1, 1])
-            with c1:
-                st.markdown("""
-                    **Гидрологическая безопасность:**
-                    * Ежедневный замер уровня в 08:00 и 20:00.
-                    * Оповещение о штормовых нагонах на Каспии.
-                    * Прогнозы весеннего половодья.
-                """)
-            with c2:
-                st.info("🌊 Каспийское море контролируется 50 точками наблюдения, включая автоматические морские станции.")
-
-    with rt2:
-            st.markdown("""
-                **Экологический щит:**
-                * Мониторинг 30 основных загрязнителей (PM2.5, NO2, SO2).
-                * Прогнозы НМУ (неблагоприятных метеоусловий) для городов.
-                * Интерактивная карта качества воздуха в приложении *AirKZ*.
-            """)
-            chart_data = pd.DataFrame(np.random.randn(20, 1), columns=['AQI Index'])
-            st.line_chart(chart_data, height=120)
-
-    with rt3:
-            st.success("🚀 Казгидромет использует прогностическую модель **WRF (Weather Research and Forecasting)** для сверхкраткосрочных и среднесрочных прогнозов с детализацией до 4 км.")
-
-        # FOOTER
     st.markdown("""
-            <div style="background: #003366; color: white; padding: 20px; border-radius: 15px; text-align: center; margin-top: 30px;">
-                <p style="margin:0;">👉 Перейдите во вкладку <b>«Каспийское море»</b> для детального анализа морской среды</p>
+        <div style="background: #F8FAFC; border-radius: 30px; padding: 40px; border: 1px solid #E2E8F0; text-align: center; font-family: 'Montserrat', sans-serif;">
+            <span style="font-size: 3rem;">🇰🇿</span>
+            <h2 style="color: #1E293B; font-weight: 800; margin-top: 15px;">Будущее Каспийского моря</h2>
+            <p style="color: #64748B; font-size: 1.1rem; max-width: 700px; margin: 0 auto 25px auto; line-height: 1.6;">
+                Сохранение экосистемы Каспия требует скоординированных усилий всех прикаспийских государств. 
+                Постоянный мониторинг уровня моря и ледового режима является критически важным для безопасности инфраструктуры и экономики региона.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <a href="https://www.kazhydromet.kz" target="_blank" style="text-decoration: none;">
+                    <div style="background: #3B82F6; color: white; padding: 12px 25px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; transition: 0.3s;">
+                        🌐 Официальные данные Казгидромет
+                    </div>
+                </a>
+                <a href="#" style="text-decoration: none;">
+                    <div style="background: white; color: #1E293B; border: 1px solid #CBD5E1; padding: 12px 25px; border-radius: 50px; font-weight: 600; font-size: 0.9rem;">
+                        📄 Скачать полный отчет (PDF)
+                    </div>
+                </a>
             </div>
-        """, unsafe_allow_html=True)
-
+            <p style="margin-top: 30px; font-size: 0.8rem; color: #94A3B8;">
+                Данные обновлены по состоянию на 2026 год. <br>
+                Разработано в рамках мониторинга казахстанского сектора Каспийского моря.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
     
+   
 
 with tabs[6]:
     st.title("🌍 Климат Казахстана и регионов")
