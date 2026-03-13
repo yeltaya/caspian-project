@@ -3791,35 +3791,39 @@ with tabs[2]:
                 <p class="desc-text">Рассчитывается  по методике Л.А.Разумовой. Прогноз содержит сведения об ожидаемых запасах влаги в почве к началу весны по территории Казахстана (влажность почвы оценивается по категории: недостаточное, удовлетворительное и оптимальное) в разрезе районов по пунктам наблюдения.
     </p>
             </div>""", unsafe_allow_html=True)
-    # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК РИСУНКИ) ---
+
+
+
+    # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК РИСУНКИ В 2 РЯДА) ---
     st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
 
-    # 1. Получаем путь к папке, где лежит ваш скрипт (app3.py)
+    # 1. Получаем путь к папке скрипта
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # 2. Формируем полные пути к файлам
-    img1 = os.path.join(current_dir, "image_1.png")
-    img2 = os.path.join(current_dir, "image_2.png")
-    img3 = os.path.join(current_dir, "image_3.png")
-    img4 = os.path.join(current_dir, "image_4.png")
+    # 2. Формируем список путей и заголовков
+    images_data = [
+        {"path": os.path.join(current_dir, "image_1.png"), "caption": "Зерновые культуры"},
+        {"path": os.path.join(current_dir, "image_2.png"), "caption": "Запасы влаги в почве"},
+        {"path": os.path.join(current_dir, "image_3.png"), "caption": "с/х культуры"},
+        {"path": os.path.join(current_dir, "image_4.png"), "caption": "Сроки созревания"}
+    ]
 
-    # 3. Выводим изображения, используя сформированные переменные
-    # Проверяем наличие файла перед выводом, чтобы приложение не упало
-    if os.path.exists(img1):
-        st.image(img1, caption="Оправдываемость: Яровая пшеница", use_container_width=True)
-    else:
-        st.error(f"Файл не найден: {img1}")
+    # 3. Вывод в два ряда по две колонки
+    # Первый ряд
+    row1_col1, row1_col2 = st.columns(2)
+    # Второй ряд
+    row2_col1, row2_col2 = st.columns(2)
 
-    if os.path.exists(img2):
-        st.image(img2, caption="Оправдываемость: Запасы влаги в почве", use_container_width=True)
+    # Собираем колонки в список для удобного обхода в цикле
+    cols = [row1_col1, row1_col2, row2_col1, row2_col2]
 
-    if os.path.exists(img3):
-        st.image(img3, caption="Оправдываемость: Кукуруза", use_container_width=True)
-
-    if os.path.exists(img4):
-        st.image(img4, caption="Оправдываемость: Сроки созревания", use_container_width=True)
-        
-
+    for i, item in enumerate(images_data):
+        with cols[i]:
+            if os.path.exists(item["path"]):
+                st.image(item["path"], caption=item["caption"], use_container_width=True)
+            else:
+                st.warning(f"Файл {os.path.basename(item['path'])} не найден")
+                
 
 
 
