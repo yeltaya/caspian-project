@@ -3824,9 +3824,6 @@ with tabs[2]:
             else:
                 st.warning(f"Файл {os.path.basename(item['path'])} не найден")
                 
-
-
-
 with tabs[3]:
     st.title("Гидрологические прогнозы")
     
@@ -6133,10 +6130,6 @@ with tabs[4]:
         draw_basin_card("ЕСИЛЬСКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (2,29 км³).", data_esil, highlights_esil)
         
         
-            
-
-
-  
 
 # --- Твой основной контент по Каспию идет во вкладку №5 (индекс 5) ---
 with tabs[5]:
@@ -8661,10 +8654,6 @@ with tabs[6]:
         st.plotly_chart(fig_chart, use_container_width=True)
         
         
-   
-    
-# --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
-
     # 1. Выбор области (используем ключи из твоей базы ALL_REGIONS_DATABASE)
     selected_name = st.selectbox("Выберите область Казахстана:", list(ALL_REGIONS_DATABASE.keys()))
 
@@ -9120,48 +9109,57 @@ with tabs[6]:
     }
 
     # --- 4. ИНТЕРФЕЙС ---
-    col_nav, col_display = st.columns([1, 3])
+    import os
+
+    col_nav, col_display = st.columns([1, 4]) # Немного увеличим область контента
 
     with col_nav:
         st.subheader("Навигация")
-        sel_sector = st.selectbox("Выберите сектор:", list(sectors_config.keys()))
-        sel_index = st.radio("Выберите индекс:", list(sectors_config[sel_sector].keys()))
+        sel_sector = st.selectbox("Сектор:", list(sectors_config.keys()))
+        sel_index = st.radio("Индекс:", list(sectors_config[sel_sector].keys()))
 
     with col_display:
-        st.header(f"Анализ индекса: {sel_index}")
+        st.header(f"Анализ: {sel_index}")
         st.info(sectors_config[sel_sector][sel_index]["desc"])
         
-        tab_map, tab_chart = st.tabs(["🗺️ Карта пространственного распределения", "📈 График временной динамики"])
+        # Создаем два столбца для Карты и Графика внутри основной области
+        col_map, col_chart = st.columns(2)
         
-        # В блоке tab_map:
-        with tab_map:
-                # Получаем чистое имя файла из конфигурации (например, "gsl.jpeg")
-                image_name = sectors_config[sel_sector][sel_index]['map']
+        # --- БЛОК КАРТЫ ---
+        with col_map:
+            st.write("**🗺️ Пространственное распределение**")
+            image_name = sectors_config[sel_sector][sel_index]['map']
+            
+            # Логика поиска пути файла
+            if os.path.exists(image_name):
+                image_path = image_name
+            elif os.path.exists(f"maps/{image_name}"):
+                image_path = f"maps/{image_name}"
+            else:
+                image_path = image_name
                 
-                # Поскольку карты в основной папке, путь — это просто имя файла
-                # Но мы проверим и в корне, и на всякий случай в папке maps
-                import os
-                
-                if os.path.exists(image_name):
-                    image_path = image_name
-                elif os.path.exists(f"maps/{image_name}"):
-                    image_path = f"maps/{image_name}"
-                else:
-                    image_path = image_name # Оставляем как есть для попытки загрузки
-                
-                try:
-                    st.image(image_path, caption=f"Пространственное распределение: {sel_index}")
-                except:
-                    st.error(f"Файл {image_name} не найден в основной папке репозитория. Проверьте написание имени файла (регистр букв) на GitHub.")
-                    
+            try:
+                # use_container_width=True подстроит карту под ширину узкой колонки
+                st.image(image_path, use_container_width=True)
+            except:
+                st.error(f"Файл {image_name} не найден.")
 
-        with tab_chart:
+        # --- БЛОК ГРАФИКА ---
+        with col_chart:
+            st.write("**📈 Временная динамика**")
             df = get_data(sel_index)
+            
             fig = px.line(df, x="Year", y="Казахстан", 
-                          title=f"Изменение индекса {sel_index} (Среднее по РК)",
-                          markers=True, line_shape="spline")
+                          markers=True, 
+                          line_shape="spline",
+                          height=300) # Ограничиваем высоту для компактности
+            
             fig.update_traces(line_color='#e74c3c')
+            # Убираем лишние отступы в графике
+            fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
+            
             st.plotly_chart(fig, use_container_width=True)
+            
 
 
 with tabs[7]:
