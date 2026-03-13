@@ -7056,56 +7056,10 @@ with tabs[5]:
     st.markdown("""
         <div style="margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
             <p style="font-size: 1.15rem; border-left: 4px solid #3B82F6; padding-left: 15px;">
-                Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. Ниже представлены прогнозы до 2100 года:
+                Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления.
             </p>
         </div>
     """, unsafe_allow_html=True)
-
-    # Горизонтальные плашки прогноза
-    f_col1, f_col2, f_col3 = st.columns(3)
-
-    # Общий стиль для карточек (задаем переменные для удобства)
-    card_style = """
-        display: flex; 
-        flex-direction: column; 
-        justify-content: space-between; 
-        padding: 25px; 
-        border-radius: 24px; 
-        height: 280px; 
-        color: white; 
-        font-family: 'Montserrat', sans-serif; 
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    """
-
-    with f_col1:
-        st.markdown(f"""
-            <div style="{card_style} background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
-                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Оптимистичный</div>
-                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP1-2.6</div>
-                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-9<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
-                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Стабилизация климата и сохранение текущего притока рек.</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    with f_col2:
-        st.markdown(f"""
-            <div style="{card_style} background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
-                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Умеренный</div>
-                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP2-4.5</div>
-                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-14<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
-                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Продолжение потепления и частичное обмеление северной части.</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    with f_col3:
-        st.markdown(f"""
-            <div style="{card_style} background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
-                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Пессимистичный</div>
-                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP5-8.5</div>
-                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-18<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
-                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Критическое испарение и полная трансформация экосистемы.</div>
-            </div>
-        """, unsafe_allow_html=True)
 
     st.divider()
     
