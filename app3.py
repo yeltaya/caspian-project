@@ -6522,7 +6522,7 @@ with tabs[5]:
 
     # 2. Уменьшаем размер шрифта заголовка (5.0rem — это очень много, обычно 2.0-2.5 достаточно)
     # И убираем margin-bottom, если он не нужен
-    st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 0px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
+    st.markdown('<div class="white-label-header"><p style="font-size: 3.5rem; font-weight: bold; margin-bottom: 0px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
 
     # 3. Убираем лишний margin-bottom у подзаголовка
     st.markdown("""
@@ -6711,7 +6711,7 @@ with tabs[5]:
     
     
     # --- БЛОК: ГЛОБАЛЬНЫЕ ПОСЛЕДСТВИЯ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">⚠️ Комплексное влияние на регион</p></div>', unsafe_allow_html=True)
 
     # 1. Добавляем CSS стили для анимации
@@ -6799,8 +6799,8 @@ with tabs[5]:
     st.divider()
     
     # --- БЛОК: ПРОГНОЗЫ И ПРОДУКЦИЯ С ЭФФЕКТОМ НАЖАТИЯ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Прогнозы и информационная продукция</p></div>', unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown('<div class="white-label-header"><p class="section-header-text">📈 Прогнозы и информационная продукция</p></div>', unsafe_allow_html=True)
 
     # Расширенные стили для анимации плашек
     st.markdown("""
@@ -6882,8 +6882,8 @@ with tabs[5]:
                     <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">❄️ Обзор льда</span><br><span style="color:#0072FF; font-weight:600;">Еженедельно (вт)</span></div>
                 </div>
                 <div style="flex: 1; min-width: 220px;">
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">🌀 Сгонно-нагонные</span><br><span style="color:#0072FF; font-weight:600;">Раз в месяц</span></div>
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📈 Прогноз условий</span><br><span style="color:#0072FF; font-weight:600;">2 раза в неделю</span></div>
+                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">🌀 Обзор сгонно-нагонных явлений</span><br><span style="color:#0072FF; font-weight:600;">Раз в месяц</span></div>
+                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📈 Прогноз уровня и волнения</span><br><span style="color:#0072FF; font-weight:600;">2 раза в неделю</span></div>
                     <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📁 Водный кадастр</span><br><span style="color:#0072FF; font-weight:600;">Ежегодно</span></div>
                 </div>
             </div>
@@ -6895,7 +6895,7 @@ with tabs[5]:
         
     # --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔭 Долгосрочная оценка изменений</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="white-label-header"><p class="section-header-text">📈 Оценка долгосрочных изменений</p></div>', unsafe_allow_html=True)
     st.markdown('<div class="promo-sub" style="margin-bottom: 25px; font-size: 1.1em !important;">'
                 'РГП «Казгидромет» проводятся исследования по долгосрочной оценке изменения уровня и параметров волнения.'
                 '</div>', unsafe_allow_html=True)
@@ -6944,7 +6944,7 @@ with tabs[5]:
             <div class="long-term-card" style="background: linear-gradient(135deg, #003366 0%, #00509E 100%);">
                 <div class="lt-title">🌊 Долгосрочный уровень</div>
                 <div class="lt-desc">
-                    Анализ вековых колебаний и расчет сценариев изменения уровня моря до конца XXI века на основе глобальных климатических моделей.
+                    Анализ многолетних колебаний и расчет сценариев изменения уровня моря до конца XXI века на основе данных глобальных климатических моделей.
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -7004,26 +7004,65 @@ with tabs[5]:
         
         st.plotly_chart(fig_lt, use_container_width=True, config={'displayModeBar': False})
 
+
     with lt_plot_col2:
-        # Здесь остается ваша карта/заглушка по волнению
-        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">🌊 Карта изменений волнения</div>', unsafe_allow_html=True)
+        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">🌊 Прогноз высоты волн (SSP5-8.5)</div>', unsafe_allow_html=True)
+
+        # 1. Подготовка данных (замените эти списки на ваши данные или загрузите из df)
+        years = list(range(2015, 2051))
+        
+        # Пример данных (замените на свои реальные значения)
+        fort_shevchenko = [2.25, 2.01, 2.08, 2.20, 2.18, 2.03, 2.00, 2.08, 2.09, 1.96, 1.96, 2.00, 2.06, 2.00, 2.13, 2.03, 2.11, 2.03, 1.99, 1.96, 1.99, 2.07, 2.18, 2.29, 1.90, 1.98, 1.90, 1.95, 1.83, 2.15, 2.13, 2.02, 2.03, 1.96, 1.89, 2.21]
+        aktau = [2.28, 2.05, 2.10, 2.29, 2.23, 2.07, 2.07, 2.12, 2.14, 2.05, 2.07, 2.07, 2.11, 2.09, 2.32, 2.14, 2.17, 2.10, 2.04, 2.12, 2.11, 2.15, 2.29, 2.30, 1.96, 2.09, 1.99, 2.06, 1.95, 2.18, 2.25, 2.05, 2.07, 2.05, 1.88, 2.25]
+        kuryk = [2.32, 2.08, 2.15, 2.31, 2.26, 2.11, 2.09, 2.14, 2.17, 2.06, 2.08, 2.08, 2.12, 2.10, 2.33, 2.16, 2.20, 2.13, 2.08, 2.13, 2.13, 2.16, 2.33, 2.36, 1.98, 2.11, 1.99, 2.08, 1.96, 2.21, 2.29, 2.09, 2.12, 2.06, 1.91, 2.31]
+
+        # 2. Создание графика Plotly
+        fig = go.Figure()
+
+        # Линия для Форт-Шевченко
+        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Fort-Shevchenko',
+                                 line=dict(color='#4F7942', width=3)))
+
+        # Линия для Актау
+        fig.add_trace(go.Scatter(x=years, y=aktau, name='Aktau',
+                                 line=dict(color='#A0C4DE', width=3)))
+
+        # Линия для Курык
+        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Kuryk',
+                                 line=dict(color='#D35400', width=3)))
+
+        # 3. Настройка оформления (максимально близко к вашему скрину)
+        fig.update_layout(
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            margin=dict(l=0, r=0, t=20, b=0),
+            height=400,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+            hovermode="x unified" # Показывает значения всех линий при наведении на год
+        )
+
+        # Настройка осей
+        fig.update_xaxes(title="year", showline=True, linewidth=2, linecolor='black', mirror=True, 
+                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0')
+        fig.update_yaxes(title="wave height, m", showline=True, linewidth=2, linecolor='black', mirror=True, 
+                         range=[1.5, 2.5], gridcolor='#f0f0f0')
+
+        # 4. Отображение в Streamlit
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
         st.markdown("""
-            <div style="background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 15px; height: 450px; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #64748b;">
-                <span style="font-size: 4em; margin-bottom: 10px;">🗺️</span>
-                <p style="font-size: 1.1em; font-weight: 500;">Место для визуализации волнения</p>
+            <div style="border: 1px solid #e2e8f0; border-radius: 15px; padding: 10px; background: #f8fafc; margin-top: 10px;">
+                <p style="font-size: 0.85rem; color: #475569; text-align: center; margin: 0;">
+                    💡 <b>Интерактивность:</b> Наведите на график, чтобы увидеть точные значения. Кликните на название станции в легенде, чтобы скрыть её.
+                </p>
             </div>
         """, unsafe_allow_html=True)
-
-    st.divider()
-    # --- БЛОК: ПРОГНОЗЫ И БУДУЩЕЕ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Будущее Каспия: Сценарии до 2100 года</p></div>', unsafe_allow_html=True)
+     
 
     # Описание прогнозов
     st.markdown("""
         <div style="margin-bottom: 30px; color: #475569; line-height: 1.6;">
-            Согласно международным климатическим моделям (CMIP6), уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. 
-            Ниже представлены три научно обоснованных сценария изменения уровня к концу столетия:
+            Согласно международным климатическим моделям, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. 
         </div>
     """, unsafe_allow_html=True)
 
