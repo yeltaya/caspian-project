@@ -8681,6 +8681,82 @@ with tabs[6]:
     conclusion = reg.get("final_conclusion", "Анализ данных продолжается.")
     st.info(f"💡 **Общие выводы:** {conclusion}")
 
+    <div class="max-w-6xl mx-auto p-6 bg-gray-50 font-sans text-gray-900">
+      <header class="mb-12 text-center">
+        <h1 class="text-4xl font-extrabold text-blue-900 mb-4">Климатические Индексы</h1>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Расчетные диагностические показатели для оценки интенсивности, частоты и продолжительности погодных явлений, имеющих критическое значение для экономики и безопасности.
+        </p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-green-100 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center mb-4">
+            <span class="p-3 bg-green-100 text-green-700 rounded-lg mr-4">🌱</span>
+            <h2 class="text-xl font-bold text-green-800">Сельское хозяйство</h2>
+          </div>
+          <ul class="space-y-4 text-sm">
+            <li><strong class="text-green-700">GDD:</strong> Сумма эффективных температур для созревания культур.</li>
+            <li><strong class="text-green-700">GSL:</strong> Длительность вегетационного периода (между заморозками).</li>
+            <li><strong class="text-green-700">WSDI:</strong> Продолжительность тепловых волн (риск «запала» зерновых).</li>
+            <li><strong class="text-green-700">TXGE30:</strong> Дни с Т ≥ 30°C — порог теплового стресса растений.</li>
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-red-100 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center mb-4">
+            <span class="p-3 bg-red-100 text-red-700 rounded-lg mr-4">🏥</span>
+            <h2 class="text-xl font-bold text-red-800">Здравоохранение</h2>
+          </div>
+          <ul class="space-y-4 text-sm">
+            <li><strong class="text-red-700">HWD/HWF:</strong> Частота и длительность волн жары (риск для сердца).</li>
+            <li><strong class="text-red-700">TR (Tropical Nights):</strong> Ночи с Т > 20°C. Организм не успевает восстановиться.</li>
+            <li><strong class="text-red-700">TXGE30:</strong> Пиковая жара, вызывающая всплеск вызовов скорой помощи.</li>
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center mb-4">
+            <span class="p-3 bg-blue-100 text-blue-700 rounded-lg mr-4">⚡</span>
+            <h2 class="text-xl font-bold text-blue-800">Энергетика</h2>
+          </div>
+          <ul class="space-y-4 text-sm">
+            <li><strong class="text-blue-700">HDD:</strong> Градусо-дни отопления. Нагрузка на ТЭЦ зимой.</li>
+            <li><strong class="text-blue-700">CDD:</strong> Градусо-дни охлаждения. Спрос на кондиционирование.</li>
+            <li><strong class="text-blue-700">FD:</strong> Морозные дни (T < 0°C). Риски обледенения ЛЭП.</li>
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-amber-100 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center mb-4">
+            <span class="p-3 bg-amber-100 text-amber-700 rounded-lg mr-4">💧</span>
+            <h2 class="text-xl font-bold text-amber-800">Водное хозяйство & ЧС</h2>
+          </div>
+          <ul class="space-y-4 text-sm">
+            <li><strong class="text-amber-700">CDD (Dry):</strong> Макс. число дней без осадков. Индикатор засухи.</li>
+            <li><strong class="text-amber-700">TNltM20:</strong> Ночи с экстремальным холодом (<-20°C). Влияют на паводки.</li>
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center mb-4">
+            <span class="p-3 bg-emerald-100 text-emerald-700 rounded-lg mr-4">🌲</span>
+            <h2 class="text-xl font-bold text-emerald-800">Лесное хозяйство</h2>
+          </div>
+          <p class="text-sm text-gray-600 mb-4 italic">Фокус на пожарной опасности и поглощении углерода.</p>
+          <ul class="space-y-4 text-sm">
+            <li><strong class="text-emerald-700">WSDI/HWD:</strong> Факторы лесных пожаров при отсутствии дождей.</li>
+            <li><strong class="text-emerald-700">GDD:</strong> Скорость роста леса и объем депонирования CO2.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
+        <p>Данные индексы базируются на критических пороговых значениях для физических и биологических систем.</p>
+      </footer>
+    </div>
 
     st.markdown("---")
     st.markdown("### 📊 Климатические индексы по секторам экономики")
