@@ -3383,15 +3383,6 @@ with tabs[1]:
         # Добавьте другие области по этому шаблону
     }
 
-    # Получаем данные текущей области или "заглушку", если данных нет
-    info = region_descriptions.get(selected_region_name, {
-        "temp_north": "нет данных", "temp_south": "нет данных",
-        "heat_record": "нет данных", "cold_record": "нет данных",
-        "precip_val": "нет данных", "precip_type": "нет данных",
-        "wind_event": "нет данных", "storm_event": "нет данных"
-    })
-        
-
     # Получаем список файлов из целевой директории
     regions_dict = get_available_regions(DATA_DIR)
 
