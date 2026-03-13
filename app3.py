@@ -3206,6 +3206,191 @@ with tabs[1]:
 
     # --- ОСНОВНОЙ ИНТЕРФЕЙС ---
     st.title("Прогноз на Апрель")
+    
+    
+    # Словарь с расширенными характеристиками
+    region_descriptions = {
+        "Алматинская область": {
+            "temp_north": "-2...+3°С",
+            "temp_south": "+12...+17°С",
+            "heat_record": "до +32°С",
+            "cold_record": "до -10°С",
+            "precip_val": "35-55 мм",
+            "precip_type": "преимущ. дождь",
+            "wind_event": "Ветер 15-20 м/с",
+            "storm_event": "Гроза (2-4 дня)"
+        },
+        "Акмолинская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Актюбинская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Атырауская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Восточно-Казахстанская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Жамбылская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Жетсісуская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Западно-Казахстанская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Карагандинская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Костанайская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Кызылординская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Мангистауская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Область Абай": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Павлодарская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Северо-Казахстанская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Туркестанкая область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Улытауская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        }
+        # Добавьте другие области по этому шаблону
+    }
+
+    # Получаем данные текущей области или "заглушку", если данных нет
+    info = region_descriptions.get(selected_region_name, {
+        "temp_north": "нет данных", "temp_south": "нет данных",
+        "heat_record": "нет данных", "cold_record": "нет данных",
+        "precip_val": "нет данных", "precip_type": "нет данных",
+        "wind_event": "нет данных", "storm_event": "нет данных"
+    })
+        
 
     # Получаем список файлов из целевой директории
     regions_dict = get_available_regions(DATA_DIR)
@@ -3238,36 +3423,37 @@ with tabs[1]:
 
                 col_left, col_right = st.columns([1.2, 1.3], gap="large")
 
-                # --- ЛЕВЫЙ БЛОК (МЕНЯЕТСЯ ДИНАМИЧЕСКИ) ---
                 with col_left:
-                    st.markdown(f"#### 📜 Характеристика: {selected_region_name}")
+                    st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
                     
                     st.markdown(f"""
                     <div style="display: flex; gap: 10px;">
                         <div class="big-climate-card" style="flex: 1;">
                             <div class="section-title">🌡️ Температура</div>
-                            <div class="info-item">🔹 Средняя норма: <span class="val-bold">{avg_norm:.1f}°С</span></div>
-                            <div class="info-item">🔹 Пик месяца: <span class="val-bold">{peak_max:.1f}°С</span></div>
+                            <div class="info-item">🔹 Север: <span class="val-bold">{info['temp_north']}</span></div>
+                            <div class="info-item">🔹 Юг: <span class="val-bold">{info['temp_south']}</span></div>
                         </div>
                         <div class="big-climate-card" style="flex: 1;">
                             <div class="section-title">❄️ Экстремумы</div>
-                            <div class="info-item">🔴 Максимум: <span class="val-bold">{peak_max:.1f}°С</span></div>
-                            <div class="info-item">🔵 Минимум: <span class="val-bold">{peak_min:.1f}°С</span></div>
+                            <div class="info-item">🔴 Тепло: <span class="val-bold">{info['heat_record']}</span></div>
+                            <div class="info-item">🔵 Холод: <span class="val-bold">{info['cold_record']}</span></div>
                         </div>
                     </div>
+
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
                         <div class="big-climate-card" style="flex: 1;">
                             <div class="section-title">💧 Осадки</div>
-                            <div class="info-item">📅 Регион: <span class="val-bold">{selected_region_name}</span></div>
-                            <div class="info-item">📅 Тренд: <span class="val-bold">Около нормы</span></div>
+                            <div class="info-item">📅 В среднем: <span class="val-bold">{info['precip_val']}</span></div>
+                            <div class="info-item">📅 Вид: <span class="val-bold">{info['precip_type']}</span></div>
                         </div>
                         <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
                             <div class="section-title">🌬️ Явления</div>
-                            <div class="info-item">🚩 Ветер: <span class="val-bold">Умеренный</span></div>
-                            <div class="info-item">⚡ Грозы: <span class="val-bold">Вероятны</span></div>
+                            <div class="info-item">🚩 Ветер: <span class="val-bold">{info['wind_event']}</span></div>
+                            <div class="info-item">⚡ Особенности: <span class="val-bold">{info['storm_event']}</span></div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
+    
 
                 # --- ПРАВЫЙ БЛОК (ГРАФИК) ---
                 with col_right:
