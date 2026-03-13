@@ -7020,15 +7020,15 @@ with tabs[5]:
         fig = go.Figure()
 
         # Линия для Форт-Шевченко
-        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Fort-Shevchenko',
+        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Форт-Шевченко',
                                  line=dict(color='#4F7942', width=3)))
 
         # Линия для Актау
-        fig.add_trace(go.Scatter(x=years, y=aktau, name='Aktau',
+        fig.add_trace(go.Scatter(x=years, y=aktau, name='Актау',
                                  line=dict(color='#A0C4DE', width=3)))
 
         # Линия для Курык
-        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Kuryk',
+        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Курык',
                                  line=dict(color='#D35400', width=3)))
 
         # 3. Настройка оформления (максимально близко к вашему скрину)
@@ -7042,9 +7042,9 @@ with tabs[5]:
         )
 
         # Настройка осей
-        fig.update_xaxes(title="year", showline=True, linewidth=2, linecolor='black', mirror=True, 
-                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0')
-        fig.update_yaxes(title="wave height, m", showline=True, linewidth=2, linecolor='black', mirror=True, 
+        fig.update_xaxes(title="год", showline=True, linewidth=1, linecolor='black', mirror=True, 
+                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0', autorange='reversed')
+        fig.update_yaxes(title="высота волны, м", showline=True, linewidth=1, linecolor='black', mirror=True, 
                          range=[1.5, 2.5], gridcolor='#f0f0f0')
 
         # 4. Отображение в Streamlit
@@ -7060,6 +7060,8 @@ with tabs[5]:
             </p>
         </div>
     """, unsafe_allow_html=True)
+
+
 
     st.divider()
     
