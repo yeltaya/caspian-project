@@ -7108,55 +7108,68 @@ with tabs[5]:
         """, unsafe_allow_html=True)
 
     st.divider()
-
+    # 1. Стили выносим отдельно в начало кода или перед блоком
     st.markdown("""
         <style>
-            /* Убираем стандартную линию под h2, которую добавляет Streamlit */
-            .stMarkdown h2 {
-                border-bottom: none !important;
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+            
+            .final-card {
+                background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+                border-radius: 30px; 
+                padding: 60px 40px; 
+                border: 1px solid #E2E8F0; 
+                text-align: center; 
+                font-family: 'Montserrat', sans-serif;
+                max-width: 850px;
+                margin: 50px auto;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
             }
-            /* Убираем подчеркивание ссылок при наведении */
-            a:hover {
-                text-decoration: none !important;
+            
+            .final-card h2 {
+                color: #1E293B !important; 
+                font-weight: 800 !important; 
+                font-size: 2.4rem !important; 
+                margin-bottom: 20px !important;
+                border: none !important;
+                letter-spacing: -0.5px !important;
+            }
+            
+            .final-text {
+                color: #475569; 
+                font-size: 1.15rem; 
+                max-width: 650px; 
+                margin: 0 auto 40px auto; 
+                line-height: 1.8;
+            }
+
+            .final-footer {
+                border-top: 1px solid #E2E8F0;
+                padding-top: 30px;
+                color: #94A3B8;
+                font-size: 0.9rem;
             }
         </style>
-        
-        <div style="
-            background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-            border-radius: 30px; 
-            padding: 50px 30px; 
-            border: 1px solid #E2E8F0; 
-            text-align: center; 
-            font-family: 'Montserrat', sans-serif;
-            max-width: 900px;
-            margin: 60px auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-        ">
-            <div style="margin-bottom: 25px;">
-                <span style="font-size: 3.5rem; display: block; margin-bottom: 15px;">🇰🇿</span>
-                <h2 style="
-                    color: #1E293B; 
-                    font-weight: 800; 
-                    font-size: 2.2rem; 
-                    margin: 0;
-                    line-height: 1.2;
-                    letter-spacing: -0.5px;
-                ">Будущее Каспийского моря</h2>
-            </div>
+    """, unsafe_allow_html=True)
 
-            <p style="
-                color: #475569; 
-                font-size: 1.1rem; 
-                max-width: 700px; 
-                margin: 0 auto 40px auto; 
-                line-height: 1.7;
-            ">
+    # 2. Сам блок контента
+    st.markdown("""
+        <div class="final-card">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🇰🇿</div>
+            <h2>Будущее Каспийского моря</h2>
+            
+            <p class="final-text">
                 Сохранение экосистемы Каспия требует скоординированных усилий всех прикаспийских государств. 
                 Постоянный мониторинг является критически важным для 
-                <b>безопасности инфраструктуры</b> и <b>экономики региона</b>.
+                <b style="color: #1E293B;">безопасности инфраструктуры</b> и <b style="color: #1E293B;">экономики региона</b>.
             </p>
+
+            <div class="final-footer">
+                <p style="margin: 0; font-weight: 600;">Данные мониторинга актуальны на 2026 год</p>
+                <p style="margin: 5px 0 0 0; opacity: 0.8;">Научно-исследовательский центр РГП «Казгидромет»</p>
+            </div>
         </div>
     """, unsafe_allow_html=True)
+
 
 
    
