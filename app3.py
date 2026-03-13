@@ -8285,25 +8285,25 @@ with tabs[6]:
     # Получаем данные
     zones = reg.get("zones", []) 
 
-    # Используем пропорцию 2:1, чтобы карта была меньше, а правая панель с текстом — шире
+    # Используем пропорцию [2, 1], чтобы текст справа имел достаточно места
     col_left, col_right = st.columns([2, 1])
 
     with col_left:
         try:
-            # Отображаем карту. Чтобы она была меньше по высоте, можно обернуть её в контейнер 
-            # или просто позволить колонке задать размер.
+            # Основная карта Казахстана
             st.image("Natural Zones.jpeg", use_container_width=True)
         except Exception as e:
             st.error(f"Ошибка карты: {e}")
 
     with col_right:
         try:
-            # Переносим шкалу (легенду) сюда, чтобы она была перед текстом
-            st.image("Клим_зоны_Шкала.jpeg", use_container_width=True)
+            # УМЕНЬШАЕМ ЛЕГЕНДУ: вместо use_container_width задаем фиксированную ширину
+            # Это сделает шкалу аккуратной и не даст ей растянуться на всю колонку
+            st.image("Клим_зоны_Шкала.jpeg", width=220) 
         except:
             pass
 
-        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
         
         if zones:
             for zone in zones:
@@ -8312,20 +8312,20 @@ with tabs[6]:
                 z_title = zone.get('title', 'Зона')
                 z_desc = zone.get('desc', '')
 
-                # Увеличили font-size для заголовка (18px) и текста (15px)
+                # ЕЩЕ БОЛЬШЕ ТЕКСТА: заголовок 20px, описание 17px
                 st.markdown(f"""
                     <div style="
                         background-color: {z_bg}; 
-                        border-radius: 12px; 
-                        padding: 18px; 
-                        border-left: 6px solid {z_col};
-                        margin-bottom: 15px;
-                        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+                        border-radius: 14px; 
+                        padding: 22px; 
+                        border-left: 8px solid {z_col};
+                        margin-bottom: 20px;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
                     ">
-                        <div style="color: {z_col}; font-weight: 800; font-size: 18px; margin-bottom: 8px;">
+                        <div style="color: {z_col}; font-weight: 850; font-size: 20px; margin-bottom: 10px; letter-spacing: -0.5px;">
                             {z_title}
                         </div>
-                        <div style="color: #333; font-size: 15px; line-height: 1.5; font-weight: 450;">
+                        <div style="color: #111; font-size: 17px; line-height: 1.6; font-weight: 400;">
                             {z_desc}
                         </div>
                     </div>
