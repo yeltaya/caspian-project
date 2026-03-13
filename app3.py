@@ -6452,7 +6452,7 @@ with tabs[5]:
                         
 
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
-        st.markdown("""
+    st.markdown("""
             <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; margin-top: 15px; font-family: 'Montserrat', sans-serif;">
                 <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 600; font-size: 1.1rem; text-align: center; text-transform: uppercase;">
                     Изменение акватории (2006 — 2024)
@@ -6478,10 +6478,10 @@ with tabs[5]:
                     За этот период Каспий потерял объем воды, равный <b>47.6 км³</b>.
                 </p>
             </div>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
         # 4. ВТОРОЙ БЛОК: КРИТИЧЕСКИЙ ПОРОГ (-34 см)
-        st.markdown("""
+    st.markdown("""
             <div style="background: #FFF5F5; padding: 20px; border-radius: 20px; border: 1px solid #FECACA; margin-top: 15px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.05);">
                 <p style="margin: 0 0 15px 0; color: #D32F2F; font-weight: 800; font-size: 0.9rem; text-align: center; text-transform: uppercase;">
                     Превышение критического порога
@@ -6507,7 +6507,7 @@ with tabs[5]:
                     Уровень моря опустился ниже самого низкого значения XX века.
                 </p>
             </div>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     st.divider()
     
