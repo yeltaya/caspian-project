@@ -6451,13 +6451,18 @@ with tabs[5]:
                         """, unsafe_allow_html=True)
                         
 
+
+    # Создаем две колонки с равной шириной
+    col1, col2 = st.columns(2)
+
+    with col1:
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
-    st.markdown("""
-            <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; margin-top: 15px; font-family: 'Montserrat', sans-serif;">
+        st.markdown("""
+            <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; height: 250px; font-family: 'Montserrat', sans-serif;">
                 <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 600; font-size: 1.1rem; text-align: center; text-transform: uppercase;">
                     Изменение акватории (2006 — 2024)
                 </p>
-                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; margin-top: 25px;">
                     <div style="text-align: center;">
                         <p style="margin: 0; color: #64748B; font-size: 0.7rem;">2006 г.</p>
                         <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 400;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
@@ -6474,19 +6479,20 @@ with tabs[5]:
                         <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 400;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
                     </div>
                 </div>
-                <p style="margin: 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
+                <p style="margin: 15px 0 0 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
                     За этот период Каспий потерял объем воды, равный <b>47.6 км³</b>.
                 </p>
             </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
+    with col2:
         # 4. ВТОРОЙ БЛОК: КРИТИЧЕСКИЙ ПОРОГ (-34 см)
-    st.markdown("""
-            <div style="background: #FFF5F5; padding: 20px; border-radius: 20px; border: 1px solid #FECACA; margin-top: 15px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.05);">
+        st.markdown("""
+            <div style="background: #FFF5F5; padding: 20px; border-radius: 20px; border: 1px solid #FECACA; height: 250px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.05);">
                 <p style="margin: 0 0 15px 0; color: #D32F2F; font-weight: 800; font-size: 0.9rem; text-align: center; text-transform: uppercase;">
                     Превышение критического порога
                 </p>
-                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; margin-top: 25px;">
                     <div style="text-align: center;">
                         <p style="margin: 0; color: #64748B; font-size: 0.7rem;">РЕКОРД 1977 г.</p>
                         <p style="margin: 0; color: #475569; font-size: 1.2rem; font-weight: 700;">-29.01 м</p>
@@ -6503,12 +6509,12 @@ with tabs[5]:
                         <p style="margin: 0; color: #D32F2F; font-size: 1.5rem; font-weight: 900;">-29.35 м</p>
                     </div>
                 </div>
-                <p style="margin: 0; text-align: center; color: #334155; font-size: 0.85rem; line-height: 1.4;">
+                <p style="margin: 15px 0 0 0; text-align: center; color: #334155; font-size: 0.85rem; line-height: 1.4;">
                     Уровень моря опустился ниже самого низкого значения XX века.
                 </p>
             </div>
-    """, unsafe_allow_html=True)
-
+        """, unsafe_allow_html=True)
+        
     st.divider()
     
     # --- ОБЩИЙ БЛОК: ОСНОВНЫЕ ФАКТОРЫ ---
