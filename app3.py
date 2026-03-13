@@ -7113,45 +7113,57 @@ with tabs[5]:
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
             
-            .ecology-section {
+            .ecology-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 300px;
                 padding: 40px;
                 background-color: #ffffff;
                 font-family: 'Montserrat', sans-serif;
-                text-align: center;
             }
+
+            .ecology-content {
+                text-align: center;
+                max-width: 800px;
+            }
+
             .ecology-title {
                 color: #1E293B;
-                font-size: 2rem;
+                font-size: 2.2rem;
                 font-weight: 700;
-                margin-bottom: 25px;
+                margin-bottom: 30px;
+                border: none !important; /* Убираем линию Streamlit */
             }
+
             .ecology-text {
                 color: #475569;
-                font-size: 1.2rem;
+                font-size: 1.25rem;
                 line-height: 1.8;
-                max-width: 850px;
                 margin: 0 auto;
             }
+
             .highlight {
                 color: #3B82F6;
                 font-weight: 600;
             }
         </style>
 
-        <div class="ecology-section">
-            <h2 class="ecology-title">Сохраним Каспий вместе</h2>
-            <p class="ecology-text">
-                Каспийское море — это уникальное природное наследие, которое требует нашего общего внимания и заботы. 
-                Сегодня, перед лицом глобальных климатических изменений, <span class="highlight">совместная работа</span> 
-                всех прикаспийских государств, научных центров и общественности становится единственным путем 
-                к сохранению его экосистемы.
-                <br><br>
-                Бережное отношение к водным ресурсам, постоянный мониторинг и ответственное использование 
-                прибрежных зон — это наш вклад в будущее, который позволит передать живое и богатое море 
-                следующим поколениям.
-            </p>
+        <div class="ecology-container">
+            <div class="ecology-content">
+                <h2 class="ecology-title">Сохраним Каспий вместе</h2>
+                <p class="ecology-text">
+                    Каспийское море — это уникальное природное наследие, которое требует нашего общего внимания и заботы. 
+                    Сегодня, перед лицом глобальных климатических изменений, <span class="highlight">совместная работа</span> 
+                    всех прикаспийских государств и научных центров становится единственным путем к сохранению его экосистемы.
+                    <br><br>
+                    Бережное отношение к ресурсам и постоянный мониторинг — это наш общий вклад в будущее, 
+                    который позволит передать живое море следующим поколениям.
+                </p>
+            </div>
         </div>
     """, unsafe_allow_html=True)
+
 
 
 
