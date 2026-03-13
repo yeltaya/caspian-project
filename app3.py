@@ -6517,13 +6517,16 @@ with tabs[5]:
         
     st.divider()
     
-    # --- ОБЩИЙ БЛОК: ОСНОВНЫЕ ФАКТОРЫ ---
-    st.markdown("<hr style='margin: 80px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p style="font-size: 5.0rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
+    # 1. Уменьшаем отступы у линии (с 80px до 30px например)
+    st.markdown("<hr style='margin: 30px 0; opacity: 0.1;'>", unsafe_allow_html=True)
 
-    # Общий подзаголовок на всю ширину (тот самый текст)
+    # 2. Уменьшаем размер шрифта заголовка (5.0rem — это очень много, обычно 2.0-2.5 достаточно)
+    # И убираем margin-bottom, если он не нужен
+    st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 0px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
+
+    # 3. Убираем лишний margin-bottom у подзаголовка
     st.markdown("""
-        <div style="margin-bottom: 30px; text-align: center;">
+        <div style="margin-bottom: 10px; text-align: center;">
             <p style="font-style: italic; color: #64748B; font-size: 1.1rem; max-width: 800px; margin: 0 auto;">
                 Изменения элементов водного баланса, обусловленные антропогенным воздействием и природными циклами.
             </p>
