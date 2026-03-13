@@ -5653,6 +5653,10 @@ with tabs[4]:
                 """, icon="⚠️")
                 
 
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+
     def show_water_resources_block():
         st.write("---")
         st.header("🌊 ОЦЕНКА ИЗМЕНЕНИЯ СТОКА РЕК КАЗАХСТАНА НА ПЕРСПЕКТИВУ ДО 2050 ГОДА")
@@ -5672,13 +5676,13 @@ with tabs[4]:
             st.subheader("🌡️ Климатические сценарии")
             st.markdown("""
             <div style="display: flex; flex-direction: column; gap: 8px;">
-                <div style="background-color: #f8f9fa; padding: 8px; border-radius: 8px; border-left: 8px solid #ff4b4b;">
+                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 8px solid #ff4b4b; font-size: 1.1em;">
                     <span style="color: #ff4b4b; font-weight: bold;">RCP 8.5</span> — Жесткий
                 </div>
-                <div style="background-color: #f8f9fa; padding: 8px; border-radius: 8px; border-left: 8px solid #ffa500;">
+                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 8px solid #ffa500; font-size: 1.1em;">
                     <span style="color: #ffa500; font-weight: bold;">RCP 4.5</span> — Умеренный
                 </div>
-                <div style="background-color: #f8f9fa; padding: 8px; border-radius: 8px; border-left: 8px solid #28a745;">
+                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 8px solid #28a745; font-size: 1.1em;">
                     <span style="color: #28a745; font-weight: bold;">RCP 2.6</span> — Мягкий
                 </div>
             </div>
@@ -5688,12 +5692,12 @@ with tabs[4]:
         with st.container():
             st.markdown(f"""
                 <div style="border: 1px solid #e6e9ef; border-radius: 10px; padding: 20px; background-color: #ffffff; margin-bottom: 20px;">
-                    <h4 style="color: #1f77b4; margin-top: 0;">{name}</h4>
-                    <p style="font-size: 15px; color: #333;">{norm_text}</p>
+                    <h3 style="color: #1f77b4; margin-top: 0; font-size: 24px;">{name}</h3>
+                    <p style="font-size: 18px; color: #333;">{norm_text}</p>
                 </div>
             """, unsafe_allow_html=True)
             
-            # --- СОЗДАНИЕ ГРАФИКА PLOTLY (КАК НА КАРТИНКЕ) ---
+            # --- СОЗДАНИЕ ГРАФИКА С КРУПНЫМ ШРИФТОМ ---
             periods = list(data_dict.keys())
             rcp26 = [data_dict[p][0] for p in periods]
             rcp45 = [data_dict[p][1] for p in periods]
@@ -5701,44 +5705,68 @@ with tabs[4]:
 
             fig = go.Figure()
 
-            # Добавляем бары для каждого сценария
-            fig.add_trace(go.Bar(name='RCP 2.6', x=periods, y=rcp26, marker_color='#00a65a', text=rcp26, textposition='outside'))
-            fig.add_trace(go.Bar(name='RCP 4.5', x=periods, y=rcp45, marker_color='#ffc107', text=rcp45, textposition='outside'))
-            fig.add_trace(go.Bar(name='RCP 8.5', x=periods, y=rcp85, marker_color='#ff0000', text=rcp85, textposition='outside'))
+            # Добавляем бары (textfont определяет размер цифр над столбцами)
+            fig.add_trace(go.Bar(
+                name='RCP 2.6', x=periods, y=rcp26, marker_color='#00a65a', 
+                text=rcp26, textposition='outside', 
+                textfont=dict(size=16, font_variant="small-caps") 
+            ))
+            fig.add_trace(go.Bar(
+                name='RCP 4.5', x=periods, y=rcp45, marker_color='#ffc107', 
+                text=rcp45, textposition='outside',
+                textfont=dict(size=16)
+            ))
+            fig.add_trace(go.Bar(
+                name='RCP 8.5', x=periods, y=rcp85, marker_color='#ff0000', 
+                text=rcp85, textposition='outside',
+                textfont=dict(size=16)
+            ))
 
             fig.update_layout(
                 barmode='group',
-                height=400,
-                margin=dict(t=20, b=20, l=10, r=10),
-                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
-                yaxis=dict(title="Объем воды, км³", range=[32, 34.5]), # Диапазон как на картинке
+                height=500, # Немного увеличим высоту для читаемости цифр
+                margin=dict(t=40, b=20, l=10, r=10),
+                # Настройка легенды (крупный шрифт)
+                legend=dict(
+                    orientation="h", 
+                    yanchor="bottom", y=-0.25, 
+                    xanchor="center", x=0.5,
+                    font=dict(size=16) 
+                ),
+                # Настройка осей и общего шрифта
+                font=dict(size=14),
+                yaxis=dict(
+                    title=dict(text="Объем воды, км³", font=dict(size=16)),
+                    tickfont=dict(size=14),
+                    range=[31.5, 34.5]
+                ),
+                xaxis=dict(tickfont=dict(size=16, color="black")),
                 plot_bgcolor='white',
                 paper_bgcolor='white'
             )
             
-            # Добавляем сетку
             fig.update_yaxes(showgrid=True, gridcolor='lightgrey')
 
             st.plotly_chart(fig, use_container_width=True)
             
-            # Хайлайты
+            # --- ХАЙЛАЙТЫ (УВЕЛИЧЕННЫЕ) ---
+            st.write("**Среднее значение стока (км³):**")
             h_cols = st.columns(3)
             colors = ["#28a745", "#f39c12", "#d32f2f"]
             for i, (scen, val) in enumerate(highlights.items()):
                 with h_cols[i]:
                     st.markdown(f"""
-                        <div style="text-align: center; padding: 10px; border-radius: 5px; background: #f0f2f6;">
-                            <div style="font-size: 10px; color: #666;">{scen}</div>
-                            <div style="font-size: 16px; font-weight: bold; color: {colors[i]};">{val}</div>
+                        <div style="text-align: center; padding: 15px; border-radius: 10px; background: #f0f2f6; border: 1px solid #ddd;">
+                            <div style="font-size: 14px; color: #666; font-weight: bold; margin-bottom: 5px;">{scen}</div>
+                            <div style="font-size: 26px; font-weight: bold; color: {colors[i]};">{val}</div>
                         </div>
                     """, unsafe_allow_html=True)
 
     # --- ЗАПУСК ---
     show_water_resources_block()
 
-    st.markdown("### 💧 Прогноз водных ресурсов по бассейнам")
+    st.markdown("## 💧 Прогноз водных ресурсов по бассейнам")
 
-    # Данные строго по картинке: [RCP 2.6, RCP 4.5, RCP 8.5]
     data_balhash = {
         "2022-2030 гг.": [33.50, 33.30, 33.40],
         "2031-2040 гг.": [32.80, 32.70, 33.60],
@@ -5747,6 +5775,8 @@ with tabs[4]:
 
     highlights_balhash = {"RCP 2.6": 33.20, "RCP 4.5": 32.93, "RCP 8.5": 33.57}
 
+    # Для удобства на больших экранах можно оставить 2 колонки, 
+    # но если шрифт слишком крупный, можно вызывать по одному на всю ширину.
     col1, col2 = st.columns(2)
     with col1:
         draw_basin_card(
@@ -5756,6 +5786,8 @@ with tabs[4]:
             highlights_balhash
         )
         
+        
+            
 
 
   
