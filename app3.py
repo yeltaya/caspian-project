@@ -290,8 +290,8 @@ tabs = st.tabs([
     "📊 Мониторинг", 
     "🌤️ Прогноз погоды", 
     "🌾 Агрометео", 
-    "💧 Гидропрогнозы", 
-    "🌊 Водные ресурсы", 
+    "📈 Гидропрогнозы", 
+    "💧 Водные ресурсы", 
     "🌊 Каспийское море", 
     "🇰🇿 Климат", 
     "🏭 Экология",
@@ -1888,7 +1888,7 @@ with tabs[0]:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     def render_final_agro_map():
-        st.markdown("### 🗺️ Карта агромониторинга по областям")
+        st.markdown("### 🗺️ Агрометеорологические наблюдения")
         
         # Формируем путь к вашему изображению
         # Убедитесь, что файл на GitHub называется именно AGRO.jpg (регистр важен!)
@@ -1913,8 +1913,8 @@ with tabs[0]:
                 
         with col_text:
             st.markdown("""
-            **О карте:**
-            Данная схема отображает пункты агрометеорологического мониторинга по всей территории РК.
+            ****
+            Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами, оказывающими влияние на жизнедеятельность растений и животных – температурой и влажностью воздуха, скоростью и направлением ветра, видом и количеством осадков, чнежным покровом, атмосферными явлениями и суммарной солнечной радиацией.
             
             **Основные культуры:**
             * 🌾 Зерновые
@@ -1923,16 +1923,6 @@ with tabs[0]:
             * 🍎 Плодовые
             """)
             
-            # Кнопка для скачивания (если нужно)
-            if os.path.exists(img_path):
-                with open(img_path, "rb") as file:
-                    st.download_button(
-                        label="📂 Скачать карту",
-                        data=file,
-                        file_name="Agro_Map_Kazhydromet.jpg",
-                        mime="image/jpg"
-                    )
-
     # Вызов функции
     render_final_agro_map()
 
@@ -3164,7 +3154,335 @@ with tabs[1]:
     if __name__ == "__main__":
         show_forecast_process()
     
-       
+ 
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    import os
+
+    # --- НАСТРОЙКИ ПУТЕЙ ---
+    # Создаем отдельную папку для областей, чтобы не перемешивать с другими CSV
+    DATA_DIR = "regions_data" 
+
+    # Создаем папку, если она еще не создана
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
+
+    # --- ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
+    def get_available_regions(directory):
+        # Берем только CSV файлы из конкретной папки
+        files = [f for f in os.listdir(directory) if f.endswith('.csv')]
+        return {f.replace('.csv', ''): os.path.join(directory, f) for f in files}
+
+    # --- СТИЛИ (CSS) ---
+    st.markdown("""
+        <style>
+        .big-climate-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 10px;
+            border: 1px solid #eef0f2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            color: #1d4d2b;
+            font-weight: 800;
+            font-size: 1.4rem !important;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+        .info-item { 
+            font-size: 1.1rem !important;
+            margin-bottom: 8px; 
+            line-height: 1.5; 
+        }
+        .val-bold {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # --- ОСНОВНОЙ ИНТЕРФЕЙС ---
+    st.title("Прогноз на Апрель")
+    
+    
+    # Словарь с расширенными характеристиками
+    region_descriptions = {
+        "Алматинская область": {
+            "temp_north": "-2...+3°С",
+            "temp_south": "+12...+17°С",
+            "heat_record": "до +32°С",
+            "cold_record": "до -10°С",
+            "precip_val": "35-55 мм",
+            "precip_type": "преимущ. дождь",
+            "wind_event": "Ветер 15-20 м/с",
+            "storm_event": "Гроза (2-4 дня)"
+        },
+        "Акмолинская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Актюбинская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Атырауская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Восточно-Казахстанская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Жамбылская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Жетсісуская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Западно-Казахстанская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Карагандинская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Костанайская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Кызылординская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Мангистауская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Область Абай": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Павлодарская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Северо-Казахстанская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Туркестанская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        },
+        "Улытауская область": {
+            "temp_north": "-5...0°С",
+            "temp_south": "+5...+10°С",
+            "heat_record": "до +25°С",
+            "cold_record": "до -22°С",
+            "precip_val": "20-30 мм",
+            "precip_type": "снег с дождем",
+            "wind_event": "Метели (начало)",
+            "storm_event": "Гололед (1-2 дня)"
+        }
+        # Добавьте другие области по этому шаблону
+    }
+
+    # Получаем список файлов из целевой директории
+    regions_dict = get_available_regions(DATA_DIR)
+
+    if not regions_dict:
+        st.info(f"Пожалуйста, переместите файлы областей в папку '{DATA_DIR}'")
+    else:
+        selected_region_name = st.selectbox("Выберите область:", sorted(list(regions_dict.keys())))
+        file_path = regions_dict[selected_region_name]
+        
+        # --- ДОБАВЬТЕ ЭТОТ БЛОК ---
+        info = region_descriptions.get(selected_region_name, {
+            "temp_north": "нет данных", "temp_south": "нет данных",
+            "heat_record": "нет данных", "cold_record": "нет данных",
+            "precip_val": "нет данных", "precip_type": "нет данных",
+            "wind_event": "нет данных", "storm_event": "нет данных"
+        })
+        # --------------------------
+        
+        # Чтение данных
+        try:
+            df = pd.read_csv(file_path, sep=';', encoding='cp1251')
+        except:
+            df = pd.read_csv(file_path, sep=';', encoding='utf-8-sig')
+
+        if df is not None:
+            df.columns = df.columns.str.strip()
+            
+            required_columns = ['норма', 'max', 'min', 'Ср.зн.']
+            missing_cols = [c for c in required_columns if c not in df.columns]
+            
+            if missing_cols:
+                st.error(f"В файле не найдены колонки: {', '.join(missing_cols)}")
+            else:
+                # Расчеты для динамического левого блока
+                avg_norm = df['норма'].mean()
+                peak_max = df['max'].max()
+                peak_min = df['min'].min()
+
+                col_left, col_right = st.columns([1.2, 1.3], gap="large")
+
+                with col_left:
+                    st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
+                    
+                    st.markdown(f"""
+                    <div style="display: flex; gap: 10px;">
+                        <div class="big-climate-card" style="flex: 1;">
+                            <div class="section-title">🌡️ Температура</div>
+                            <div class="info-item">🔹 Север: <span class="val-bold">{info['temp_north']}</span></div>
+                            <div class="info-item">🔹 Юг: <span class="val-bold">{info['temp_south']}</span></div>
+                        </div>
+                        <div class="big-climate-card" style="flex: 1;">
+                            <div class="section-title">❄️ Экстремумы</div>
+                            <div class="info-item">🔴 Тепло: <span class="val-bold">{info['heat_record']}</span></div>
+                            <div class="info-item">🔵 Холод: <span class="val-bold">{info['cold_record']}</span></div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <div class="big-climate-card" style="flex: 1;">
+                            <div class="section-title">💧 Осадки</div>
+                            <div class="info-item">📅 В среднем: <span class="val-bold">{info['precip_val']}</span></div>
+                            <div class="info-item">📅 Вид: <span class="val-bold">{info['precip_type']}</span></div>
+                        </div>
+                        <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
+                            <div class="section-title">🌬️ Явления</div>
+                            <div class="info-item">🚩 Ветер: <span class="val-bold">{info['wind_event']}</span></div>
+                            <div class="info-item">⚡ Особенности: <span class="val-bold">{info['storm_event']}</span></div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+    
+
+                # --- ПРАВЫЙ БЛОК (ГРАФИК) ---
+                with col_right:
+                    st.markdown("#### 📊 График прогноза")
+                    fig = go.Figure()
+                    
+                    # Коридор min-max
+                    fig.add_trace(go.Scatter(x=df['День'], y=df['max'], mode='lines', line=dict(width=0), showlegend=False))
+                    fig.add_trace(go.Scatter(x=df['День'], y=df['min'], mode='lines', line=dict(width=0), 
+                                             fill='tonexty', fillcolor='rgba(0, 100, 255, 0.1)', name='Коридор (min-max)'))
+                    # Линия нормы
+                    fig.add_trace(go.Scatter(x=df['День'], y=df['норма'], mode='lines', 
+                                             line=dict(color='green', dash='dash'), name='Климат. норма'))
+                    # Линия прогноза
+                    fig.add_trace(go.Scatter(x=df['День'], y=df['Ср.зн.'], mode='lines+markers', 
+                                             line=dict(color='#e74c3c', width=3), marker=dict(size=6), name='Прогноз Ср.зн.'))
+
+                    fig.update_layout(
+                        height=450, 
+                        margin=dict(l=0, r=0, t=30, b=0), 
+                        hovermode="x unified",
+                        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+ 
+   
     with st.container():
         st.markdown("<h3 style='color: #1d4d2b; text-align: center; margin-bottom: 20px;'>💼 Отраслевое применение прогнозов</h3>", unsafe_allow_html=True)
         
@@ -3178,7 +3496,7 @@ with tabs[1]:
                 border: 1px solid #eef0f2;
                 text-align: center;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                height: 180px; /* Уменьшили высоту, т.к. нет фото */
+                height: 250px; /* Уменьшили высоту, т.к. нет фото */
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-start;
@@ -3454,12 +3772,12 @@ with tabs[2]:
     with m1:
         st.markdown("""<div class="description-card">
             <span class="desc-title">Прогноз урожайности яровой и озимой пшеницы </span>
-            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой и CGMS.Расчёты выполняются на основе агрометеорологических, статистических и климатических данных.Прогноз содержит сведения об ожидаемой урожайности яровых зерновых культур в разрезе районов по пунктам наблюдения.</p>
+            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой и CGMS. Расчёты выполняются на основе агрометеорологических, статистических и климатических данных. Прогноз содержит сведения об ожидаемой урожайности яровых зерновых культур в разрезе районов по пунктам наблюдения.</p>
         </div>""", unsafe_allow_html=True)
     with m2:
         st.markdown("""<div class="description-card">
             <span class="desc-title">Прогноз урожайности подсолнечника, кукурузы на зерно и сахарной свеклы</span>
-            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой.Расчёты выполняются на основе агрометеорологических, статистических и климатических данных.Прогноз содержит сведения об ожидаемой урожайности в разрезе районов по пунктам наблюдения.</p>
+            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой. Расчёты выполняются на основе агрометеорологических, статистических и климатических данных. Прогноз содержит сведения об ожидаемой урожайности в разрезе районов по пунктам наблюдения.</p>
         </div>""", unsafe_allow_html=True)
     with m3:
         st.markdown("""<div class="description-card">
@@ -3474,59 +3792,38 @@ with tabs[2]:
     </p>
             </div>""", unsafe_allow_html=True)
 
-    # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ (ПОЛНЫЙ СПИСОК) ---
+
+
+    # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК РИСУНКИ В 2 РЯДА) ---
     st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
 
-    def create_chart(labels, values, title, color):
-        fig = go.Figure(go.Bar(
-            x=labels, 
-            y=values, 
-            text=values, 
-            textposition='auto', 
-            marker_color=color,
-            hovertemplate="Область: %{x}<br>Оправдываемость: %{y}%<extra></extra>"
-        ))
-        fig.update_layout(
-            title=dict(text=title, font=dict(size=16)),
-            yaxis=dict(range=[0, 110], title="%"),
-            height=320, 
-            margin=dict(l=10, r=10, t=50, b=10)
-        )
-        return fig
+    # 1. Получаем путь к папке скрипта
+    current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Регионы
-    reg_main = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
-    reg_south = ["Алмат.", "Жамбыл.", "Туркест."]
+    # 2. Формируем список путей и заголовков
+    images_data = [
+        {"path": os.path.join(current_dir, "image_1.png"), "caption": "Зерновые культуры"},
+        {"path": os.path.join(current_dir, "image_2.png"), "caption": "Запасы влаги в почве"},
+        {"path": os.path.join(current_dir, "image_3.png"), "caption": "с/х культуры"},
+        {"path": os.path.join(current_dir, "image_4.png"), "caption": "Сроки созревания"}
+    ]
 
-    # --- СТРОКА 1: Две основные культуры (2 колонки) ---
-    r1_c1, r1_c2 = st.columns(2)
-    with r1_c1:
-        st.plotly_chart(create_chart(reg_main, [92, 80, 82, 84, 82, 68, 78, 84], "Яровая пшеница", "#2e7d32"), use_container_width=True)
-    with r1_c2:
-        st.plotly_chart(create_chart(reg_main, [98, 100, 94, 93, 95, 89, 72, 57], "Запасы влаги в почве", "#0277bd"), use_container_width=True)
+    # 3. Вывод в два ряда по две колонки
+    # Первый ряд
+    row1_col1, row1_col2 = st.columns(2)
+    # Второй ряд
+    row2_col1, row2_col2 = st.columns(2)
 
-    # --- СТРОКА 2: Технические и спец. культуры (3 колонки) ---
-    r2_c1, r2_c2, r2_c3 = st.columns(3)
-    with r2_c1:
-        # Кукуруза (Алмат, Жамб, Турк)
-        st.plotly_chart(create_chart(reg_south, [87, 69, 86], "Кукуруза", "#f9a825"), use_container_width=True)
-    with r2_c2:
-        # Сахарная свекла (Алмат, Жамб)
-        st.plotly_chart(create_chart(reg_south[:2], [74, 35], "Сахарная свекла", "#bf360c"), use_container_width=True)
-    with r2_c3:
-        # Подсолнечник (Кост, Павл, ВКО)
-        st.plotly_chart(create_chart(["Кост.", "Павл.", "ВКО"], [72, 71, 80], "Подсолнечник", "#ef6c00"), use_container_width=True)
+    # Собираем колонки в список для удобного обхода в цикле
+    cols = [row1_col1, row1_col2, row2_col1, row2_col2]
 
-    # --- СТРОКА 3: Дополнительные прогнозы (2 колонки) ---
-    r3_c1, r3_c2 = st.columns(2)
-    with r3_c1:
-        st.plotly_chart(create_chart(reg_main, [50, 100, 88, 90, 88, 100, 90, 82], "Сроки созревания", "#689f38"), use_container_width=True)
-    with r3_c2:
-        # Озимая пшеница (Алмат, Жамб, Турк)
-        st.plotly_chart(create_chart(reg_south[:2], [80, 85, 81], "Озимая пшеница", "#1b5e20"), use_container_width=True)
-  
- 
-
+    for i, item in enumerate(images_data):
+        with cols[i]:
+            if os.path.exists(item["path"]):
+                st.image(item["path"], caption=item["caption"], use_container_width=True)
+            else:
+                st.warning(f"Файл {os.path.basename(item['path'])} не найден")
+                
 with tabs[3]:
     st.title("Гидрологические прогнозы")
     
@@ -5653,6 +5950,10 @@ with tabs[4]:
                 """, icon="⚠️")
                 
 
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+
     def show_water_resources_block():
         st.write("---")
         st.header("🌊 ОЦЕНКА ИЗМЕНЕНИЯ СТОКА РЕК КАЗАХСТАНА НА ПЕРСПЕКТИВУ ДО 2050 ГОДА")
@@ -5662,43 +5963,173 @@ with tabs[4]:
         with col_method:
             st.subheader("📊 Материалы и методы исследования")
             st.markdown("""
-            * **Данные наблюдений**: Данные государственной наблюдательной сети Казахстана.
-            * **Климатические архивы**: Глобальный климатический архив **Terra Climate**.
-            * **Прогнозные модели**: Данные по осадкам по **23 моделям** (МОЦАО) до 2050 г.
-            * **Группа CMIP5**: Модели Межправительственной группы экспертов по изменению климата (**МГЭИК**).
-            * **Базисный период**: Оценка рассчитана относительно нормы стока за **1930-2019 гг.**.
+            * **Данные наблюдений**: Сеть Казахстана.
+            * **Климатические архивы**: **Terra Climate**.
+            * **Прогнозные модели**: **23 модели** (МОЦАО) до 2050 г.
+            * **Базисный период**: Норма стока за **1930-2019 гг.**.
             """)
 
         with col_scenarios:
             st.subheader("🌡️ Климатические сценарии")
             st.markdown("""
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ff4b4b;">
-                    <div style="min-width: 60px; font-weight: bold; color: #ff4b4b; font-size: 0.8em;">RCP 8.5</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Жесткий» сценарий:</b> Быстрый рост выбросов.</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 8px solid #ff4b4b; font-size: 1.1em;">
+                    <span style="color: #ff4b4b; font-weight: bold;">RCP 8.5</span> — Жесткий
                 </div>
-                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ffa500;">
-                    <div style="min-width: 60px; font-weight: bold; color: #ffa500; font-size: 0.8em;">RCP 4.5</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Умеренно жесткий»:</b> Умеренный рост выбросов.</div>
+                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 8px solid #ffa500; font-size: 1.1em;">
+                    <span style="color: #ffa500; font-weight: bold;">RCP 4.5</span> — Умеренный
                 </div>
-                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #28a745;">
-                    <div style="min-width: 60px; font-weight: bold; color: #28a745; font-size: 0.8em;">RCP 2.6</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Мягкий» сценарий:</b> Снижение выбросов.</div>
+                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 8px solid #28a745; font-size: 1.1em;">
+                    <span style="color: #28a745; font-weight: bold;">RCP 2.6</span> — Мягкий
                 </div>
             </div>
             """, unsafe_allow_html=True)
+            
+    def draw_basin_card(name, norm_text, data_dict, highlights):
+        # Создаем уникальный ID на основе имени бассейна
+        unique_id = name.replace(" ", "_").lower()
+        
+        with st.container():
+            st.markdown(f"""
+                <div style="border: 1px solid #e6e9ef; border-radius: 10px; padding: 20px; background-color: #ffffff; margin-bottom: 20px;">
+                    <h3 style="color: #1f77b4; margin-top: 0; font-size: 24px;">{name}</h3>
+                    <p style="font-size: 18px; color: #333;">{norm_text}</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            periods = list(data_dict.keys())
+            rcp26 = [data_dict[p][0] for p in periods]
+            rcp45 = [data_dict[p][1] for p in periods]
+            rcp85 = [data_dict[p][2] for p in periods]
 
-        st.markdown("---")
-        st.success("**БАЛКАШ-АЛАКОЛЬСКИЙ БАССЕЙН**: ожидается **увеличение стока** (29.9 км³) к 2050 г.")
+            fig = go.Figure()
+            fig.add_trace(go.Bar(name='RCP 2.6', x=periods, y=rcp26, marker_color='#00a65a', text=rcp26, textposition='outside', textfont=dict(size=16)))
+            fig.add_trace(go.Bar(name='RCP 4.5', x=periods, y=rcp45, marker_color='#ffc107', text=rcp45, textposition='outside', textfont=dict(size=16)))
+            fig.add_trace(go.Bar(name='RCP 8.5', x=periods, y=rcp85, marker_color='#ff0000', text=rcp85, textposition='outside', textfont=dict(size=16)))
 
-    # --- ВАЖНЫЙ МОМЕНТ: ПРАВИЛЬНЫЙ ВЫЗОВ ---
-    if __name__ == "__main__":
-        show_water_resources_block() # <-- Проверьте, что здесь есть 4 пробела (отступ)
-    
-    
+            fig.update_layout(
+                barmode='group', height=500, margin=dict(t=40, b=20, l=10, r=10),
+                legend=dict(orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5, font=dict(size=16)),
+                font=dict(size=14),
+                yaxis=dict(title=dict(text="Объем воды, км³", font=dict(size=16)), tickfont=dict(size=14), autorange=True),
+                xaxis=dict(tickfont=dict(size=16, color="black")),
+                plot_bgcolor='white', paper_bgcolor='white'
+            )
+            
+            fig.update_yaxes(showgrid=True, gridcolor='lightgrey')
+            
+            # КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: добавляем параметр key
+            st.plotly_chart(fig, use_container_width=True, key=f"chart_{unique_id}")
+            
+            st.write("**Среднее значение стока (км³):**")
+            h_cols = st.columns(3)
+            colors = ["#28a745", "#f39c12", "#d32f2f"]
+            for i, (scen, val) in enumerate(highlights.items()):
+                with h_cols[i]:
+                    st.markdown(f"""
+                        <div style="text-align: center; padding: 15px; border-radius: 10px; background: #f0f2f6; border: 1px solid #ddd;">
+                            <div style="font-size: 14px; color: #666; font-weight: bold; margin-bottom: 5px;">{scen}</div>
+                            <div style="font-size: 26px; font-weight: bold; color: {colors[i]};">{val}</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                    
 
+    # --- ЗАПУСК ---
+    show_water_resources_block()
 
-  
+    st.markdown("## 💧 Прогноз водных ресурсов по бассейнам")
+
+    # Данные бассейнов (все переменные выровнены по левому краю)
+    data_balhash = {
+        "2022-2030 гг.": [33.50, 33.30, 33.40],
+        "2031-2040 гг.": [32.80, 32.70, 33.60],
+        "2041-2050 гг.": [33.30, 32.80, 33.70]
+    }
+
+    data_ertis = {
+        "2022-2030 гг.": [38.5, 38.5, 43.9],
+        "2031-2040 гг.": [39.8, 39.7, 42.6],
+        "2041-2050 гг.": [40.3, 39.5, 43.9]
+    }
+
+    data_aral = {
+        "2022-2030 гг.": [23.4, 25.4, 26.6],
+        "2031-2040 гг.": [22.2, 25.2, 25.7],
+        "2041-2050 гг.": [23.4, 25.2, 26.3]
+    }
+
+    data_zhayik = {
+        "2022-2030 гг.": [14.5, 12.8, 13.8],
+        "2031-2040 гг.": [14.4, 13, 13.3],
+        "2041-2050 гг.": [14.6, 13.6, 13.3]
+    }
+
+    data_shu_talas = {
+        "2022-2030 гг.": [2.80, 3.00, 3.00],
+        "2031-2040 гг.": [2.70, 2.90, 2.90],
+        "2041-2050 гг.": [2.90, 3.00, 3.20]
+    }
+
+    data_obyl_torgay = {
+        "2022-2030 гг.": [1.81, 2.16, 2.11],
+        "2031-2040 гг.": [1.76, 2.17, 2.04],
+        "2041-2050 гг.": [1.81, 2.13, 2.17]
+    }
+
+    data_nura_sarysu = {
+        "2022-2030 гг.": [1.38, 1.39, 1.42],
+        "2031-2040 гг.": [1.36, 1.4, 1.41],
+        "2041-2050 гг.": [1.43, 1.41, 1.46]
+    }
+
+    data_esil = {
+        "2022-2030 гг.": [2.80, 3.00, 3.00],
+        "2031-2040 гг.": [2.70, 2.90, 2.90],
+        "2041-2050 гг.": [2.90, 3.00, 3.20]
+    }
+
+    # Средние значения (Highlights)
+    highlights_balhash = {"RCP 2.6": 33.20, "RCP 4.5": 32.93, "RCP 8.5": 33.57}
+    highlights_ertis = {"RCP 2.6": 39.5, "RCP 4.5": 39.2, "RCP 8.5": 43.4}
+    highlights_aral = {"RCP 2.6": 23.0, "RCP 4.5": 25.2, "RCP 8.5": 26.2}
+    highlights_zhayik = {"RCP 2.6": 14.5, "RCP 4.5": 13.1, "RCP 8.5": 13.4}
+    highlights_shu = {"RCP 2.6": 2.8, "RCP 4.5": 2.9, "RCP 8.5": 3.0}
+    highlights_torgay = {"RCP 2.6": 1.79, "RCP 4.5": 2.15, "RCP 8.5": 2.10}
+    highlights_nura = {"RCP 2.6": 1.39, "RCP 4.5": 1.40, "RCP 8.5": 1.43}
+    highlights_esil = {"RCP 2.6": 2.80, "RCP 4.5": 3.0, "RCP 8.5": 3.0}
+
+    # Создаем ряды колонок
+    row1_col1, row1_col2 = st.columns(2)
+    row2_col1, row2_col2 = st.columns(2)
+    row3_col1, row3_col2 = st.columns(2)
+    row4_col1, row4_col2 = st.columns(2)
+
+    # РЯД 1
+    with row1_col1:
+        draw_basin_card("БАЛКАШ – АЛАКОЛЬСКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (29,9 км³).", data_balhash, highlights_balhash)
+    with row1_col2:
+        draw_basin_card("ЕРТИССКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (33.4 км³).", data_ertis, highlights_ertis)
+
+    # РЯД 2
+    with row2_col1:
+        draw_basin_card("АРАЛО – СЫРДАРЬИНСКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение по «умеренно-жесткому» и «жесткому» сценарию, а по «мягкому» сценарию сокращение относительно нормы (21,4 км³).", data_aral, highlights_aral)
+    with row2_col2:
+        draw_basin_card("ЖАЙЫК – КАСПИЙСКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (12.0 км³).", data_zhayik, highlights_zhayik)
+
+    # РЯД 3
+    with row3_col1:
+        draw_basin_card("ШУ – ТАЛАССКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (4,12 км³).", data_shu_talas, highlights_shu)
+    with row3_col2:
+        draw_basin_card("ТОБЫЛ – ТОРГАЙСКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (1,67 км³).", data_obyl_torgay, highlights_torgay)
+
+    # РЯД 4
+    with row4_col1:
+        draw_basin_card("НУРА-САРЫСУЙСКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (1,16 км³).", data_nura_sarysu, highlights_nura)
+    with row4_col2:
+        draw_basin_card("ЕСИЛЬСКИЙ БАССЕЙН", "В результате оценки изменения стока к 2050 г. ожидается увеличение относительно нормы (2,29 км³).", data_esil, highlights_esil)
+        
+        
 
 # --- Твой основной контент по Каспию идет во вкладку №5 (индекс 5) ---
 with tabs[5]:
@@ -6020,13 +6451,18 @@ with tabs[5]:
                         """, unsafe_allow_html=True)
                         
 
+
+    # Создаем две колонки с равной шириной
+    col1, col2 = st.columns(2)
+
+    with col1:
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
         st.markdown("""
-            <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; margin-top: 15px; font-family: 'Montserrat', sans-serif;">
+            <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; height: 250px; font-family: 'Montserrat', sans-serif;">
                 <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 600; font-size: 1.1rem; text-align: center; text-transform: uppercase;">
                     Изменение акватории (2006 — 2024)
                 </p>
-                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; margin-top: 25px;">
                     <div style="text-align: center;">
                         <p style="margin: 0; color: #64748B; font-size: 0.7rem;">2006 г.</p>
                         <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 400;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
@@ -6043,19 +6479,20 @@ with tabs[5]:
                         <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 400;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
                     </div>
                 </div>
-                <p style="margin: 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
+                <p style="margin: 15px 0 0 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
                     За этот период Каспий потерял объем воды, равный <b>47.6 км³</b>.
                 </p>
             </div>
         """, unsafe_allow_html=True)
 
+    with col2:
         # 4. ВТОРОЙ БЛОК: КРИТИЧЕСКИЙ ПОРОГ (-34 см)
         st.markdown("""
-            <div style="background: #FFF5F5; padding: 20px; border-radius: 20px; border: 1px solid #FECACA; margin-top: 15px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.05);">
+            <div style="background: #FFF5F5; padding: 20px; border-radius: 20px; border: 1px solid #FECACA; height: 250px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.05);">
                 <p style="margin: 0 0 15px 0; color: #D32F2F; font-weight: 800; font-size: 0.9rem; text-align: center; text-transform: uppercase;">
                     Превышение критического порога
                 </p>
-                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; margin-top: 25px;">
                     <div style="text-align: center;">
                         <p style="margin: 0; color: #64748B; font-size: 0.7rem;">РЕКОРД 1977 г.</p>
                         <p style="margin: 0; color: #475569; font-size: 1.2rem; font-weight: 700;">-29.01 м</p>
@@ -6072,21 +6509,24 @@ with tabs[5]:
                         <p style="margin: 0; color: #D32F2F; font-size: 1.5rem; font-weight: 900;">-29.35 м</p>
                     </div>
                 </div>
-                <p style="margin: 0; text-align: center; color: #334155; font-size: 0.85rem; line-height: 1.4;">
+                <p style="margin: 15px 0 0 0; text-align: center; color: #334155; font-size: 0.85rem; line-height: 1.4;">
                     Уровень моря опустился ниже самого низкого значения XX века.
                 </p>
             </div>
         """, unsafe_allow_html=True)
-
+        
     st.divider()
     
-    # --- ОБЩИЙ БЛОК: ОСНОВНЫЕ ФАКТОРЫ ---
-    st.markdown("<hr style='margin: 80px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p style="font-size: 5.0rem; font-weight: bold; margin-bottom: 12px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
+    # 1. Уменьшаем отступы у линии (с 80px до 30px например)
+    st.markdown("<hr style='margin: 30px 0; opacity: 0.1;'>", unsafe_allow_html=True)
 
-    # Общий подзаголовок на всю ширину (тот самый текст)
+    # 2. Уменьшаем размер шрифта заголовка (5.0rem — это очень много, обычно 2.0-2.5 достаточно)
+    # И убираем margin-bottom, если он не нужен
+    st.markdown('<div class="white-label-header"><p style="font-size: 3.5rem; font-weight: bold; margin-bottom: 0px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
+
+    # 3. Убираем лишний margin-bottom у подзаголовка
     st.markdown("""
-        <div style="margin-bottom: 30px; text-align: center;">
+        <div style="margin-bottom: 10px; text-align: center;">
             <p style="font-style: italic; color: #64748B; font-size: 1.1rem; max-width: 800px; margin: 0 auto;">
                 Изменения элементов водного баланса, обусловленные антропогенным воздействием и природными циклами.
             </p>
@@ -6271,7 +6711,7 @@ with tabs[5]:
     
     
     # --- БЛОК: ГЛОБАЛЬНЫЕ ПОСЛЕДСТВИЯ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown('<div class="white-label-header"><p class="section-header-text">⚠️ Комплексное влияние на регион</p></div>', unsafe_allow_html=True)
 
     # 1. Добавляем CSS стили для анимации
@@ -6359,8 +6799,8 @@ with tabs[5]:
     st.divider()
     
     # --- БЛОК: ПРОГНОЗЫ И ПРОДУКЦИЯ С ЭФФЕКТОМ НАЖАТИЯ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Прогнозы и информационная продукция</p></div>', unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown('<div class="white-label-header"><p class="section-header-text">📈 Прогнозы и информационная продукция</p></div>', unsafe_allow_html=True)
 
     # Расширенные стили для анимации плашек
     st.markdown("""
@@ -6442,8 +6882,8 @@ with tabs[5]:
                     <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">❄️ Обзор льда</span><br><span style="color:#0072FF; font-weight:600;">Еженедельно (вт)</span></div>
                 </div>
                 <div style="flex: 1; min-width: 220px;">
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">🌀 Сгонно-нагонные</span><br><span style="color:#0072FF; font-weight:600;">Раз в месяц</span></div>
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📈 Прогноз условий</span><br><span style="color:#0072FF; font-weight:600;">2 раза в неделю</span></div>
+                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">🌀 Обзор сгонно-нагонных явлений</span><br><span style="color:#0072FF; font-weight:600;">Раз в месяц</span></div>
+                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📈 Прогноз уровня и волнения</span><br><span style="color:#0072FF; font-weight:600;">2 раза в неделю</span></div>
                     <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📁 Водный кадастр</span><br><span style="color:#0072FF; font-weight:600;">Ежегодно</span></div>
                 </div>
             </div>
@@ -6455,7 +6895,7 @@ with tabs[5]:
         
     # --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔭 Долгосрочная оценка изменений</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="white-label-header"><p class="section-header-text">📈 Оценка долгосрочных изменений</p></div>', unsafe_allow_html=True)
     st.markdown('<div class="promo-sub" style="margin-bottom: 25px; font-size: 1.1em !important;">'
                 'РГП «Казгидромет» проводятся исследования по долгосрочной оценке изменения уровня и параметров волнения.'
                 '</div>', unsafe_allow_html=True)
@@ -6504,7 +6944,7 @@ with tabs[5]:
             <div class="long-term-card" style="background: linear-gradient(135deg, #003366 0%, #00509E 100%);">
                 <div class="lt-title">🌊 Долгосрочный уровень</div>
                 <div class="lt-desc">
-                    Анализ вековых колебаний и расчет сценариев изменения уровня моря до конца XXI века на основе глобальных климатических моделей.
+                    Анализ многолетних колебаний и расчет сценариев изменения уровня моря до конца XXI века на основе данных глобальных климатических моделей.
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -6564,26 +7004,65 @@ with tabs[5]:
         
         st.plotly_chart(fig_lt, use_container_width=True, config={'displayModeBar': False})
 
+
     with lt_plot_col2:
-        # Здесь остается ваша карта/заглушка по волнению
-        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">🌊 Карта изменений волнения</div>', unsafe_allow_html=True)
+        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">🌊 Прогноз высоты волн (SSP5-8.5)</div>', unsafe_allow_html=True)
+
+        # 1. Подготовка данных (замените эти списки на ваши данные или загрузите из df)
+        years = list(range(2015, 2051))
+        
+        # Пример данных (замените на свои реальные значения)
+        fort_shevchenko = [2.25, 2.01, 2.08, 2.20, 2.18, 2.03, 2.00, 2.08, 2.09, 1.96, 1.96, 2.00, 2.06, 2.00, 2.13, 2.03, 2.11, 2.03, 1.99, 1.96, 1.99, 2.07, 2.18, 2.29, 1.90, 1.98, 1.90, 1.95, 1.83, 2.15, 2.13, 2.02, 2.03, 1.96, 1.89, 2.21]
+        aktau = [2.28, 2.05, 2.10, 2.29, 2.23, 2.07, 2.07, 2.12, 2.14, 2.05, 2.07, 2.07, 2.11, 2.09, 2.32, 2.14, 2.17, 2.10, 2.04, 2.12, 2.11, 2.15, 2.29, 2.30, 1.96, 2.09, 1.99, 2.06, 1.95, 2.18, 2.25, 2.05, 2.07, 2.05, 1.88, 2.25]
+        kuryk = [2.32, 2.08, 2.15, 2.31, 2.26, 2.11, 2.09, 2.14, 2.17, 2.06, 2.08, 2.08, 2.12, 2.10, 2.33, 2.16, 2.20, 2.13, 2.08, 2.13, 2.13, 2.16, 2.33, 2.36, 1.98, 2.11, 1.99, 2.08, 1.96, 2.21, 2.29, 2.09, 2.12, 2.06, 1.91, 2.31]
+
+        # 2. Создание графика Plotly
+        fig = go.Figure()
+
+        # Линия для Форт-Шевченко
+        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Fort-Shevchenko',
+                                 line=dict(color='#4F7942', width=3)))
+
+        # Линия для Актау
+        fig.add_trace(go.Scatter(x=years, y=aktau, name='Aktau',
+                                 line=dict(color='#A0C4DE', width=3)))
+
+        # Линия для Курык
+        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Kuryk',
+                                 line=dict(color='#D35400', width=3)))
+
+        # 3. Настройка оформления (максимально близко к вашему скрину)
+        fig.update_layout(
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            margin=dict(l=0, r=0, t=20, b=0),
+            height=400,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+            hovermode="x unified" # Показывает значения всех линий при наведении на год
+        )
+
+        # Настройка осей
+        fig.update_xaxes(title="year", showline=True, linewidth=2, linecolor='black', mirror=True, 
+                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0')
+        fig.update_yaxes(title="wave height, m", showline=True, linewidth=2, linecolor='black', mirror=True, 
+                         range=[1.5, 2.5], gridcolor='#f0f0f0')
+
+        # 4. Отображение в Streamlit
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
         st.markdown("""
-            <div style="background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 15px; height: 450px; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #64748b;">
-                <span style="font-size: 4em; margin-bottom: 10px;">🗺️</span>
-                <p style="font-size: 1.1em; font-weight: 500;">Место для визуализации волнения</p>
+            <div style="border: 1px solid #e2e8f0; border-radius: 15px; padding: 10px; background: #f8fafc; margin-top: 10px;">
+                <p style="font-size: 0.85rem; color: #475569; text-align: center; margin: 0;">
+                    💡 <b>Интерактивность:</b> Наведите на график, чтобы увидеть точные значения. Кликните на название станции в легенде, чтобы скрыть её.
+                </p>
             </div>
         """, unsafe_allow_html=True)
-
-    st.divider()
-    # --- БЛОК: ПРОГНОЗЫ И БУДУЩЕЕ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">🔮 Будущее Каспия: Сценарии до 2100 года</p></div>', unsafe_allow_html=True)
+     
 
     # Описание прогнозов
     st.markdown("""
         <div style="margin-bottom: 30px; color: #475569; line-height: 1.6;">
-            Согласно международным климатическим моделям (CMIP6), уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. 
-            Ниже представлены три научно обоснованных сценария изменения уровня к концу столетия:
+            Согласно международным климатическим моделям, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. 
         </div>
     """, unsafe_allow_html=True)
 
@@ -7002,7 +7481,8 @@ with tabs[6]:
             },
             "h-precip-box"
         )
-            
+
+    
     import streamlit as st
     import streamlit.components.v1 as components
 
@@ -7020,7 +7500,8 @@ with tabs[6]:
         {"rank": 10, "year": 2002, "value": 1.55, "color": "#ffcdd2"}
     ]
 
-    st.markdown("---")
+
+
     st.markdown("### 🏆 Анализ температурных рекордов")
 
     # Создаем колонки
@@ -7070,60 +7551,72 @@ with tabs[6]:
    
             
     with col_map:
-        # Путь к вашему изображению
         map_path = "temp1.gif"
         
         if os.path.exists(map_path):
-            st.image(map_path, caption="Карта аномалий: Зима (анализ данных)", use_container_width=True)
-        else:
-            st.error(f"Файл не найден по пути: {map_path}")
-            # Заглушка, если файла нет
-            st.info("Здесь должна быть карта: temp1.gif")
+            # Чтобы HTML увидел файл, он должен быть доступен (например, в папке со скриптом)
+            # Но проще всего вывести через st.image(contents) как выше.
+            # Если все же нужен HTML:
+            import base64
+            with open(map_path, "rb") as f:
+                data_url = base64.b64encode(f.read()).decode("utf-8")
             
-    st.markdown("---")
-    st.markdown("### 🏆 Анализ атмосферных осадков")            
+            st.markdown(
+                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%;">',
+                unsafe_allow_html=True,
+            )
+            st.caption("Карта аномалий")
+        
+        
+    st.divider()
 
-    import streamlit as st
-    import streamlit.components.v1 as components
 
-# --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
-    rank_data1 = [
-        {"rank": 1, "year": 1944, "value": 73.5, "color": "#5D4037"},  # Темно-коричневый (экстремально сухо)
-        {"rank": 2, "year": 1975, "value": 77.0, "color": "#795548"},  # Коричневый
-        {"rank": 3, "year": 1974, "value": 78.3, "color": "#8D6E63"},  # Светло-коричневый
-        {"rank": 4, "year": 1995, "value": 78.8, "color": "#8D6E63"}, 
-        {"rank": 5, "year": 1991, "value": 78.9, "color": "#A1887F"},  # Серо-коричневый
-        {"rank": 6, "year": 2008, "value": 81.6, "color": "#A1887F"}, 
-        {"rank": 7, "year": 1955, "value": 82.4, "color": "#BCAAA4"},  # Песочный
-        {"rank": 8, "year": 1936, "value": 82.6, "color": "#BCAAA4"}, 
-        {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},  # Светло-песочный
+    st.markdown("### 🏆 Анализ влажности")
+    
+    col_info2, col_chart2, col_map2 = st.columns([1, 1, 1], gap="large")
+    
+    # --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
+    rank_data_precip = [
+        {"rank": 1, "year": 1944, "value": 73.5, "color": "#5D4037"},
+        {"rank": 2, "year": 1975, "value": 77.0, "color": "#795548"},
+        {"rank": 3, "year": 1974, "value": 78.3, "color": "#8D6E63"},
+        {"rank": 4, "year": 1995, "value": 78.8, "color": "#8D6E63"},
+        {"rank": 5, "year": 1991, "value": 78.9, "color": "#A1887F"},
+        {"rank": 6, "year": 2008, "value": 81.6, "color": "#A1887F"},
+        {"rank": 7, "year": 1955, "value": 82.4, "color": "#BCAAA4"},
+        {"rank": 8, "year": 1936, "value": 82.6, "color": "#BCAAA4"},
+        {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},
         {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
     ]
-  
+    
+ 
+    with col_info2:
+            st.markdown("""
+                <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
+                    <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
+                    <p style="font-size: 0.95rem; line-height: 1.4;">
+                        <span style="font-weight: 800;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению годовых сумм атмосферных осадков на 2,5 мм/10 лет, в основном за счет осадков весеннего сезона. 
+                        <br><br>
+                        Уменьшение осадков наблюдалось в центральных и южных регионах. Изменения максимальной продолжительности бездождных периодов с осадками менее 1 мм в сутки достигли 1–4 дней за десятилетие, как в сторону увеличения, так и в сторону уменьшения.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
 
-        # Создаем колонки
-    # Создаем колонки с одинаковым выравниванием
-    col_info, col_chart, col_map = st.columns([1, 1, 1], gap="large")
-
-    with col_info:
-        # Добавляем margin-top: 0, чтобы блок не прыгал вниз
+        
+    # 2. КОЛОНКА С ГРАФИКОМ
+    with col_chart2:
+        # Крупный заголовок как в верхнем блоке
         st.markdown("""
-            <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
-                <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
-                <p style="font-size: 0.95rem; line-height: 1.4;">
-                    <span style="font-weight: 800;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению...
-                </p>
+            <div style="font-size: 1.1rem; font-weight: 600; color: #555; margin-bottom: 15px; font-family: sans-serif;">
+                Самые сухие годы в Казахстане <span style="font-weight: 400; font-size: 0.9rem; color: #888;">(1941–2025 гг.)</span>
             </div>
         """, unsafe_allow_html=True)
-
-    with col_chart:
-        # Заголовок пишем прямо в HTML или через markdown БЕЗ отступов
-        st.markdown("<div style='height: 20px; font-size: 0.8rem; color: gray;'>Самые сухие годы в Казахстане (1941–2025 гг.)</div>", unsafe_allow_html=True)
         
         rows_html = ""
-        max_val = max([item["value"] for item in rank_data1]) 
-        for item in rank_data1:
-            width = (item["value"] / max_val) * 100
+        max_val_precip = 100 # База для процентов
+        
+        for item in rank_data_precip:
+            width = (item["value"] / max_val_precip) * 100
             rows_html += f"""
             <div style="display: flex; align-items: center; margin-bottom: 6px; height: 26px; font-family: sans-serif;">
                 <div style="width: 25px; font-size: 11px; font-weight: bold; color: #888;">{item['rank']}</div>
@@ -7135,32 +7628,29 @@ with tabs[6]:
                 </div>
             </div>
             """
-        # Уменьшаем height до 320, чтобы убрать пустоту снизу
-        components.html(f"<div style='margin-top: 10px;'>{rows_html}</div>", height=320)
-          
-                
-    with col_map:
-        # 1. Создаем пустой "отступ", чтобы карта была на одном уровне с графиком
-        # Высота 20px обычно соответствует высоте заголовка в соседней колонке
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        
+        components.html(f"<div style='margin-top: 5px;'>{rows_html}</div>", height=340)
+              
+        
+    with col_map2:
+        map_path = "Precipitation.gif"
         
         if os.path.exists(map_path):
-            # 2. Выводим изображение БЕЗ стандартного caption (чтобы он не толкал блок)
-            st.image(map_path, use_container_width=True)
+            # Чтобы HTML увидел файл, он должен быть доступен (например, в папке со скриптом)
+            # Но проще всего вывести через st.image(contents) как выше.
+            # Если все же нужен HTML:
+            import base64
+            with open(map_path, "rb") as f:
+                data_url = base64.b64encode(f.read()).decode("utf-8")
             
-            # 3. Добавляем подпись вручную с минимальным отступом сверху
-            st.markdown("""
-                <div style="text-align: center; color: gray; font-size: 0.8rem; margin-top: -10px;">
-                    Карта аномалий: Зима (анализ данных)
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.error(f"Файл не найден: {map_path}")
-            st.info("Здесь должна быть карта: temp1.gif")
+            st.markdown(
+                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%;">',
+                unsafe_allow_html=True,
+            )
+            st.caption("Карта аномалий")
+        
             
-            
-
-
+    st.divider()
 
     # Основной заголовок секции
     st.header("🔮 Изменение климата в будущем")
@@ -7246,6 +7736,9 @@ with tabs[6]:
             "anom_2025": 3.28,
             "precip_2025": 439.8,
             "prec_norm": "124.7%",
+            "trend_temp": "+0,36 °С",
+            "trend_precip": "+6,1 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",
             "temp_extreme": {"max": "+24°С (июль 1989)", "min": "-29.8°С (январь 1969)"},
             "top_years": [
                 {"year": 2025, "val": 5.09, "col": "#990000"},
@@ -7254,6 +7747,19 @@ with tabs[6]:
                 {"year": 1983, "val": 4.01, "col": "#e57373"},
                 {"year": 1995, "val": 3.73, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 2010, "val": 239.04, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1975, "val": 248.90, "col": "#2e7d32"},
+                {"year": 1965, "val": 253.16, "col": "#4caf50"},
+                {"year": 1951, "val": 255.49, "col": "#81c784"},
+                {"year": 1991, "val": 260.34, "col": "#a5d6a7"}
+            ],
+            "risks": [
+            {"title": "🔥 Экстремальные температуры", "text": "Рост 0.36 °С за 10 лет. 2025 год — рекорд (+5.09 °С).", "level": 95, "color": "#d32f2f"},
+            {"title": "🌾 Засухи и дефицит влаги", "text": "Снижение осадков в июне и октябре. Угроза урожаю.", "level": 70, "color": "#f57c00"},
+            {"title": "🌊 Весенние паводки", "text": "Рост осадков весной (+6.1 мм/10 лет) провоцирует наводнения.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "На территории СКО наблюдается интенсивное потепление, опережающее среднемировые темпы. 2025 год официально зафиксирован как ранг №1 в списке самых теплых лет. Несмотря на общую слабую тенденцию к увеличению годовых осадков (+11 мм/10 лет), сохраняется риск «аграрных засух» из-за перераспределения влаги: её становится больше весной, но меньше в ключевые летние и осенние месяцы. Это требует пересмотра сроков посевных работ и внедрения технологий сохранения весенней влаги в почве.",            
             "zones": [
             {
                 "title": "🌳 Лесостепная (~45%)",
@@ -7284,6 +7790,9 @@ with tabs[6]:
             "precip_2025": 439.8,
             "prec_norm": "121.4%",
             "temp_extreme": {"max": "+23.6°С (июль 1998)", "min": "-30.2°С (январь 1969)"},
+            "trend_temp": "+0,37 °С",
+            "trend_precip": "+5,1 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",
             "top_years": [
                 {"year": 2025, "val": 5.4, "col": "#990000"},
                 {"year": 2023, "val": 4.7, "col": "#b30000"},
@@ -7291,6 +7800,19 @@ with tabs[6]:
                 {"year": 1983, "val": 4.1, "col": "#e57373"},
                 {"year": 2002, "val": 3.9, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1951, "val": 206.65, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1955, "val": 214.91, "col": "#2e7d32"},
+                {"year": 1998, "val": 222.1, "col": "#4caf50"},
+                {"year": 1697, "val": 228.11, "col": "#81c784"},
+                {"year": 1991, "val": 228.89, "col": "#a5d6a7"}
+            ], 
+            "risks": [
+            {"title": "🔥 Экстремальное потепление ", "text": "Повышение на 0,37 °С каждые 10 лет. 2025 год — самый теплый за всю историю.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌾 Аграрные засухи ", "text": "Снижение осадков в апреле, мае и июне. Дефицит влаги именно в период посевной и активного роста культур создает прямую угрозу урожайности.", "level": 70, "color": "#f57c00"},
+            {"title": "🌊 Переувлажнение в межсезонье ", "text": "Рост осадков весной (+6.1 мм/10 лет) провоцирует наводнения.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "Акмолинская область входит в число регионов с наиболее выраженным темпом потепления. Характерной чертой является «сезонный дисбаланс» осадков: их количество растет зимой, но сокращается в критически важные для сельского хозяйства весенне-летние месяцы. Климатическая адаптация региона должна быть направлена на удержание зимней влаги и внедрение засухоустойчивых технологий возделывания почв.",            
             "zones": [
             {
                 "title": "🌳 Лесостепная (~30%)",
@@ -7310,7 +7832,7 @@ with tabs[6]:
             "p_norm": {"w": 47.5, "sp": 69.2, "su": 130.1, "au": 78.2, "y": 325.0},
             "p_anom_2025": {"w": 19.9, "sp": 15.5, "su": 24.4, "au": 4.2, "y": 69.5}           
         },
-        "Западно-Казахстанская": {
+        "Западно-Казахстанская область": {
             "geo_text": "Западно-Казахстанская область расположена на северо-западе страны, в пределах Прикаспийской низменности и Предуральского плато. Климат региона резко континентальный, с выраженным дефицитом влаги в летний период. Особенностью региона является крайне интенсивное весеннее потепление и высокая изменчивость увлажнения.",
             "stations": 8,
             "area": "151 339 км²",
@@ -7321,6 +7843,9 @@ with tabs[6]:
             "precip_2025": 265.5,
             "prec_norm": "94.4%",
             "temp_extreme": {"max": "+29.1°С (июль 2010)", "min": "-25.8°С (февраль 1954)"},
+            "trend_temp": "+0,59 °С",
+            "trend_precip": "-0,03 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",
             "top_years": [
                 {"year": 2025, "val": 9.9, "col": "#990000"},
                 {"year": 2023, "val": 9.3, "col": "#b30000"},
@@ -7328,6 +7853,19 @@ with tabs[6]:
                 {"year": 2020, "val": 8.9, "col": "#e57373"},
                 {"year": 2021, "val": 8.9, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1996, "val": 158.99, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1949, "val": 162.44, "col": "#2e7d32"},
+                {"year": 1972, "val": 167.91, "col": "#4caf50"},
+                {"year": 1955, "val": 172.61, "col": "#81c784"},
+                {"year": 2014, "val": 175.39, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🔥 Интенсивное потепление", "text": "Повышение на 0,59 °С каждые 10 лет . 2025 год — самый теплый за всю историю (Ранг №1). Наиболее выраженный рост температур наблюдается в марте (+1,09 °С/10 лет).", "level": 95, "color": "#d32f2f"},
+            {"title": "🌾 Сезонный дефицит влаги и засухи ", "text": "Годовое количество осадков стабильно (−0,03 мм/10 лет), но происходит опасное перераспределение. Уменьшение осадков летом (−3,17 мм/10 лет) и зимой (−1,43 мм/10 лет). Особенно критично сокращение в августе (−3,32 мм/10 лет).", "level": 70, "color": "#f57c00"},
+            {"title": "❄️ Риск раннего снеготаяния ", "text": "Рост весенних осадков (+5,23 мм/10 лет) на фоне резкого потепления в марте. Повышает вероятность интенсивных весенних половодий на реках региона.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "В Западно-Казахстанской области наблюдается «сдвиг» климатических сезонов: весна становится более теплой и влажной, в то время как лето и зима аридизируются (становятся суше). 2025 год подтвердил статус региона как зоны активного температурного роста (+3,5 °С к календарной норме). Главным вызовом для сельского хозяйства является усиление дефицита влаги в августе и сентябре, что требует адаптации сроков уборки и управления водными ресурсами.",            
             "zones": [
             {
                 "title": "🌾 Степная (~40%)",
@@ -7336,7 +7874,7 @@ with tabs[6]:
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Полупустынная (~60%)",
+                "title": "🏜️ Полупустынная (~60%)",
                 "desc": "Южная часть, открытые равнинные пространства.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7358,6 +7896,9 @@ with tabs[6]:
             "precip_2025": 146.7,
             "prec_norm": "97.6%",
             "temp_extreme": {"max": "+29.4°С (июль 2018)", "min": "-21.4°С (январь 1954)"},
+            "trend_temp": "+0,54 °С",
+            "trend_precip": "+4,73 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2023, "val": 12.1, "col": "#990000"},
                 {"year": 2025, "val": 12.0, "col": "#b30000"},
@@ -7365,15 +7906,28 @@ with tabs[6]:
                 {"year": 2024, "val": 11.5, "col": "#e57373"},
                 {"year": 2022, "val": 11.4, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1972, "val": 69.90, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1984, "val": 70.63, "col": "#2e7d32"},
+                {"year": 2018, "val": 86.33, "col": "#4caf50"},
+                {"year": 1968, "val": 88.6, "col": "#81c784"},
+                {"year": 2020, "val": 96.17, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🌡️ Экстремальное весеннее потепление ", "text": "Повышение температуры на 0,54 °С каждые 10 лет. Наиболее интенсивный рост температур зафиксирован в феврале и марте (+0,96 °С/10 лет). Сокращение периода залегания снежного покрова и сверхраннее наступление весенних процессов.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌾 Летняя засуха и дефицит влаги ", "text": "Несмотря на общий рост годовых осад (+4,73 мм/10 лет), наблюдается устойчивое сокращение летних дождей (−2,59 мм/10 лет). Наибольшее снижение осадков в августе (−1,14 мм/10 лет). Это ведет к иссушению почв и деградации растительности в самый жаркий период.", "level": 90, "color": "#d32f2f"},
+            {"title": "🌊 Сезонный дисбаланс увлажнения", "text": "Рост осадков происходит исключительно зимой и весной (+5,61 мм/10 лет в весенний период). Увеличение весенней влаги при росте летних температур усиливает испаряемость, что не компенсирует летний дефицит воды для пастбищ.", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "Атырауская область демонстрирует классический сценарий опустынивания: температуры растут во все месяцы года (особенно в феврале-марте), а осадки перераспределяются. Год становится более влажным зимой и весной, но более сухим летом и осенью. 2025 год подтвердил статус региона как зоны температурных рекордов (+12,0 °С). Главный вызов экстремальная жара в июле (до +29,4 °С в среднем за месяц) на фоне дефицита летних осадков.",            
             "zones": [
             {
-                "title": "🌳 Полупустынная (~20%)",
+                "title": "🏜️ Полупустынная (~20%)",
                 "desc": "Северные окраины области, полынно-злаковая растительность.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 СПустынная (~80%)",
+                "title": "🏜️🔥 Пустынная (~80%)",
                 "desc": "Большая часть области, Прикаспийская низменность. Солончаки и пески.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7395,6 +7949,9 @@ with tabs[6]:
             "precip_2025": 118.5,
             "prec_norm": "83.1%",
             "temp_extreme": {"max": "+29.7°С (июль 2018)", "min": "-11.6°С (январь 1954)"},
+            "trend_temp": "+0,59 °С",
+            "trend_precip": "-5,8 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2023, "val": 14.3, "col": "#990000"},
                 {"year": 2024, "val": 14.1, "col": "#b30000"},
@@ -7402,15 +7959,28 @@ with tabs[6]:
                 {"year": 2025, "val": 13.9, "col": "#e57373"},
                 {"year": 2004, "val": 13.8, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 2021, "val": 42.60, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1942, "val": 54.00, "col": "#2e7d32"},
+                {"year": 1949, "val": 56.00, "col": "#4caf50"},
+                {"year": 1994, "val": 69.60, "col": "#81c784"},
+                {"year": 1986, "val": 70.70, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🏜️ Интенсивное опустынивание ", "text": "Уменьшение годовых осадков на 5,8 мм каждые 10 лет. Сокращение происходит в самые важные периоды — весной (−3,62 мм/10 лет) и летом (−2,28 мм/10 лет). В мае и апреле зафиксировано наибольшее падение увлажнения, что ведет к уничтожению естественного пастбищного покрова.", "level": 95, "color": "#d32f2f"},
+            {"title": "☀️ Тепловые волны ", "text": "Максимальная среднемесячная температура июля достигла +29,7 °С. Повышение нагрузки на энергетические системы и системы опреснения воды, рост рисков для здоровья населения.", "level": 70, "color": "#f57c00"},
+            {"title": "❄️ Экстремальный рост зимне-весенних температур ", "text": "Потепление на 0,59 °С за десятилетие. Наибольший рост температур отмечается в феврале (+0,76 °С/10 лет). Сверхраннее наступление жары при отсутствии весенних дождей усиливает испарение скудных запасов влаги. ", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "Мангистауская область находится в состоянии климатического стресса. В отличие от других регионов, здесь отрицательный тренд осадков охватывает три сезона из четырех (весна, лето, осень). Рост осадков наблюдается только зимой (+1,37 мм/10 лет), что не компенсирует их катастрофическую нехватку в теплый период года. 2025 год подтвердил долгосрочный тренд: область становится всё более жаркой и сухой, что требует немедленных мер по адаптации водного хозяйства.",            
             "zones": [
             {
-                "title": "🌳 Морская прибрежная (~15%)",
+                "title": "🌊 Морская прибрежная (~15%)",
                 "desc": "Узкая полоса вдоль Каспия. Относительно мягкая зима и высокая влажность воздуха.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Экстремально-пустынная (~85%)",
+                "title": "🏜️☀️ Экстремально-пустынная (~85%)",
                 "desc": "Внутренние плато (Устюрт) и впадины. Зона жесточайшего дефицита влаги.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7432,6 +8002,9 @@ with tabs[6]:
             "precip_2025": 258.8,
             "prec_norm": "98.2%",
             "temp_extreme": {"max": "+27.5°С (июль 1984)", "min": "-25.2°С (февраль 1969)"},
+            "trend_temp": "+0,50 °С",
+            "trend_precip": "-1,46 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",
             "top_years": [
                 {"year": 2025, "val": 8.5, "col": "#990000"},
                 {"year": 2023, "val": 8.2, "col": "#b30000"},
@@ -7439,6 +8012,19 @@ with tabs[6]:
                 {"year": 2013, "val": 7.5, "col": "#e57373"},
                 {"year": 2021, "val": 7.4, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1944, "val": 143.07, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 2018, "val": 165.43, "col": "#2e7d32"},
+                {"year": 1955, "val": 165.47, "col": "#4caf50"},
+                {"year": 1951, "val": 166.32, "col": "#81c784"},
+                {"year": 2012, "val": 166.76, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🌡️ Интенсивное весеннее потепление", "text": "Повышение на 0,50 °С каждые 10 лет. Наиболее резкий рост температур зафиксирован в марте (+1,12 °С/10 лет). Сверхбыстрое снеготаяние и раннее иссушение верхнего слоя почвы.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌾 Осенне-летняя аридизация ", "text": "Устойчивое снижение осадков летом (−1,2 мм/10 лет) и особенно осенью (−3,2 мм/10 лет). Сокращение влаги в июне и октябре ведет к дефициту влагозарядки почвы перед зимой и плохим условиям для вегетации поздних культур.", "level": 70, "color": "#f57c00"},
+            {"title": "🌊 Изменение структуры увлажнения ", "text": "Рост осадков наблюдается только весной (+2,74 мм/10 лет), преимущественно в марте. Общий годовой тренд отрицательный (−1,46 мм/10 лет), так как весенний прирост не компенсирует летние и осенние потери.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "Актюбинская область сталкивается с двойным вызовом: быстрым ростом температур и снижением годовых сумм осадков. 2025 год продемонстрировал значительный температурный скачок (на 3 °С выше исторической нормы). Основной риск для региона заключается в сдвиге влаги на раннюю весну, что при экстремально жарком лете приводит к быстрому опустыниванию южных и центральных районов области.",            
             "zones": [
             {
                 "title": "🌾 Степная (~35%)",
@@ -7469,6 +8055,9 @@ with tabs[6]:
             "precip_2025": 153.8,
             "prec_norm": "71.3%",
             "temp_extreme": {"max": "+26.4°С (июль 2023)", "min": "-27.9°С (январь 1969)"},
+            "trend_temp": "+0,41 °С",
+            "trend_precip": "+0,67 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2025, "val": 8.1, "col": "#990000"},
                 {"year": 2023, "val": 7.5, "col": "#b30000"},
@@ -7476,15 +8065,28 @@ with tabs[6]:
                 {"year": 1983, "val": 6.6, "col": "#e57373"},
                 {"year": 2022, "val": 6.5, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1944, "val": 110.5, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1936, "val": 117.6, "col": "#2e7d32"},
+                {"year": 1995, "val": 118.25, "col": "#4caf50"},
+                {"year": 1951, "val": 121.17, "col": "#81c784"},
+                {"year": 1991, "val": 123.87, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "☀️ Сверхбыстрое весеннее потепление ", "text": "Рост температуры в марте на 1,36 °С каждые 10 лет. Это самый высокий показатель среди всех регионов. Стремительный переход от зимы к лету («взрывная весна»), что ведет к быстрому испарению талых вод и иссушению пастбищ. ", "level": 95, "color": "#d32f2f"},
+            {"title": "🏜️ Дефицит увлажнения ", "text": "Хотя годовой тренд осадков слабоположительный (+0,67 мм/10 лет), 2025 год показал жесткий дефицит влаги (лишь 71% нормы).Уменьшение осадков в январе (−1,4 мм/10 лет) и осенью (−0,52 мм/10 лет) на фоне экстремальной жары усиливает аридность региона.", "level": 70, "color": "#f57c00"},
+            {"title": "☀️ Летний тепловой стресс ", "text": "Максимальная среднемесячная температура июля достигла +26,4 °С (в 2023 г.). Рост пожароопасности в степных и полупустынных районах.", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "Область Ұлытау находится в эпицентре температурных изменений Казахстана. Аномалия 2025 года (+3,7 °С) является одной из самых высоких в стране. Главная климатическая особенность — феноменальный рост мартовских температур, который полностью меняет гидрологический режим начала года. Увеличение осадков в теплый период (лето: +1,84 мм/10 лет) лишь частично компенсирует зимне-осеннее иссушение, сохраняя высокий риск опустынивания.",            
             "zones": [
             {
-                "title": "🌳 Полупустынная (~40%)",
+                "title": "🏜️ Полупустынная (~40%)",
                 "desc": "Северная часть мелкосопочника.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Пустынная (~60%)",
+                "title": "🏜️☀️ Пустынная (~60%)",
                 "desc": "Юг, переход в пустыню Бетпак-Дала.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7506,6 +8108,9 @@ with tabs[6]:
             "precip_2025": 163.9,
             "prec_norm": "117.7%",
             "temp_extreme": {"max": "+23.7°С (июль 1974)", "min": "-28.4°С (январь 1969)"},
+            "trend_temp": "+0,33 °С",
+            "trend_precip": "+6,7 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2023, "val": 5.2, "col": "#990000"},
                 {"year": 2020, "val": 4.9, "col": "#b30000"},
@@ -7513,9 +8118,22 @@ with tabs[6]:
                 {"year": 2015, "val": 4.8, "col": "#e57373"},
                 {"year": 2024, "val": 3.8, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1974, "val": 256.38, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 2008, "val": 263.84, "col": "#2e7d32"},
+                {"year": 1997, "val": 277.4, "col": "#4caf50"},
+                {"year": 1962, "val": 285.4, "col": "#81c784"},
+                {"year": 1955, "val": 294.28, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🔥 «Взрывное» весеннее потепление", "text": "Рост температуры в марте на 1,17 °С каждые 10 лет. Стремительное снеготаяние в предгорьях Алтая, что при одновременном росте мартовских осадков резко повышает риски разрушительных паводков.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌊 Изменение структуры увлажнения", "text": "Положительный тренд осадков (+6,7 мм/10 лет) за счет зимы и весны. Наибольший рост зафиксирован в марте (+3,7 мм/10 лет). Увеличение снежности зим и влажности весны на фоне дефицита влаги в мае (−2,7 мм/10 лет).", "level": 70, "color": "#f57c00"},
+            {"title": "🌾 Аграрные риски мая", "text": "Единственный месяц с существенным снижением осадков — май (−2,7 мм/10 лет). Иссушение почвы в период посевных работ, что критично для растениеводства в восточных районах.", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "ВКО демонстрирует тренд на «смягчение» зим и увлажнение начала года. 2025 год подтвердил общую тенденцию потепления (аномалия +2,2 °С). Единственный месяц с небольшим отрицательным температурным трендом — сентябрь (−0,03 °С/10 лет), что может способствовать более длительному периоду уборки урожая. Однако быстрый рост температур в марте (+1,17 °С) в сочетании с ростом осадков требует усиленного мониторинга паводковой ситуации в горных районах.",            
             "zones": [
             {
-                "title": "🌳 Горно-лесная (~60%)",
+                "title": "🏔️🌲 Горно-лесная (~60%)",
                 "desc": "Алтайские горы, хвойные леса, высокая влажность..",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
@@ -7543,6 +8161,9 @@ with tabs[6]:
             "precip_2025": 311.4,
             "prec_norm": "108.4%",
             "temp_extreme": {"max": "+24.3°С (июль 1974)", "min": "-27.7°С (январь 1969)"},
+            "trend_temp": "+0,32 °С",
+            "trend_precip": "+6,0 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",          
             "top_years": [
                 {"year": 2025, "val": 6.1, "col": "#990000"},
                 {"year": 2023, "val": 6.0, "col": "#b30000"},
@@ -7550,6 +8171,19 @@ with tabs[6]:
                 {"year": 2002, "val": 5.7, "col": "#e57373"},
                 {"year": 2024, "val": 5.6, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1974, "val": 168.25, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 2008, "val": 191.58, "col": "#2e7d32"},
+                {"year": 1991, "val": 208.73, "col": "#4caf50"},
+                {"year": 1997, "val": 212.46, "col": "#81c784"},
+                {"year": 1982, "val": 214.34, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🌡️ Стабильное потепление ", "text": "Повышение температуры на 0,32 °С каждые 10 лет. Наиболее активный рост наблюдается в апреле (+0,74 °С/10 лет), что ускоряет сход снежного покрова.Сентябрь — единственный месяц с «замиранием» потепления (тренд −0,01 °С/10 лет).", "level": 70, "color": "#f57c00"},
+            {"title": "🌊 Рост паводковой нагрузки", "text": "Наибольший рост месячных осадков зафиксирован в марте (+3,1 мм/10 лет). Сочетание потепления и роста осадков в марте повышает вероятность интенсивных весенних паводков на реках бассейна Иртыша.", "level": 70, "color": "#f57c00"},
+            {"title": "💧 Весенний дефицит влаги ", "text": "Уменьшение осадков в мае (−1,8 мм/10 лет) и апреле (−1,0 мм/10 лет). Несмотря на общий рост годовых осадков (+6,0 мм/10 лет), иссушение в пик посевной (май) может негативно сказываться на ранних этапах вегетации.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "Климат области Абай становится более влажным: рост осадков наблюдается практически во все сезоны, особенно летом (+3,0 мм/10 лет). 2025 год подтвердил статус региона как зоны умеренных, но устойчивых изменений (+2,5 °С к норме). Положительным фактором является рост осадков в августе (+2,3 мм/10 лет), что смягчает летнюю засушливость, однако дефицит осадков в мае остается главным вызовом для аграрного сектора.",            
             "zones": [
             {
                 "title": "🌾 Степная (~45%)",
@@ -7558,7 +8192,7 @@ with tabs[6]:
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Полупустынная (~55%)",
+                "title": "🏜️ Полупустынная (~55%)",
                 "desc": "Юг, район озера Балхаш и Зайсанская впадина.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7580,6 +8214,9 @@ with tabs[6]:
             "precip_2025": 292.6,
             "prec_norm": "104.3%",
             "temp_extreme": {"max": "+25.6°С (июль 1998)", "min": "-29.3°С (февраль 1969)"},
+            "trend_temp": "+0,43 °С",
+            "trend_precip": "+0,1 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2025, "val": 6.5, "col": "#990000"},
                 {"year": 2023, "val": 5.6, "col": "#b30000"},
@@ -7587,6 +8224,19 @@ with tabs[6]:
                 {"year": 1983, "val": 5.2, "col": "#e57373"},
                 {"year": 2004, "val": 4.8, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1964, "val": 338, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1950, "val": 387, "col": "#2e7d32"},
+                {"year": 2013, "val": 384, "col": "#4caf50"},
+                {"year": 1993, "val": 382, "col": "#81c784"},
+                {"year": 1990, "val": 376, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🔥 Экстремальный рост температур ", "text": "Повышение на 0,43 °С каждые 10 лет. 2025 год стал аномально жарким. Превышение нормы на 3,51 °C свидетельствует о серьезном изменении термического режима.", "level": 95, "color": "#d32f2f"},
+            {"title": "💧 Нестабильность увлажнения ", "text": "Слабоположительный тренд осадков (+0,1 мм/10 лет) фактически означает стагнацию увлажнения на фоне сильного потепления. Повышение температуры ускоряет испарение. Даже при сохранении нормы осадков, почва становится суше.", "level": 70, "color": "#f57c00"},
+            {"title": "🌦️ Изменение внутригодового распределения осадков ", "text": "Рост осадков наблюдается в большинстве месяцев (январь–май, июль–август) в пределах 0,11–2,55 мм/10 лет. Основной прирост обеспечивают зимний, весенний и летний сезоны, что несколько смягчает риски засух в период вегетации.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "Костанайская область демонстрирует один из самых высоких уровней температурных аномалий в северном Казахстане. В 2025 году среднегодовая температура (+6,7 °С) более чем в два раза превысила историческую норму региона. Несмотря на слабую тенденцию к росту осадков, интенсивное потепление создает риски для зернового хозяйства. Положительным фактором является то, что рост осадков затрагивает май и август, что крайне важно для формирования урожая пшеницы.",            
             "zones": [
             {
                 "title": "🌳 Лесостепная (~25%)",
@@ -7617,6 +8267,9 @@ with tabs[6]:
             "precip_2025": 439.8,
             "prec_norm": "124.7%",
             "temp_extreme": {"max": "+24.3°С (июль 1965)", "min": "-30.9°С (январь 1969)"},
+            "trend_temp": "+0,32 °С",
+            "trend_precip": "+8,4 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",           
             "top_years": [
                 {"year": 2025, "val": 3.02, "col": "#990000"},
                 {"year": 2020, "val": 2.97, "col": "#b30000"},
@@ -7624,6 +8277,19 @@ with tabs[6]:
                 {"year": 1983, "val": 2.33, "col": "#e57373"},
                 {"year": 2002, "val": 2.28, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1951, "val": 173.34, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1997, "val": 196.26, "col": "#2e7d32"},
+                {"year": 1955, "val": 197.06, "col": "#4caf50"},
+                {"year": 1988, "val": 215.06, "col": "#81c784"},
+                {"year": 1981, "val": 218.26, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🔥 Экстремальные температурные колебания", "text": "Повышение на 0,32 °С каждые 10 лет. Огромная амплитуда между историческим минимумом января (−30,9 °С) и максимумом июля (+24,3 °С). 2025 год показал резкий скачок средней температуры до +5,4 °С.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌦️ Сдвиг сезонного увлажнения ", "text": "Положительный тренд годовых осадков (+8,4 мм/10 лет). Сокращение осадков в мае и июле (на 0,14–1,41 мм/10 лет) создает угрозу «летней засухи» на фоне общего роста годовых показателей.", "level": 70, "color": "#f57c00"},
+            {"title": "💧 Весенние паводки", "text": "Устойчивый рост весенних осадков на 2,6 мм/10 лет. Это благоприятно для накопления влаги в почве перед посевной, но может осложнить полевые работы при чрезмерных осадках в начале сезона.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "Павлодарская область демонстрирует устойчивый тренд к «смягчению» климата и росту годовых сумм осадков. 2025 год стал аномально влажным (124,7% нормы) и теплым (аномалия +3,0 °С). Главный риск заключается в дефиците осадков в мае и июле, что при растущих температурах увеличивает испаряемость и может негативно влиять на урожайность зерновых, несмотря на общую «дождливость» года.",            
             "zones": [
             {
                 "title": "🌾 Степная (~70%)",
@@ -7632,7 +8298,7 @@ with tabs[6]:
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Сухостепная (~30%)",
+                "title": "🌾☀️ Сухостепная (~30%)",
                 "desc": "Южные районы, переход к полупустыне.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7654,6 +8320,9 @@ with tabs[6]:
             "precip_2025": 348.2,
             "prec_norm": "72.4%",
             "temp_extreme": {"max": "+23.9°С (июль 2015)", "min": "-16.5°С (январь 1969)"},
+            "trend_temp": "+0,36 °С",
+            "trend_precip": "+0,4 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",          
             "top_years": [
                 {"year": 2025, "val": 9.46, "col": "#990000"},
                 {"year": 2023, "val": 8.86, "col": "#b30000"},
@@ -7661,15 +8330,28 @@ with tabs[6]:
                 {"year": 1997, "val": 8.76, "col": "#e57373"},
                 {"year": 2015, "val": 8.6, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1944, "val": 284.06, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1991, "val": 294.98, "col": "#2e7d32"},
+                {"year": 1997, "val": 318.99, "col": "#4caf50"},
+                {"year": 1995, "val": 337.83, "col": "#81c784"},
+                {"year": 2020, "val": 348.0, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🌾 Интенсивное летнее иссушение ", "text": "Снижение летних осадков на 2,5 мм каждые 10 лет. Уменьшение влаги в июне и июле на фоне роста температур усиливает риск засух и лесных пожаров в предгорьях.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌦 Деградация осадков в вегетационный период ", "text": "Сокращение осадков в апреле, мае и октябре (на 0,55–3,91 мм/10 лет). Дефицит влаги в период активного роста сельхозкультур требует пересмотра графиков орошения.", "level": 70, "color": "#f57c00"},
+            {"title": "🔥 Температурный стресс ", "text": "Повышение на 0,36 °С за десятилетие. 2025 год стал одним из самых теплых (+9,5 °С), что ускоряет абляцию (таяние) ледников, сокращая долгосрочные запасы пресной воды.", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "Алматинская область входит в фазу «засушливого потепления». Несмотря на символический рост общегодового количества осадков (+0,4 мм/10 лет), их распределение становится крайне невыгодным: летние месяцы катастрофически теряют влагу. 2025 год с его показателем в 72,4% от нормы осадков является ярким индикатором нарастающего водного дефицита. Региону требуется адаптация к уменьшению летнего стока рек и внедрение технологий сбережения талых вод.",            
             "zones": [
             {
-                "title": "🌳 Горная / Предгорная (~30%)",
+                "title": "🏔️ Горная / Предгорная (~30%)",
                 "desc": "Юг и Восток. Заилийский Алатау, обилие рек.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Пустынно-степная(~70%)",
+                "title": "🌾☀️ Пустынно-степная(~70%)",
                 "desc": "Север (Прибалхашье). Пески, сухие равнины.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7691,6 +8373,9 @@ with tabs[6]:
             "precip_2025": 331.7,
             "prec_norm": "86.4%",
             "temp_extreme": {"max": "+24.8°С (июль 2023)", "min": "-4.9°С (январь 2022 г.)"},
+            "trend_temp": "+0,32 °С",
+            "trend_precip": "+3,6 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2025, "val": 14.6, "col": "#990000"},
                 {"year": 2023, "val": 14.0, "col": "#b30000"},
@@ -7698,15 +8383,28 @@ with tabs[6]:
                 {"year": 2019, "val": 13.6, "col": "#e57373"},
                 {"year": 2021, "val": 13.6, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 2016, "val": 597, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1993, "val": 589, "col": "#2e7d32"},
+                {"year": 2010, "val": 560, "col": "#4caf50"},
+                {"year": 2002, "val": 550, "col": "#81c784"},
+                {"year": 1958, "val": 541, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🔥 Стабильное потепление ", "text": "Повышение на 0,32 °С каждые 10 лет. 2025 год подтвердил тренд на перегрев, показав среднюю температуру на 2,1 °C выше нормы. Ускорение таяния ледников Джунгарского Алатау, что в долгосрочной перспективе грозит маловодьем.", "level": 70, "color": "#f57c00"},
+            {"title": "🌦️ Сезонный дисбаланс осадков ", "text": "Общий годовой тренд осадков отрицательный (−3,6 мм/10 лет). Уменьшение влаги в теплый период года на фоне роста температур усиливает засушливость пастбищ.", "level": 70, "color": "#f57c00"},
+            {"title": "💧 Рост зимне-весеннего увлажнения ", "text": "Значительный рост осадков в январе, феврале и марте (до 5,36 мм/10 лет). Накопление большего объема снега в горах, что при резком весеннем потеплении повышает риск селей и паводков.", "level": 45, "color": "#1976d2"}
+            ],
+            "final_conclusion": "Климат области Жетісу становится более контрастным. Наблюдается выраженное потепление при сокращении годовой суммы осадков. Однако положительным фактором является «увлажнение» зимнего и ранневесеннего периодов, что способствует накоплению влаги в горах. 2025 год зафиксирован как засушливый (86% нормы), что в сочетании с высокой температурой требует усиленного контроля за рациональным распределением поливной воды в вегетационный период.",            
             "zones": [
             {
-                "title": "🌳 Высокогорная (~35%)",
+                "title": "🏔️ Высокогорная (~35%)",
                 "desc": "Хребты Джунгарского Алатау, ледники.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Пустынно-степная (~65%)",
+                "title": "🏜️☀️ Пустынно-степная (~65%)",
                 "desc": "Балхаш-Алакольская низменность, сухие равнины.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7728,6 +8426,9 @@ with tabs[6]:
             "precip_2025": 240.0,
             "prec_norm": "55.1%",
             "temp_extreme": {"max": "+29.7°С (июль 2019)", "min": "-12.9°С (февраль 1969)"},
+            "trend_temp": "+0,40 °С",
+            "trend_precip": "+2,3 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2025, "val": 14.6, "col": "#990000"},
                 {"year": 2023, "val": 14.0, "col": "#b30000"},
@@ -7735,15 +8436,28 @@ with tabs[6]:
                 {"year": 2019, "val": 13.6, "col": "#e57373"},
                 {"year": 2021, "val": 13.6, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1969, "val": 722.0, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1958, "val": 685.3, "col": "#2e7d32"},
+                {"year": 2003, "val": 641.0, "col": "#4caf50"},
+                {"year": 1993, "val": 598.2, "col": "#81c784"},
+                {"year": 1998, "val": 596.7, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🏜️ Усиление аридности ", "text": "Снижение годовых осадков на 2,3 мм каждые 10 лет. В 2025 году выпало чуть больше половины годовой нормы осадков. Уменьшение влаги наблюдается практически во все ключевые месяцы (апрель–июль, сентябрь–октябрь).", "level": 95, "color": "#d32f2f"},
+            {"title": "🔥 Экстремальный тепловой стресс ", "text": "Повышение на 0,40 °С каждые 10 лет. Среднемесячная температура июля достигает +29,7 °С. Рост испаряемости и увеличение потребности в поливной воде при одновременном её дефиците. ", "level": 95, "color": "#d32f2f"},
+            {"title": "💧 Деградация водных ресурсов ", "text": "Значительное уменьшение осадков во все сезоны года. Сокращение снежного покрова в горах и снижение стока рек (Сырдарья), что ставит под угрозу продовольственную безопасность.", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "Туркестанская область находится в зоне повышенного климатического риска. В отличие от северных регионов, где рост температур частично компенсируется ростом осадков, здесь наблюдается синхронный процесс: быстрый рост тепла и стабильное сокращение влаги. 2025 год продемонстрировал сценарий «жесткой засухи», когда при аномально высокой температуре (+14,2 °С) регион получил лишь 55% необходимых осадков. Адаптация требует тотального перехода на водосберегающие технологии.",            
             "zones": [
             {
-                "title": "🌳 Пустынная (~75%)",
+                "title": "🏜️☀️ Пустынная (~75%)",
                 "desc": "Западная часть (Кызылкум), жаркое сухое лето.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Предгорная (~25%)",
+                "title": "🏔️ Предгорная (~25%)",
                 "desc": "Предгорная	Восток и Юго-восток (каштановые почвы).",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7765,6 +8479,9 @@ with tabs[6]:
             "precip_2025": 111.8,
             "prec_norm": "79.1%",
             "temp_extreme": {"max": "+30.4°С (июль 2019)", "min": "-20.7°С (январь 1969)"},
+            "trend_temp": "+0,53 °С",
+            "trend_precip": "+5,7 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2025, "val": 12.82, "col": "#990000"},
                 {"year": 2023, "val": 12.74, "col": "#b30000"},
@@ -7772,15 +8489,28 @@ with tabs[6]:
                 {"year": 2016, "val": 11.78, "col": "#e57373"},
                 {"year": 2022, "val": 11.70, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1971, "val": 88.2, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 2021, "val": 90.7, "col": "#2e7d32"},
+                {"year": 2000, "val": 90.78, "col": "#4caf50"},
+                {"year": 1944, "val": 92.5, "col": "#81c784"},
+                {"year": 1951, "val": 97.78, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🌡️ Экстремальный темп потепления ", "text": "Повышение температуры на 0,53 °С каждые 10 лет. Это один из самых высоких показателей на юге страны. 2025 год продемонстрировал аномалию +3,5 °С — регион фактически перешел в новый температурный режим.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌾 Прогрессирующая аридизация ", "text": "Снижение годовых осадков на 5,7 мм за десятилетие. Наиболее выраженное падение увлажнения происходит осенью (−3,7 мм/10 лет). Это ведет к деградации пастбищ и затрудняет естественное восстановление растительности.", "level": 90, "color": "#d32f2f"},
+            {"title": "🔥 Тепловой стресс и испаряемость ", "text": "Максимальная среднемесячная температура июля достигла +30,4 °С. При крайне малом количестве осадков (111 мм) и такой жаре коэффициент испаряемости в десятки раз превышает количество влаги, что делает богарное (неполивное) земледелие невозможным.", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "Кызылординская область является «горячей точкой» климатических изменений в Казахстане. 2025 год подтвердил опасный тренд: область становится всё более жаркой и сухой одновременно. Незначительный рост осадков в зимне-весенний период и июле (+0,05–0,66 мм) не способен компенсировать резкое осеннее иссушение и общее падение годовых сумм. Основной вызов — сохранение водного баланса реки Сырдарья в условиях, когда локальные осадки составляют менее 80% от и без того низкой нормы.",            
             "zones": [
             {
-                "title": "🌳 ЛПустынная (~90%)",
+                "title": "☀️ Пустынная (~90%)",
                 "desc": "Почти вся территория. Пустыня Кызылкум, зона Аральского бедствия.",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Долина реки (~10%)",
+                "title": "🏞️💧 Долина реки (~10%)",
                 "desc": "Пойма Сырдарьи. Тугайные леса и орошаемые земли.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7802,6 +8532,9 @@ with tabs[6]:
             "precip_2025": 138.4,
             "prec_norm": "45.4%",
             "temp_extreme": {"max": "+28.2°С (июль 2019)", "min": "-17.8°С (февораль 1969)"},
+            "trend_temp": "+0,36 °С",
+            "trend_precip": "+3,0 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",            
             "top_years": [
                 {"year": 2025, "val": 12.6, "col": "#990000"},
                 {"year": 2022, "val": 12.0, "col": "#b30000"},
@@ -7809,15 +8542,28 @@ with tabs[6]:
                 {"year": 2013, "val": 11.7, "col": "#e57373"},
                 {"year": 2018, "val": 11.7, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 2025, "val": 138.4, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 2012, "val": 177.7, "col": "#2e7d32"},
+                {"year": 2008, "val": 192.7, "col": "#4caf50"},
+                {"year": 1995, "val": 193.8, "col": "#81c784"},
+                {"year": 2020, "val": 202.2, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🌾 Аридность и экстремальное снижение осадков ", "text": "Уменьшение годовой суммы осадков на 7,4 мм каждые 10 лет. 2025 год стал экстремально засушливым (выпало менее половины нормы).Сокращение влаги в ключевые месяцы (апрель–июнь и сентябрь–ноябрь) на 0,8–2,6 мм/10 лет ведет к деградации пастбищ. ", "level": 95, "color": "#d32f2f"},
+            {"title": "🔥 Тепловой стресс ", "text": "Повышение температуры на 0,36 °С за десятилетие. Рост числа дней с температурой выше +40 °С, что пагубно влияет на здоровье населения и вегетацию культур.", "level": 70, "color": "#f57c00"},
+            {"title": "🌊 Дефицит водных ресурсов ", "text": "Снижение осадков осеннего сезона и общего годового фона. Истощение запасов в водохранилищах и снижение стока рек, что при текущем тренде потепления усиливает опустынивание южных районов.", "level": 90, "color": "#d32f2f"}
+            ],
+            "final_conclusion": "Жамбылская область находится в зоне высокого климатического риска. В отличие от севера страны, здесь наблюдается не только рост температур, но и устойчивое сокращение осадков. 2025 год продемонстрировал опасное сочетание рекордного тепла (Ранг №1) и критической засухи. Адаптационные меры должны включать переход на жесткое водосбережение, капельное орошение и восстановление деградированных пастбищных земель.",            
             "zones": [
             {
-                "title": "🌳 Пустынная (~70%)",
+                "title": "🏜️☀️ Пустынная (~70%)",
                 "desc": "Северная часть (глинистая пустыня Бетпак-Дала и пески Мойынкум).",
                 "color": "#2e7d32",
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Предгорно-горная (~30%)",
+                "title": "🏔️ Предгорно-горная (~30%)",
                 "desc": "Южная часть вдоль хребтов Киргизского Алатау. Зона поливного земледелия.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7839,6 +8585,9 @@ with tabs[6]:
             "precip_2025": 224.4,
             "prec_norm": "88.1%",
             "temp_extreme": {"max": "+24.2°С (июль 1974)", "min": "-26.8°С (январь 1969)"},
+            "trend_temp": "+0,29 °С",
+            "trend_precip": "+2,19 мм",
+            "analysis_text": "Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.",           
             "top_years": [
                 {"year": 2025, "val": 6.3, "col": "#990000"},
                 {"year": 2023, "val": 6.1, "col": "#b30000"},
@@ -7846,6 +8595,19 @@ with tabs[6]:
                 {"year": 2002, "val": 5.3, "col": "#e57373"},
                 {"year": 1983, "val": 5.3, "col": "#ef9a9a"}
             ],
+            "top_precip_years": [
+                {"year": 1974, "val": 155.54, "col": "#1b5e20"}, # Темно-зеленый
+                {"year": 1944, "val": 164.97, "col": "#2e7d32"},
+                {"year": 1951, "val": 166.66, "col": "#4caf50"},
+                {"year": 1955, "val": 172.64, "col": "#81c784"},
+                {"year": 1950, "val": 177.39, "col": "#a5d6a7"}
+            ],            
+            "risks": [
+            {"title": "🔥 Экстремальный рост весенних температур ", "text": "Повышение на 0,29 °С каждые 10 лет. В марте зафиксирован аномальный рост — +1,15 °С за десятилетие. Это ведет к сверхраннему разрушению устойчивого снежного покрова и ложной весне.", "level": 95, "color": "#d32f2f"},
+            {"title": "🌦️ Летнее перераспределение осадков ", "text": "Общий годовой рост осадков (+2,19 мм/10 лет) за счет летнего сезона (+3,14 мм/10 лет). Рост осадков в июле и августе часто носит ливневый характер, что при высоких температурах не компенсирует засушливость, а может приводить к эрозии почв.", "level": 70, "color": "#f57c00"},
+            {"title": "💧 Весенне-осенний дефицит влаги ", "text": "Снижение осадков в мае (−2,76 мм/10 лет) и осенью (−1,21 мм/10 лет). Майское иссушение почв критично для посевной кампании зерновых в центральном регионе.", "level": 70, "color": "#f57c00"}
+            ],
+            "final_conclusion": "Карагандинская область демонстрирует специфический сценарий: климат становится более влажным летом, но при этом экстремально жарким весной. 2025 год подтвердил статус региона как зоны активных изменений (аномалия +2,7 °С). Единственный месяц с отрицательным температурным трендом, сентябрь (−0,06 °С/10 лет), что несколько продлевает условия для созревания культур, однако общее иссушение в мае остается главным аграрным вызовом.",            
             "zones": [
             {
                 "title": "🌾 Степная (~40%)",
@@ -7854,7 +8616,7 @@ with tabs[6]:
                 "bg": "#f1f8e9"
             },
             {
-                "title": "🌾 Полупустынная (~60%)",
+                "title": "🏜️ Полупустынная (~60%)",
                 "desc": "Южная часть. Сухие степи, высокая испаряемость.",
                 "color": "#f57c00",
                 "bg": "#fff3e0"
@@ -7887,14 +8649,14 @@ with tabs[6]:
                 return None, None, {}
 
         mapping = {
-            "Абайская область": {"col_t": "АБАЙ.ОБЛ", "col_p": "Абайск.обл"},
+            "Область Абай": {"col_t": "АБАЙ.ОБЛ", "col_p": "Абайск.обл"},
             "Акмолинская область": {"col_t": "АКМОЛ.ОБЛ", "col_p": "Акм обл"},
             "Актюбинская область": {"col_t": "АКТЮБИН.ОБЛ", "col_p": "Актю обл"},
             "Алматинская область": {"col_t": "АЛМАТИН.ОБЛ", "col_p": "Алмат обл"},
             "Атырауская область": {"col_t": "АТЫРАУ.ОБЛ", "col_p": "Атыр обл"},
             "Восточно-Казахстанская область": {"col_t": "ВКО", "col_p": "ВКО"},
             "Жамбылская область": {"col_t": "ЖАМБЫЛ.ОБЛ", "col_p": "жамб обл"},
-            "Жетысуская область": {"col_t": "ЖЕТЫСУ.ОБЛ", "col_p": "Жетысус обл"},
+            "Область Жетісу": {"col_t": "ЖЕТЫСУ.ОБЛ", "col_p": "Жетысус обл"},
             "Западно-Казахстанская область": {"col_t": "ЗКО", "col_p": "ЗКО"},
             "Карагандинская область": {"col_t": "КАРАГ.ОБЛ", "col_p": "Караг обл"},
             "Костанайская область": {"col_t": "КОСТ.ОБЛ", "col_p": "Кост обл"},
@@ -7903,7 +8665,7 @@ with tabs[6]:
             "Павлодарская область": {"col_t": "ПАВЛ.ОБЛ", "col_p": "Павл обл"},
             "Северо-Казахстанская область": {"col_t": "СКО", "col_p": "СКО"},
             "Туркестанская область": {"col_t": "ТУРКЕСТ.ОБЛ", "col_p": "Турк обл"},
-            "Улытауская область": {"col_t": "УЛЫТАУ.ОБЛ", "col_p": "Улытау обл"},
+            "Область Ұлытау": {"col_t": "УЛЫТАУ.ОБЛ", "col_p": "Улытау обл"},
             "Казахстан (в целом)": {"col_t": "КАЗАХСТАН", "col_p": "Казахстан"}
         }
 
@@ -7911,7 +8673,7 @@ with tabs[6]:
     
     df_temp, df_precip, name_mapping = load_all_data()    
 
-      
+     
     def render_climate_charts(df, column_name, title, subtitle, colorscale, bar_colors, unit):
         st.subheader(title)
         st.caption(subtitle)
@@ -7938,9 +8700,8 @@ with tabs[6]:
         ))
 
         st.plotly_chart(fig_chart, use_container_width=True)
-    
-# --- ИНТЕГРАЦИЯ С ТВОИМ ИНТЕРФЕЙСОМ ---
-
+        
+        
     # 1. Выбор области (используем ключи из твоей базы ALL_REGIONS_DATABASE)
     selected_name = st.selectbox("Выберите область Казахстана:", list(ALL_REGIONS_DATABASE.keys()))
 
@@ -7992,18 +8753,78 @@ with tabs[6]:
             delta="отклонение",
             delta_color="off"
         )
-    
+  
+ 
+    st.markdown("### 🗺️ Природно-климатические зоны")
 
+    # Получаем данные
+    zones = reg.get("zones", []) 
+
+    # Используем пропорцию [2, 1], чтобы текст справа имел достаточно места
+    col_left, col_right = st.columns([2, 1])
+
+    with col_left:
+        try:
+            # Основная карта Казахстана
+            st.image("Natural Zones.jpeg", use_container_width=True)
+        except Exception as e:
+            st.error(f"Ошибка карты: {e}")
+
+    with col_right:
+        try:
+            # УМЕНЬШАЕМ ЛЕГЕНДУ: вместо use_container_width задаем фиксированную ширину
+            # Это сделает шкалу аккуратной и не даст ей растянуться на всю колонку
+            st.image("Клим_зоны_Шкала.jpeg", width=220) 
+        except:
+            pass
+
+        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
         
+        if zones:
+            for zone in zones:
+                z_bg = zone.get('bg', '#f8f9fa')
+                z_col = zone.get('color', '#333')
+                z_title = zone.get('title', 'Зона')
+                z_desc = zone.get('desc', '')
+
+                # ЕЩЕ БОЛЬШЕ ТЕКСТА: заголовок 20px, описание 17px
+                st.markdown(f"""
+                    <div style="
+                        background-color: {z_bg}; 
+                        border-radius: 14px; 
+                        padding: 22px; 
+                        border-left: 8px solid {z_col};
+                        margin-bottom: 20px;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+                    ">
+                        <div style="color: {z_col}; font-weight: 850; font-size: 20px; margin-bottom: 10px; letter-spacing: -0.5px;">
+                            {z_title}
+                        </div>
+                        <div style="color: #111; font-size: 17px; line-height: 1.6; font-weight: 400;">
+                            {z_desc}
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("Данные по зонам уточняются.")
+            
+            
+ 
+ 
+# --- 5. ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКОВ ОБЛАСТИ ---
+        # Извлекаем топ лет и рекорды осадков именно для выбранной области
+    region_top_years = reg.get("top_years", [])
+    region_precip_records = reg.get("precip_records_mm", []) # Используем мм, как ты просил
+
+           
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
-        st.markdown("---")
+    st.markdown("---")
             # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
-        st.markdown("### 📊 Климатические тренды")
-        
-        
-        col_l, col_r = st.columns(2)
+    st.markdown("### 📊 Климатические тренды")      
+     
+    col_l, col_r = st.columns(2)
 
-        with col_l:
+    with col_l:
             render_climate_charts(
                 df_temp, col_t, 
                 "Температура воздуха", 
@@ -8012,67 +8833,59 @@ with tabs[6]:
                 ['#d32f2f', '#1f77b4'], "°C"
             )
 
-        with col_r:
+    with col_r:
             render_climate_charts(
                 df_precip, col_p, 
                 "Осадки", 
                 "Отклонение осадков от нормы (%)", 
                 'BrBG',                
                 ['#2e7d32', '#8d6e63'], "%"
-            )
+        )
         
  
-    # Стили для горизонтального отображения трендов
-    st.markdown("""
+    # Извлекаем значения из базы (с заглушками, если данных нет)
+    t_val = reg.get("trend_temp", "н/д")
+    p_val = reg.get("trend_precip", "н/д")
+    analysis = reg.get("analysis_text", "Анализ для данной области уточняется.")
+
+    # Стили оставляем в markdown (их можно вынести отдельно, чтобы не дублировать)
+    st.markdown(f"""
         <style>
-        .trends-container {
+        .trends-container {{
             display: flex;
             justify-content: flex-start;
             gap: 30px;
             margin: 15px 0;
-        }
-        .trend-card {
+        }}
+        .trend-card {{
             flex: 0 1 auto;
             padding: 15px 25px;
             border-radius: 10px;
             background-color: #fcfcfc;
             border: 1px solid #eee;
             min-width: 200px;
-        }
-        .trend-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .trend-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-        .v-green { color: #28a745; }
-        .v-orange { color: #f39c12; }
-        .trend-note {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 8px;
-            font-style: italic;
-        }
+        }}
+        .trend-label {{ font-size: 0.9rem; color: #666; margin-bottom: 5px; }}
+        .trend-value {{ font-size: 1.8rem; font-weight: 800; line-height: 1.1; }}
+        .v-green {{ color: #28a745; }}
+        .v-orange {{ color: #f39c12; }}
+        .trend-note {{ font-size: 0.8rem; color: #888; margin-top: 8px; font-style: italic; }}
         </style>
         
         <div class="trends-container">
             <div class="trend-card" style="border-left: 5px solid #28a745;">
                 <div class="trend-label">тренд</div>
-                <div class="trend-value v-green">📈 +0,36 °С</div>
+                <div class="trend-value v-green">📈 {t_val}</div>
                 <div class="trend-note">прирост на каждые 10 лет</div>
             </div>
             <div class="trend-card" style="border-left: 5px solid #f39c12;">
                 <div class="trend-label">тренд</div>
-                <div class="trend-value v-orange">📈 +6,1 мм</div>
+                <div class="trend-value v-orange">📈 {p_val}</div>
                 <div class="trend-note">прирост на каждые 10 лет</div>
             </div>
             <div style="flex: 1; display: flex; align-items: center; padding-left: 10px;">
                 <p style="color: #444; font-size: 0.95rem; border-left: 2px dashed #ccc; padding-left: 20px;">
-                    💡 <b>Анализ:</b> Общий рост увлажнения происходит за счет <b>весеннего периода</b>, в то время как летние месяцы демонстрируют опасную тенденцию к засушливости.
+                    💡 <b>Анализ:</b> {analysis}
                 </p>
             </div>
         </div>
@@ -8149,26 +8962,35 @@ with tabs[6]:
 
         with p_col2:
             st.markdown("**🏆 Рекорды осадков**")
-            # Здесь можно либо добавить prec_top_years в базу, либо считать из CSV
-            top_p = df_precip[['Год', col_p]].sort_values(by=col_p, ascending=False).head(5)
-            max_p = top_p[col_p].max()
-            p_html = "".join([f"""
-                <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
-                    <div style="width:35px; font-size:11px; font-weight:bold;">{int(row['Год'])}</div>
-                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
-                        <div style="width:{(row[col_p]/max_p)*100}%; background:#2e7d32; height:100%; border-radius:2px;"></div>
-                    </div>
-                    <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{row[col_p]:.0f}%</div>
-                </div>""" for _, row in top_p.iterrows()])
-            st.components.v1.html(p_html, height=160)
             
+            # 1. Получаем список из базы (тот, что вы прислали)
+            records = reg.get("top_precip_years", [])
             
+            if records:
+                # 2. Находим максимум для масштабирования полосок
+                max_val = max([r['val'] for r in records]) if records else 1
+                
+                # 3. Генерируем HTML, используя данные из списка
+                p_html = "".join([f"""
+                    <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                        <div style="width:40px; font-size:11px; font-weight:bold; color:#333;">{r['year']}</div>
+                        <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 8px;">
+                            <div style="width:{(r['val']/max_val)*100}%; background:{r['col']}; height:100%; border-radius:2px;"></div>
+                        </div>
+                        <div style="width:50px; text-align:right; font-size:11px; font-weight:bold; color:#333;">{r['val']:.0f} мм</div>
+                    </div>""" for r in records])
+                
+                # 4. Выводим результат
+                st.components.v1.html(f"<div style='margin-top:10px;'>{p_html}</div>", height=160)
+            else:
+                st.info("Данные о рекордах отсутствуют")
         
-
+            
+ 
     st.markdown("### 🚨 Основные климатические риски")
 
+    # Определение функции (если она еще не определена выше)
     def risk_box(title, text, level, color):
-        # level — число от 0 до 100
         st.markdown(f"""
             <div style="background: white; border-left: 5px solid {color}; padding: 15px; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -8182,21 +9004,214 @@ with tabs[6]:
             </div>
         """, unsafe_allow_html=True)
 
-    risk_box("🔥 Экстремальные температуры", "Рост 0.36 °С за 10 лет. 2025 год — рекорд (+5.09 °С).", 95, "#d32f2f")
-    risk_box("🌾 Засухи и дефицит влаги", "Снижение осадков в июне и октябре. Угроза урожаю.", 70, "#f57c00")
-    risk_box("🌊 Весенние паводки", "Рост осадков весной (+6.1 мм/10 лет) провоцирует наводнения.", 45, "#1976d2")
+    # --- ДИНАМИЧЕСКИЙ ВЫВОД РИСКОВ ---
+    # Берем данные из текущей области 'reg'
+    region_risks = reg.get("risks", [])
+
+    if region_risks:
+        for r in region_risks:
+            risk_box(r['title'], r['text'], r['level'], r['color'])
+    else:
+        st.info("Данные по климатическим рискам для этого региона уточняются.")
 
     # --- 6. ОБЩИЙ ВЫВОД ---
-    st.info("💡 **Общие выводы:** Интенсивное потепление в СКО опережает среднемировые темпы. Несмотря на рост годовых осадков, их неравномерное распределение (дефицит летом при избытке весной) требует адаптации агротехнологий.")
+    conclusion = reg.get("final_conclusion", "Анализ данных продолжается.")
+    st.info(f"💡 **Общие выводы:** {conclusion}")
 
+    import streamlit as st
+    import pandas as pd
+    import plotly.express as px
+    import io
 
+    st.title("🌍 Климатические индексы ")
 
+    st.markdown("""
+    > **Климатический индекс** — это расчетный диагностический показатель, который используется для количественной оценки интенсивности, частоты и продолжительности конкретных погодных явлений.
+    > 
+    > В отличие от простых метеорологических величин, индекс базируется на **пороговых значениях**, имеющих критическое значение для физических, биологических или экономических систем.
+    """)
 
+    st.divider()
 
-   
+    # --- 2. ДАННЫЕ ДЛЯ ГРАФИКОВ (Пример загрузки) ---
+
+    def get_data(index_name):
+        # 1. Настройка соответствия индексов и имен файлов
+        # Убедитесь, что названия файлов в точности совпадают с файлами в GitHub
+        file_mapping = {
+            "GDD (Grow)": "gdd_data.csv",
+            "GSL": "gsl_data.csv",
+            "WSDI": "wsdi_data.csv",
+            "txge30": "txge30_data.csv",
+            "hwd": "hwd_data.csv",           
+            "TR": "tr.csv",
+            "HDD (heat)": "hdd_data.csv",
+            "CDD": "cdd_data.csv",
+            "tnltm2 / tnltm20": "tnltm20_data.csv",
+            "FD": "fd_data.csv",            
+        }
+        
+        file_name = file_mapping.get(index_name)
+        
+        if not file_name:
+            return pd.DataFrame(columns=["Year", "Казахстан"])
+
+        # 2. Список возможных путей (в корне или в папке data)
+        possible_paths = [
+            file_name,
+            os.path.join("data", file_name),
+            os.path.join("src", file_name)
+        ]
+        
+        # 3. Перебор путей и кодировок
+        for path in possible_paths:
+            if os.path.exists(path):
+                # Пробуем разные кодировки, чтобы не было UnicodeDecodeError
+                for enc in ['utf-8', 'cp1251', 'latin1', 'utf-8-sig']:
+                    try:
+                        # Пробуем разные разделители (запятая или табуляция)
+                        df = pd.read_csv(path, sep=None, engine='python', encoding=enc)
+                        
+                        # Проверка: если pandas не нашел колонки, пробуем принудительно табуляцию
+                        if "Year" not in df.columns:
+                            df = pd.read_csv(path, sep='\t', encoding=enc)
+                            
+                        return df
+                    except (UnicodeDecodeError, Exception):
+                        continue
+        
+        # Если файл так и не найден после всех попыток
+        st.error(f"Файл {file_name} не найден в репозитории по путям: {possible_paths}")
+        return pd.DataFrame(columns=["Year", "Казахстан"])
+        
+
+    # --- 3. КОНФИГУРАЦИЯ СЕКТОРОВ ---
+    sectors_config = {
+        "Сельское хозяйство": {
+            "GDD (Grow)": {
+                "desc": "🌱 **Градусо-дни роста.** Показывает накопленное тепло, необходимое для созревания культур (пшеницы, кукурузы).",
+                "map": "GDDgrow10.jpeg"
+            },
+            "GSL": {
+                "desc": "📅 **Продолжительность вегетационного периода.** Время от последних весенних заморозков до первых осенних.",
+                "map": "gsl.jpeg"
+            },
+            "WSDI": {
+                "desc": "🔥 **Индекс продолжительности тепловой волны.** Критичен для «запала» зерновых. Падение урожайности при долгой жаре.",
+                "map": "WSDI_1.jpeg"
+            },
+            "txge30": {
+                "desc": "☀️ **Дни с температурой ≥ 30°C.** Порог, при котором у многих культур замедляется фотосинтез.",
+                "map": "txge30_2.jpeg"
+            }
+        },
+        "Здравоохранение": { 
+            "hwd": {
+                "desc": "🌱 **Длительность волн жары.** Самый опасный показатель для сердечно-сосудистой системы.",
+                "map": "hwd.jpeg"
+            },
+            "TR": {
+                "desc": "☀️ **Тропические ночи (T min > 20°C).** Индекс показывает, когда организм человека не успевает восстановиться ночью после дневной жары.",
+                "map": "tr.jpeg"
+            },
+            "txge30": {
+                "desc": "🔥 **Дни с температурой ≥ 30°C.** Дни сильной жары, когда резко возрастает количество вызовов скорой помощи.",
+                "map": "txge30_2.jpeg"
+            }
+        },
+        "Энергетика": { 
+            "HDD (heat)": {
+                "desc": "🌱 **Градусо-дни отопления.** Показывает, сколько энергии потребуется на обогрев зданий зимой. С потеплением этот показатель в РК падает, что экономит топливо.",
+                "map": "HDDheat23_trend_2024.jpeg"
+            },
+            "CDD": {
+                "desc": "☀️ **Градусо-дни охлаждения.** Этот индекс растет, показывая резкое увеличение спроса на электричество для кондиционирования летом.",
+                "map": "cddcold23_2.jpeg"
+            },
+            "FD": {
+                "desc": "🔥 **Морозные дни (T min < 0°C).** Важны для мониторинга рисков обледенения линий электропередач.",
+                "map": "fd.jpeg"
+            }
+        },
+        "Водное хозяйство ": { 
+            "CDD (Cold)": {
+                "desc": "🌱 **Продолжительность сухого периода.** Максимальное количество идущих подряд дней без осадков. Ключевой индикатор для прогнозирования засух в степных зонах РК.",
+                "map": "CDD_trend_2024.jpeg"
+            },
+            "tnltm2 / tnltm20": {
+                "desc": "☀️ **Ночи с экстремальным холодом.** Влияют на промерзание почвы и последующие весенние паводки (если почва замерзла, она не впитывает талую воду).",
+                "map": "tnltm20_trend_2024.jpeg"
+            }
+        },
+        "Лесное хозяйство ": { 
+            "WSDI": {
+                "desc": "🌱 **Индекс продолжительности тепловой волны.** Длительная жара при отсутствии дождей — главный фактор лесных пожаров (как в Абайской и Костанайской областях).",
+                "map": "WSDI_1.jpeg"
+            },
+            "GDD": {
+                "desc": "☀️ **Градусо-дни роста.** Влияет на скорость роста лесных массивов и, соответственно, на объем депонирования (поглощения) углерода из атмосферы.",
+                "map": "GDDgrow10.jpeg"
+            }
+        }
+        
+    }
+
+    # --- 4. ИНТЕРФЕЙС ---
+    import os
+
+    col_nav, col_display = st.columns([1, 4]) # Немного увеличим область контента
+
+    with col_nav:
+        st.subheader("Навигация")
+        sel_sector = st.selectbox("Сектор:", list(sectors_config.keys()))
+        sel_index = st.radio("Индекс:", list(sectors_config[sel_sector].keys()))
+
+    with col_display:
+        st.header(f"Анализ: {sel_index}")
+        st.info(sectors_config[sel_sector][sel_index]["desc"])
+        
+        # Создаем два столбца для Карты и Графика внутри основной области
+        col_map, col_chart = st.columns(2)
+        
+        # --- БЛОК КАРТЫ ---
+        with col_map:
+            st.write("**🗺️ Пространственное распределение**")
+            image_name = sectors_config[sel_sector][sel_index]['map']
+            
+            # Логика поиска пути файла
+            if os.path.exists(image_name):
+                image_path = image_name
+            elif os.path.exists(f"maps/{image_name}"):
+                image_path = f"maps/{image_name}"
+            else:
+                image_path = image_name
+                
+            try:
+                # use_container_width=True подстроит карту под ширину узкой колонки
+                st.image(image_path, use_container_width=True)
+            except:
+                st.error(f"Файл {image_name} не найден.")
+
+        # --- БЛОК ГРАФИКА ---
+        with col_chart:
+            st.write("**📈 Временная динамика**")
+            df = get_data(sel_index)
+            
+            fig = px.line(df, x="Year", y="Казахстан", 
+                          markers=True, 
+                          line_shape="spline",
+                          height=300) # Ограничиваем высоту для компактности
+            
+            fig.update_traces(line_color='#e74c3c')
+            # Убираем лишние отступы в графике
+            fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
+            
+            st.plotly_chart(fig, use_container_width=True)
+            
+
 
 with tabs[7]:
-    st.title("Экология городов")
+    st.title("Экология")
 
     import streamlit as st
     import pandas as pd
@@ -8297,7 +9312,7 @@ with tabs[7]:
 
 
 with tabs[8]:
-    st.title("Международное сотрудничество")
+    st.title("Сотрудничество")
 
     import streamlit as st
 
