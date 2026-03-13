@@ -8686,10 +8686,7 @@ with tabs[6]:
     import plotly.express as px
     import io
 
-    # --- 1. НАСТРОЙКИ СТРАНИЦЫ ---
-    st.set_page_config(page_title="Климатический портал РК", layout="wide")
-
-    st.title("🌍 Климатические индексы и экономика Казахстана")
+    st.title("🌍 Климатические индексы ")
 
     st.markdown("""
     > **Климатический индекс** — это расчетный диагностический показатель, который используется для количественной оценки интенсивности, частоты и продолжительности конкретных погодных явлений.
@@ -8704,7 +8701,7 @@ with tabs[6]:
     def get_data(index_name):
         # Словарь соответствия индекса и названия файла с данными
         file_mapping = {
-            "GDD (Grow)": "gdd_data.csv)",
+            "GDD (Grow)": "gdd_data.csv",
             "GSL": "gsl_data.csv",
             "WSDI": "wsdi_data.csv",
             "txge30": "txge30_data.csv"
@@ -8773,11 +8770,6 @@ with tabs[6]:
                           markers=True, line_shape="spline")
             fig.update_traces(line_color='#e74c3c')
             st.plotly_chart(fig, use_container_width=True)
-
-    # --- 5. ПОСТОЯННЫЙ БЛОК (SIDEBAR) ---
-    st.sidebar.title("ℹ️ Справка")
-    st.sidebar.write("Эти данные используются для оценки климатических рисков согласно национальным отчетам РК.")
-    st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Flag_of_Kazakhstan.svg/320px-Flag_of_Kazakhstan.svg.png")
 
 
 with tabs[7]:
