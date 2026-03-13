@@ -3796,14 +3796,20 @@ with tabs[2]:
 
     # Убедитесь, что файлы лежат в той же папке, что и скрипт, или укажите путь
     # Например: images/graph1.png
+    current_dir = os.path.dirname(__content__)
+    # Формируем путь к картинке
+    img_path = os.path.join(current_dir, "image_1.png")
+    img_path = os.path.join(current_dir, "image_2.png")
+    img_path = os.path.join(current_dir, "image_3.png")
+    img_path = os.path.join(current_dir, "image_4.png")
+    
+    st.image("image_1.png", caption="Оправдываемость: Яровая пшеница", use_container_width=True)
 
-    st.image("image_855ead.png", caption="Оправдываемость: Яровая пшеница", use_container_width=True)
+    st.image("image_2.png", caption="Оправдываемость: Запасы влаги в почве", use_container_width=True)
 
-    st.image("image_855ec4.png", caption="Оправдываемость: Запасы влаги в почве", use_container_width=True)
+    st.image("image_3.png", caption="Оправдываемость: Кукуруза", use_container_width=True)
 
-    st.image("image_855ec6.png", caption="Оправдываемость: Кукуруза", use_container_width=True)
-
-    st.image("image_855ec9.png", caption="Оправдываемость: Сроки созревания", use_container_width=True)
+    st.image("image_4.png", caption="Оправдываемость: Сроки созревания", use_container_width=True)
 
 
 
