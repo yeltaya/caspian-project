@@ -8702,16 +8702,21 @@ with tabs[6]:
     # --- 2. ДАННЫЕ ДЛЯ ГРАФИКОВ (Пример загрузки) ---
     # Для краткости я создам функцию, которая преобразует ваш текст в DataFrame
     def get_data(index_name):
-        # Здесь мы вставляем ваши данные. В реальном приложении лучше читать из .csv
-        raw_data = {
-            "GDD (Grow)": """Year	Казахстан\n1961	2296.67\n1962	2415.61\n1970	2274.65\n1980	2359.66\n1990	2437.88\n2000	2421.31\n2010	2585.10\n2020	2617.41\n2024	2617.24""",
-            "GSL": """Year	Казахстан\n1961	4.59\n1971	4.23\n1981	3.21\n1991	15.32\n2001	14.73\n2011	9.86\n2021	24.94\n2024	9.87""",
-            "WSDI": """Year	Казахстан\n1961	42.51\n1971	41.10\n1981	43.21\n1991	46.21\n2001	43.63\n2011	47.67\n2021	67.72\n2024	47.84""",
-            "txge30": """Year	Казахстан\n1961	195.76\n1971	205.28\n1981	208.01\n1991	205.30\n2001	212.98\n2011	206.93\n2021	207.12\n2024	217.80"""
+        # Словарь соответствия индекса и названия файла с данными
+        file_mapping = {
+            "GDD (Grow)": "gdd_data.xlsx)",
+            "GSL": "gsl_data.csv",
+            "WSDI": "wsdi_data.csv",
+            "txge30": "txge30_data.csv"
         }
-        # (В реальном коде мы берем полный список из вашего сообщения)
-        df = pd.read_csv(io.StringIO(raw_data.get(index_name, "Year\tКазахстан\n2024\t0")), sep="\t")
-        return df
+        
+        file_name = file_mapping.get(index_name)
+        if file_name:
+            # Читаем CSV (убедитесь, что разделитель в файле совпадает, например ',' или '\t')
+            df = pd.read_csv(file_name, sep='\t') 
+            return df
+        return pd.DataFrame(columns=["Year", "Казахстан"])
+    
 
     # --- 3. КОНФИГУРАЦИЯ СЕКТОРОВ ---
     sectors_config = {
@@ -8751,12 +8756,15 @@ with tabs[6]:
         
         tab_map, tab_chart = st.tabs(["🗺️ Карта пространственного распределения", "📈 График временной динамики"])
         
+        # В блоке tab_map:
         with tab_map:
+            # Замените "maps/" на название вашей папки, если оно другое
             image_path = f"maps/{sectors_config[sel_sector][sel_index]['map']}"
             try:
-                st.image(image_path, caption=f"Карта {sel_index} по территории Казахстана")
+                st.image(image_path, caption=f"Пространственное распределение: {sel_index}")
             except:
-                st.error(f"Файл карты {image_path} не найден в папке 'maps/'")
+                st.error(f"Файл {image_path} не найден. Проверьте путь к папке.")
+                
 
         with tab_chart:
             df = get_data(sel_index)
