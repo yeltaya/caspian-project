@@ -5653,7 +5653,11 @@ with tabs[4]:
                 """, icon="⚠️")
                 
 
+
+    # --- 1. ОПРЕДЕЛЕНИЕ ФУНКЦИЙ ---
+
     def show_water_resources_block():
+        """Функция для отображения вводной части (методы и сценарии)"""
         st.write("---")
         st.header("🌊 ОЦЕНКА ИЗМЕНЕНИЯ СТОКА РЕК КАЗАХСТАНА НА ПЕРСПЕКТИВУ ДО 2050 ГОДА")
         
@@ -5688,19 +5692,9 @@ with tabs[4]:
             </div>
             """, unsafe_allow_html=True)
 
-    import streamlit as st
-    import pandas as pd
-
-    # 1. Функция для отрисовки карточки бассейна
     def draw_basin_card(name, norm_text, df_plot, highlights):
-        """
-        name: Название бассейна
-        norm_text: Текст описания прогноза
-        df_plot: DataFrame с данными для графика
-        highlights: Словарь со средними значениями
-        """
+        """Функция для отрисовки карточки конкретного бассейна"""
         with st.container():
-            # Стилизация рамки карточки
             st.markdown(f"""
                 <div style="border: 1px solid #e6e9ef; border-radius: 10px; padding: 20px; background-color: #ffffff; margin-bottom: 20px;">
                     <h4 style="color: #1f77b4; margin-top: 0;">{name}</h4>
@@ -5708,15 +5702,12 @@ with tabs[4]:
                 </div>
             """, unsafe_allow_html=True)
             
-            # График
             st.write("**Прогноз стока по сценариям RCP (км³):**")
             st.line_chart(df_plot)
             
-            # Хайлайты (Средние значения)
             st.write("**Среднее значение стока (км³):**")
             h_cols = st.columns(3)
-            scenarios = ["RCP 2.6", "RCP 4.5", "RCP 8.5"]
-            colors = ["#28a745", "#f39c12", "#d32f2f"] # Зеленый, Оранжевый, Красный
+            colors = ["#28a745", "#f39c12", "#d32f2f"]
             
             for i, (scen, val) in enumerate(highlights.items()):
                 with h_cols[i]:
@@ -5727,48 +5718,43 @@ with tabs[4]:
                         </div>
                     """, unsafe_allow_html=True)
 
-            # --- ОСНОВНОЙ БЛОК ПРИЛОЖЕНИЯ ---
-            st.markdown("### 💧 Прогноз водных ресурсов по бассейнам")
+    # --- 2. ОСНОВНОЙ ЗАПУСК ПРИЛОЖЕНИЯ ---
 
-            # 2. Подготовка данных для Балкаш-Алакольского бассейна
-            data_balhash = {
-                "2022-2030": [33.50, 33.30, 33.40],
-                "2031-2040": [32.80, 32.70, 33.60],
-                "2041-2050": [33.30, 32.80, 33.70]
-            }
-            df_balhash = pd.DataFrame(
-                data_balhash, 
-                index=["RCP 2.6", "RCP 4.5", "RCP 8.5"]
-            ).T # Транспонируем для графика
+    # Сначала вызываем вводный блок
+    show_water_resources_block()
 
-            highlights_balhash = {
-                "RCP 2.6": 33.20,
-                "RCP 4.5": 32.93,
-                "RCP 8.5": 33.57
-            }
+    st.markdown("### 💧 Прогноз водных ресурсов по бассейнам")
 
-            # 3. Создание сетки (2 столбца)
-            col1, col2 = st.columns(2)
+    # Подготовка данных
+    data_balhash = {
+        "2022-2030": [33.50, 33.30, 33.40],
+        "2031-2040": [32.80, 32.70, 33.60],
+        "2041-2050": [33.30, 32.80, 33.70]
+    }
+    df_balhash = pd.DataFrame(data_balhash, index=["RCP 2.6", "RCP 4.5", "RCP 8.5"]).T
 
-            with col1:
-                draw_basin_card(
-                    "БАЛКАШ – АЛАКОЛЬСКИЙ БАССЕЙН",
-                    "В результате оценки изменения стока к 2050 г. ожидается <b>увеличение</b> относительно нормы (29,9 км³).",
-                    df_balhash,
-                    highlights_balhash
-                )
+    highlights_balhash = {"RCP 2.6": 33.20, "RCP 4.5": 32.93, "RCP 8.5": 33.57}
 
-            with col2:
-                # Здесь можно вызвать функцию для другого бассейна (например, Арало-Сырдарьинский)
-                # Пока продублируем для наглядности сетки
-                draw_basin_card(
-                    "ПРИМЕР ВТОРОГО БАССЕЙНА",
-                    "Краткое описание прогноза изменения стока для демонстрации второго столбца.",
-                    df_balhash, # Замените на другие данные
-                    highlights_balhash
-                )
-            
+    # Отображение карточек в сетке
+    col1, col2 = st.columns(2)
+
+    with col1:
+        draw_basin_card(
+            "БАЛКАШ – АЛАКОЛЬСКИЙ БАССЕЙН",
+            "В результате оценки изменения стока к 2050 г. ожидается <b>увеличение</b> относительно нормы (29,9 км³).",
+            df_balhash,
+            highlights_balhash
+        )
+
+    with col2:
+        draw_basin_card(
+            "ПРИМЕР ВТОРОГО БАССЕЙНА",
+            "Краткое описание прогноза изменения стока для демонстрации второго столбца.",
+            df_balhash, 
+            highlights_balhash
+        )
         
+            
 
 
   
@@ -8692,11 +8678,6 @@ with tabs[6]:
 
 
 
-
-
-
-
-
 with tabs[7]:
     st.title("Экология")
 
@@ -8799,7 +8780,7 @@ with tabs[7]:
 
 
 with tabs[8]:
-    st.title("Международное сотрудничество")
+    st.title("Сотрудничество")
 
     import streamlit as st
 
