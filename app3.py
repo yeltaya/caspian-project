@@ -7108,65 +7108,48 @@ with tabs[5]:
         """, unsafe_allow_html=True)
 
     st.divider()
-    # 1. Стили выносим отдельно в начало кода или перед блоком
+    
     st.markdown("""
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
             
-            .final-card {
-                background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-                border-radius: 30px; 
-                padding: 60px 40px; 
-                border: 1px solid #E2E8F0; 
-                text-align: center; 
+            .ecology-section {
+                padding: 40px;
+                background-color: #ffffff;
                 font-family: 'Montserrat', sans-serif;
-                max-width: 850px;
-                margin: 50px auto;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+                text-align: center;
             }
-            
-            .final-card h2 {
-                color: #1E293B !important; 
-                font-weight: 800 !important; 
-                font-size: 2.4rem !important; 
-                margin-bottom: 20px !important;
-                border: none !important;
-                letter-spacing: -0.5px !important;
+            .ecology-title {
+                color: #1E293B;
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 25px;
             }
-            
-            .final-text {
-                color: #475569; 
-                font-size: 1.15rem; 
-                max-width: 650px; 
-                margin: 0 auto 40px auto; 
+            .ecology-text {
+                color: #475569;
+                font-size: 1.2rem;
                 line-height: 1.8;
+                max-width: 850px;
+                margin: 0 auto;
             }
-
-            .final-footer {
-                border-top: 1px solid #E2E8F0;
-                padding-top: 30px;
-                color: #94A3B8;
-                font-size: 0.9rem;
+            .highlight {
+                color: #3B82F6;
+                font-weight: 600;
             }
         </style>
-    """, unsafe_allow_html=True)
 
-    # 2. Сам блок контента
-    st.markdown("""
-        <div class="final-card">
-            <div style="font-size: 4rem; margin-bottom: 10px;">🇰🇿</div>
-            <h2>Будущее Каспийского моря</h2>
-            
-            <p class="final-text">
-                Сохранение экосистемы Каспия требует скоординированных усилий всех прикаспийских государств. 
-                Постоянный мониторинг является критически важным для 
-                <b style="color: #1E293B;">безопасности инфраструктуры</b> и <b style="color: #1E293B;">экономики региона</b>.
+        <div class="ecology-section">
+            <h2 class="ecology-title">Сохраним Каспий вместе</h2>
+            <p class="ecology-text">
+                Каспийское море — это уникальное природное наследие, которое требует нашего общего внимания и заботы. 
+                Сегодня, перед лицом глобальных климатических изменений, <span class="highlight">совместная работа</span> 
+                всех прикаспийских государств, научных центров и общественности становится единственным путем 
+                к сохранению его экосистемы.
+                <br><br>
+                Бережное отношение к водным ресурсам, постоянный мониторинг и ответственное использование 
+                прибрежных зон — это наш вклад в будущее, который позволит передать живое и богатое море 
+                следующим поколениям.
             </p>
-
-            <div class="final-footer">
-                <p style="margin: 0; font-weight: 600;">Данные мониторинга актуальны на 2026 год</p>
-                <p style="margin: 5px 0 0 0; opacity: 0.8;">Научно-исследовательский центр РГП «Казгидромет»</p>
-            </div>
         </div>
     """, unsafe_allow_html=True)
 
