@@ -8782,13 +8782,25 @@ with tabs[6]:
         
         # В блоке tab_map:
         with tab_map:
-            # Замените "maps/" на название вашей папки, если оно другое
-            image_path = f"maps/{sectors_config[sel_sector][sel_index]['map']}"
-            try:
-                st.image(image_path, caption=f"Пространственное распределение: {sel_index}")
-            except:
-                st.error(f"Файл {image_path} не найден. Проверьте путь к папке.")
+                # Получаем чистое имя файла из конфигурации (например, "gsl.jpeg")
+                image_name = sectors_config[sel_sector][sel_index]['map']
                 
+                # Поскольку карты в основной папке, путь — это просто имя файла
+                # Но мы проверим и в корне, и на всякий случай в папке maps
+                import os
+                
+                if os.path.exists(image_name):
+                    image_path = image_name
+                elif os.path.exists(f"maps/{image_name}"):
+                    image_path = f"maps/{image_name}"
+                else:
+                    image_path = image_name # Оставляем как есть для попытки загрузки
+                
+                try:
+                    st.image(image_path, caption=f"Пространственное распределение: {sel_index}")
+                except:
+                    st.error(f"Файл {image_name} не найден в основной папке репозитория. Проверьте написание имени файла (регистр букв) на GitHub.")
+                    
 
         with tab_chart:
             df = get_data(sel_index)
