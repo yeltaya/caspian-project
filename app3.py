@@ -3792,18 +3792,18 @@ with tabs[2]:
     </p>
             </div>""", unsafe_allow_html=True)
 
-    # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ (4 ГРАФИКА) ---
+    # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ ---
     st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
 
-    def create_uniform_chart(labels, values, title):
+    def create_styled_chart(labels, values, title, color):
         fig = go.Figure(go.Bar(
             x=labels, 
             y=values, 
-            text=[f"{v}%" for v in values], # Добавляем знак % в подписи
+            text=[f"{v}%" for v in values],
             textposition='outside', 
             marker=dict(
-                color='#2e7d32', # Единый зеленый цвет для всех графиков
-                line=dict(color='#1b5e20', width=1)
+                color=color, # Цвет теперь передается для каждой культуры свой
+                line=dict(color='rgba(0,0,0,0.1)', width=1)
             ),
             hovertemplate="Область: %{x}<br>Оправдываемость: %{y}%<extra></extra>"
         ))
@@ -3811,53 +3811,63 @@ with tabs[2]:
         fig.update_layout(
             title=dict(
                 text=f"<b>{title}</b>", 
-                font=dict(size=18, color='#1d4d2b'),
-                x=0.05 # Выравнивание заголовка по левому краю
+                font=dict(size=18, color='#333'),
+                x=0.01 
             ),
             yaxis=dict(
-                range=[0, 115], # Запас сверху для подписей textposition='outside'
+                range=[0, 118], # Запас для текста над столбиками
                 title="%",
-                gridcolor='#f0f0f0'
+                gridcolor='#f0f0f0',
+                zeroline=False
             ),
-            xaxis=dict(tickangle=0), # Прямое расположение названий областей
-            height=350, 
-            margin=dict(l=20, r=20, t=60, b=40),
-            plot_bgcolor='rgba(0,0,0,0)', # Прозрачный фон
+            xaxis=dict(
+                tickangle=0,
+                showgrid=False
+            ),
+            height=280, # Компактная высота как на фото
+            margin=dict(l=10, r=10, t=50, b=30),
+            plot_bgcolor='white',
             paper_bgcolor='white',
         )
         return fig
 
-    # Общий список регионов для примера
-    reg_main = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
+    # Списки регионов (можно менять под конкретный график)
+    reg_full = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
     reg_south = ["Алмат.", "Жамбыл.", "Туркест."]
+    reg_sunflower = ["Кост.", "Павл.", "ВКО"]
 
-    # --- СЕТКА ГРАФИКОВ 2x2 ---
+    # --- ОТОБРАЖЕНИЕ ГРАФИКОВ ---
 
-    # Строка 1
-    col1, col2 = st.columns(2)
-    with col1:
-        st.plotly_chart(create_uniform_chart(
-            reg_main, [92, 80, 82, 84, 82, 68, 78, 84], "Яровая пшеница"
-        ), use_container_width=True)
+    # 1. Пшеница (Зеленый)
+    st.plotly_chart(create_styled_chart(
+        reg_full, [92, 80, 82, 84, 82, 68, 78, 84], 
+        "Яровая пшеница", "#2e7d32"
+    ), use_container_width=True)
 
-    with col2:
-        st.plotly_chart(create_uniform_chart(
-            reg_main, [98, 100, 94, 93, 95, 89, 72, 57], "Запасы влаги"
-        ), use_container_width=True)
+    # 2. Влага (Синий)
+    st.plotly_chart(create_styled_chart(
+        reg_full, [98, 100, 94, 93, 95, 89, 72, 57], 
+        "Запасы влаги в почве", "#0277bd"
+    ), use_container_width=True)
 
-    # Строка 2
-    col3, col4 = st.columns(2)
-    with col3:
-        st.plotly_chart(create_uniform_chart(
-            reg_south, [87, 69, 86], "Кукуруза"
-        ), use_container_width=True)
+    # 3. Кукуруза (Желтый/Оранжевый)
+    st.plotly_chart(create_styled_chart(
+        reg_south, [87, 69, 86], 
+        "Кукуруза", "#f9a825"
+    ), use_container_width=True)
 
-    with col4:
-        # Пример для подсолнечника
-        st.plotly_chart(create_uniform_chart(
-            ["Кост.", "Павл.", "ВКО"], [72, 71, 80], "Подсолнечник"
-        ), use_container_width=True)
-        
+    # 4. Подсолнечник (Насыщенный оранжевый)
+    st.plotly_chart(create_styled_chart(
+        reg_sunflower, [72, 71, 80], 
+        "Подсолнечник", "#ef6c00"
+    ), use_container_width=True)
+
+    # 5. Сроки созревания (Светло-зеленый)
+    st.plotly_chart(create_styled_chart(
+        reg_full, [50, 100, 88, 90, 88, 100, 90, 82], 
+        "Сроки созревания", "#689f38"
+    ), use_container_width=True)
+
 
 with tabs[3]:
     st.title("Гидрологические прогнозы")
