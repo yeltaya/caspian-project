@@ -8681,125 +8681,74 @@ with tabs[6]:
     conclusion = reg.get("final_conclusion", "Анализ данных продолжается.")
     st.info(f"💡 **Общие выводы:** {conclusion}")
 
-    # Пример для Streamlit (используйте st.markdown с unsafe_allow_html=True)
     import streamlit as st
+    import pandas as pd
+    from PIL import Image
 
-    html_code = """
-    <div style="font-family: sans-serif; max-width: 800px; margin: auto;">
-        <div style="background-color: #f0fdf4; border: 1px solid #dcfce7; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
-            <h2 style="color: #166534; display: flex; align-items: center;">
-                <span style="background: #ffffff; padding: 5px 10px; border-radius: 8px; margin-right: 10px;">🌱</span>
-                Сельское хозяйство
-            </h2>
-            <ul style="list-style-type: none; padding-left: 0;">
-                <li style="margin-bottom: 10px;"><strong>GDD:</strong> Градусо-дни роста. Накопленное тепло для созревания культур.</li>
-                <li style="margin-bottom: 10px;"><strong>GSL:</strong> Продолжительность вегетационного периода.</li>
-                <li style="margin-bottom: 10px;"><strong>WSDI:</strong> Индекс длительности тепловой волны (риск для зерновых).</li>
-                <li style="margin-bottom: 10px;"><strong>txge30:</strong> Дни с температурой ≥ 30°C (тепловой стресс).</li>
-            </ul>
-        </div>
+    # Настройка страницы
+    st.set_page_config(page_title="Климатические риски Казахстана", layout="wide")
 
-        <div style="background-color: #fef2f2; border: 1px solid #fee2e2; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
-            <h2 style="color: #991b1b; display: flex; align-items: center;">
-                <span style="background: #ffffff; padding: 5px 10px; border-radius: 8px; margin-right: 10px;">🏥</span>
-                Здравоохранение
-            </h2>
-            <ul style="list-style-type: none; padding-left: 0;">
-                <li style="margin-bottom: 10px;"><strong>hwd / hwf:</strong> Длительность и частота волн жары.</li>
-                <li style="margin-bottom: 10px;"><strong>TR (Tropical Nights):</strong> Ночи > 20°C. Организм не восстанавливается.</li>
-            </ul>
-        </div>
-
-        <div style="background-color: #eff6ff; border: 1px solid #dbeafe; padding: 20px; border-radius: 15px;">
-            <h2 style="color: #1e40af; display: flex; align-items: center;">
-                <span style="background: #ffffff; padding: 5px 10px; border-radius: 8px; margin-right: 10px;">⚡</span>
-                Энергетика
-            </h2>
-            <ul style="list-style-type: none; padding-left: 0;">
-                <li style="margin-bottom: 10px;"><strong>HDD:</strong> Градусо-дни отопления (нагрузка зимой).</li>
-                <li style="margin-bottom: 10px;"><strong>CDD:</strong> Градусо-дни охлаждения (нагрузка летом).</li>
-            </ul>
-        </div>
-    </div>
-    """
-
-    # Если это Streamlit:
-    st.markdown(html_code, unsafe_allow_html=True)
-
-
-
+    st.title("📊 Мониторинг климатических индексов Казахстана по секторам")
     st.markdown("---")
-    st.markdown("### 📊 Климатические индексы по секторам экономики")
 
-    # 1. Данные для секторов (лучше вынести в ALL_REGIONS_DATABASE для каждой области)
-    # Здесь приведен пример структуры данных
-    sectors_data = {
-        "💧 Водные ресурсы": {
-            "index_name": "ИНДЕКС СТОКА И ИСПАРЕНИЯ",
-            "desc": "Оценка доступности водных ресурсов для ирригации и промышленности.",
-            "map_file": "water_index_map.png",
-            "status": "Стабильный",
-            "color": "#1976d2",
-            "analysis": "Запасы воды в водохранилищах области находятся в пределах нормы благодаря весенним осадкам."
-        },        
-        "🌾 Сельское хозяйство": {
-            "index_name": "ГИДРОТЕРМИЧЕСКИЙ КОЭФФИЦИЕНТ (ГТК)",
-            "desc": "Показатель увлажненности территории. Используется для оценки условий роста культур и прогнозирования засух.",
-            "map_file": "agro_index_map.png", # Замените на реальное имя файла
-            "status": "Критический",
-            "color": "#d32f2f",
-            "analysis": "В текущем сезоне наблюдается снижение ГТК до 0.6, что соответствует сильной засухе в период вегетации."
+    # Данные о секторах и индексах
+    sectors = {
+        "Сельское хозяйство": {
+            "GDD": "Градусо-дни роста: накопленное тепло для созревания культур.",
+            "GSL": "Вегетационный период: время от последних до первых заморозков.",
+            "WSDI": "Индекс тепловой волны: критичен для 'запала' зерновых.",
+            "txge30": "Дни ≥ 30°C: порог замедления фотосинтеза."
         },
-
-        "🩺 Здоровье": {
-            "index_name": "ИНДЕКС ТЕПЛОВОГО СТРЕССА (UTCI)",
-            "desc": "Влияние температуры и влажности на самочувствие человека.",
-            "map_file": "health_index_map.png",
-            "status": "Внимание",
-            "color": "#f57c00",
-            "analysis": "Увеличилось количество дней с экстремальным тепловым стрессом, что требует усиления мер в здравоохранении."
+        "Энергетика": {
+            "HDD": "Градусо-дни отопления: потребность в обогреве зданий.",
+            "CDD": "Градусо-дни охлаждения: нагрузка на сеть из-за кондиционеров.",
+            "FD": "Морозные дни (T < 0°C): риски обледенения ЛЭП."
         },
-        "⚡ Энергетика": {
-            "index_name": "ГРАДУСО-СУТКИ ОТОПЛЕНИЯ/ОХЛАЖДЕНИЯ",
-            "desc": "Прогноз нагрузки на энергосистему в зависимости от температурного режима.",
-            "map_file": "energy_index_map.png",
-            "status": "Оптимально",
-            "color": "#388e3c",
-            "analysis": "Снижение потребности в отоплении зимой компенсируется ростом затрат на кондиционирование летом."
+        "Здравоохранение": {
+            "TR": "Тропические ночи (T > 20°C): организм не восстанавливается.",
+            "hwd": "Длительность волн жары: риск для сердечно-сосудистой системы."
         }
     }
 
-    # 2. Создание вкладок Streamlit
-    tabs = st.tabs(list(sectors_data.keys()))
+    # 1. Выбор сектора в боковой панели
+    st.sidebar.header("Настройки отображения")
+    selected_sector = st.sidebar.selectbox("Выберите сектор экономики:", list(sectors.keys()))
 
-    for i, (sector_name, data) in enumerate(sectors_data.items()):
-        with tabs[i]:
-            col_info, col_map = st.columns([1, 2])
-            
-            with col_info:
-                # Карточка описания индекса
-                st.markdown(f"""
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid {data['color']};">
-                        <h4 style="margin:0; color:{data['color']};">{data['index_name']}</h4>
-                        <p style="font-size: 13px; color: #666; margin: 10px 0;">{data['desc']}</p>
-                        <hr>
-                        <div style="font-size: 12px; font-weight: bold;">СТАТУС: <span style="color:{data['color']};">{data['status']}</span></div>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                st.info(f"💡 **Анализ:** {data['analysis']}")
-                
-            with col_map:
-                # Отображение карты индекса
-                try:
-                    # Вставьте путь к вашим картам
-                    st.image(data['map_file'], caption=f"Пространственное распределение: {data['index_name']}", use_container_width=True)
-                except:
-                    st.warning(f"Файл карты {data['map_file']} не найден.")
+    # 2. Выбор индекса внутри сектора
+    selected_index = st.sidebar.radio("Выберите индекс:", list(sectors[selected_sector].keys()))
 
-    # 3. Дополнительные сектора (Снижение риска бедствий и Леса)
-    st.caption("Данные обновляются в режиме реального времени на основе метеорологических станций Казгидромет.")
+    # Контент основной части
+    st.header(f"Сектор: {selected_sector}")
+    st.subheader(f"Индекс: {selected_index}")
+    st.info(sectors[selected_sector][selected_index])
 
+    # Создаем две колонки для графики
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("### 🗺️ Пространственное распределение (Карта)")
+        # Здесь логика загрузки вашей карты
+        # Если это картинка: 
+        # st.image(f"maps/{selected_index}_map.png", caption=f"Карта {selected_index} по территории РК")
+        st.warning(f"Здесь будет отображена карта для {selected_index}")
+
+    with col2:
+        st.markdown("### 📈 Временная динамика (График)")
+        # Здесь логика загрузки графика
+        # st.image(f"charts/{selected_index}_plot.png", caption=f"Изменение {selected_index} по годам")
+        st.warning(f"Здесь будет отображен график тренда для {selected_index}")
+
+    # 3. Дополнительный блок: Риски
+    st.markdown("---")
+    st.subheader("⚠️ Оценка рисков для Казахстана")
+    if selected_index == "CDD":
+        st.error("В южных регионах РК прогнозируется рост нагрузки на электросети на 15-20% к 2030 году.")
+    elif selected_index == "GSL":
+        st.success("Увеличение периода позволяет расширять посевы кукурузы в северных областях.")
+
+    # Футер
+    st.sidebar.markdown("---")
+    st.sidebar.caption("Данные обновлены на основе климатических моделей 2026 года.")
 
 
 
