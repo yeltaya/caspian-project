@@ -8704,7 +8704,7 @@ with tabs[6]:
     def get_data(index_name):
         # Словарь соответствия индекса и названия файла с данными
         file_mapping = {
-            "GDD (Grow)": "gdd_data.xlsx)",
+            "GDD (Grow)": "gdd_data.csv)",
             "GSL": "gsl_data.csv",
             "WSDI": "wsdi_data.csv",
             "txge30": "txge30_data.csv"
