@@ -3792,81 +3792,83 @@ with tabs[2]:
     </p>
             </div>""", unsafe_allow_html=True)
 
-    # --- 4. ИНТЕРАКТИВНАЯ ОПРАВДЫВАЕМОСТЬ ---
+    # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК НА ФОТО) ---
     st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
 
-    def create_styled_chart(labels, values, title, color):
+    def create_final_chart(labels, values, title, color):
         fig = go.Figure(go.Bar(
             x=labels, 
             y=values, 
             text=[f"{v}%" for v in values],
             textposition='outside', 
             marker=dict(
-                color=color, # Цвет теперь передается для каждой культуры свой
-                line=dict(color='rgba(0,0,0,0.1)', width=1)
+                color=color, 
+                line=dict(width=0) # Убираем обводку для чистоты стиля
             ),
-            hovertemplate="Область: %{x}<br>Оправдываемость: %{y}%<extra></extra>"
+            # Убираем лишнюю информацию при наведении
+            hovertemplate="%{y}%<extra></extra>" 
         ))
         
         fig.update_layout(
             title=dict(
                 text=f"<b>{title}</b>", 
                 font=dict(size=18, color='#333'),
-                x=0.01 
+                x=0, # Заголовок максимально слева
+                y=0.95
             ),
             yaxis=dict(
-                range=[0, 118], # Запас для текста над столбиками
-                title="%",
-                gridcolor='#f0f0f0',
-                zeroline=False
+                range=[0, 125], # Запас для процентов сверху
+                visible=False,   # Скрываем ось Y как на фото
             ),
             xaxis=dict(
-                tickangle=0,
-                showgrid=False
+                showgrid=False,
+                zeroline=False,
+                tickfont=dict(size=12, color='#555')
             ),
-            height=280, # Компактная высота как на фото
-            margin=dict(l=10, r=10, t=50, b=30),
-            plot_bgcolor='white',
-            paper_bgcolor='white',
+            height=240, # Очень компактная высота
+            margin=dict(l=0, r=0, t=40, b=20),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            bargap=0.3 # Расстояние между столбиками
         )
         return fig
 
-    # Списки регионов (можно менять под конкретный график)
-    reg_full = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
+    # Списки регионов по группам
+    reg_main = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
     reg_south = ["Алмат.", "Жамбыл.", "Туркест."]
-    reg_sunflower = ["Кост.", "Павл.", "ВКО"]
 
-    # --- ОТОБРАЖЕНИЕ ГРАФИКОВ ---
+    # --- ВЫВОД ГРАФИКОВ ---
 
-    # 1. Пшеница (Зеленый)
-    st.plotly_chart(create_styled_chart(
-        reg_full, [92, 80, 82, 84, 82, 68, 78, 84], 
-        "Яровая пшеница", "#2e7d32"
+    # 1. Пшеница (Темно-зеленый)
+    st.plotly_chart(create_final_chart(
+        reg_main, [92, 80, 82, 84, 82, 68, 78, 84], 
+        "Яровая пшеница", "#2E7D32"
     ), use_container_width=True)
 
     # 2. Влага (Синий)
-    st.plotly_chart(create_styled_chart(
-        reg_full, [98, 100, 94, 93, 95, 89, 72, 57], 
-        "Запасы влаги в почве", "#0277bd"
+    st.plotly_chart(create_final_chart(
+        reg_main, [98, 100, 94, 93, 95, 89, 72, 57], 
+        "Запасы влаги в почве", "#1565C0"
     ), use_container_width=True)
 
-    # 3. Кукуруза (Желтый/Оранжевый)
-    st.plotly_chart(create_styled_chart(
+    # 3. Кукуруза (Золотисто-желтый)
+    st.plotly_chart(create_final_chart(
         reg_south, [87, 69, 86], 
-        "Кукуруза", "#f9a825"
+        "Кукуруза", "#F9A825"
     ), use_container_width=True)
 
-    # 4. Подсолнечник (Насыщенный оранжевый)
-    st.plotly_chart(create_styled_chart(
-        reg_sunflower, [72, 71, 80], 
-        "Подсолнечник", "#ef6c00"
+    # 4. Сахарная свекла (Бордовый/Красный)
+    st.plotly_chart(create_final_chart(
+        reg_south[:2], [74, 35], 
+        "Сахарная свекла", "#C62828"
     ), use_container_width=True)
 
     # 5. Сроки созревания (Светло-зеленый)
-    st.plotly_chart(create_styled_chart(
-        reg_full, [50, 100, 88, 90, 88, 100, 90, 82], 
-        "Сроки созревания", "#689f38"
+    st.plotly_chart(create_final_chart(
+        reg_main, [50, 100, 88, 90, 88, 100, 90, 82], 
+        "Сроки созревания", "#7CB342"
     ), use_container_width=True)
+
 
 
 with tabs[3]:
