@@ -5697,7 +5697,6 @@ with tabs[4]:
                 </div>
             """, unsafe_allow_html=True)
             
-            # --- СОЗДАНИЕ ГРАФИКА С КРУПНЫМ ШРИФТОМ ---
             periods = list(data_dict.keys())
             rcp26 = [data_dict[p][0] for p in periods]
             rcp45 = [data_dict[p][1] for p in periods]
@@ -5705,11 +5704,11 @@ with tabs[4]:
 
             fig = go.Figure()
 
-            # Добавляем бары (textfont определяет размер цифр над столбцами)
+            # Исправленные трейсы (только размер шрифта)
             fig.add_trace(go.Bar(
                 name='RCP 2.6', x=periods, y=rcp26, marker_color='#00a65a', 
                 text=rcp26, textposition='outside', 
-                textfont=dict(size=16, font_variant="small-caps") 
+                textfont=dict(size=16) 
             ))
             fig.add_trace(go.Bar(
                 name='RCP 4.5', x=periods, y=rcp45, marker_color='#ffc107', 
@@ -5724,16 +5723,14 @@ with tabs[4]:
 
             fig.update_layout(
                 barmode='group',
-                height=500, # Немного увеличим высоту для читаемости цифр
+                height=500,
                 margin=dict(t=40, b=20, l=10, r=10),
-                # Настройка легенды (крупный шрифт)
                 legend=dict(
                     orientation="h", 
                     yanchor="bottom", y=-0.25, 
                     xanchor="center", x=0.5,
                     font=dict(size=16) 
                 ),
-                # Настройка осей и общего шрифта
                 font=dict(size=14),
                 yaxis=dict(
                     title=dict(text="Объем воды, км³", font=dict(size=16)),
@@ -5746,10 +5743,9 @@ with tabs[4]:
             )
             
             fig.update_yaxes(showgrid=True, gridcolor='lightgrey')
-
             st.plotly_chart(fig, use_container_width=True)
             
-            # --- ХАЙЛАЙТЫ (УВЕЛИЧЕННЫЕ) ---
+            # Хайлайты (без изменений, они и так работают через HTML)
             st.write("**Среднее значение стока (км³):**")
             h_cols = st.columns(3)
             colors = ["#28a745", "#f39c12", "#d32f2f"]
@@ -5761,6 +5757,7 @@ with tabs[4]:
                             <div style="font-size: 26px; font-weight: bold; color: {colors[i]};">{val}</div>
                         </div>
                     """, unsafe_allow_html=True)
+                
 
     # --- ЗАПУСК ---
     show_water_resources_block()
