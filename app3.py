@@ -3154,7 +3154,167 @@ with tabs[1]:
     if __name__ == "__main__":
         show_forecast_process()
     
-       
+ 
+
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    import io
+
+    # --- ИМИТАЦИЯ ДАННЫХ ИЗ ВАШЕГО ТЕКСТА ---
+    # В реальном приложении используйте pd.read_excel("path.xlsx")
+    data_str = """День	Среднее	норма	низ	верх
+    1	6.5	9.6	9.0	14.0
+    2	7.4	9.7	9.0	14.0
+    3	7.9	9.9	6.5	11.5
+    4	7.2	10.0	4.0	9.0
+    5	7.5	10.1	4.0	9.0
+    6	9.2	10.2	11.0	16.0
+    7	7.1	10.4	11.0	16.0
+    8	5.1	10.5	7.7	12.7
+    9	3.8	10.6	4.3	9.3
+    10	2.1	10.7	1.0	6.0
+    11	2.5	10.9	1.0	6.0
+    12	5.4	11.0	3.8	8.8
+    13	8.0	11.1	6.5	11.5
+    14	9.8	11.3	9.3	14.3
+    15	12.6	11.4	12.0	17.0
+    16	10.4	11.5	12.0	17.0
+    17	8.4	11.6	8.5	13.5
+    18	5.0	11.8	5.0	10.0
+    19	5.2	11.9	5.0	10.0
+    20	9.4	12.0	10.5	15.5
+    21	12.7	12.2	16.0	21.0
+    22	14.3	12.3	16.0	21.0
+    23	12.9	12.4	13.5	18.5
+    24	10.5	12.5	11.0	16.0
+    25	16.0	12.7	11.0	16.0
+    26	19.0	12.8	20.0	25.0
+    27	18.6	12.9	20.0	25.0
+    28	17.0	13.0	17.0	22.0
+    29	14.0	13.2	14.0	19.0
+    30	12.2	13.3	14.0	19.0"""
+
+    df = pd.read_csv(io.StringIO(data_str), sep="\t")
+
+    # --- СТИЛИ (CSS) ---
+    st.markdown("""
+        <style>
+        .big-climate-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 10px;
+            border: 1px solid #eef0f2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            color: #1d4d2b;
+            font-weight: 800;
+            font-size: 1.4rem !important;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+        .info-item { 
+            font-size: 1.1rem !important;
+            margin-bottom: 8px; 
+            line-height: 1.5; 
+        }
+        .val-bold {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # --- ОСНОВНОЙ КОНТЕНТ ---
+    st.title("Прогноз на Апрель")
+
+    col_left, col_right = st.columns([1.2, 1.3], gap="large")
+
+    with col_left:
+        st.markdown("#### 📜 Климатическая характеристика: Апрель")
+        
+        # Сетка карточек 2x2
+        html_cards = f"""
+        <div style="display: flex; gap: 10px;">
+            <div class="big-climate-card" style="flex: 1;">
+                <div class="section-title">🌡️ Температура</div>
+                <div class="info-item">🔹 Ср. за месяц: <span class="val-bold">+10...+15°С</span></div>
+                <div class="info-item">🔹 Ночью: <span class="val-bold">+2...+7°С</span></div>
+            </div>
+            <div class="big-climate-card" style="flex: 1;">
+                <div class="section-title">🔥 Экстремумы</div>
+                <div class="info-item">🔴 Макс: <span class="val-bold">+30°С</span></div>
+                <div class="info-item">🔵 Мин: <span class="val-bold">-5°С</span></div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div class="big-climate-card" style="flex: 1;">
+                <div class="section-title">💧 Осадки</div>
+                <div class="info-item">📅 Норма: <span class="val-bold">30-50 мм</span></div>
+                <div class="info-item">📅 Дождливых дней: <span class="val-bold">10-12</span></div>
+            </div>
+            <div class="big-climate-card" style="flex: 1; border-left: 5px solid #3498db;">
+                <div class="section-title">⛈️ Явления</div>
+                <div class="info-item">⚡ Грозы: <span class="val-bold">2-4 дня</span></div>
+                <div class="info-item">🌬️ Ветер: <span class="val-bold">до 15 м/с</span></div>
+            </div>
+        </div>
+        """
+        st.markdown(html_cards, unsafe_allow_html=True)
+
+    with col_right:
+        st.markdown("#### 📊 Прогноз по Алматинской области")
+        
+        # Создание графика Plotly
+        fig = go.Figure()
+
+        # Линия Низ-Верх (диапазон) - закрашенная область
+        fig.add_trace(go.Scatter(
+            x=df['День'], y=df['верх'],
+            mode='lines', line=dict(width=0),
+            showlegend=False, name='Верхняя граница'
+        ))
+        fig.add_trace(go.Scatter(
+            x=df['День'], y=df['низ'],
+            mode='lines', line=dict(width=0),
+            fill='tonexty', fillcolor='rgba(173, 216, 230, 0.3)',
+            showlegend=True, name='Диапазон (низ-верх)'
+        ))
+
+        # Линия нормы
+        fig.add_trace(go.Scatter(
+            x=df['День'], y=df['норма'],
+            mode='lines', line=dict(color='green', dash='dash'),
+            name='Климатическая норма'
+        ))
+
+        # Линия среднего прогноза
+        fig.add_trace(go.Scatter(
+            x=df['День'], y=df['Среднее'],
+            mode='lines+markers', line=dict(color='red', width=3),
+            marker=dict(size=6),
+            name='Прогноз (среднее)'
+        ))
+
+        fig.update_layout(
+            margin=dict(l=0, r=0, t=30, b=0),
+            height=400,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            xaxis_title="Числа месяца",
+            yaxis_title="Температура °C",
+            hovermode="x unified"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+
+
+ 
+   
     with st.container():
         st.markdown("<h3 style='color: #1d4d2b; text-align: center; margin-bottom: 20px;'>💼 Отраслевое применение прогнозов</h3>", unsafe_allow_html=True)
         
