@@ -3360,7 +3360,7 @@ with tabs[1]:
             "wind_event": "Метели (начало)",
             "storm_event": "Гололед (1-2 дня)"
         },
-        "Туркестанкая область": {
+        "Туркестанская область": {
             "temp_north": "-5...0°С",
             "temp_south": "+5...+10°С",
             "heat_record": "до +25°С",
@@ -3391,6 +3391,15 @@ with tabs[1]:
     else:
         selected_region_name = st.selectbox("Выберите область:", sorted(list(regions_dict.keys())))
         file_path = regions_dict[selected_region_name]
+        
+        # --- ДОБАВЬТЕ ЭТОТ БЛОК ---
+        info = region_descriptions.get(selected_region_name, {
+            "temp_north": "нет данных", "temp_south": "нет данных",
+            "heat_record": "нет данных", "cold_record": "нет данных",
+            "precip_val": "нет данных", "precip_type": "нет данных",
+            "wind_event": "нет данных", "storm_event": "нет данных"
+        })
+        # --------------------------
         
         # Чтение данных
         try:
