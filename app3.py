@@ -3791,83 +3791,20 @@ with tabs[2]:
                 <p class="desc-text">Рассчитывается  по методике Л.А.Разумовой. Прогноз содержит сведения об ожидаемых запасах влаги в почве к началу весны по территории Казахстана (влажность почвы оценивается по категории: недостаточное, удовлетворительное и оптимальное) в разрезе районов по пунктам наблюдения.
     </p>
             </div>""", unsafe_allow_html=True)
-
-    # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК НА ФОТО) ---
+    # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК РИСУНКИ) ---
     st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
 
-    def create_final_chart(labels, values, title, color):
-        fig = go.Figure(go.Bar(
-            x=labels, 
-            y=values, 
-            text=[f"{v}%" for v in values],
-            textposition='outside', 
-            marker=dict(
-                color=color, 
-                line=dict(width=0) # Убираем обводку для чистоты стиля
-            ),
-            # Убираем лишнюю информацию при наведении
-            hovertemplate="%{y}%<extra></extra>" 
-        ))
-        
-        fig.update_layout(
-            title=dict(
-                text=f"<b>{title}</b>", 
-                font=dict(size=18, color='#333'),
-                x=0, # Заголовок максимально слева
-                y=0.95
-            ),
-            yaxis=dict(
-                range=[0, 125], # Запас для процентов сверху
-                visible=False,   # Скрываем ось Y как на фото
-            ),
-            xaxis=dict(
-                showgrid=False,
-                zeroline=False,
-                tickfont=dict(size=12, color='#555')
-            ),
-            height=240, # Очень компактная высота
-            margin=dict(l=0, r=0, t=40, b=20),
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            bargap=0.3 # Расстояние между столбиками
-        )
-        return fig
+    # Убедитесь, что файлы лежат в той же папке, что и скрипт, или укажите путь
+    # Например: images/graph1.png
 
-    # Списки регионов по группам
-    reg_main = ["ЗКО", "Актюб.", "Кост.", "Акмол.", "СКО", "Павл.", "Караг.", "ВКО"]
-    reg_south = ["Алмат.", "Жамбыл.", "Туркест."]
+    st.image("image_855ead.png", caption="Оправдываемость: Яровая пшеница", use_container_width=True)
 
-    # --- ВЫВОД ГРАФИКОВ ---
+    st.image("image_855ec4.png", caption="Оправдываемость: Запасы влаги в почве", use_container_width=True)
 
-    # 1. Пшеница (Темно-зеленый)
-    st.plotly_chart(create_final_chart(
-        reg_main, [92, 80, 82, 84, 82, 68, 78, 84], 
-        "Яровая пшеница", "#2E7D32"
-    ), use_container_width=True)
+    st.image("image_855ec6.png", caption="Оправдываемость: Кукуруза", use_container_width=True)
 
-    # 2. Влага (Синий)
-    st.plotly_chart(create_final_chart(
-        reg_main, [98, 100, 94, 93, 95, 89, 72, 57], 
-        "Запасы влаги в почве", "#1565C0"
-    ), use_container_width=True)
+    st.image("image_855ec9.png", caption="Оправдываемость: Сроки созревания", use_container_width=True)
 
-    # 3. Кукуруза (Золотисто-желтый)
-    st.plotly_chart(create_final_chart(
-        reg_south, [87, 69, 86], 
-        "Кукуруза", "#F9A825"
-    ), use_container_width=True)
-
-    # 4. Сахарная свекла (Бордовый/Красный)
-    st.plotly_chart(create_final_chart(
-        reg_south[:2], [74, 35], 
-        "Сахарная свекла", "#C62828"
-    ), use_container_width=True)
-
-    # 5. Сроки созревания (Светло-зеленый)
-    st.plotly_chart(create_final_chart(
-        reg_main, [50, 100, 88, 90, 88, 100, 90, 82], 
-        "Сроки созревания", "#7CB342"
-    ), use_container_width=True)
 
 
 
