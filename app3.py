@@ -3210,14 +3210,27 @@ with tabs[1]:
     if not regions_dict:
         st.error("CSV файлы не найдены в корневой папке проекта.")
     else:
-        # Селектбокс для выбора области
         selected_region_name = st.selectbox("Выберите область:", sorted(list(regions_dict.keys())))
         
-        # Чтение выбранного файла
-        # Используем sep=';' так как в ваших данных разделитель точка с запятой
-        df = pd.read_csv(regions_dict[selected_region_name], sep=';')
+        # Пытаемся прочитать файл с обработкой кодировок
+        file_path = regions_dict[selected_region_name]
+        
+        try:
+            # Пытаемся прочитать как Windows-1251
+            df = pd.read_csv(file_path, sep=';', encoding='cp1251')
+        except Exception:
+            try:
+                # Если не вышло, пробуем UTF-8
+                df = pd.read_csv(file_path, sep=';', encoding='utf-8-sig')
+            except Exception as e:
+                st.error(f"Не удалось прочитать файл. Ошибка: {e}")
+                df = None
 
-        col_left, col_right = st.columns([1.2, 1.3], gap="large")
+        if df is not None:
+            # Дальше идет ваш код отрисовки колонок и графиков
+            col_left, col_right = st.columns([1.2, 1.3], gap="large")
+            # ... и так далее
+        
 
         with col_left:
             st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
