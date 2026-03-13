@@ -3794,22 +3794,31 @@ with tabs[2]:
     # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК РИСУНКИ) ---
     st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
 
-    # Убедитесь, что файлы лежат в той же папке, что и скрипт, или укажите путь
-    # Например: images/graph1.png
-    current_dir = os.path.dirname(__content__)
-    # Формируем путь к картинке
-    img_path = os.path.join(current_dir, "image_1.png")
-    img_path = os.path.join(current_dir, "image_2.png")
-    img_path = os.path.join(current_dir, "image_3.png")
-    img_path = os.path.join(current_dir, "image_4.png")
-    
-    st.image("image_1.png", caption="Оправдываемость: Яровая пшеница", use_container_width=True)
+    # 1. Получаем путь к папке, где лежит ваш скрипт (app3.py)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    st.image("image_2.png", caption="Оправдываемость: Запасы влаги в почве", use_container_width=True)
+    # 2. Формируем полные пути к файлам
+    img1 = os.path.join(current_dir, "image_1.png")
+    img2 = os.path.join(current_dir, "image_2.png")
+    img3 = os.path.join(current_dir, "image_3.png")
+    img4 = os.path.join(current_dir, "image_4.png")
 
-    st.image("image_3.png", caption="Оправдываемость: Кукуруза", use_container_width=True)
+    # 3. Выводим изображения, используя сформированные переменные
+    # Проверяем наличие файла перед выводом, чтобы приложение не упало
+    if os.path.exists(img1):
+        st.image(img1, caption="Оправдываемость: Яровая пшеница", use_container_width=True)
+    else:
+        st.error(f"Файл не найден: {img1}")
 
-    st.image("image_4.png", caption="Оправдываемость: Сроки созревания", use_container_width=True)
+    if os.path.exists(img2):
+        st.image(img2, caption="Оправдываемость: Запасы влаги в почве", use_container_width=True)
+
+    if os.path.exists(img3):
+        st.image(img3, caption="Оправдываемость: Кукуруза", use_container_width=True)
+
+    if os.path.exists(img4):
+        st.image(img4, caption="Оправдываемость: Сроки созревания", use_container_width=True)
+        
 
 
 
