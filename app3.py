@@ -8697,9 +8697,10 @@ with tabs[6]:
     st.divider()
 
     # --- 2. ДАННЫЕ ДЛЯ ГРАФИКОВ (Пример загрузки) ---
-    # Для краткости я создам функцию, которая преобразует ваш текст в DataFrame
+
     def get_data(index_name):
-        # Словарь соответствия индекса и названия файла с данными
+        # 1. Настройка соответствия индексов и имен файлов
+        # Убедитесь, что названия файлов в точности совпадают с файлами в GitHub
         file_mapping = {
             "GDD (Grow)": "gdd_data.csv",
             "GSL": "gsl_data.csv",
@@ -8708,12 +8709,38 @@ with tabs[6]:
         }
         
         file_name = file_mapping.get(index_name)
-        if file_name:
-            # Читаем CSV (убедитесь, что разделитель в файле совпадает, например ',' или '\t')
-            df = pd.read_csv(file_name, sep='\t') 
-            return df
+        
+        if not file_name:
+            return pd.DataFrame(columns=["Year", "Казахстан"])
+
+        # 2. Список возможных путей (в корне или в папке data)
+        possible_paths = [
+            file_name,
+            os.path.join("data", file_name),
+            os.path.join("src", file_name)
+        ]
+        
+        # 3. Перебор путей и кодировок
+        for path in possible_paths:
+            if os.path.exists(path):
+                # Пробуем разные кодировки, чтобы не было UnicodeDecodeError
+                for enc in ['utf-8', 'cp1251', 'latin1', 'utf-8-sig']:
+                    try:
+                        # Пробуем разные разделители (запятая или табуляция)
+                        df = pd.read_csv(path, sep=None, engine='python', encoding=enc)
+                        
+                        # Проверка: если pandas не нашел колонки, пробуем принудительно табуляцию
+                        if "Year" not in df.columns:
+                            df = pd.read_csv(path, sep='\t', encoding=enc)
+                            
+                        return df
+                    except (UnicodeDecodeError, Exception):
+                        continue
+        
+        # Если файл так и не найден после всех попыток
+        st.error(f"Файл {file_name} не найден в репозитории по путям: {possible_paths}")
         return pd.DataFrame(columns=["Year", "Казахстан"])
-    
+        
 
     # --- 3. КОНФИГУРАЦИЯ СЕКТОРОВ ---
     sectors_config = {
