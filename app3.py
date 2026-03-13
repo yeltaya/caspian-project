@@ -5653,11 +5653,7 @@ with tabs[4]:
                 """, icon="⚠️")
                 
 
-
-    # --- 1. ОПРЕДЕЛЕНИЕ ФУНКЦИЙ ---
-
     def show_water_resources_block():
-        """Функция для отображения вводной части (методы и сценарии)"""
         st.write("---")
         st.header("🌊 ОЦЕНКА ИЗМЕНЕНИЯ СТОКА РЕК КАЗАХСТАНА НА ПЕРСПЕКТИВУ ДО 2050 ГОДА")
         
@@ -5666,49 +5662,68 @@ with tabs[4]:
         with col_method:
             st.subheader("📊 Материалы и методы исследования")
             st.markdown("""
-            * **Данные наблюдений**: Данные государственной наблюдательной сети Казахстана.
-            * **Климатические архивы**: Глобальный климатический архив **Terra Climate**.
-            * **Прогнозные модели**: Данные по осадкам по **23 моделям** (МОЦАО) до 2050 г.
-            * **Группа CMIP5**: Модели Межправительственной группы экспертов по изменению климата (**МГЭИК**).
-            * **Базисный период**: Оценка рассчитана относительно нормы стока за **1930-2019 гг.**.
+            * **Данные наблюдений**: Сеть Казахстана.
+            * **Климатические архивы**: **Terra Climate**.
+            * **Прогнозные модели**: **23 модели** (МОЦАО) до 2050 г.
+            * **Базисный период**: Норма стока за **1930-2019 гг.**.
             """)
 
         with col_scenarios:
             st.subheader("🌡️ Климатические сценарии")
             st.markdown("""
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ff4b4b;">
-                    <div style="min-width: 60px; font-weight: bold; color: #ff4b4b; font-size: 0.8em;">RCP 8.5</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Жесткий» сценарий:</b> Быстрый рост выбросов.</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="background-color: #f8f9fa; padding: 8px; border-radius: 8px; border-left: 8px solid #ff4b4b;">
+                    <span style="color: #ff4b4b; font-weight: bold;">RCP 8.5</span> — Жесткий
                 </div>
-                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #ffa500;">
-                    <div style="min-width: 60px; font-weight: bold; color: #ffa500; font-size: 0.8em;">RCP 4.5</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Умеренно жесткий»:</b> Умеренный рост выбросов.</div>
+                <div style="background-color: #f8f9fa; padding: 8px; border-radius: 8px; border-left: 8px solid #ffa500;">
+                    <span style="color: #ffa500; font-weight: bold;">RCP 4.5</span> — Умеренный
                 </div>
-                <div style="display: flex; align-items: center; background-color: #f8f9fa; padding: 10px; border-radius: 10px; border-left: 10px solid #28a745;">
-                    <div style="min-width: 60px; font-weight: bold; color: #28a745; font-size: 0.8em;">RCP 2.6</div>
-                    <div style="margin-left: 10px; color: #333;"><b>«Мягкий» сценарий:</b> Снижение выбросов.</div>
+                <div style="background-color: #f8f9fa; padding: 8px; border-radius: 8px; border-left: 8px solid #28a745;">
+                    <span style="color: #28a745; font-weight: bold;">RCP 2.6</span> — Мягкий
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-    def draw_basin_card(name, norm_text, df_plot, highlights):
-        """Функция для отрисовки карточки конкретного бассейна"""
+    def draw_basin_card(name, norm_text, data_dict, highlights):
         with st.container():
             st.markdown(f"""
                 <div style="border: 1px solid #e6e9ef; border-radius: 10px; padding: 20px; background-color: #ffffff; margin-bottom: 20px;">
                     <h4 style="color: #1f77b4; margin-top: 0;">{name}</h4>
-                    <p style="font-size: 15px; line-height: 1.5; color: #333;">{norm_text}</p>
+                    <p style="font-size: 15px; color: #333;">{norm_text}</p>
                 </div>
             """, unsafe_allow_html=True)
             
-            st.write("**Прогноз стока по сценариям RCP (км³):**")
-            st.line_chart(df_plot)
+            # --- СОЗДАНИЕ ГРАФИКА PLOTLY (КАК НА КАРТИНКЕ) ---
+            periods = list(data_dict.keys())
+            rcp26 = [data_dict[p][0] for p in periods]
+            rcp45 = [data_dict[p][1] for p in periods]
+            rcp85 = [data_dict[p][2] for p in periods]
+
+            fig = go.Figure()
+
+            # Добавляем бары для каждого сценария
+            fig.add_trace(go.Bar(name='RCP 2.6', x=periods, y=rcp26, marker_color='#00a65a', text=rcp26, textposition='outside'))
+            fig.add_trace(go.Bar(name='RCP 4.5', x=periods, y=rcp45, marker_color='#ffc107', text=rcp45, textposition='outside'))
+            fig.add_trace(go.Bar(name='RCP 8.5', x=periods, y=rcp85, marker_color='#ff0000', text=rcp85, textposition='outside'))
+
+            fig.update_layout(
+                barmode='group',
+                height=400,
+                margin=dict(t=20, b=20, l=10, r=10),
+                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+                yaxis=dict(title="Объем воды, км³", range=[32, 34.5]), # Диапазон как на картинке
+                plot_bgcolor='white',
+                paper_bgcolor='white'
+            )
             
-            st.write("**Среднее значение стока (км³):**")
+            # Добавляем сетку
+            fig.update_yaxes(showgrid=True, gridcolor='lightgrey')
+
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Хайлайты
             h_cols = st.columns(3)
             colors = ["#28a745", "#f39c12", "#d32f2f"]
-            
             for i, (scen, val) in enumerate(highlights.items()):
                 with h_cols[i]:
                     st.markdown(f"""
@@ -5718,43 +5733,29 @@ with tabs[4]:
                         </div>
                     """, unsafe_allow_html=True)
 
-    # --- 2. ОСНОВНОЙ ЗАПУСК ПРИЛОЖЕНИЯ ---
-
-    # Сначала вызываем вводный блок
+    # --- ЗАПУСК ---
     show_water_resources_block()
 
     st.markdown("### 💧 Прогноз водных ресурсов по бассейнам")
 
-    # Подготовка данных
+    # Данные строго по картинке: [RCP 2.6, RCP 4.5, RCP 8.5]
     data_balhash = {
-        "2022-2030": [33.50, 33.30, 33.40],
-        "2031-2040": [32.80, 32.70, 33.60],
-        "2041-2050": [33.30, 32.80, 33.70]
+        "2022-2030 гг.": [33.50, 33.30, 33.40],
+        "2031-2040 гг.": [32.80, 32.70, 33.60],
+        "2041-2050 гг.": [33.30, 32.80, 33.70]
     }
-    df_balhash = pd.DataFrame(data_balhash, index=["RCP 2.6", "RCP 4.5", "RCP 8.5"]).T
 
     highlights_balhash = {"RCP 2.6": 33.20, "RCP 4.5": 32.93, "RCP 8.5": 33.57}
 
-    # Отображение карточек в сетке
     col1, col2 = st.columns(2)
-
     with col1:
         draw_basin_card(
             "БАЛКАШ – АЛАКОЛЬСКИЙ БАССЕЙН",
-            "В результате оценки изменения стока к 2050 г. ожидается <b>увеличение</b> относительно нормы (29,9 км³).",
-            df_balhash,
-            highlights_balhash
-        )
-
-    with col2:
-        draw_basin_card(
-            "ПРИМЕР ВТОРОГО БАССЕЙНА",
-            "Краткое описание прогноза изменения стока для демонстрации второго столбца.",
-            df_balhash, 
+            "Прогноз изменения стока к 2050 г. относительно нормы (29,9 км³).",
+            data_balhash,
             highlights_balhash
         )
         
-            
 
 
   
