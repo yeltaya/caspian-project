@@ -1923,16 +1923,6 @@ with tabs[0]:
             * 🍎 Плодовые
             """)
             
-            # Кнопка для скачивания (если нужно)
-            if os.path.exists(img_path):
-                with open(img_path, "rb") as file:
-                    st.download_button(
-                        label="📂 Скачать карту",
-                        data=file,
-                        file_name="Agro_Map_Kazhydromet.jpg",
-                        mime="image/jpg"
-                    )
-
     # Вызов функции
     render_final_agro_map()
 
