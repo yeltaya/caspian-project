@@ -3208,110 +3208,87 @@ with tabs[1]:
     regions_dict = get_available_regions(DATA_DIR)
 
     if not regions_dict:
-        st.error("CSV файлы не найдены в корневой папке проекта.")
+        st.error("CSV файлы не найдены.")
     else:
         selected_region_name = st.selectbox("Выберите область:", sorted(list(regions_dict.keys())))
-        
-        # Пытаемся прочитать файл с обработкой кодировок
         file_path = regions_dict[selected_region_name]
         
         try:
-            # Пытаемся прочитать как Windows-1251
+            # Пробуем прочитать с основной кодировкой
             df = pd.read_csv(file_path, sep=';', encoding='cp1251')
-        except Exception:
-            try:
-                # Если не вышло, пробуем UTF-8
-                df = pd.read_csv(file_path, sep=';', encoding='utf-8-sig')
-            except Exception as e:
-                st.error(f"Не удалось прочитать файл. Ошибка: {e}")
-                df = None
+        except:
+            df = pd.read_csv(file_path, sep=';', encoding='utf-8-sig')
 
         if df is not None:
-            # Дальше идет ваш код отрисовки колонок и графиков
-            col_left, col_right = st.columns([1.2, 1.3], gap="large")
-            # ... и так далее
+            # ОЧЕНЬ ВАЖНО: Убираем возможные пробелы в названиях колонок
+            df.columns = df.columns.str.strip()
+            
+            # Проверяем, что все нужные колонки на месте
+            required_columns = ['норма', 'max', 'min', 'Ср.зн.']
+            missing_cols = [c for c in required_columns if c not in df.columns]
+            
+            if missing_cols:
+                st.error(f"В файле не найдены колонки: {', '.join(missing_cols)}")
+                st.write("Доступные колонки:", list(df.columns))
+            else:
+                # Если всё ок, рисуем интерфейс
+                col_left, col_right = st.columns([1.2, 1.3], gap="large")
+            
         
 
-        with col_left:
-            st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
-            
-            # Динамический расчет показателей на основе файла
-            avg_norm = df['норма'].mean()
-            max_temp = df['max'].max()
-            min_temp = df['min'].min()
+            with col_left:
+                st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
+                
+                # Теперь ошибки KeyError не будет
+                avg_norm = df['норма'].mean()
+                max_temp = df['max'].max()
+                min_temp = df['min'].min()
 
-            st.markdown(f"""
-            <div style="display: flex; gap: 10px;">
-                <div class="big-climate-card" style="flex: 1;">
-                    <div class="section-title">🌡️ Температура</div>
-                    <div class="info-item">🔹 Средняя норма: <span class="val-bold">{avg_norm:.1f}°С</span></div>
-                    <div class="info-item">🔹 Пик месяца: <span class="val-bold">{max_temp:.1f}°С</span></div>
+                st.markdown(f"""
+                <div style="display: flex; gap: 10px;">
+                    <div class="big-climate-card" style="flex: 1;">
+                        <div class="section-title">🌡️ Температура</div>
+                        <div class="info-item">🔹 Средняя норма: <span class="val-bold">{avg_norm:.1f}°С</span></div>
+                        <div class="info-item">🔹 Пик месяца: <span class="val-bold">{max_temp:.1f}°С</span></div>
+                    </div>
+                    <div class="big-climate-card" style="flex: 1;">
+                        <div class="section-title">❄️ Экстремумы</div>
+                        <div class="info-item">🔴 Максимум: <span class="val-bold">{max_temp}°С</span></div>
+                        <div class="info-item">🔵 Минимум: <span class="val-bold">{min_temp}°С</span></div>
+                    </div>
                 </div>
-                <div class="big-climate-card" style="flex: 1;">
-                    <div class="section-title">❄️ Экстремумы</div>
-                    <div class="info-item">🔴 Максимум: <span class="val-bold">{max_temp}°С</span></div>
-                    <div class="info-item">🔵 Минимум: <span class="val-bold">{min_temp}°С</span></div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <div class="big-climate-card" style="flex: 1;">
+                        <div class="section-title">💧 Осадки</div>
+                        <div class="info-item">📅 Характер: <span class="val-bold">Смешанные</span></div>
+                        <div class="info-item">📅 Тренд: <span class="val-bold">Около нормы</span></div>
+                    </div>
+                    <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
+                        <div class="section-title">🌬️ Явления</div>
+                        <div class="info-item">🚩 Ветер: <span class="val-bold">Усиление</span></div>
+                        <div class="info-item">⚡ Грозы: <span class="val-bold">Возможны</span></div>
+                    </div>
                 </div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div class="big-climate-card" style="flex: 1;">
-                    <div class="section-title">💧 Осадки</div>
-                    <div class="info-item">📅 Характер: <span class="val-bold">Смешанные</span></div>
-                    <div class="info-item">📅 Тренд: <span class="val-bold">Около нормы</span></div>
-                </div>
-                <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
-                    <div class="section-title">🌬️ Явления</div>
-                    <div class="info-item">🚩 Ветер: <span class="val-bold">Усиление</span></div>
-                    <div class="info-item">⚡ Грозы: <span class="val-bold">Возможны</span></div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
-        with col_right:
-            st.markdown("#### 📊 График прогноза")
-            
-            fig = go.Figure()
+            with col_right:
+                st.markdown("#### 📊 График прогноза")
+                fig = go.Figure()
+                
+                # Коридор
+                fig.add_trace(go.Scatter(x=df['День'], y=df['max'], mode='lines', line=dict(width=0), showlegend=False))
+                fig.add_trace(go.Scatter(x=df['День'], y=df['min'], mode='lines', line=dict(width=0), 
+                                         fill='tonexty', fillcolor='rgba(0, 100, 255, 0.1)', name='Коридор (min-max)'))
+                # Норма
+                fig.add_trace(go.Scatter(x=df['День'], y=df['норма'], mode='lines', 
+                                         line=dict(color='green', dash='dash'), name='Норма'))
+                # Прогноз
+                fig.add_trace(go.Scatter(x=df['День'], y=df['Ср.зн.'], mode='lines+markers', 
+                                         line=dict(color='#e74c3c', width=3), name='Прогноз'))
 
-            # Область диапазона (Max/Min)
-            fig.add_trace(go.Scatter(
-                x=df['День'], y=df['max'],
-                mode='lines', line=dict(width=0),
-                showlegend=False, name='Max'
-            ))
-            fig.add_trace(go.Scatter(
-                x=df['День'], y=df['min'],
-                mode='lines', line=dict(width=0),
-                fill='tonexty', fillcolor='rgba(0, 100, 255, 0.1)',
-                showlegend=True, name='Коридор (min-max)'
-            ))
-
-            # Линия нормы (зеленая пунктирная)
-            fig.add_trace(go.Scatter(
-                x=df['День'], y=df['норма'],
-                mode='lines', line=dict(color='green', dash='dash'),
-                name='Норма'
-            ))
-
-            # Линия среднего прогноза (красная)
-            fig.add_trace(go.Scatter(
-                x=df['День'], y=df['Ср.зн.'],
-                mode='lines+markers', line=dict(color='#e74c3c', width=3),
-                marker=dict(size=6),
-                name='Средний прогноз'
-            ))
-
-            fig.update_layout(
-                margin=dict(l=0, r=0, t=30, b=0),
-                height=450,
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                xaxis=dict(title="Числа апреля", tickmode='linear', dtick=2),
-                yaxis=dict(title="Температура °C"),
-                hovermode="x unified",
-                plot_bgcolor='rgba(0,0,0,0)'
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
-            
+                fig.update_layout(height=450, margin=dict(l=0, r=0, t=30, b=0), hovermode="x unified")
+                st.plotly_chart(fig, use_container_width=True)
+                
         
 
     st.divider()
