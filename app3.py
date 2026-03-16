@@ -9195,7 +9195,7 @@ with tabs[7]:
 
             with col_b:
                 # Вставляем интерактивную карту через iframe
-                st.components.v1.iframe("http://ecodata.kz:3838/app_dem_visual/", height=600, scrolling=True)
+                st.components.v1.iframe("https://ecodata.kz:3838/app_dem_visual/", height=600, scrolling=True)
                 
                           
     with tab2:
@@ -9218,8 +9218,7 @@ with tabs[7]:
                     </div>
                     """, unsafe_allow_html=True)
                 
-        
-        
+      
         
     with tab3:
         col_soil, col_rad = st.columns(2)
