@@ -9096,16 +9096,10 @@ with tabs[6]:
 
     # --- ФУНКЦИИ ПОДГОТОВКИ ДАННЫХ ---
 
-    if page == "КЛИМАТ":
-        st.write("...")
-
-    def load_data(): # Этот код "разрывает" связь, так как он не внутри IF
-        pass
-
-    elif page == "СНЕЖНЫЙ ПОКРОВ": # ОШИБКА! Python не видит здесь IF
-
-        # 1. НАСТРОЙКА ПУТЕЙ (Файлы в корне GitHub, как на скриншоте)
-        # ВАЖНО: Убедитесь, что названия файлов в GitHub совпадают до символа
+# Убедитесь, что этот elif находится на том же уровне отступа, 
+    # что и предыдущий if page == "...":
+    elif page == "СНЕЖНЫЙ ПОКРОВ":
+        # 1. НАСТРОЙКА ПУТЕЙ (Относительные пути для GitHub)
         PATH_WATER = "Запас воды в снеге.xlsx"
         PATH_HEIGHT = "Высота снега.xlsx"
         SHAPE_PATH = "kaz 17 obl.shp" 
@@ -9132,7 +9126,7 @@ with tabs[6]:
             'АБАЙСКАЯ ОБЛ.': 'Абай', 'ЖЕТЫСУСКАЯ ОБЛ.': 'Жетысу', 'УЛЫТАУСКАЯ ОБЛ.': 'Улытау'
         }
 
-        # 3. ЗАГОЛОВОК И ИНТРО
+        # 3. ЗАГОЛОВОК
         st.markdown("<h1 style='text-align: center; color: #0F172A;'>❄️ Мониторинг Снежного Покрова</h1>", unsafe_allow_html=True)
         
         with st.expander("ℹ️ О методике мониторинга"):
@@ -9149,16 +9143,17 @@ with tabs[6]:
             
         with c2:
             s_reg = st.selectbox("📍 Регион:", list(REGION_MAP.keys()))
-            # Загружаем данные только после выбора региона
             df_raw = load_excel_snow(target_file, REGION_MAP[s_reg])
             
         with c3:
             if not df_raw.empty:
                 years = df_raw.iloc[:, 0].dropna().astype(int).unique().tolist()
-                start_y, end_y = st.select_slider("📅 Период наблюдения:", options=sorted(years), value=(min(years), max(years)))
+                start_y, end_y = st.select_slider("📅 Период наблюдения:", 
+                                                  options=sorted(years), 
+                                                  value=(min(years), max(years)))
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # 5. ОСНОВНОЙ КОНТЕНТ (ГРАФИК И АНАЛИЗ)
+        # 5. КОНТЕНТ
         if not df_raw.empty:
             df_filt = df_raw[(df_raw.iloc[:, 0] >= start_y) & (df_raw.iloc[:, 0] <= end_y)].copy()
             stations = ["Среднее по области"] + df_raw.columns[1:-1].tolist()
@@ -9169,40 +9164,37 @@ with tabs[6]:
             col_chart, col_report = st.columns([2, 1])
             
             with col_chart:
-                fig = px.line(df_filt, x=df_filt.columns[0], y=y_axis, 
-                             title=f"Динамика: {selected_station}",
-                             markers=True, line_shape="linear")
+                st.markdown(f"### 📈 Динамика: {selected_station}")
+                fig = px.line(df_filt, x=df_filt.columns[0], y=y_axis, markers=True)
                 fig.update_traces(line_color='#0077b6', fill='tozeroy', fillcolor='rgba(0,119,182,0.1)')
                 fig.update_layout(template="plotly_white", yaxis_title=unit, xaxis_title="Год")
                 st.plotly_chart(fig, use_container_width=True)
 
             with col_report:
-                st.subheader("🔬 Аналитика")
-                # Здесь вызывается ваша функция генерации отчета
+                st.markdown("### 🔬 Аналитика")
                 report = generate_scientific_report(df_filt, y_axis, unit, selected_station)
                 st.info(report)
 
-            # 6. КАРТА (ПРОСТРАНСТВЕННОЕ РАСПРЕДЕЛЕНИЕ)
+            # 6. КАРТА
             st.divider()
-            st.subheader(f"🗺️ Распределение снежного покрова ({end_y} г.)")
+            st.subheader(f"🗺️ Пространственное распределение ({end_y} г.)")
+            m_param = st.radio("Данные для карты:", ["Высота снега", "Запас воды"], horizontal=True)
             
-            m_param = st.radio("Отобразить на карте:", ["Высота снега", "Запас воды"], horizontal=True, key="map_toggle")
-            
-            with st.spinner("Загрузка геоданных..."):
+            with st.spinner("Загрузка карты..."):
                 merged_gdf = load_synchronized_map(end_y, m_param, REGION_MAP, SHP_TO_EXCEL_SNOW, PATH_WATER, PATH_HEIGHT)
                 
                 if merged_gdf is not None:
-                    fig_m, ax = plt.subplots(figsize=(10, 5))
+                    fig_m, ax = plt.subplots(figsize=(10, 6))
                     merged_gdf.plot(column='Map_Value', ax=ax, cmap='Blues', legend=True,
-                                   edgecolor='white', linewidth=0.5,
-                                   legend_kwds={'label': f"{m_param}, {unit}", 'orientation': "horizontal"})
+                                   edgecolor='black', linewidth=0.3,
+                                   legend_kwds={'label': f"{m_param} ({unit})", 'orientation': "horizontal"})
                     ax.set_axis_off()
                     st.pyplot(fig_m)
+                    plt.close()
                 else:
-                    st.warning("Не удалось сопоставить данные с картой. Проверьте названия областей в файлах.")
-
+                    st.warning("Файлы карты не найдены или данные не сопоставлены.")
         else:
-            st.warning(f"Данные по региону {s_reg} отсутствуют в файле.")
+            st.warning(f"Данные по региону {s_reg} отсутствуют.")
             
             
             
