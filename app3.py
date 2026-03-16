@@ -9094,15 +9094,6 @@ with tabs[6]:
             st.plotly_chart(fig, use_container_width=True)
             
 
-    import streamlit as st
-    import pandas as pd
-    import geopandas as gpd
-    import plotly.express as px
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import os
-    from pathlib import Path
-
     # --- ФУНКЦИИ ПОДГОТОВКИ ДАННЫХ ---
 
     @st.cache_data
