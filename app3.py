@@ -9096,15 +9096,30 @@ with tabs[6]:
 
     # --- ФУНКЦИИ ПОДГОТОВКИ ДАННЫХ ---
 
-# Убедитесь, что этот elif находится на том же уровне отступа, 
-    # что и предыдущий if page == "...":
-    elif page == "СНЕЖНЫЙ ПОКРОВ":
-        # 1. НАСТРОЙКА ПУТЕЙ (Относительные пути для GitHub)
+# --- ШАГ 1: Функции загрузки (вынесите их в начало файла, вне if/elif) ---
+
+    @st.cache_data
+    def load_excel_snow(path, sheet):
+        try:
+            df = pd.read_excel(path, sheet_name=sheet)
+            df.columns = [str(c).strip() for c in df.columns]
+            return df
+        except Exception as e:
+            return pd.DataFrame()
+
+    # --- ШАГ 2: Основная навигация ---
+
+    if page == "ГЛАВНАЯ":
+        st.write("Главная страница")
+
+    # ... другие ваши elif ...
+
+    elif page == "СНЕЖНЫЙ ПОКРОВ":  # <--- Теперь Python увидит эту связь
+        # Пути для GitHub (без C:\Users\...)
         PATH_WATER = "Запас воды в снеге.xlsx"
         PATH_HEIGHT = "Высота снега.xlsx"
         SHAPE_PATH = "kaz 17 obl.shp" 
 
-        # 2. СЛОВАРИ СОПОСТАВЛЕНИЙ
         REGION_MAP = {
             "Абай": "Абайская ", "Акмолинская": "Акмолинская", "Актюбинская": "Актюбинская ",
             "Алматинская": "Алматинская", "Атырауская": "Атырауская", "ВКО": "ВКО",
@@ -9115,43 +9130,27 @@ with tabs[6]:
             "Улытау": "Улытау"
         }
 
-        SHP_TO_EXCEL_SNOW = {
-            'ЗАПАДНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ЗКО', 'ВОСТОЧНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ВКО',
-            'КАРАГАНДИНСКАЯ ОБЛ.': 'Карагандинская', 'АКТЮБИНСКАЯ ОБЛ.': 'Актюбинская',
-            'АТЫРАУСКАЯ ОБЛ.': 'Атырауская', 'КЫЗЫЛОРДИНСКАЯ ОБЛ.': 'Кызылординская',
-            'АЛМАТИНСКАЯ ОБЛ.': 'Алматинская', 'МАНГИСТАУСКАЯ ОБЛ.': 'Мангистауская',
-            'ЖАМБЫЛСКАЯ ОБЛ.': 'Жамбылская', 'ЮЖНО-КАЗАХСТАНСКАЯ ОБЛ.': 'Туркестанская',
-            'АКМОЛИНСКАЯ ОБЛ.': 'Акмолинская', 'СЕВЕРО-КАЗАХСТАНСКАЯ ОБЛ.': 'СКО',
-            'ПАВЛОДАРСКАЯ ОБЛ.': 'Павлодарская', 'КОСТАНАЙСКАЯ ОБЛ.': 'Костанайская ',
-            'АБАЙСКАЯ ОБЛ.': 'Абай', 'ЖЕТЫСУСКАЯ ОБЛ.': 'Жетысу', 'УЛЫТАУСКАЯ ОБЛ.': 'Улытау'
-        }
+        st.markdown("<h1 style='text-align: center;'>❄️ Мониторинг Снежного Покрова</h1>", unsafe_allow_html=True)
 
-        # 3. ЗАГОЛОВОК
-        st.markdown("<h1 style='text-align: center; color: #0F172A;'>❄️ Мониторинг Снежного Покрова</h1>", unsafe_allow_html=True)
-        
-        with st.expander("ℹ️ О методике мониторинга"):
-            st.write("Анализ базируется на данных снегомерных съемок. Запас воды в снеге (SWEn) является ключевым параметром для прогнозирования весенних паводков.")
-
-        # 4. БЛОК ФИЛЬТРОВ
-        st.markdown('<div style="background:#f0f2f6; padding:25px; border-radius:15px; margin-bottom:25px;">', unsafe_allow_html=True)
+        # Интерфейс выбора
+        st.markdown('<div style="background:#f0f2f6; padding:20px; border-radius:15px;">', unsafe_allow_html=True)
         c1, c2, c3 = st.columns([1, 1, 1.2])
         
         with c1:
-            p_choice = st.radio("📊 Параметр:", ["Запас воды (мм)", "Высота снега (см)"], horizontal=True)
+            p_choice = st.radio("Параметр:", ["Запас воды (мм)", "Высота снега (см)"])
             target_file = PATH_WATER if "Запас" in p_choice else PATH_HEIGHT
             unit = "мм" if "Запас" in p_choice else "см"
             
         with c2:
-            s_reg = st.selectbox("📍 Регион:", list(REGION_MAP.keys()))
+            s_reg = st.selectbox("Регион:", list(REGION_MAP.keys()))
             df_raw = load_excel_snow(target_file, REGION_MAP[s_reg])
             
         with c3:
             if not df_raw.empty:
-                years = df_raw.iloc[:, 0].dropna().astype(int).unique().tolist()
-                start_y, end_y = st.select_slider("📅 Период наблюдения:", 
-                                                  options=sorted(years), 
-                                                  value=(min(years), max(years)))
+                years = sorted(df_raw.iloc[:, 0].dropna().astype(int).unique().tolist())
+                start_y, end_y = st.select_slider("Период:", options=years, value=(min(years), max(years)))
         st.markdown('</div>', unsafe_allow_html=True)
+
 
         # 5. КОНТЕНТ
         if not df_raw.empty:
