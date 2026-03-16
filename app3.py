@@ -9202,7 +9202,7 @@ with tabs[7]:
              col_text, col_img = st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
             
                
-            with col_text:
+        with col_text:
                 st.markdown("""
                     <div class="stCard">
                         <h4>☀️ Прогноз УФ индекса</h4>
@@ -9215,16 +9215,16 @@ with tabs[7]:
                     </div>
                     """, unsafe_allow_html=True)
 
-            with col_img:
+        with col_img:
                 # Отображение GIF из вашей папки
                 st.image("uf.gif", use_column_width=True)
                 
                         
     with tab3:
-             col_text, col_b= st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
+        col_text, col_b= st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
             
                
-            with col_text:
+        with col_text:
                 st.markdown("""
                     <div class="stCard">
                         <h4>🏜️ SILAM</h4>
@@ -9235,7 +9235,7 @@ with tabs[7]:
                     </div>
                     """, unsafe_allow_html=True)
 
-            with col_b:
+        with col_b:
                 # Вставляем интерактивную карту через iframe
                 st.components.v1.iframe("https://www.kazhydromet.kz/vc/silam/", height=400, scrolling=True)
                 
