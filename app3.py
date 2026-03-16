@@ -9189,15 +9189,28 @@ with tabs[7]:
                 """, unsafe_allow_html=True)
                       
     with tab2:
-            with st.container():
+            col_img, col_text = st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
+            
+            with col_img:
+                # Отображение GIF из вашей папки
+                st.image("uf.gif", use_column_width=True)
+                
+            with col_text:
                 st.markdown("""
-                <div class="stCard">
-                    <h4>☀️ Прогноз УФ индекса</h4>
-                    <p><b>Период:</b> май – сентябрь.<br>
-                    В теплое полугодие, выпускается бюллетень с прогнозом уровня ультрафиолета на ближайшие 7 дней.</p>
-                </div>
-                """, unsafe_allow_html=True)
-
+                    <div class="stCard">
+                        <h4>☀️ Прогноз УФ индекса</h4>
+                        <p><b>Период:</b> май – сентябрь.</p>
+                        <p>В теплое полугодие выпускается бюллетень с прогнозом уровня ультрафиолета на ближайшие <b>7 дней</b>.</p>
+                        <p style="font-size: 0.9em; color: #555;">
+                        Также в бюллетене даны рекомендации для различных групп лиц. 
+                        Продукция доступна на казахском, русском и английском языках.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+        
+        
+        
     with tab3:
         col_soil, col_rad = st.columns(2)
         
