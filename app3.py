@@ -9178,13 +9178,18 @@ with tabs[6]:
 
         @st.cache_data
         def load_geo_wind(_df_stats):
-            path_shp = r"C:\Users\eltai_a\Desktop\RES\stend\Admin_KZ.shp"
-            if os.path.exists(path_shp):
-                gdf = gpd.read_file(path_shp, encoding='cp1251')
+            # Прямая ссылка на RAW-файл (замените на свои данные)
+            url = "https://github.com/yeltaya/caspian-project/blob/yeltaya-patch-1/kaz%2017%20obl.shp"
+            
+            try:
+                gdf = gpd.read_file(url)
                 gdf['name_clean'] = gdf['name_adm1'].str.strip().str.upper()
                 merged = gdf.merge(_df_stats, left_on='name_clean', right_on='ADM1_EN', how='left')
                 return merged.to_crs(epsg=4326)
-            return None
+            except Exception as e:
+                print(f"Ошибка: {e}")
+                return None
+                
 
         def get_sheet_full_data(sheet_name):
             excel_path = "графики.xlsx"
