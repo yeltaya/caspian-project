@@ -9237,7 +9237,7 @@ with tabs[7]:
 
         with col_b:
                 # Вставляем интерактивную карту через iframe
-                st.components.v1.iframe("https://www.kazhydromet.kz/vc/silam/", height=400, scrolling=True)
+                st.components.v1.iframe("https://www.kazhydromet.kz/vc/silam/", height=600, scrolling=True)
                 
                 
     with tab4:
@@ -9254,6 +9254,103 @@ with tabs[7]:
         st.info("💡 Более 10 000 активных пользователей")
 
 
+
+    import streamlit as st
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import pandas as pd
+    import numpy as np
+
+    # --- 1. ПОДГОТОВКА ДАННЫХ (Пример на основе ваших данных по Алматы) ---
+    months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
+    pollutants = ['Пыль', 'PM-2.5', 'PM-10', 'SO2', 'CO', 'NO2', 'NO', 'O3']
+
+    # Данные по количеству превышений (Heatmap)
+    heatmap_data = np.array([
+        [3, 1, 3, 5, 8, 4, 0, 0, 1, 2, 0, 1],          # Пыль
+        [553, 417, 65, 25, 60, 28, 34, 61, 48, 57, 332, 451], # PM-2.5
+        [370, 168, 5, 4, 8, 1, 0, 3, 6, 11, 75, 121],   # PM-10
+        [2, 0, 742, 489, 6, 126, 0, 1, 143, 6, 70, 119], # SO2
+        [382, 266, 9, 4, 0, 3, 3, 0, 4, 16, 66, 145],    # CO
+        [1993, 2355, 1922, 1489, 1508, 1519, 308, 105, 77, 278, 624, 131], # NO2
+        [501, 180, 384, 122, 14, 6, 23, 19, 64, 291, 502, 643], # NO
+        [9, 1, 2, 0, 0, 0, 1, 50, 12, 1, 0, 1]          # O3
+    ])
+
+    # Данные по годам (Line Chart / Slider)
+    years = list(range(2015, 2026))
+    yearly_data = {
+        'PM-2.5': [0, 3.9, 4.4, 5.2, 6.3, 5.8, 6.3, 6.0, 4.9, 5.7, 4.7],
+        'NO2': [8.7, 5.0, 2.5, 9.1, 9.5, 4.8, 5.3, 5.2, 9.6, 5.1, 5.3]
+    }
+
+    # --- 2. ИНТЕРФЕЙС ---
+    st.set_page_config(page_title="Эко-Мониторинг Казахстана", layout="wide")
+    st.title("🍀 Экологический мониторинг городов Казахстана")
+
+    # Выпадающий список (Dropdown)
+    city = st.selectbox("Выберите город:", ["Алматы", "Астана", "Караганда"])
+
+    # Переключатель (Tabs)
+    tab1, tab2, tab3 = st.tabs(["📊 Месячная статистика", "📈 Годовая динамика", "🎯 Сравнение с ПДК"])
+
+    # --- TAB 1: ТЕПЛОВАЯ КАРТА ---
+    with tab1:
+        st.subheader(f"Карта загрязнений по месяцам ({city})")
+        fig_heat = px.imshow(
+            heatmap_data,
+            labels=dict(x="Месяц", y="Примесь", color="Случаев > ПДК"),
+            x=months,
+            y=pollutants,
+            color_continuous_scale="Reds", # Градиент от белого к красному
+            aspect="auto"
+        )
+        st.plotly_chart(fig_heat, use_container_width=True)
+        st.info("Чем насыщеннее красный цвет, тем чаще фиксировались превышения нормы в этот период.")
+
+    # --- TAB 2: ГОДОВАЯ ДИНАМИКА И СЛАЙДЕР ---
+    with tab2:
+        st.subheader("Изменение кратности превышения ПДК")
+        year_range = st.select_slider(
+            "Выберите период:",
+            options=years,
+            value=(2015, 2025)
+        )
+        
+        # Фильтрация данных по годам (упрощенно)
+        filtered_years = [y for y in years if year_range[0] <= y <= year_range[1]]
+        
+        fig_line = go.Figure()
+        for pol, vals in yearly_data.items():
+            fig_line.add_trace(go.Scatter(x=filtered_years, y=vals, name=pol, mode='lines+markers'))
+        
+        fig_line.update_layout(xaxis_title="Год", yaxis_title="Кратность превышения")
+        st.plotly_chart(fig_line, use_container_width=True)
+
+    # --- TAB 3: РАДАРНАЯ ДИАГРАММА ---
+    with tab3:
+        st.subheader("Профиль загрязнения города (Radar Chart)")
+        
+        # Пример данных для радара (средняя кратность за последний год)
+        radar_values = [2.0, 4.7, 2.3, 2.0, 4.8, 5.3, 9.6, 2.0] # Значения из вашей таблицы 2025
+        
+        fig_radar = go.Figure()
+        fig_radar.add_trace(go.Scatterpolar(
+            r=radar_values,
+            theta=pollutants,
+            fill='toself',
+            name=city,
+            line_color='red'
+        ))
+        
+        fig_radar.update_layout(
+            polar=dict(radialaxis=dict(visible=True, range=[0, 10])),
+            showlegend=False
+        )
+        st.plotly_chart(fig_radar, use_container_width=True)
+        st.write("Радар показывает 'отпечаток' города: чем больше площадь фигуры, тем выше общий уровень загрязнения.")
+        
+        
 
   
     
