@@ -4049,7 +4049,8 @@ with tabs[3]:
         </div>
         """, unsafe_allow_html=True)
     
-
+    st.divider()
+    
     import streamlit as st
     from PIL import Image
     import os
@@ -9092,6 +9093,355 @@ with tabs[6]:
             
             st.plotly_chart(fig, use_container_width=True)
             
+
+
+    import streamlit as st
+    import pandas as pd
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import geopandas as gpd
+    import os
+    import numpy as np
+    from pathlib import Path
+    import matplotlib.pyplot as plt
+
+    # --- 1. ОБЩАЯ НАСТРОЙКА (ТОЛЬКО ОДИН РАЗ) ---
+    st.set_page_config(page_title="Казгидромет — Мониторинг", layout="wide")
+
+    # --- 2. НАВИГАЦИЯ ---
+    with st.sidebar:
+        st.markdown("### 🛰️ НАВИГАЦИЯ")
+        page = st.radio("Выберите раздел:", ["СКОРОСТЬ ВЕТРА", "СНЕЖНЫЙ ПОКРОВ"])
+        st.markdown("---")
+        st.caption("© 2026 Казгидромет")
+
+    # --- 3. ОБЩИЕ СТИЛИ (CSS) ---
+    st.markdown("""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+        html, body, [class*="st-"] { font-family: 'Montserrat', sans-serif !important; }
+        .stApp { background-color: #F8FAFC; }
+        .header-wrapper { 
+            text-align: center; padding: 25px; 
+            background: linear-gradient(90deg, #001f3f 0%, #0072ff 100%); 
+            color: white; border-radius: 0 0 20px 20px; margin-bottom: 20px;
+        }
+        .section-title {
+            background: #f0f2f6; padding: 15px; border-radius: 10px;
+            margin-top: 30px; margin-bottom: 20px; text-align: center; 
+            font-weight: bold; font-size: 1.3rem; color: #1E293B;
+        }
+        .map-title { font-weight: 700; font-size: 1.2rem; color: #1E293B; margin-bottom: 10px; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # =================================================================
+    # РАЗДЕЛ: СКОРОСТЬ ВЕТРА
+    # =================================================================
+    if page == "СКОРОСТЬ ВЕТРА":
+        # Ваш словарь сопоставления
+        SHP_TO_EXCEL_WIND = {
+            'ЗАПАДНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ЗКО',
+            'ВОСТОЧНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ВКО',
+            'КАРАГАНДИНСКАЯ ОБЛ.': 'Карагандинская',
+            'АКТЮБИНСКАЯ ОБЛ.': 'Актюбинская',
+            'АТЫРАУСКАЯ ОБЛ.': 'Атырауская',
+            'КЫЗЫЛОРДИНСКАЯ ОБЛ.': 'Кызылординская',
+            'АЛМАТИНСКАЯ ОБЛ.': 'Алматинская',
+            'МАНГИСТАУСКАЯ ОБЛ.': 'Мангистауская',
+            'ЖАМБЫЛСКАЯ ОБЛ.': 'Жамбылская',
+            'ЮЖНО-КАЗАХСТАНСКАЯ ОБЛ.': 'Туркестанская',
+            'АКМОЛИНСКАЯ ОБЛ.': 'Акмолинская',
+            'СЕВЕРО-КАЗАХСТАНСКАЯ ОБЛ.': 'СКО',
+            'ПАВЛОДАРСКАЯ ОБЛ.': 'Павлодарская',
+            'КОСТАНАЙСКАЯ ОБЛ.': 'Костанайская ',
+            'АБАЙСКАЯ ОБЛ.': 'Абай',
+            'ЖЕТЫСУСКАЯ ОБЛ.': 'Жетысу',
+            'УЛЫТАУСКАЯ ОБЛ.': 'Улытау'
+        }
+
+        DESCRIPTIONS = {
+            'АБАЙСКАЯ ОБЛ.': "Максимальная скорость ветра по области Абай за 1979–2024 гг. показывает, что значения варьируются в диапазоне от 26 до 53 м/с. Наибольшее зарегистрированное значение составляет 53 м/с и было отмечено в 1987 году на метеостанции Актогай. В целом за 46 лет уменьшение составляет около 3,6 м/с.",
+            'АКМОЛИНСКАЯ ОБЛ.': "Максимальная скорость ветра за рассматриваемый период варьируется в диапазоне от 28 до 43 м/с. Наибольшее зарегистрированное значение составляет 43 м/с и наблюдалось в 1980 году на метеостанции Аршалы. Согласно результатам анализа линейного тренда, за 46 лет наблюдается незначительное снижение максимальной скорости ветра, общее уменьшение составляет около 0,7 м/с.",
+            'АКТЮБИНСКАЯ ОБЛ.': "Максимальная скорость ветра по Актюбинской области за рассматриваемый период изменялась в пределах от 24 до 40 м/с. Наибольшее зарегистрированное значение составило 40 м/с — оно было отмечено на метеостанции Мугоджарское в 1979 году. В целом за анализируемый период наблюдается снижение максимальных значений скорости ветра, за 46 лет уменьшилась примерно на 5,7 м/с.",
+            'АЛМАТИНСКАЯ ОБЛ.': "По Алматинской области максимальная скорость ветра за рассматриваемый период изменялась в пределах от 26 до 48 м/с. Наибольшее значение 48 м/с, зафиксировано на метеостанции Айдарлы в 2018 году. За 46 лет максимальная скорость ветра в Алматинской области уменьшилась примерно на 1,9 м/с.",
+            'АТЫРАУСКАЯ ОБЛ.': "По Атырауской области максимальная скорость ветра за рассматриваемый период изменялась в пределах от 23 до 34 м/с. Наибольшее значение 34 м/с, наблюдалось в 1979, 1980, 1984 и 1993 годах на метеостанциях Кульсары и Атырау. Максимальная скорость ветра в Атырауской области за данный период уменьшилась примерно на 4,0 м/с.",
+            'ВОСТОЧНО-КАЗАХСТАНСКАЯ ОБЛ.': "Максимальная скорость ветра за рассматриваемый период изменялась в пределах от 28 до 45 м/с. Наибольшее значение 45 м/с, зафиксировано в 2000 году на метеостанции Улкен Нарын. Максимальная скорость ветра в Восточно-Казахстанской области уменьшилась примерно на 0,5 м/с.",
+            'ЖАМБЫЛСКАЯ ОБЛ.': "По Жамбылской области максимальная скорость ветра за рассматриваемый период изменялась в пределах от 28 до 49 м/с. Наибольшее значение 49 м/с, зафиксировано в 1980 году на метеостанции Шокпар. Максимальная скорость ветра в Жамбылской области уменьшилась примерно на 3,5 м/с.",
+            'ЖЕТЫСУСКАЯ ОБЛ.': "По области Жетісу максимальная скорость ветра за рассматриваемый период изменялась в пределах от 28 до 60 м/с. Наибольшее значение 60 м/с, зафиксировано в 1979, 1982 и 1983 годах на метеостанции Жаланашколь. За 46 лет максимальная скорость ветра в области Жетісу уменьшилась примерно на 14,6 м/с.",
+            'ЗАПАДНО-КАЗАХСТАНСКАЯ ОБЛ.': "Максимальная скорость ветра по Западно-Казахстанской области за рассматриваемый период изменялась в пределах от 23 до 40 м/с. Наибольшее значение 40 м/с, зафиксировано в 1982 году на метеостанции Уральск. Максимальная скорость ветра в Западно-Казахстанской области уменьшилась примерно на 4,5 м/с.",
+            'КАРАГАНДИНСКАЯ ОБЛ.': "По Карагандинской области максимальная скорость ветра за рассматриваемый период изменялась в пределах от 25 до 50 м/с. Наибольшее значение 50 м/с, зафиксировано в 1981 году на метеостанции Караганда СХОЗ. Максимальная скорость ветра в Карагандинской области уменьшилась примерно на 6,2 м/с.",
+            'КОСТАНАЙСКАЯ ОБЛ.': "По Костанайской области максимальная скорость ветра за рассматриваемый период изменялась в пределах от 26 до 40 м/с. Наибольшее значение 40 м/с, отмечалось в 1980, 1987, 2005, 2007 и 2008 годах на метеостанциях Диевская, Железнодорожный и Аркалык. В Костанайской области максимальная скорость ветра уменьшилась примерно на 4,3 м/с.",
+            'КЫЗЫЛОРДИНСКАЯ ОБЛ.': "По Кызылординской области максимальная скорость ветра за рассматриваемый период изменялась в пределах от 23 до 55 м/с. Наибольшее значение 55 м/с, зафиксировано в 1985 году на метеостанции Злиха. За данный период в Кызылординской области увеличилась примерно на 0,4 м/с.",
+            'МАНГИСТАУСКАЯ ОБЛ.': "Максимальная скорость ветра за рассматриваемый период изменялась в пределах от 21 до 40 м/с. Наибольшее значение 40 м/с, зафиксировано в 2000 году в Форт-Шевченко. Максимальная скорость ветра в Мангистауской области уменьшилась примерно на 3,6 м/с.",
+            'ПАВЛОДАРСКАЯ ОБЛ.': "Максимальная скорость ветра за рассматриваемый период изменялась в пределах от 25 до 44 м/с. Наибольшее значение 44 м/с, зафиксировано в 1983 году на метеостанции Ертис. Максимальная скорость ветра в Павлодарской области уменьшилась примерно на 2,9 м/с.",
+            'СЕВЕРО-КАЗАХСТАНСКАЯ ОБЛ.': "Максимальная скорость ветра за рассматриваемый период изменялась в пределах от 24 до 42 м/с. Наибольшее значение 42 м/с, зафиксировано в 2020 году на метеостанции Тайынша. Максимальная скорость ветра в Северо-Казахстанской области увеличилась примерно на 4,77 м/с.",
+            'ЮЖНО-КАЗАХСТАНСКАЯ ОБЛ.': "Максимальная скорость ветра за рассматриваемый период изменялась в пределах от 24 до 52 м/с. Наибольшее значение 52 м/с, зафиксировано в 1988 и 1991 годах на метеостанции Ащысай. Максимальная скорость ветра в Туркестанской области уменьшилась примерно на 7,36 м/с.",
+            'УЛЫТАУСКАЯ ОБЛ.': "Максимальная скорость ветра за рассматриваемый период изменялась в пределах от 22 до 40 м/с. Наибольшее значение 40 м/с, зафиксировано в 2019 году на метеостанции Жана-Арка. Максимальная скорость ветра в области Ұлытау увеличилась примерно на 2,71 м/с."
+        }
+
+        df_stats = pd.DataFrame({
+            'ADM1_EN': list(SHP_TO_EXCEL_WIND.keys()),
+            'Region_RU': [
+                "Западно-Казахстанская область", "Восточно-Казахстанская область", "Карагандинская область",
+                "Актюбинская область", "Атырауская область", "Кызылординская область",
+                "Алматинская область", "Мангистауская область", "Жамбылская область",
+                "Туркестанская область", "Акмолинская область", "Северо-Казахстанская область",
+                "Павлодарская область", "Костанайская область", "Абайская область",
+                "Область Жетісу", "Область Ұлытау"
+            ],
+            'Max_Wind': [40, 45, 50, 40, 34, 55, 48, 40, 49, 52, 43, 42, 44, 40, 53, 60, 40],
+            'Year': [1982, 2000, 1981, 1979, 1993, 1985, 2018, 2000, 1980, 1991, 1980, 2020, 1983, 1980, 1987, 1983, 2019],
+            'Station': ["Уральск", "Улкен Нарын", "Караганда СХОЗ", "Мугоджарское", "Кульсары/Атырау", "Злиха", "Айдарлы", "Форт-Шевченко", "Шокпар", "Ащысай", "Аршалы", "Тайынша", "Ертис", "Диевская", "Актогай", "Жаланашколь", "Жана-Арка"]
+        })
+
+        @st.cache_data
+        def load_geo_wind(_df_stats):
+            path_shp = r"C:\Users\eltai_a\Desktop\RES\stend\Admin_KZ.shp"
+            if os.path.exists(path_shp):
+                gdf = gpd.read_file(path_shp, encoding='cp1251')
+                gdf['name_clean'] = gdf['name_adm1'].str.strip().str.upper()
+                merged = gdf.merge(_df_stats, left_on='name_clean', right_on='ADM1_EN', how='left')
+                return merged.to_crs(epsg=4326)
+            return None
+
+        def get_sheet_full_data(sheet_name):
+            excel_path = "графики.xlsx"
+            try:
+                df = pd.read_excel(excel_path, sheet_name=sheet_name)
+                df.columns.values[0] = "Year"
+                df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+                df = df.replace('#Н/Д', pd.NA)
+                stations = df.columns[1:-1].tolist()
+                target_col = df.columns[-1]
+                df["Year"] = pd.to_numeric(df["Year"], errors='coerce')
+                for col in df.columns[1:]:
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+                return df.dropna(subset=["Year"]), target_col, stations
+            except: return None, None, []
+
+        map_data = load_geo_wind(df_stats)
+        st.markdown('<div class="header-wrapper"><h1>KAZHYDROMET</h1><p>Мониторинг экстремальных скоростей ветра</p></div>', unsafe_allow_html=True)
+
+        col_left, col_right = st.columns([1.6, 1], gap="large")
+
+        with col_left:
+            st.markdown('<div class="map-title">Максимальная скорость приземного ветра</div>', unsafe_allow_html=True)
+            if map_data is not None:
+                fig_map = px.choropleth_mapbox(
+                    map_data, geojson=map_data.geometry, locations=map_data.index,
+                    color="Max_Wind", color_continuous_scale="Blues",
+                    mapbox_style="carto-positron", zoom=3.8, center={"lat": 48.0, "lon": 67.0},
+                    opacity=0.8, hover_name="Region_RU"
+                )
+                fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, height=500, coloraxis_showscale=False)
+                selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
+                
+                if selected and "selection" in selected and len(selected["selection"]["point_indices"]) > 0:
+                    idx = selected["selection"]["point_indices"][0]
+                    row_sel = map_data.iloc[idx]
+                    sheet = SHP_TO_EXCEL_WIND.get(row_sel['name_clean'])
+                    df_full, target_col, stations = get_sheet_full_data(sheet)
+                    
+                    if df_full is not None:
+                        st.markdown("---")
+                        st.subheader(f"📁 Экспорт данных: {row_sel['Region_RU']}")
+                        csv = df_full.to_csv(index=False).encode('utf-8-sig')
+                        st.download_button("📥 СКАЧАТЬ ДАННЫЕ (CSV)", data=csv, file_name=f"{row_sel['ADM1_EN']}.csv")
+                        
+                        st.markdown(f"### 📊 Динамика по станциям ({row_sel['Region_RU']})")
+                        view_type = st.segmented_control("Вид визуализации:", options=["Столбцы", "Линии"], default="Столбцы", label_visibility="collapsed")
+                        df_melted = df_full.melt(id_vars=["Year"], value_vars=stations, var_name="Станция", value_name="Скорость (м/с)")
+                        
+                        if view_type == "Столбцы":
+                            fig_hist = px.bar(df_melted, x="Year", y="Скорость (м/с)", color="Станция", barmode="group", color_discrete_sequence=px.colors.qualitative.T10)
+                        else:
+                            fig_hist = px.line(df_melted, x="Year", y="Скорость (м/с)", color="Станция", markers=True, color_discrete_sequence=px.colors.qualitative.T10)
+
+                        avg_val = df_melted["Скорость (м/с)"].mean()
+                        fig_hist.add_hline(y=avg_val, line_dash="dot", line_color="green", annotation_text=f"Среднее: {avg_val:.1f} м/с")
+                        fig_hist.add_hline(y=30, line_dash="dash", line_color="red", annotation_text="ОЯ (30 м/с)")
+                        fig_hist.update_layout(legend=dict(orientation="h", y=-0.2), height=500, hovermode="x unified", plot_bgcolor="white")
+                        st.plotly_chart(fig_hist, use_container_width=True)
+
+        with col_right:
+            if selected and "selection" in selected and len(selected["selection"]["point_indices"]) > 0:
+                idx = selected["selection"]["point_indices"][0]
+                row = map_data.iloc[idx]
+                st.subheader(f"📍 {row['Region_RU']}")
+                st.metric("Абсолютный максимум", f"{row['Max_Wind']} м/с")
+                st.write(f"**Рекордная МС:** {row['Station']} ({int(row['Year'])} г.)")
+                
+                df_p, col_p, _ = get_sheet_full_data(SHP_TO_EXCEL_WIND.get(row['name_clean']))
+                if df_p is not None:
+                    fig_trend = px.scatter(df_p, x="Year", y=col_p, trendline="ols", trendline_color_override="red")
+                    fig_trend.data[0].update(mode='lines+markers', line_color='#0072FF')
+                    fig_trend.update_layout(height=280, margin=dict(l=0,r=0,t=0,b=0), showlegend=False)
+                    st.plotly_chart(fig_trend, use_container_width=True)
+                    
+                    try:
+                        results = px.get_trendline_results(fig_trend).iloc[0]["px_fit_results"]
+                        slope = results.params[1]
+                        years_count = int(df_p["Year"].max() - df_p["Year"].min())
+                        total_change = slope * years_count
+                        if total_change > 0: st.success(f"📈 Рост за {years_count} лет: {abs(total_change):.2f} м/с.")
+                        else: st.info(f"📉 Снижение за {years_count} лет: {abs(total_change):.2f} м/с.")
+                    except: pass
+                    
+                    st.markdown("### 📝 Описание региона")
+                    st.write(DESCRIPTIONS.get(row['name_clean'], "Описание дополняется..."))
+                    img_path = r"C:\Users\eltai_a\Desktop\RES\stend\wind_RES5.jpg"
+                    if os.path.exists(img_path): st.image(img_path, use_container_width=True)
+            else:
+                st.info("Выберите область на карте.")
+
+    # =================================================================
+    # РАЗДЕЛ: СНЕЖНЫЙ ПОКРОВ
+    # =================================================================
+    elif page == "СНЕЖНЫЙ ПОКРОВ":
+        BASE_DIR = Path(r"C:\Users\eltai_a\Desktop\RES\stend")
+        PATH_WATER = BASE_DIR / "Запас воды в снеге.xlsx"
+        PATH_HEIGHT = BASE_DIR / "Высота снега.xlsx"
+        SHAPE_PATH = BASE_DIR / "Admin_KZ.shp"
+
+        REGION_MAP = {
+            "Абай": "Абайская ", "Акмолинская": "Акмолинская", "Актюбинская": "Актюбинская ",
+            "Алматинская": "Алматинская", "Атырауская": "Атырауская", "ВКО": "ВКО",
+            "Жамбылская": "Жамбылская", "Жетысу": "Жетису", "ЗКО": "ЗКО",
+            "Карагандинская": "Карагандинская", "Костанайская": "Костанайская ",
+            "Кызылординская": "Кызылорда", "Мангистауская": "Мангистау",
+            "Павлодарская": "Павлодар", "СКО": "СКО", "Туркестанская": "Туркестанская",
+            "Улытау": "Улытау"
+        }
+
+        SHP_TO_EXCEL_SNOW = {
+            'ЗАПАДНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ЗКО', 'ВОСТОЧНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ВКО',
+            'КАРАГАНДИНСКАЯ ОБЛ.': 'Карагандинская', 'АКТЮБИНСКАЯ ОБЛ.': 'Актюбинская',
+            'АТЫРАУСКАЯ ОБЛ.': 'Атырауская', 'КЫЗЫЛОРДИНСКАЯ ОБЛ.': 'Кызылординская',
+            'АЛМАТИНСКАЯ ОБЛ.': 'Алматинская', 'МАНГИСТАУСКАЯ ОБЛ.': 'Мангистауская',
+            'ЖАМБЫЛСКАЯ ОБЛ.': 'Жамбылская', 'ЮЖНО-КАЗАХСТАНСКАЯ ОБЛ.': 'Туркестанская',
+            'АКМОЛИНСКАЯ ОБЛ.': 'Акмолинская', 'СЕВЕРО-КАЗАХСТАНСКАЯ ОБЛ.': 'СКО',
+            'ПАВЛОДАРСКАЯ ОБЛ.': 'Павлодарская', 'КОСТАНАЙСКАЯ ОБЛ.': 'Костанайская ',
+            'АБАЙСКАЯ ОБЛ.': 'Абай', 'ЖЕТЫСУСКАЯ ОБЛ.': 'Жетысу', 'УЛЫТАУСКАЯ ОБЛ.': 'Улытау'
+        }
+
+        @st.cache_data
+        def load_excel_snow(path, sheet):
+            df = pd.read_excel(path, sheet_name=sheet)
+            df.columns = [str(c).strip() for c in df.columns]
+            return df
+
+        def generate_scientific_report(df, target_col, unit, station_name):
+            if df.empty: return "Нет данных для анализа."
+            years_col = df.columns[0]
+            data_series = df[target_col].dropna()
+            avg_val = data_series.mean()
+            max_val = data_series.max()
+            max_year = df.loc[df[target_col].idxmax(), years_col]
+            min_val = data_series.min()
+            last_val = data_series.iloc[-1]
+            last_year = df.iloc[-1][years_col]
+            deviation = ((last_val - avg_val) / avg_val) * 100
+            status = "превышает норму" if deviation > 0 else "ниже нормы"
+            last_10 = data_series.tail(10)
+            z = np.polyfit(range(len(last_10)), last_10.values, 1)
+            slope = z[0]
+            trend_text = "устойчивого роста" if slope > 0.1 else ("сокращения" if slope < -0.1 else "стабильности")
+
+            return f"""
+            Анализ данных по объекту **{station_name}** за период **{int(df[years_col].min())}-{int(last_year)} гг.** показывает следующее:
+            
+            1. **Текущее состояние:** По состоянию на **{int(last_year)} год**, значение показателя составило **{last_val:.1f} {unit}**. 
+            Это на **{abs(deviation):.1f}% {status}** относительно многолетней климатической нормы (**{avg_val:.1f} {unit}**).
+            
+            2. **Экстремумы:** За рассматриваемый период абсолютный максимум был зафиксирован в **{int(max_year)} году** и составил **{max_val:.1f} {unit}**. 
+            
+            3. **Динамика десятилетия:** В последние 10 лет гидрометеорологический режим характеризуется фазой **{trend_text}**. 
+            
+            4. **Прогнозные риски:** {"Высокое снегонакопление повышает риски подтоплений." if deviation > 15 else "Низкие показатели указывают на возможный дефицит влагозарядки." if deviation < -15 else "Показатели в пределах естественной вариативности."}
+            """
+
+        st.markdown("<h1 style='text-align: center; color: #0F172A;'>❄️ Система Мониторинга Снежного Покрова РК</h1>", unsafe_allow_html=True)
+        st.markdown('<div style="background:#f8f9fa; padding:20px; border-radius:15px; border:1px solid #dee2e6; margin-bottom:20px;">', unsafe_allow_html=True)
+        r1c1, r1c2, r1c3 = st.columns([1, 1, 1.5])
+        with r1c1:
+            p_choice = st.radio("📑 Показатель:", ["Запас воды (SWEn)", "Высота снега (Hmax)"], horizontal=True)
+            cur_file = PATH_WATER if "Запас" in p_choice else PATH_HEIGHT
+            unit_s = "мм" if "Запас" in p_choice else "см"
+        with r1c2:
+            s_reg = st.selectbox("📍 Область:", list(REGION_MAP.keys()))
+            df_raw = load_excel_snow(cur_file, REGION_MAP[s_reg])
+            s_stat = st.selectbox("🏘️ Станция:", ["Среднее по области"] + df_raw.columns[1:-1].tolist())
+        with r1c3:
+            years_s = df_raw.iloc[:, 0].dropna().astype(int).unique().tolist()
+            start_y, end_y = st.select_slider("📅 Выбор временного интервала:", options=sorted(years_s), value=(min(years_s), max(years_s)))
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        df_filt = df_raw[(df_raw.iloc[:, 0] >= start_y) & (df_raw.iloc[:, 0] <= end_y)].copy()
+        y_col = df_filt.columns[0]
+        t_col = df_filt.columns[-1] if s_stat == "Среднее по области" else s_stat
+
+        cg, cr = st.columns([1.8, 1.2])
+        with cg:
+            st.markdown(f"### 📈 Визуализация данных: {s_stat}")
+            fig = px.area(df_filt, x=y_col, y=t_col, line_shape="spline", color_discrete_sequence=['#0077b6'])
+            df_filt['MA'] = df_filt[t_col].rolling(window=5, center=True).mean()
+            fig.add_scatter(x=df_filt[y_col], y=df_filt['MA'], name='Скользящее среднее (5л)', line=dict(color='#ffb703', width=3))
+            fig.update_layout(hovermode="x unified", template="plotly_white", yaxis_title=unit_s, height=450)
+            st.plotly_chart(fig, use_container_width=True)
+        with cr:
+            st.markdown("### 🔬 Научно-аналитическое заключение")
+            st.info(generate_scientific_report(df_filt, t_col, unit_s, s_stat))
+
+        # КАРТА СНЕГА
+        st.markdown("---")
+        m1, m2 = st.columns([2, 1])
+        with m1: st.markdown(f"### 🗺️ Пространственный анализ на {end_y} год")
+        with m2: m_param = st.radio("Показатель для карты:", ["Высота снега", "Запас воды"], horizontal=True, key="snow_map_v4")
+
+        try:
+            @st.cache_data
+            def load_synchronized_map(shp_p, water_p, height_p, r_map, trans_dict, target_year, mode):
+                if not os.path.exists(shp_p): return None
+                gdf = gpd.read_file(shp_p, encoding='cp1251')
+                excel_p = water_p if mode == "Запас воды" else height_p
+                data_l = []
+                for d_name, sheet in r_map.items():
+                    try:
+                        tmp = pd.read_excel(excel_p, sheet_name=sheet)
+                        val = tmp[tmp.iloc[:, 0] == target_year].iloc[0, -1]
+                        data_l.append({'excel_key': d_name, 'Map_Value': float(val)})
+                    except: continue
+                snow_df = pd.DataFrame(data_l)
+                gdf['match_key'] = gdf['name_adm1'].str.strip().map(trans_dict)
+                return gdf.merge(snow_df, left_on='match_key', right_on='excel_key', how='left')
+
+            merged_gdf = load_synchronized_map(SHAPE_PATH, PATH_WATER, PATH_HEIGHT, REGION_MAP, SHP_TO_EXCEL_SNOW, end_y, m_param)
+            if merged_gdf is not None:
+                fig_m, ax = plt.subplots(figsize=(12, 7))
+                fig_m.patch.set_alpha(0)
+                merged_gdf.plot(column='Map_Value', ax=ax, cmap='Blues', legend=True, missing_kwds={"color": "#e0e0e0"})
+                ax.set_axis_off()
+                st.pyplot(fig_m)
+                plt.close(fig_m)
+        except Exception as e: st.error(f"Ошибка карты: {e}")
+
+        # ТАБЛИЦА
+        st.markdown("---")
+        st.markdown("### 📊 Табличный анализ с цветовой индикацией")
+        tab_reg = st.selectbox("Выбрать область для таблицы:", options=list(REGION_MAP.keys()), index=list(REGION_MAP.keys()).index(s_reg))
+        df_tab_raw = load_excel_snow(PATH_WATER if "Запас" in p_choice else PATH_HEIGHT, REGION_MAP[tab_reg])
+        df_tab_f = df_tab_raw[(df_tab_raw.iloc[:, 0] >= start_y) & (df_tab_raw.iloc[:, 0] <= end_y)].copy()
+        
+        stations_cols = df_tab_f.columns[1:]
+        styled_df = df_tab_f.style.background_gradient(cmap='Blues', subset=stations_cols).format(precision=1)
+        st.dataframe(styled_df, use_container_width=True, height=500)
+        
+        csv_snow = df_tab_f.to_csv(index=False).encode('utf-8-sig')
+        st.download_button(label=f"📥 Скачать статистику по {tab_reg}", data=csv_snow, file_name=f"{tab_reg}.csv")
+        
+    
+
 
 
 with tabs[7]:
