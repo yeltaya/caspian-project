@@ -4063,7 +4063,7 @@ with tabs[3]:
 
         with col1:
             # Пытаемся загрузить изображение из текущей папки
-            image_path = "risk.jpg"
+            image_path = "risk.jpeg"
             if os.path.exists(image_path):
                 image = Image.open(image_path)
                 st.image(image, caption="Карта рисков", use_container_width=True)
@@ -4089,15 +4089,7 @@ with tabs[3]:
         main()
         
 
-
-
-
-        
-            
-
-    
-    
-    
+   
 
   # ВОДНЫЕ РЕСУРСЫ
 with tabs[4]:
