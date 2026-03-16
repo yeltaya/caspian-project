@@ -9199,7 +9199,7 @@ with tabs[7]:
                 
                           
     with tab2:
-             col_text, col_img = st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
+        col_text, col_img = st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
             
                
         with col_text:
