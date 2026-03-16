@@ -9129,52 +9129,60 @@ with tabs[7]:
     # Вводная часть
     st.info("Сбор, обработка, анализ данных экологического мониторинга для обеспечения экологической безопасности граждан Казахстана.")
 
-    # Заголовок раздела
+    # Добавим немного стилей для красоты карточек
+    st.markdown("""
+        <style>
+        /* Стиль для контейнера метрики */
+        [data-testid="stMetric"] {
+            background-color: #ffffff;
+            border: 1px solid #e6e9ef;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /* Убираем лишние отступы у заголовков групп */
+        .group-header {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
     st.markdown("### 📊 Статистика мониторинга РГП «Казгидромет»")
 
-    # --- ПЕРВЫЙ РЯД: ВОЗДУХ И ОБЩИЕ ДАННЫЕ ---
-    st.write("**Атмосферный воздух и общие показатели**")
+    # --- ГРУППА 1: ВОЗДУХ ---
+    st.markdown('<p class="group-header">🌬️ Атмосферный воздух и общие показатели</p>', unsafe_allow_html=True)
     c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        st.metric(label="Населенных пунктов", value="70")
-    with c2:
-        st.metric(label="Всего постов воздуха", value="175", help="131 автоматический и 44 ручных")
-    with c3:
-        st.metric(label="Типов загрязнителей", value="36")
-    with c4:
-        st.metric(label="Областей охвата", value="17")
+    c1.metric("Населенных пунктов", "70")
+    c2.metric("Постов воздуха", "175", help="131 авто / 44 ручных")
+    c3.metric("Видов загрязнителей", "36")
+    c4.metric("Областей охвата", "17")
 
-    # --- ВТОРОЙ РЯД: ВОДА ---
-    st.write("**Поверхностные воды**")
-    c5, c6, c7 = st.columns(3)
-    with c5:
-        st.metric(label="Водных объектов", value="134", help="88 рек, 29 озер, 13 водохранилищ, 3 канала, 1 море")
-    with c6:
-        st.metric(label="Гидрохимических створов", value="373")
-    with c7:
-        st.metric(label="Морской мониторинг", value="1", delta="Каспийское море")
+    # --- ГРУППА 2: ВОДА (Выделим фоном или разделителем) ---
+    st.markdown('<p class="group-header">💧 Поверхностные воды</p>', unsafe_allow_html=True)
+    # Создадим "плашку" для водных ресурсов
+    with st.container():
+        c5, c6, c7 = st.columns([1.5, 1.5, 1])
+        c5.metric("Водных объектов", "134", help="88 рек, 29 озер, 13 вдхр, 3 канала, 1 море")
+        c6.metric("Гидрохим. створов", "373")
+        c7.metric("Море", "1", delta="Каспий")
 
-    # --- ТРЕТИЙ РЯД: ПОЧВА, ОСАДКИ И РАДИАЦИЯ ---
-    st.write("**Почва, осадки и радиационный фон**")
+    # --- ГРУППА 3: ПОЧВА И РАДИАЦИЯ ---
+    st.markdown('<p class="group-header">🛰️ Почва, осадки и радиация</p>', unsafe_allow_html=True)
     c8, c9, c10, c11 = st.columns(4)
-    with c8:
-        st.metric(label="Пунктов мониторинга почв", value="101")
-    with c9:
-        st.metric(label="Станций (Осадки/Снег)", value="47 / 40")
-    with c10:
-        st.metric(label="Гамма-фон (ежедневно)", value="89 МС")
-    with c11:
-        st.metric(label="Радиоактивное загр.", value="43 МС")
+    c8.metric("Пунктов почв", "101")
+    c9.metric("МС (Осадки/Снег)", "47 / 40")
+    c10.metric("Гамма-фон", "89 МС")
+    c11.metric("Радиоакт. загр.", "43 МС")
 
-    st.divider()
+    st.markdown("---")
 
-    # Дополнительная визуализация структуры постов (опционально)
-    with st.expander("Посмотреть детализацию постов воздуха"):
-        col_auto, col_manual = st.columns(2)
-        col_auto.info(f"🤖 **Автоматические посты:** 131")
-        col_manual.warning(f"✍️ **Ручной отбор проб:** 44")
-        
-        
 
     st.divider()
 
