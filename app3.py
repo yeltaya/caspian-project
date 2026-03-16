@@ -9175,19 +9175,29 @@ with tabs[7]:
     ])
 
     with tab1:
-        st.markdown("### 🌬️ Прогноз неблагоприятных метеорологических условий")
-        
-        col_a, col_b = st.columns(2)
-        with col_a:
-            with st.container():
-                st.markdown("""
-                <div class="stCard">
-                    <h4>Прогноз НМУ</h4>
-                    <p>Предоставляем прогнозы неблагоприятных метеоусловий (НМУ), важные для предупреждения возможных проблем с качеством воздуха. . Бюллетени с прогнозами НМУ для городов Казахстана публикуются на официальном сайте Казгидромета, предоставляя жителям информацию о предстоящих неблагоприятных условиях.</p>
-                    <a href="https://www.kazhydromet.kz/ru/ecology/ezhednevnyy-byulleten-sostoyaniya-vozdushnogo-basseyna-nmu">Перейти на сайт →</a>
-                </div>
-                """, unsafe_allow_html=True)
-                      
+            st.markdown("### 🌬️ Прогноз неблагоприятных метеорологических условий")
+            
+            col_a, col_b = st.columns([1, 2]) # Делаем колонку с картой (col_b) шире
+            
+            with col_a:
+                with st.container():
+                    st.markdown("""
+                    <div class="stCard">
+                        <h4>Прогноз НМУ</h4>
+                        <p>Предоставляем прогнозы неблагоприятных метеоусловий (НМУ), важные для предупреждения возможных проблем с качеством воздуха.</p>
+                        <p>Бюллетени для городов Казахстана публикуются на официальном сайте, предоставляя жителям информацию о предстоящих условиях.</p>
+                        <a href="https://www.kazhydromet.kz/ru/ecology/ezhednevnyy-byulleten-sostoyaniya-vozdushnogo-basseyna-nmu" target="_blank">Перейти к бюллетеням →</a>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                # Можно добавить краткую инструкцию под текстом
+                st.info("💡 На карте справа можно просмотреть визуализацию данных в режиме реального времени.")
+
+            with col_b:
+                # Вставляем интерактивную карту через iframe
+                st.components.v1.iframe("http://ecodata.kz:3838/app_dem_visual/", height=600, scrolling=True)
+                
+                          
     with tab2:
             col_img, col_text = st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
             
