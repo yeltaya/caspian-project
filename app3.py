@@ -9102,6 +9102,160 @@ with tabs[6]:
 
 with tabs[7]:
     st.title("Экология")
+    
+    
+    # Настройка страницы
+    st.set_page_config(
+        page_title="Эко-мониторинг Казгидромет",
+        page_icon="🌍",
+        layout="wide"
+    )
+
+    # Стилизация через CSS для красивых карточек
+    st.markdown("""
+        <style>
+        .main {
+            background-color: #f8f9fa;
+        }
+        .stCard {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #007bff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stMetric {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    # Заголовок
+    st.title("🌱 Инструменты информирования населения о состоянии ОС")
+    st.subheader("РГП «Казгидромет»")
+
+    # Вводная часть
+    st.info("Разработка и совершенствование инструментов мониторинга для обеспечения экологической безопасности граждан Казахстана.")
+
+    # Разделение на колонки для ключевых метрик
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(label="Скачиваний AirKz", value="10 000+", delta="Растет")
+    with col2:
+        st.metric(label="Пунктов мониторинга почв", value="101")
+    with col3:
+        st.metric(label="Частота обновления (воздух)", value="Ежечасно")
+
+    st.divider()
+
+    # Основной контент через вкладки (Tabs)
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "💨 Воздух и Метео", 
+        "💧 Водные ресурсы", 
+        "🌱 Почва и Радиация", 
+        "📱 Мобильное приложение"
+    ])
+
+    with tab1:
+        st.markdown("### 🌬️ Мониторинг атмосферного воздуха")
+        
+        col_a, col_b = st.columns(2)
+        with col_a:
+            with st.container():
+                st.markdown("""
+                <div class="stCard">
+                    <h4>1. Прогноз НМУ</h4>
+                    <p>Бюллетени неблагоприятных метеоусловий для городов Казахстана. 
+                    Важны для предупреждения рисков снижения качества воздуха.</p>
+                    <a href="#">Перейти на сайт →</a>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            with st.container():
+                st.markdown("""
+                <div class="stCard">
+                    <h4>2. Прогноз УФ индекса</h4>
+                    <p><b>Период:</b> май – сентябрь.<br>
+                    Прогноз на 7 дней с рекомендациями для населения. Доступно на трех языках.</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+        with col_b:
+            with st.container():
+                st.markdown("""
+                <div class="stCard" style="border-left-color: #28a745;">
+                    <h4>3. Интерактивная карта (Online)</h4>
+                    <p>Ежечасное обновление. Интеграция с моделью <b>SILAM</b> (прогноз на 24/48 часов).</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            with st.container():
+                st.markdown("""
+                <div class="stCard" style="border-left-color: #28a745;">
+                    <h4>4. Концентрация загрязнителей</h4>
+                    <p>Визуальная модель в динамике по часам. Разработано совместно с Финским метеорологическим институтом.</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+    with tab2:
+        st.markdown("### 🌊 Мониторинг поверхностных вод")
+        st.write("Результаты доступны в виде интерактивной карты с цветовой индикацией качества:")
+        
+        # Визуализация шкалы качества воды
+        c1, c2, c3, c4, c5 = st.columns(5)
+        c1.success("1 класс (Чистая)")
+        c2.warning("3 класс (Умеренная)")
+        c3.error("5 класс (Грязная)")
+        c4.markdown("<div style='background:#800000; color:white; padding:10px; border-radius:5px;'>Выше 5 класса</div>", unsafe_allow_html=True)
+        c5.info("Обмен данными с РФ, КНР, КР и РУз")
+
+        st.image("https://img.icons8.com/clouds/500/water.png", width=150) # Заглушка для визуала
+        st.write("Карта отображает точки-индикаторы, характеризующие степень загрязнения в каждом створе.")
+
+    with tab3:
+        col_soil, col_rad = st.columns(2)
+        
+        with col_soil:
+            st.markdown("### 🏜️ Почвенный покров")
+            st.write("""
+            - **Точек отбора:** 403.
+            - **Обновление:** 1 раз в месяц (теплый период).
+            - **Периоды:** апрель, июль, октябрь (населенные пункты); май, июнь, сентябрь (побережья).
+            """)
+            st.button("Открыть карту почв")
+
+        with col_rad:
+            st.markdown("### ☢️ Радиационная обстановка")
+            st.write("""
+            - **Обновление:** Автоматически 1 раз в день.
+            - **Функции:** Анализ показателей за разные периоды в удобном визуальном формате.
+            """)
+            st.button("Проверить фон")
+
+    with tab4:
+        st.markdown("### 📱 Мобильное приложение AirKz")
+        st.write("Популярный инструмент среди жителей Казахстана для контроля качества воздуха в реальном времени.")
+        
+        st.success("✅ **Что нового в обновлении:**")
+        st.markdown("""
+        * **Новый дизайн и интерфейс**
+        * **Знак тревоги** при превышении ПДК
+        * **Описания загрязнителей**, согласованные с Минздравом РК
+        """)
+        
+        st.info("💡 Более 10 000 активных пользователей")
+
+    # Футер
+    st.divider()
+    st.caption("Данные актуальны на 2026 год. РГП «Казгидромет»")
+
+
+    
+    
 
     import streamlit as st
     import pandas as pd
