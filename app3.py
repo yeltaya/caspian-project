@@ -9095,16 +9095,6 @@ with tabs[6]:
             
 
 
-    import streamlit as st
-    import pandas as pd
-    import plotly.express as px
-    import plotly.graph_objects as go
-    import geopandas as gpd
-    import os
-    import numpy as np
-    from pathlib import Path
-    import matplotlib.pyplot as plt
-
     # --- 1. ОБЩАЯ НАСТРОЙКА (ТОЛЬКО ОДИН РАЗ) ---
     st.set_page_config(page_title="Казгидромет — Мониторинг", layout="wide")
 
