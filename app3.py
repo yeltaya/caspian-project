@@ -4051,114 +4051,43 @@ with tabs[3]:
     
 
     import streamlit as st
-    import geopandas as gpd
-    import plotly.express as px
-    import pandas as pd
+    from PIL import Image
     import os
 
-    # 1. Конфигурация рисков и цветов согласно вашему макету
-    FLOOD_CONFIG = {
-        "высокий риск": {
-            "color": "#f9a03f",  # Оранжевый
-            "regions_en": ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay"],
-            "desc": "Высокий риск: Ожидается интенсивное снеготаяние и формирование значительного стока."
-        },
-        "средний риск": {
-            "color": "#f9f080",  # Желтый
-            "regions_en": ["Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu"],
-            "desc": "Средний риск: Возможны подтопления при резком повышении температур."
-        },
-        "низкий риск": {
-            "color": "#90ee90",  # Зеленый
-            "regions_en": ["Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
-            "desc": "Низкий риск: Обстановка стабильная."
-        }
-    }
+    # Настройка страницы (широкий формат)
+    st.set_page_config(layout="wide")
 
-    # Подготовка данных
-    data_rows = []
-    for risk_label, info in FLOOD_CONFIG.items():
-        for reg_en in info["regions_en"]:
-            data_rows.append({
-                "ADM1_EN": reg_en,
-                "Risk_Label": risk_label,
-                "Color": info["color"],
-                "Description": info["desc"]
-            })
-    df_stats = pd.DataFrame(data_rows)
+    def main():
+        # Создаем две колонки: левая для карты (относительная ширина 2), правая для текста (ширина 1)
+        col1, col2 = st.columns([2, 1])
 
-    @st.cache_data
-    def load_geo_data():
-        if os.path.exists("kaz 17 obl.shp"):
-            gdf = gpd.read_file("kaz 17 obl.shp")
-            # Важно: ADM1_EN должен совпадать с именами в колонках файла
-            merged = gdf.merge(df_stats, on='ADM1_EN', how='left')
-            return merged.to_crs(epsg=4326)
-        return None
-
-    st.title("🌊 Мониторинг паводковых рисков Казахстана")
-
-    map_data = load_geo_data()
-
-    if map_data is not None:
-        col_left, col_right = st.columns([1.6, 1], gap="large")
-
-        with col_left:
-            st.markdown("#### Карта предварительной оценки")
-            
-            # Используем mapbox для корректного отображения слоев
-            fig_map = px.choropleth_mapbox(
-                map_data,
-                geojson=map_data.__geo_interface__,
-                locations=map_data.index,
-                color="Risk_Label",
-                color_discrete_map={
-                    "высокий риск": "#f9a03f",
-                    "средний риск": "#f9f080",
-                    "низкий риск": "#90ee90"
-                },
-                mapbox_style="carto-positron", # Светлая подложка как на скриншотах
-                center={"lat": 48.0, "lon": 67.0},
-                zoom=3.5,
-                opacity=0.7,
-                hover_name="ADM1_EN"
-            )
-
-            fig_map.update_layout(
-                margin={"r":0,"t":0,"l":0,"b":0},
-                height=550,
-                showlegend=True,
-                legend=dict(orientation="h", yanchor="bottom", y=0.01, xanchor="right", x=0.99)
-            )
-
-            selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
-
-        with col_right:
-            if selected and "selection" in selected and len(selected["selection"]["point_indices"]) > 0:
-                idx = selected["selection"]["point_indices"][0]
-                row = map_data.iloc[idx]
-                st.subheader(f"📍 {row['ADM1_EN']}")
-                st.markdown(f"""
-                    <div style="padding:15px; border-radius:10px; background-color:{row['Color']}; color:black; text-align:center; font-weight:bold;">
-                        УРОВЕНЬ РИСКА: {row['Risk_Label'].upper()}
-                    </div>
-                """, unsafe_allow_html=True)
-                st.info(row['Description'])
+        with col1:
+            # Пытаемся загрузить изображение из текущей папки
+            image_path = "risk.jpg"
+            if os.path.exists(image_path):
+                image = Image.open(image_path)
+                st.image(image, caption="Карта рисков", use_container_width=True)
             else:
-                st.info("Выберите область на карте для получения информации.")
+                st.error(f"Файл {image_path} не найден в основной папке.")
 
-    # Сводный блок информации
-    st.markdown("---")
-    st.markdown("""
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
-        <h4>📋 Оценка паводко-опасных регионов</h4>
-        <ul>
-            <li><b>С повышенными рисками:</b> Акмолинская, СКО, Карагандинская, ВКО и область Абай.</li>
-            <li><b>Со средними рисками:</b> Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.</li>
-            <li><b>С низкими рисками:</b> Атырауская, Мангыстауская, Кызылординская и Жамбылская области.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+        with col2:
+            # Текстовый блок справа
+            st.subheader("📋 Оценка паводко-опасных регионов")
+            
+            st.markdown("""
+            **С повышенными рисками:** Акмолинская, СКО, Карагандинская, ВКО и область Абай.
+            
+            **Со средними рисками:** Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.
+            
+            **С низкими рисками:** Атырауская, Мангыстауская, Кызылординская и Жамбылская области.
+            """)
+            
+            # Дополнительная заметка (согласно вашим предпочтениям о постоянном отображении блоков)
+            st.info("Этот информационный блок закреплен для постоянного отображения.")
+
+    if __name__ == "__main__":
+        main()
+        
 
 
 
