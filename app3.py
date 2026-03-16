@@ -9095,6 +9095,167 @@ with tabs[6]:
             
 
 
+    st.title("Снежный покров ")
+
+    st.markdown("""
+    > **Климатический индекс** — это расчетный диагностический показатель, который используется для количественной оценки интенсивности, частоты и продолжительности конкретных погодных явлений.
+    > 
+    > В отличие от простых метеорологических величин, индекс базируется на **пороговых значениях**, имеющих критическое значение для физических, биологических или экономических систем.
+    """)
+
+    st.divider()
+
+
+   # =================================================================
+    # РАЗДЕЛ: СНЕЖНЫЙ ПОКРОВ
+    # =================================================================
+    elif page == "СНЕЖНЫЙ ПОКРОВ":
+        BASE_DIR = Path(r"C:\Users\eltai_a\Desktop\RES\stend")
+        PATH_WATER = BASE_DIR / "Запас воды в снеге.xlsx"
+        PATH_HEIGHT = BASE_DIR / "Высота снега.xlsx"
+        SHAPE_PATH = BASE_DIR / "Admin_KZ.shp"
+
+        REGION_MAP = {
+            "Абай": "Абайская ", "Акмолинская": "Акмолинская", "Актюбинская": "Актюбинская ",
+            "Алматинская": "Алматинская", "Атырауская": "Атырауская", "ВКО": "ВКО",
+            "Жамбылская": "Жамбылская", "Жетысу": "Жетису", "ЗКО": "ЗКО",
+            "Карагандинская": "Карагандинская", "Костанайская": "Костанайская ",
+            "Кызылординская": "Кызылорда", "Мангистауская": "Мангистау",
+            "Павлодарская": "Павлодар", "СКО": "СКО", "Туркестанская": "Туркестанская",
+            "Улытау": "Улытау"
+        }
+
+        SHP_TO_EXCEL_SNOW = {
+            'ЗАПАДНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ЗКО', 'ВОСТОЧНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ВКО',
+            'КАРАГАНДИНСКАЯ ОБЛ.': 'Карагандинская', 'АКТЮБИНСКАЯ ОБЛ.': 'Актюбинская',
+            'АТЫРАУСКАЯ ОБЛ.': 'Атырауская', 'КЫЗЫЛОРДИНСКАЯ ОБЛ.': 'Кызылординская',
+            'АЛМАТИНСКАЯ ОБЛ.': 'Алматинская', 'МАНГИСТАУСКАЯ ОБЛ.': 'Мангистауская',
+            'ЖАМБЫЛСКАЯ ОБЛ.': 'Жамбылская', 'ЮЖНО-КАЗАХСТАНСКАЯ ОБЛ.': 'Туркестанская',
+            'АКМОЛИНСКАЯ ОБЛ.': 'Акмолинская', 'СЕВЕРО-КАЗАХСТАНСКАЯ ОБЛ.': 'СКО',
+            'ПАВЛОДАРСКАЯ ОБЛ.': 'Павлодарская', 'КОСТАНАЙСКАЯ ОБЛ.': 'Костанайская ',
+            'АБАЙСКАЯ ОБЛ.': 'Абай', 'ЖЕТЫСУСКАЯ ОБЛ.': 'Жетысу', 'УЛЫТАУСКАЯ ОБЛ.': 'Улытау'
+        }
+
+        @st.cache_data
+        def load_excel_snow(path, sheet):
+            df = pd.read_excel(path, sheet_name=sheet)
+            df.columns = [str(c).strip() for c in df.columns]
+            return df
+
+        def generate_scientific_report(df, target_col, unit, station_name):
+            if df.empty: return "Нет данных для анализа."
+            years_col = df.columns[0]
+            data_series = df[target_col].dropna()
+            avg_val = data_series.mean()
+            max_val = data_series.max()
+            max_year = df.loc[df[target_col].idxmax(), years_col]
+            min_val = data_series.min()
+            last_val = data_series.iloc[-1]
+            last_year = df.iloc[-1][years_col]
+            deviation = ((last_val - avg_val) / avg_val) * 100
+            status = "превышает норму" if deviation > 0 else "ниже нормы"
+            last_10 = data_series.tail(10)
+            z = np.polyfit(range(len(last_10)), last_10.values, 1)
+            slope = z[0]
+            trend_text = "устойчивого роста" if slope > 0.1 else ("сокращения" if slope < -0.1 else "стабильности")
+
+            return f"""
+            Анализ данных по объекту **{station_name}** за период **{int(df[years_col].min())}-{int(last_year)} гг.** показывает следующее:
+            
+            1. **Текущее состояние:** По состоянию на **{int(last_year)} год**, значение показателя составило **{last_val:.1f} {unit}**. 
+            Это на **{abs(deviation):.1f}% {status}** относительно многолетней климатической нормы (**{avg_val:.1f} {unit}**).
+            
+            2. **Экстремумы:** За рассматриваемый период абсолютный максимум был зафиксирован в **{int(max_year)} году** и составил **{max_val:.1f} {unit}**. 
+            
+            3. **Динамика десятилетия:** В последние 10 лет гидрометеорологический режим характеризуется фазой **{trend_text}**. 
+            
+            4. **Прогнозные риски:** {"Высокое снегонакопление повышает риски подтоплений." if deviation > 15 else "Низкие показатели указывают на возможный дефицит влагозарядки." if deviation < -15 else "Показатели в пределах естественной вариативности."}
+            """
+
+        st.markdown("<h1 style='text-align: center; color: #0F172A;'>❄️ Система Мониторинга Снежного Покрова РК</h1>", unsafe_allow_html=True)
+        st.markdown('<div style="background:#f8f9fa; padding:20px; border-radius:15px; border:1px solid #dee2e6; margin-bottom:20px;">', unsafe_allow_html=True)
+        r1c1, r1c2, r1c3 = st.columns([1, 1, 1.5])
+        with r1c1:
+            p_choice = st.radio("📑 Показатель:", ["Запас воды (SWEn)", "Высота снега (Hmax)"], horizontal=True)
+            cur_file = PATH_WATER if "Запас" in p_choice else PATH_HEIGHT
+            unit_s = "мм" if "Запас" in p_choice else "см"
+        with r1c2:
+            s_reg = st.selectbox("📍 Область:", list(REGION_MAP.keys()))
+            df_raw = load_excel_snow(cur_file, REGION_MAP[s_reg])
+            s_stat = st.selectbox("🏘️ Станция:", ["Среднее по области"] + df_raw.columns[1:-1].tolist())
+        with r1c3:
+            years_s = df_raw.iloc[:, 0].dropna().astype(int).unique().tolist()
+            start_y, end_y = st.select_slider("📅 Выбор временного интервала:", options=sorted(years_s), value=(min(years_s), max(years_s)))
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        df_filt = df_raw[(df_raw.iloc[:, 0] >= start_y) & (df_raw.iloc[:, 0] <= end_y)].copy()
+        y_col = df_filt.columns[0]
+        t_col = df_filt.columns[-1] if s_stat == "Среднее по области" else s_stat
+
+        cg, cr = st.columns([1.8, 1.2])
+        with cg:
+            st.markdown(f"### 📈 Визуализация данных: {s_stat}")
+            fig = px.area(df_filt, x=y_col, y=t_col, line_shape="spline", color_discrete_sequence=['#0077b6'])
+            df_filt['MA'] = df_filt[t_col].rolling(window=5, center=True).mean()
+            fig.add_scatter(x=df_filt[y_col], y=df_filt['MA'], name='Скользящее среднее (5л)', line=dict(color='#ffb703', width=3))
+            fig.update_layout(hovermode="x unified", template="plotly_white", yaxis_title=unit_s, height=450)
+            st.plotly_chart(fig, use_container_width=True)
+        with cr:
+            st.markdown("### 🔬 Научно-аналитическое заключение")
+            st.info(generate_scientific_report(df_filt, t_col, unit_s, s_stat))
+
+        # КАРТА СНЕГА
+        st.markdown("---")
+        m1, m2 = st.columns([2, 1])
+        with m1: st.markdown(f"### 🗺️ Пространственный анализ на {end_y} год")
+        with m2: m_param = st.radio("Показатель для карты:", ["Высота снега", "Запас воды"], horizontal=True, key="snow_map_v4")
+
+        try:
+            @st.cache_data
+            def load_synchronized_map(shp_p, water_p, height_p, r_map, trans_dict, target_year, mode):
+                if not os.path.exists(shp_p): return None
+                gdf = gpd.read_file(shp_p, encoding='cp1251')
+                excel_p = water_p if mode == "Запас воды" else height_p
+                data_l = []
+                for d_name, sheet in r_map.items():
+                    try:
+                        tmp = pd.read_excel(excel_p, sheet_name=sheet)
+                        val = tmp[tmp.iloc[:, 0] == target_year].iloc[0, -1]
+                        data_l.append({'excel_key': d_name, 'Map_Value': float(val)})
+                    except: continue
+                snow_df = pd.DataFrame(data_l)
+                gdf['match_key'] = gdf['name_adm1'].str.strip().map(trans_dict)
+                return gdf.merge(snow_df, left_on='match_key', right_on='excel_key', how='left')
+
+            merged_gdf = load_synchronized_map(SHAPE_PATH, PATH_WATER, PATH_HEIGHT, REGION_MAP, SHP_TO_EXCEL_SNOW, end_y, m_param)
+            if merged_gdf is not None:
+                fig_m, ax = plt.subplots(figsize=(12, 7))
+                fig_m.patch.set_alpha(0)
+                merged_gdf.plot(column='Map_Value', ax=ax, cmap='Blues', legend=True, missing_kwds={"color": "#e0e0e0"})
+                ax.set_axis_off()
+                st.pyplot(fig_m)
+                plt.close(fig_m)
+        except Exception as e: st.error(f"Ошибка карты: {e}")
+
+        # ТАБЛИЦА
+        st.markdown("---")
+        st.markdown("### 📊 Табличный анализ с цветовой индикацией")
+        tab_reg = st.selectbox("Выбрать область для таблицы:", options=list(REGION_MAP.keys()), index=list(REGION_MAP.keys()).index(s_reg))
+        df_tab_raw = load_excel_snow(PATH_WATER if "Запас" in p_choice else PATH_HEIGHT, REGION_MAP[tab_reg])
+        df_tab_f = df_tab_raw[(df_tab_raw.iloc[:, 0] >= start_y) & (df_tab_raw.iloc[:, 0] <= end_y)].copy()
+        
+        stations_cols = df_tab_f.columns[1:]
+        styled_df = df_tab_f.style.background_gradient(cmap='Blues', subset=stations_cols).format(precision=1)
+        st.dataframe(styled_df, use_container_width=True, height=500)
+        
+        csv_snow = df_tab_f.to_csv(index=False).encode('utf-8-sig')
+        st.download_button(label=f"📥 Скачать статистику по {tab_reg}", data=csv_snow, file_name=f"{tab_reg}.csv")
+        
+        
+        
+
+
+
 
     # --- 3. ОБЩИЕ СТИЛИ (CSS) ---
     st.markdown("""
@@ -9115,6 +9276,8 @@ with tabs[6]:
         .map-title { font-weight: 700; font-size: 1.2rem; color: #1E293B; margin-bottom: 10px; }
         </style>
     """, unsafe_allow_html=True)
+
+
 
     # =================================================================
     # РАЗДЕЛ: СКОРОСТЬ ВЕТРА
@@ -9281,151 +9444,7 @@ with tabs[6]:
             else:
                 st.info("Выберите область на карте.")
 
-    # =================================================================
-    # РАЗДЕЛ: СНЕЖНЫЙ ПОКРОВ
-    # =================================================================
-    elif page == "СНЕЖНЫЙ ПОКРОВ":
-        BASE_DIR = Path(r"C:\Users\eltai_a\Desktop\RES\stend")
-        PATH_WATER = BASE_DIR / "Запас воды в снеге.xlsx"
-        PATH_HEIGHT = BASE_DIR / "Высота снега.xlsx"
-        SHAPE_PATH = BASE_DIR / "Admin_KZ.shp"
-
-        REGION_MAP = {
-            "Абай": "Абайская ", "Акмолинская": "Акмолинская", "Актюбинская": "Актюбинская ",
-            "Алматинская": "Алматинская", "Атырауская": "Атырауская", "ВКО": "ВКО",
-            "Жамбылская": "Жамбылская", "Жетысу": "Жетису", "ЗКО": "ЗКО",
-            "Карагандинская": "Карагандинская", "Костанайская": "Костанайская ",
-            "Кызылординская": "Кызылорда", "Мангистауская": "Мангистау",
-            "Павлодарская": "Павлодар", "СКО": "СКО", "Туркестанская": "Туркестанская",
-            "Улытау": "Улытау"
-        }
-
-        SHP_TO_EXCEL_SNOW = {
-            'ЗАПАДНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ЗКО', 'ВОСТОЧНО-КАЗАХСТАНСКАЯ ОБЛ.': 'ВКО',
-            'КАРАГАНДИНСКАЯ ОБЛ.': 'Карагандинская', 'АКТЮБИНСКАЯ ОБЛ.': 'Актюбинская',
-            'АТЫРАУСКАЯ ОБЛ.': 'Атырауская', 'КЫЗЫЛОРДИНСКАЯ ОБЛ.': 'Кызылординская',
-            'АЛМАТИНСКАЯ ОБЛ.': 'Алматинская', 'МАНГИСТАУСКАЯ ОБЛ.': 'Мангистауская',
-            'ЖАМБЫЛСКАЯ ОБЛ.': 'Жамбылская', 'ЮЖНО-КАЗАХСТАНСКАЯ ОБЛ.': 'Туркестанская',
-            'АКМОЛИНСКАЯ ОБЛ.': 'Акмолинская', 'СЕВЕРО-КАЗАХСТАНСКАЯ ОБЛ.': 'СКО',
-            'ПАВЛОДАРСКАЯ ОБЛ.': 'Павлодарская', 'КОСТАНАЙСКАЯ ОБЛ.': 'Костанайская ',
-            'АБАЙСКАЯ ОБЛ.': 'Абай', 'ЖЕТЫСУСКАЯ ОБЛ.': 'Жетысу', 'УЛЫТАУСКАЯ ОБЛ.': 'Улытау'
-        }
-
-        @st.cache_data
-        def load_excel_snow(path, sheet):
-            df = pd.read_excel(path, sheet_name=sheet)
-            df.columns = [str(c).strip() for c in df.columns]
-            return df
-
-        def generate_scientific_report(df, target_col, unit, station_name):
-            if df.empty: return "Нет данных для анализа."
-            years_col = df.columns[0]
-            data_series = df[target_col].dropna()
-            avg_val = data_series.mean()
-            max_val = data_series.max()
-            max_year = df.loc[df[target_col].idxmax(), years_col]
-            min_val = data_series.min()
-            last_val = data_series.iloc[-1]
-            last_year = df.iloc[-1][years_col]
-            deviation = ((last_val - avg_val) / avg_val) * 100
-            status = "превышает норму" if deviation > 0 else "ниже нормы"
-            last_10 = data_series.tail(10)
-            z = np.polyfit(range(len(last_10)), last_10.values, 1)
-            slope = z[0]
-            trend_text = "устойчивого роста" if slope > 0.1 else ("сокращения" if slope < -0.1 else "стабильности")
-
-            return f"""
-            Анализ данных по объекту **{station_name}** за период **{int(df[years_col].min())}-{int(last_year)} гг.** показывает следующее:
-            
-            1. **Текущее состояние:** По состоянию на **{int(last_year)} год**, значение показателя составило **{last_val:.1f} {unit}**. 
-            Это на **{abs(deviation):.1f}% {status}** относительно многолетней климатической нормы (**{avg_val:.1f} {unit}**).
-            
-            2. **Экстремумы:** За рассматриваемый период абсолютный максимум был зафиксирован в **{int(max_year)} году** и составил **{max_val:.1f} {unit}**. 
-            
-            3. **Динамика десятилетия:** В последние 10 лет гидрометеорологический режим характеризуется фазой **{trend_text}**. 
-            
-            4. **Прогнозные риски:** {"Высокое снегонакопление повышает риски подтоплений." if deviation > 15 else "Низкие показатели указывают на возможный дефицит влагозарядки." if deviation < -15 else "Показатели в пределах естественной вариативности."}
-            """
-
-        st.markdown("<h1 style='text-align: center; color: #0F172A;'>❄️ Система Мониторинга Снежного Покрова РК</h1>", unsafe_allow_html=True)
-        st.markdown('<div style="background:#f8f9fa; padding:20px; border-radius:15px; border:1px solid #dee2e6; margin-bottom:20px;">', unsafe_allow_html=True)
-        r1c1, r1c2, r1c3 = st.columns([1, 1, 1.5])
-        with r1c1:
-            p_choice = st.radio("📑 Показатель:", ["Запас воды (SWEn)", "Высота снега (Hmax)"], horizontal=True)
-            cur_file = PATH_WATER if "Запас" in p_choice else PATH_HEIGHT
-            unit_s = "мм" if "Запас" in p_choice else "см"
-        with r1c2:
-            s_reg = st.selectbox("📍 Область:", list(REGION_MAP.keys()))
-            df_raw = load_excel_snow(cur_file, REGION_MAP[s_reg])
-            s_stat = st.selectbox("🏘️ Станция:", ["Среднее по области"] + df_raw.columns[1:-1].tolist())
-        with r1c3:
-            years_s = df_raw.iloc[:, 0].dropna().astype(int).unique().tolist()
-            start_y, end_y = st.select_slider("📅 Выбор временного интервала:", options=sorted(years_s), value=(min(years_s), max(years_s)))
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        df_filt = df_raw[(df_raw.iloc[:, 0] >= start_y) & (df_raw.iloc[:, 0] <= end_y)].copy()
-        y_col = df_filt.columns[0]
-        t_col = df_filt.columns[-1] if s_stat == "Среднее по области" else s_stat
-
-        cg, cr = st.columns([1.8, 1.2])
-        with cg:
-            st.markdown(f"### 📈 Визуализация данных: {s_stat}")
-            fig = px.area(df_filt, x=y_col, y=t_col, line_shape="spline", color_discrete_sequence=['#0077b6'])
-            df_filt['MA'] = df_filt[t_col].rolling(window=5, center=True).mean()
-            fig.add_scatter(x=df_filt[y_col], y=df_filt['MA'], name='Скользящее среднее (5л)', line=dict(color='#ffb703', width=3))
-            fig.update_layout(hovermode="x unified", template="plotly_white", yaxis_title=unit_s, height=450)
-            st.plotly_chart(fig, use_container_width=True)
-        with cr:
-            st.markdown("### 🔬 Научно-аналитическое заключение")
-            st.info(generate_scientific_report(df_filt, t_col, unit_s, s_stat))
-
-        # КАРТА СНЕГА
-        st.markdown("---")
-        m1, m2 = st.columns([2, 1])
-        with m1: st.markdown(f"### 🗺️ Пространственный анализ на {end_y} год")
-        with m2: m_param = st.radio("Показатель для карты:", ["Высота снега", "Запас воды"], horizontal=True, key="snow_map_v4")
-
-        try:
-            @st.cache_data
-            def load_synchronized_map(shp_p, water_p, height_p, r_map, trans_dict, target_year, mode):
-                if not os.path.exists(shp_p): return None
-                gdf = gpd.read_file(shp_p, encoding='cp1251')
-                excel_p = water_p if mode == "Запас воды" else height_p
-                data_l = []
-                for d_name, sheet in r_map.items():
-                    try:
-                        tmp = pd.read_excel(excel_p, sheet_name=sheet)
-                        val = tmp[tmp.iloc[:, 0] == target_year].iloc[0, -1]
-                        data_l.append({'excel_key': d_name, 'Map_Value': float(val)})
-                    except: continue
-                snow_df = pd.DataFrame(data_l)
-                gdf['match_key'] = gdf['name_adm1'].str.strip().map(trans_dict)
-                return gdf.merge(snow_df, left_on='match_key', right_on='excel_key', how='left')
-
-            merged_gdf = load_synchronized_map(SHAPE_PATH, PATH_WATER, PATH_HEIGHT, REGION_MAP, SHP_TO_EXCEL_SNOW, end_y, m_param)
-            if merged_gdf is not None:
-                fig_m, ax = plt.subplots(figsize=(12, 7))
-                fig_m.patch.set_alpha(0)
-                merged_gdf.plot(column='Map_Value', ax=ax, cmap='Blues', legend=True, missing_kwds={"color": "#e0e0e0"})
-                ax.set_axis_off()
-                st.pyplot(fig_m)
-                plt.close(fig_m)
-        except Exception as e: st.error(f"Ошибка карты: {e}")
-
-        # ТАБЛИЦА
-        st.markdown("---")
-        st.markdown("### 📊 Табличный анализ с цветовой индикацией")
-        tab_reg = st.selectbox("Выбрать область для таблицы:", options=list(REGION_MAP.keys()), index=list(REGION_MAP.keys()).index(s_reg))
-        df_tab_raw = load_excel_snow(PATH_WATER if "Запас" in p_choice else PATH_HEIGHT, REGION_MAP[tab_reg])
-        df_tab_f = df_tab_raw[(df_tab_raw.iloc[:, 0] >= start_y) & (df_tab_raw.iloc[:, 0] <= end_y)].copy()
-        
-        stations_cols = df_tab_f.columns[1:]
-        styled_df = df_tab_f.style.background_gradient(cmap='Blues', subset=stations_cols).format(precision=1)
-        st.dataframe(styled_df, use_container_width=True, height=500)
-        
-        csv_snow = df_tab_f.to_csv(index=False).encode('utf-8-sig')
-        st.download_button(label=f"📥 Скачать статистику по {tab_reg}", data=csv_snow, file_name=f"{tab_reg}.csv")
-        
+ 
     
 
 
