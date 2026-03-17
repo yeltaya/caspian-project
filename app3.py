@@ -9437,16 +9437,8 @@ with tabs[7]:
         st.markdown(f"**Основные загрязнители:** `{obj_info['Показатели']}`")
         st.caption(f"ℹ️ {obj_info['Пригодность']}")
 
-    # --- 5. ФУТЕР ---
-    st.caption("Данные согласно Приказу МВРИ РК № 111-НҚ от 04.06.2025 г. по Единой классификации качества воды.")
 
 
-    # Настройка внешнего вида текста в подсказке
-    fig.update_traces(
-        hovertemplate="<b>%{hovertext}</b><br><br>Класс: %{y}<br>Статус: %{customdata[1]}<br>Примечание: %{customdata[2]}<extra></extra>"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
 
 
         
