@@ -9362,9 +9362,9 @@ with tabs[7]:
         with col_chart:
             colors = ['#2ecc71' if c == 1 else '#f1c40f' if c == 3 else '#e74c3c' for c in df['Класс']]
             fig = go.Figure(go.Bar(x=df['Класс'], y=df['Объект'], orientation='h', marker_color=colors))
-            fig.update_layout(yaxis=dict(autorange="reversed"), height=300)
+            fig.update_layout(title="Классы качества (2025)", yaxis=dict(autorange="reversed"), height=350)
             st.plotly_chart(fig, use_container_width=True)
-
+        
         with col_info:
             # Уникальный key важен, чтобы виджеты не конфликтовали!
             selected_obj = st.selectbox("Справка по объекту:", df['Объект'], key=f"select_{key_prefix}")
@@ -9414,10 +9414,6 @@ with tabs[7]:
         col_stat3.metric("Лидер чистоты (1 класс)", "нет", "")
         col_stat4.metric("Случаи Экстремально Высокого Загрязнения", "не обнаружены", "2025 г.")
             
-
-            # ВЫЗОВ ФУНКЦИИ (обязательно добавьте эту строку в конце)
-        show_water_quality_dashboard()
-
             # --- 1. ДАННЫЕ ИЗ ВАШЕГО ТЕКСТА (2025) ---
         water_2025 = [
                 {"Объект": "р. Жайык", "Класс": 3, "Характеристика": "Умеренно загрязненные", 
