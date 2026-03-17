@@ -9453,10 +9453,6 @@ with tabs[7]:
 
 
 with tabs[8]:
-    st.title("Сотрудничество")
-
-
-
     # --- НАСТРОЙКА ВКЛАДКИ МЕЖДУНАРОДНОГО СОТРУДНИЧЕСТВА ---
     st.header("🌐 Международное сотрудничество")
     
@@ -9473,14 +9469,14 @@ with tabs[8]:
         # Путь к папке (если файлы в папке assets в корне репозитория)
         # Если файлы лежат прямо в корне, уберите 'assets/' из путей ниже
         partners = [
-            {"name": "ВМО", "image": "assets/wmo_logo.png"},
-            {"name": "МСГ-СНГ", "image": "assets/cis_logo.png"},
-            {"name": "КАСПКОМ", "image": "assets/caspcom_logo.png"},
-            {"name": "ПРООН", "image": "assets/undp_logo.png"},
-            {"name": "Всемирный банк", "image": "assets/worldbank_logo.png"},
-            {"name": "EUMETSAT", "image": "assets/eumetsat_logo.png"},
-            {"name": "Адаптационный фонд", "image": "assets/af_logo.png"},
-            {"name": "UNESCO", "image": "assets/unesco_logo.png"}
+            {"name": "ВМО", "image": "wmo_logo.png"},
+            {"name": "МСГ-СНГ", "image": "cis_logo.png"},
+            {"name": "КАСПКОМ", "image": "caspcom_logo.png"},
+            {"name": "ПРООН", "image": "undp_logo.png"},
+            {"name": "Всемирный банк", "image": "worldbank_logo.png"},
+            {"name": "EUMETSAT", "image": "eumetsat_logo.png"},
+            {"name": "Адаптационный фонд", "image": "af_logo.png"},
+            {"name": "UNESCO", "image": "unesco_logo.png"}
         ]
 
         # Сетка
