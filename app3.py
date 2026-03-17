@@ -9453,60 +9453,74 @@ with tabs[7]:
 
 
 with tabs[8]:
-    # --- НАСТРОЙКА ВКЛАДКИ МЕЖДУНАРОДНОГО СОТРУДНИЧЕСТВА ---
     st.header("🌐 Международное сотрудничество")
     
-    def create_partner_grid():
-        # Ваше предложение о важности сотрудничества
-        st.markdown("""
-            <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 30px;">
-                <h3 style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4;">
-                    «Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».
-                </h3>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Путь к папке (если файлы в папке assets в корне репозитория)
-        # Если файлы лежат прямо в корне, уберите 'assets/' из путей ниже
-        partners = [
-            {"name": "ВМО", "image": "wmo_logo.png"},
-            {"name": "МСГ-СНГ", "image": "cis_logo.png"},
-            {"name": "КАСПКОМ", "image": "caspcom_logo.png"},
-            {"name": "ПРООН", "image": "undp_logo.png"},
-            {"name": "Всемирный банк", "image": "worldbank_logo.png"},
-            {"name": "EUMETSAT", "image": "eumetsat_logo.png"},
-            {"name": "Адаптационный фонд", "image": "af_logo.png"},
-            {"name": "UNESCO", "image": "unesco_logo.png"}
-        ]
-
-        # Сетка
-        cols = st.columns(4)
-        
-        for i, partner in enumerate(partners):
-            with cols[i % 4]:
-                # В Streamlit для локальных файлов лучше использовать st.image вместо чистого HTML
-                # чтобы избежать проблем с путями в браузере
-                st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; margin-top: 10px;">{partner["name"]}</div>', unsafe_allow_html=True)
-                try:
-                    st.image(partner["image"], use_container_width=True)
-                except:
-                    st.error(f"Файл {partner['image']} не найден")
-
-    # Настройка стилей (опционально для красоты)
+    # CSS для выравнивания карточек и логотипов
     st.markdown("""
-    <style>
+        <style>
+        /* Стиль для всей колонки (карточки) */
         [data-testid="column"] {
             border: 1px solid #e6e9ef;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 5px;
+            border-radius: 12px;
+            padding: 20px !important;
             background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px; /* Фиксированная высота карточки */
         }
-    </style>
+        
+        [data-testid="column"]:hover {
+            transform: translateY(-5px);
+            border-color: #1f4e78;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Контейнер для имитации центрирования картинки */
+        .img-container {
+            height: 100px; /* Высота зоны для логотипа */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        </style>
     """, unsafe_allow_html=True)
 
-    create_partner_grid()
+    # Цитата
+    st.markdown("""
+        <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 40px; background-color: #f8f9fa; padding: 15px;">
+            <h3 style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4; margin: 0;">
+                «Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».
+            </h3>
+        </div>
+    """, unsafe_allow_html=True)
 
+    partners = [
+        {"name": "ВМО", "image": "wmo_logo.png"},
+        {"name": "МСГ-СНГ", "image": "cis_logo.png"},
+        {"name": "КАСПКОМ", "image": "caspcom_logo.png"},
+        {"name": "ПРООН", "image": "undp_logo.png"},
+        {"name": "Всемирный банк", "image": "worldbank_logo.png"},
+        {"name": "EUMETSAT", "image": "eumetsat_logo.png"},
+    ]
+
+    # Создаем ряды по 4 колонки
+    for i in range(0, len(partners), 4):
+        cols = st.columns(4)
+        for j, partner in enumerate(partners[i:i+4]):
+            with cols[j]:
+                # Название сверху
+                st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; margin-bottom: 10px; height: 40px; display: flex; align-items: center; justify-content: center;">{partner["name"]}</div>', unsafe_allow_html=True)
+                
+                # Логотип
+                try:
+                    # width=150 ограничивает гигантские логотипы, делая их аккуратными
+                    st.image(partner["image"], width=150) 
+                except:
+                    st.caption(f"Логотип {partner['name']} не найден")
+                    
 
     
 
