@@ -9460,66 +9460,73 @@ with tabs[8]:
     # --- НАСТРОЙКА ВКЛАДКИ МЕЖДУНАРОДНОГО СОТРУДНИЧЕСТВА ---
     st.header("🌐 Международное сотрудничество")
     
-        
-    import streamlit as st
-    from pyvis.network import Network
-    import streamlit.components.v1 as components
 
-    def create_network():
-        st.set_page_config(layout="wide")
-        st.title("Карта международного партнерства")
+    def create_partner_grid():
+        st.title("Международные партнеры")
 
-        # Создаем объект графа
-        net = Network(height="600px", width="100%", bgcolor="#ffffff", font_color="#1f4e78")
-
-        # Центр — ваша организация
-        net.add_node("KAZ", label="Казгидромет", color="#1f4e78", size=40, title="Национальная гидрометеорологическая служба")
-
-        # Группы партнеров
-        partners = {
-            "Международные организации": [
-                ("ВМО", "Всемирная метеорологическая организация"),
-                ("ПРООН", "Программа развития ООН"),
-                ("Всемирный банк", "Финансовая поддержка проектов"),
-                ("ЮНЕСКО", "Водные ресурсы и криосфера")
-            ],
-            "Региональные союзы": [
-                ("МСГ-СНГ", "Межгосударственный совет по гидрометеорологии СНГ"),
-                ("КАСПКОМ", "Координационный комитет по гидрометеорологии Каспийского моря")
-            ],
-            "Фонды и Технологии": [
-                ("EUMETSAT", "Европейская организация спутниковой метеорологии"),
-                ("Адаптационный фонд", "Проекты по управлению засухами"),
-                ("GIZ", "Германское общество по международному сотрудничеству")
-            ]
+        # CSS для красивых карточек
+        st.markdown("""
+        <style>
+        .partner-card {
+            border: 1px solid #e6e9ef;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: white;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
         }
+        .partner-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+            border-color: #1f4e78;
+        }
+        .partner-logo {
+            max-width: 100px;
+            max-height: 60px;
+            margin-bottom: 15px;
+            filter: grayscale(20%);
+        }
+        .partner-name {
+            font-weight: bold;
+            color: #1f4e78;
+            font-size: 0.9em;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-        # Цвета для разных типов партнерства
-        colors = {"Международные организации": "#ff9999", "Региональные союзы": "#99ff99", "Фонды и Технологии": "#9999ff"}
+        # Список партнеров (добавьте свои ссылки на логотипы или локальные пути)
+        partners = [
+            {"name": "ВМО", "url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/WMO_logo.svg"},
+            {"name": "МСГ-СНГ", "url": "https://upload.wikimedia.org/wikipedia/commons/d/d0/CIS_Flag.svg"},
+            {"name": "КАСПКОМ", "url": "https://www.wmo.int/pages/prog/hwrp/images/wmo_logo.png"}, # Замените на реальный
+            {"name": "ПРООН", "url": "https://upload.wikimedia.org/wikipedia/commons/2/2b/UNDP_logo.svg"},
+            {"name": "Всемирный банк", "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/The_World_Bank_logo.svg"},
+            {"name": "EUMETSAT", "url": "https://upload.wikimedia.org/wikipedia/en/3/36/EUMETSAT_logo.svg"},
+            {"name": "Адаптационный фонд", "url": "https://www.adaptation-fund.org/wp-content/themes/adaptation-fund/img/logo.png"},
+            {"name": "UNESCO", "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/UNESCO_logo.svg"}
+        ]
 
-        # Добавляем узлы и связи
-        for category, list_of_orgs in partners.items():
-            for org_name, description in list_of_orgs:
-                net.add_node(org_name, label=org_name, title=description, color=colors[category], size=25)
-                net.add_edge("KAZ", org_name, weight=2)
-
-        # Настройка физики (чтобы узлы красиво разлетались)
-        net.repulsion(node_distance=200, spring_length=200)
-
-        # Сохранение и отображение в Streamlit
-        try:
-            net.save_graph("network.html")
-            HtmlFile = open("network.html", 'r', encoding='utf-8')
-            source_code = HtmlFile.read()
-            components.html(source_code, height=650)
-        except Exception as e:
-            st.error(f"Ошибка визуализации: {e}")
-
-        st.info("💡 Узлы можно двигать мышкой. Наведите на организацию, чтобы увидеть её роль.")
-
-    if __name__ == "__main__":
-        create_network()
+        # Создаем сетку (например, по 4 карточки в ряд)
+        cols = st.columns(4)
         
+        for i, partner in enumerate(partners):
+            with cols[i % 4]:
+                st.markdown(f"""
+                <div class="partner-card">
+                    <img src="{partner['url']}" class="partner-logo">
+                    <div class="partner-name">{partner['name']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                st.write("") # Отступ
+
+    create_partner_grid()
+
     
 
     # Основной баннер нового статуса
