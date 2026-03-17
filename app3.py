@@ -9355,6 +9355,25 @@ with tabs[7]:
     # --- ОБЩИЙ ЗАГОЛОВОК САЙТА ---
     st.set_page_config(page_title="Мониторинг вод", layout="wide")
     st.title("💧 Мониторинг качества поверхностных вод Казахстана")
+    
+    def render_charts(df, key_prefix):
+        st.divider()
+        col_chart, col_info = st.columns([2, 1])
+
+        with col_chart:
+            colors = ['#2ecc71' if c == 1 else '#f1c40f' if c == 3 else '#e74c3c' for c in df['Класс']]
+            fig = go.Figure(go.Bar(x=df['Класс'], y=df['Объект'], orientation='h', marker_color=colors))
+            fig.update_layout(yaxis=dict(autorange="reversed"), height=300)
+            st.plotly_chart(fig, use_container_width=True)
+
+        with col_info:
+            # Уникальный key важен, чтобы виджеты не конфликтовали!
+            selected_obj = st.selectbox("Справка по объекту:", df['Объект'], key=f"select_{key_prefix}")
+            obj_info = df[df['Объект'] == selected_obj].iloc[0]
+            st.write(f"**{obj_info['Характеристика']}**")
+            st.caption(f"ℹ️ {obj_info['Пригодность']}")
+        st.write("---") # Линия отсечки между областями
+
         
     def show_akmola_dashboard():
             st.header("📍 Акмолинская область")  
@@ -9420,23 +9439,7 @@ with tabs[7]:
             st.divider()
 
             # --- 4. ВИЗУАЛИЗАЦИЯ КЛАССОВ (Radial Chart) ---
-    def render_charts(df, key_prefix):
-        st.divider()
-        col_chart, col_info = st.columns([2, 1])
 
-        with col_chart:
-            colors = ['#2ecc71' if c == 1 else '#f1c40f' if c == 3 else '#e74c3c' for c in df['Класс']]
-            fig = go.Figure(go.Bar(x=df['Класс'], y=df['Объект'], orientation='h', marker_color=colors))
-            fig.update_layout(yaxis=dict(autorange="reversed"), height=300)
-            st.plotly_chart(fig, use_container_width=True)
-
-        with col_info:
-            # Уникальный key важен, чтобы виджеты не конфликтовали!
-            selected_obj = st.selectbox("Справка по объекту:", df['Объект'], key=f"select_{key_prefix}")
-            obj_info = df[df['Объект'] == selected_obj].iloc[0]
-            st.write(f"**{obj_info['Характеристика']}**")
-            st.caption(f"ℹ️ {obj_info['Пригодность']}")
-        st.write("---") # Линия отсечки между областями
         
     show_akmola_dashboard()        
     
