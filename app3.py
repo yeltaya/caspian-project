@@ -9460,93 +9460,66 @@ with tabs[8]:
     # --- НАСТРОЙКА ВКЛАДКИ МЕЖДУНАРОДНОГО СОТРУДНИЧЕСТВА ---
     st.header("🌐 Международное сотрудничество")
     
-    
-    import streamlit as st
-    import plotly.graph_objects as go
-
-    def create_interactive_slide():
-        st.set_page_config(layout="wide")
         
-        # CSS для того, чтобы график занимал всё пространство
-        st.markdown("<style>iframe {min-height: 800px !important;}</style>", unsafe_allow_html=True)
+    import streamlit as st
+    from pyvis.network import Network
+    import streamlit.components.v1 as components
 
-        fig = go.Figure()
+    def create_network():
+        st.set_page_config(layout="wide")
+        st.title("Карта международного партнерства")
 
-        # --- ФОН И СЕТКА ---
-        # Задаем жесткие границы 0-100, чтобы элементы не смещались
-        fig.update_xaxes(range=[0, 100], showgrid=False, zeroline=False, visible=False)
-        fig.update_yaxes(range=[0, 100], showgrid=False, zeroline=False, visible=False)
+        # Создаем объект графа
+        net = Network(height="600px", width="100%", bgcolor="#ffffff", font_color="#1f4e78")
 
-        # --- ЗАГОЛОВОК ---
-        fig.add_shape(type="rect", x0=2, y0=90, x1=98, y1=98, fillcolor="#1f4e78", line_width=0)
-        fig.add_annotation(x=50, y=94, text="Международное сотрудничество", 
-                           font=dict(size=26, color="white", family="Arial Black"), showarrow=False)
+        # Центр — ваша организация
+        net.add_node("KAZ", label="Казгидромет", color="#1f4e78", size=40, title="Национальная гидрометеорологическая служба")
 
-        # --- ВЕРХНИЕ БЛОКИ (ОРГАНИЗАЦИИ) ---
-        y_start = 82
-        spacing = 8
-        org_data = [
-            ("ВМО (WMO)", "Выполнение функций Регионального центра по паводкам (CARFFGS), внедрение WIGOS.<br>Реализация инициативы «Раннее предупреждение для всех»."),
-            ("ЮНЕСКО", "Участие в проекте по криосфере. Взаимодействие по проекту OUTLAST<br>(прогнозирование опасности засухи)."),
-            ("GIZ", "«Зеленая Центральная Азия». Управление водными ресурсами с учетом климатических изменений.<br>German Water Partnership."),
-            ("Адаптационный фонд", "Интегрированное управление засухами в Центральной Азии для стран ЦА.")
-        ]
+        # Группы партнеров
+        partners = {
+            "Международные организации": [
+                ("ВМО", "Всемирная метеорологическая организация"),
+                ("ПРООН", "Программа развития ООН"),
+                ("Всемирный банк", "Финансовая поддержка проектов"),
+                ("ЮНЕСКО", "Водные ресурсы и криосфера")
+            ],
+            "Региональные союзы": [
+                ("МСГ-СНГ", "Межгосударственный совет по гидрометеорологии СНГ"),
+                ("КАСПКОМ", "Координационный комитет по гидрометеорологии Каспийского моря")
+            ],
+            "Фонды и Технологии": [
+                ("EUMETSAT", "Европейская организация спутниковой метеорологии"),
+                ("Адаптационный фонд", "Проекты по управлению засухами"),
+                ("GIZ", "Германское общество по международному сотрудничеству")
+            ]
+        }
 
-        for i, (name, desc) in enumerate(org_data):
-            y_pos = y_start - (i * spacing)
-            # Голубая подложка
-            fig.add_shape(type="rect", x0=25, y0=y_pos-3.5, x1=90, y1=y_pos+3.5, 
-                           fillcolor="#deeaf6", line_width=0, layer="below")
-            # Текст
-            fig.add_annotation(x=26, y=y_pos, 
-                               text=f"<b>{name}</b>: {desc}",
-                               xref="x", yref="y", align="left", xanchor="left",
-                               showarrow=False, font=dict(size=13, color="#1f4e78"))
+        # Цвета для разных типов партнерства
+        colors = {"Международные организации": "#ff9999", "Региональные союзы": "#99ff99", "Фонды и Технологии": "#9999ff"}
 
-        # --- ТЕКСТ ПРО МЕМОРАНДУМЫ ---
-        fig.add_annotation(x=30, y=42, 
-                           text="<b>В 2025 году заключено 5 международных<br>Меморандумов со следующими организациями:</b>",
-                           font=dict(size=20, color="#1f4e78"), showarrow=False, align="center")
+        # Добавляем узлы и связи
+        for category, list_of_orgs in partners.items():
+            for org_name, description in list_of_orgs:
+                net.add_node(org_name, label=org_name, title=description, color=colors[category], size=25)
+                net.add_edge("KAZ", org_name, weight=2)
 
-        # --- НИЖНИЕ КАРТОЧКИ (СТРАНЫ) ---
-        card_y = 20
-        cards = [
-            {"x": 16, "name": "Швейцария (HSOL)", "text": "Вопросы оперативной<br>гидрогеологии в ЦА"},
-            {"x": 35, "name": "Германия (GFZ)", "text": "Метеорологические<br>исследования и климат"},
-            {"x": 54, "name": "Финляндия (FMI)", "text": "Численное прогнозирование,<br>системы Smartmet/Enfuser"}
-        ]
+        # Настройка физики (чтобы узлы красиво разлетались)
+        net.repulsion(node_distance=200, spring_length=200)
 
-        for card in cards:
-            # Рамка карточки
-            fig.add_shape(type="rect", x0=card['x']-8, y0=5, x1=card['x']+8, y1=35, 
-                           line=dict(color="#1f4e78", width=2), fillcolor="white")
-            # Текст внутри
-            fig.add_annotation(x=card['x'], y=20, text=f"<b>{card['name']}</b><br><br>{card['text']}",
-                               showarrow=False, font=dict(size=12))
+        # Сохранение и отображение в Streamlit
+        try:
+            net.save_graph("network.html")
+            HtmlFile = open("network.html", 'r', encoding='utf-8')
+            source_code = HtmlFile.read()
+            components.html(source_code, height=650)
+        except Exception as e:
+            st.error(f"Ошибка визуализации: {e}")
 
-        # --- ПРАВЫЙ БОЛЬШОЙ БЛОК ---
-        fig.add_shape(type="rect", x0=65, y0=5, x1=95, y1=35, 
-                       line=dict(color="#1f4e78", width=2), fillcolor="white")
-        fig.add_annotation(x=80, y=20, 
-                           text="КАСПКОМ<br>Межгоссовет СНГ<br>EUMETSAT (спутники)<br><br><b>Обучение:</b><br>>50 человек онлайн/офлайн",
-                           showarrow=False, align="center", font=dict(size=13))
-
-        # --- НАСТРОЙКИ LAYOUT ---
-        fig.update_layout(
-            plot_bgcolor="white",
-            margin=dict(l=0, r=0, t=0, b=0),
-            height=800,
-            dragmode=False, # Отключаем перетаскивание, чтобы верстка не ехала
-            hovermode="closest"
-        )
-
-        # Отображаем
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        st.info("💡 Узлы можно двигать мышкой. Наведите на организацию, чтобы увидеть её роль.")
 
     if __name__ == "__main__":
-        create_interactive_slide()
-    
-    
+        create_network()
+        
     
 
     # Основной баннер нового статуса
