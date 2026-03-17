@@ -9493,8 +9493,7 @@ with tabs[8]:
         {"name": "КАСПКОМ", "image": "caspcom_logo.png"},
         {"name": "ПРООН", "image": "undp_logo.png"},
         {"name": "Всемирный банк", "image": "worldbank_logo.png"},
-        {"name": "EUMETSAT", "image": "eumetsat_logo.png"},
-        {"name": "UNESCO", "image": "unesco_logo.png"},
+        {"name": "EUMETSAT", "image": "eumetsat_logo.png"}
     ]
 
     # Создаем ровно столько колонок, сколько партнеров в списке
@@ -9513,6 +9512,44 @@ with tabs[8]:
             except:
                 st.caption(f"Ошибка {partner['name']}")
                 
+# Добавляем разделитель или небольшой отступ
+    st.write("---")
+    
+    # Заголовок для блока достижений
+    st.markdown("<h4 style='text-align: center; color: #1f4e78; margin-bottom: 25px;'>Ключевые показатели за 2024-2025 гг.</h4>", unsafe_allow_html=True)
+
+    # Создаем 3 колонки для метрик
+    m_col1, m_col2, m_col3 = st.columns(3)
+
+    with m_col1:
+        st.markdown("""
+            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #1f4e78; margin: 0;">5</h2>
+                <p style="color: #555; font-weight: bold; margin: 0;">Международных меморандумов</p>
+                <p style="color: #888; font-size: 0.8rem; margin: 0;">заключено в 2025 году</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with m_col2:
+        st.markdown("""
+            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #1f4e78; margin: 0;">>50</h2>
+                <p style="color: #555; font-weight: bold; margin: 0;">Специалистов обучено</p>
+                <p style="color: #888; font-size: 0.8rem; margin: 0;">онлайн и офлайн форматах</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with m_col3:
+        st.markdown("""
+            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #1f4e78; margin: 0;">25+</h2>
+                <p style="color: #555; font-weight: bold; margin: 0;">Встреч с партнерами</p>
+                <p style="color: #888; font-size: 0.8rem; margin: 0;">для обмена опытом и данными</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        
+
 
     
 
