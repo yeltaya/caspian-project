@@ -9352,13 +9352,13 @@ with tabs[7]:
         
         
 
-    st.title("💧 Мониторинг качества поверхностных вод")
+    # --- ОБЩИЙ ЗАГОЛОВОК САЙТА ---
+    st.set_page_config(page_title="Мониторинг вод", layout="wide")
+    st.title("💧 Мониторинг качества поверхностных вод Казахстана")
         
-        def show_akmola_dashboard():
-            st.subheader("📍 Акмолинская область")  
-            st.markdown("""
-            *Наблюдение ведется на 5 водных объектах (17 створа) по 37 показателям.*
-            """)
+    def show_akmola_dashboard():
+            st.header("📍 Акмолинская область")  
+            st.markdown("""*Наблюдение ведется на 5 водных объектах (17 створа) по 37 показателям.*""")
 
             # --- СТАТИСТИКА В ЦИФРАХ ---
             col_stat1, col_stat2, col_stat3, col_stat4  = st.columns(4)
@@ -9367,10 +9367,6 @@ with tabs[7]:
             col_stat3.metric("Лидер чистоты (1 класс)", "Астанинское вдхр.", "Стабильно 2020-2025")
             col_stat4.metric("Случаи Экстремально Высокого Загрязнения", "р. Сарыбулак", "Кислород")
             
-
-            # ВЫЗОВ ФУНКЦИИ (обязательно добавьте эту строку в конце)
-            show_water_quality_dashboard()
-
             # --- 1. ДАННЫЕ ИЗ ВАШЕГО ТЕКСТА (2025) ---
             water_2025 = [
                 {"Объект": "Астанинское вдхр.", "Класс": 1, "Характеристика": "Очень хорошее качество", 
@@ -9385,46 +9381,13 @@ with tabs[7]:
                  "Пригодность": "Только для тех. нужд. Крайне высокая нагрузка на экосистему.", "Показатели": "хлориды, аммоний-ион"}
             ]
 
-            df = pd.DataFrame(water_2025)
 
+            render_charts(pd.DataFrame(water_data), "akmola")
             st.divider()
-
-            # --- 4. ВИЗУАЛИЗАЦИЯ КЛАССОВ (Radial Chart) ---
-            col_chart, col_info = st.columns([2, 1])
-
-            with col_chart:
-                # Цвета в зависимости от класса
-                colors = ['#2ecc71' if c == 1 else '#f1c40f' if c == 3 else '#e74c3c' for c in df['Класс']]
-                
-                fig = go.Figure(go.Bar(
-                    x=df['Класс'],
-                    y=df['Объект'],
-                    orientation='h',
-                    marker_color=colors,
-                    text=df['Характеристика'],
-                    hovertemplate="<b>%{y}</b><br>Класс: %{x}<br>%{text}<extra></extra>"
-                ))
-                
-                fig.update_layout(
-                    title="Распределение объектов по классам качества (2025)",
-                    xaxis=dict(title="Класс (1 — Чисто, 6 — Грязно)", range=[0, 7], dtick=1),
-                    yaxis=dict(autorange="reversed"),
-                    height=400
-                )
-                st.plotly_chart(fig, use_container_width=True)
-
-            with col_info:
-                st.write("**Детализация по объектам:**")
-                selected_obj = st.selectbox("Выберите объект для справки:", df['Объект'])
-                obj_info = df[df['Объект'] == selected_obj].iloc[0]
-                
-                st.markdown(f"**Характеристика:** {obj_info['Характеристика']}")
-                st.markdown(f"**Основные загрязнители:** `{obj_info['Показатели']}`")
-                st.caption(f"ℹ️ {obj_info['Пригодность']}")
-
-        def show_atyrau_dashboard(): 
+            
+    def show_atyrau_dashboard(): 
+            st.header("📍 Атырауская область")  
             st.markdown("""
-            **Регион:** Атырауская область. 
             *Наблюдение ведется на 5 водных объектах (20 створа) по 43 показателям. Мониторинг качества морской воды проводится на 22 прибрежных точках Северного Каспийского моря *
             """)
 
@@ -9453,42 +9416,31 @@ with tabs[7]:
                  "Пригодность": "Ограничения для лососевых рыб. Для питья нужна очистка. Рекреация без ограничений.", "Показатели": "БПК5, ХПК, магний, нефтепродукты"}
             ]
 
-            df = pd.DataFrame(water_2025)
-
+            render_charts(pd.DataFrame(water_data), "atyrau")           
             st.divider()
 
             # --- 4. ВИЗУАЛИЗАЦИЯ КЛАССОВ (Radial Chart) ---
-            col_chart, col_info = st.columns([2, 1])
+    def render_charts(df, key_prefix):
+        st.divider()
+        col_chart, col_info = st.columns([2, 1])
 
-            with col_chart:
-                # Цвета в зависимости от класса
-                colors = ['#2ecc71' if c == 1 else '#f1c40f' if c == 3 else '#e74c3c' for c in df['Класс']]
-                
-                fig = go.Figure(go.Bar(
-                    x=df['Класс'],
-                    y=df['Объект'],
-                    orientation='h',
-                    marker_color=colors,
-                    text=df['Характеристика'],
-                    hovertemplate="<b>%{y}</b><br>Класс: %{x}<br>%{text}<extra></extra>"
-                ))
-                
-                fig.update_layout(
-                    title="Распределение объектов по классам качества (2025)",
-                    xaxis=dict(title="Класс (1 — Чисто, 6 — Грязно)", range=[0, 7], dtick=1),
-                    yaxis=dict(autorange="reversed"),
-                    height=400
-                )
-                st.plotly_chart(fig, use_container_width=True)
+        with col_chart:
+            colors = ['#2ecc71' if c == 1 else '#f1c40f' if c == 3 else '#e74c3c' for c in df['Класс']]
+            fig = go.Figure(go.Bar(x=df['Класс'], y=df['Объект'], orientation='h', marker_color=colors))
+            fig.update_layout(yaxis=dict(autorange="reversed"), height=300)
+            st.plotly_chart(fig, use_container_width=True)
 
-            with col_info:
-                st.write("**Детализация по объектам:**")
-                selected_obj = st.selectbox("Выберите объект для справки:", df['Объект'])
-                obj_info = df[df['Объект'] == selected_obj].iloc[0]
-                
-                st.markdown(f"**Характеристика:** {obj_info['Характеристика']}")
-                st.markdown(f"**Основные загрязнители:** `{obj_info['Показатели']}`")
-                st.caption(f"ℹ️ {obj_info['Пригодность']}")
+        with col_info:
+            # Уникальный key важен, чтобы виджеты не конфликтовали!
+            selected_obj = st.selectbox("Справка по объекту:", df['Объект'], key=f"select_{key_prefix}")
+            obj_info = df[df['Объект'] == selected_obj].iloc[0]
+            st.write(f"**{obj_info['Характеристика']}**")
+            st.caption(f"ℹ️ {obj_info['Пригодность']}")
+        st.write("---") # Линия отсечки между областями
+        
+    show_akmola_dashboard()        
+    
+    show_atyrau_dashboard()
 
 
 
