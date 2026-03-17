@@ -9455,10 +9455,99 @@ with tabs[7]:
 with tabs[8]:
     st.title("Сотрудничество")
 
-    import streamlit as st
+
 
     # --- НАСТРОЙКА ВКЛАДКИ МЕЖДУНАРОДНОГО СОТРУДНИЧЕСТВА ---
     st.header("🌐 Международное сотрудничество")
+    
+    
+    def create_interactive_slide():
+        st.set_page_config(layout="wide")
+        st.title("Интерактивный дашборд: Международное сотрудничество")
+
+        # Создаем фигуру Plotly
+        fig = go.Figure()
+
+        # 1. Заголовок (верхний баннер)
+        fig.add_shape(type="rect", x0=0, y0=90, x1=100, y1=100, fillcolor="#1f4e78", line_color="#1f4e78")
+        fig.add_annotation(x=50, y=95, text="Международное сотрудничество", font=dict(size=24, color="white"), showarrow=False)
+
+        # 2. Основные блоки организаций (Слева)
+        orgs = [
+            {"name": "ВМО (WMO)", "y": 80, "desc": "Региональный центр по паводкам (CARFFGS), внедрение WIGOS."},
+            {"name": "ЮНЕСКО", "y": 68, "desc": "Проекты по криосфере и засухам (OUTLAST)."},
+            {"name": "GIZ", "y": 58, "desc": "Управление водными ресурсами в ЦА (Зеленая Центральная Азия)."},
+            {"name": "Адаптационный фонд", "y": 48, "desc": "Управление засухами в ЦА, Кавказе и Молдове."}
+        ]
+
+        for org in orgs:
+            fig.add_shape(type="rect", x0=25, y0=org['y']-4, x1=80, y1=org['y']+4, fillcolor="#deeaf6", line_width=0)
+            fig.add_annotation(
+                x=26, y=org['y'], text=f"<b>{org['name']}</b>: {org['desc']}",
+                xref="x", yref="y", align="left", showarrow=False, font=dict(size=12)
+            )
+
+        # 3. Центральный заголовок про Меморандумы
+        fig.add_annotation(
+            x=30, y=35, 
+            text="<b>В 2025 году заключено 5 международных<br>Меморандумов с организациями:</b>",
+            font=dict(size=18, color="#1f4e78"), showarrow=False, align="center"
+        )
+
+        # 4. Интерактивные карточки стран (Нижний ряд)
+        # Мы используем 'scatter' с прозрачными маркерами для создания эффекта кнопок/ховера
+        countries = [
+            {"name": "Швейцария (Hydrosolutions)", "x": 15, "y": 20, "info": "Вопросы оперативной гидрогеологии в ЦА."},
+            {"name": "Германия (GFZ)", "x": 30, "y": 20, "info": "Метеорологические исследования и изменение климата."},
+            {"name": "Финляндия (FMI)", "x": 45, "y": 20, "info": "Численное прогнозирование и Smartmet/Enfuser."}
+        ]
+
+        for c in countries:
+            # Рисуем рамку
+            fig.add_shape(type="rect", x0=c['x']-7, y0=10, x1=c['x']+7, y1=30, fillcolor="white", line_color="#1f4e78")
+            # Добавляем невидимый след для всплывающей подсказки
+            fig.add_trace(go.Scatter(
+                x=[c['x']], y=[20],
+                mode="markers+text",
+                text=[c['name']],
+                textposition="middle center",
+                hoverinfo="text",
+                hovertext=f"<b>{c['name']}</b><br>{c['info']}",
+                marker=dict(size=40, color="rgba(0,0,0,0)"),
+                showlegend=False
+            ))
+
+        # 5. Правый блок (Комитеты и встречи)
+        fig.add_shape(type="rect", x0=62, y0=5, x1=85, y1=35, fillcolor="white", line_color="#1f4e78", layer="below")
+        fig.add_annotation(
+            x=73.5, y=20, 
+            text="КАСПКОМ<br>Межгоссовет СНГ<br>EUMETSAT<br>Обучение: >50 чел.",
+            showarrow=False, align="center"
+        )
+
+        # Настройка осей и фона
+        fig.update_xaxes(range=[0, 100], visible=False)
+        fig.update_yaxes(range=[0, 100], visible=False)
+        fig.update_layout(
+            margin=dict(l=10, r=10, t=10, b=10),
+            height=700,
+            plot_bgcolor="white"
+        )
+
+        # Отображение в Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Дополнительная функциональность через сайдбар
+        st.sidebar.header("Детализация")
+        selected_org = st.sidebar.selectbox("Выберите организацию для подробностей", ["ВМО", "ЮНЕСКО", "GIZ", "FMI"])
+        if selected_org == "FMI":
+            st.sidebar.info("Сотрудничество с Финляндией включает внедрение систем Smartmet и Enfuser для численного прогнозирования.")
+
+    if __name__ == "__main__":
+        create_interactive_slide()
+        
+    
+    
 
     # Основной баннер нового статуса
     st.info("""
