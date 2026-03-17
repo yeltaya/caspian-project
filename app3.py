@@ -1742,7 +1742,7 @@ with tabs[0]:
             
             st.warning("""
             **🚨 Экстренные оповещения**
-            * Штормовые предупреждения (ОЯ/НЯ)
+            * Штормовые предупреждения (СГЯ)
             * Уведомления о резких подъемах уровней
             """)
             
@@ -7462,17 +7462,18 @@ with tabs[6]:
     
     # --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
     rank_data_precip = [
-        {"rank": 1, "year": 1944, "value": 73.5, "color": "#5D4037"},
-        {"rank": 2, "year": 1975, "value": 77.0, "color": "#795548"},
-        {"rank": 3, "year": 1974, "value": 78.3, "color": "#8D6E63"},
-        {"rank": 4, "year": 1995, "value": 78.8, "color": "#8D6E63"},
-        {"rank": 5, "year": 1991, "value": 78.9, "color": "#A1887F"},
-        {"rank": 6, "year": 2008, "value": 81.6, "color": "#A1887F"},
-        {"rank": 7, "year": 1955, "value": 82.4, "color": "#BCAAA4"},
-        {"rank": 8, "year": 1936, "value": 82.6, "color": "#BCAAA4"},
-        {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},
-        {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
+        {"rank": 1, "year": 1944, "value": 73.5, "color": "#E65100"},
+        {"rank": 2, "year": 1975, "value": 77.0, "color": "#EF6C00"},
+        {"rank": 3, "year": 1974, "value": 78.3, "color": "#F57C00"},
+        {"rank": 4, "year": 1995, "value": 78.8, "color": "#FB8C00"},
+        {"rank": 5, "year": 1991, "value": 78.9, "color": "#FF9800"},
+        {"rank": 6, "year": 2008, "value": 81.6, "color": "#FFA726"},
+        {"rank": 7, "year": 1955, "value": 82.4, "color": "#FFB74D"},
+        {"rank": 8, "year": 1936, "value": 82.6, "color": "#FFCC80"},
+        {"rank": 9, "year": 2020, "value": 85.2, "color": "#FFE0B2"},
+        {"rank": 10, "year": 2021, "value": 85.5, "color": "#FFF3E0"}
     ]
+
     
  
     with col_info2:
@@ -9492,17 +9493,17 @@ with tabs[7]:
 
         render_charts(pd.DataFrame(water_2025), "karagandy")   
         
-    def show_karagandy_dashboard(): 
-        st.header("📍 Карагандинская область")  
+    def show_almaty_dashboard(): 
+        st.header("📍 г. Алматы, Алматинская область, область Жетісу")  
         st.markdown("""
-            *Наблюдение ведется на 11 водных объектах (39 створа) по 33 показателям.*
+            *Наблюдение ведется на 22 водных объектах (42 створа) по 44 показателям.*
             """)
 
             # --- СТАТИСТИКА В ЦИФРАХ ---
         col_stat1, col_stat2, col_stat3, col_stat4  = st.columns(4)
-        col_stat1.metric("Объектов мониторинга", "11", "3 реки, 1 вдхр., 1 канал")
-        col_stat2.metric("Показателей качества", "40", "Физ-хим + Тяжелые металлы")
-        col_stat3.metric("Лидер чистоты (1 класс)", "нет", "")
+        col_stat1.metric("Объектов мониторинга", "22", "18 рек, 3 озера, 1 вдхр.")
+        col_stat2.metric("Показателей качества", "44", "Физ-хим + Тяжелые металлы")
+        col_stat3.metric("Лидер чистоты (1 класс)", "р. Тургень", "2025 г.")
         col_stat4.metric("Случаи Высокого Загрязнения", "не обнаружены", "2025 г.")
             
             # --- 1. ДАННЫЕ ИЗ ВАШЕГО ТЕКСТА (2025) ---
@@ -9519,7 +9520,7 @@ with tabs[7]:
                  "Пригодность": "Только для тех. нужд. Крайне высокая нагрузка на экосистему.", "Показатели": "аммоний-ион, фосфор общий, фосфаты"}
             ]
 
-        render_charts(pd.DataFrame(water_2025), "karagandy")   
+        render_charts(pd.DataFrame(water_2025), "almaty")   
         
  # --- 3. В САМОМ КОНЦЕ: ЗАПУСК ПРИЛОЖЕНИЯ ---
     st.title("💧 Мониторинг качества поверхностных вод")   
