@@ -9352,11 +9352,6 @@ with tabs[7]:
         
         
 
-
-    import streamlit as st
-    import pandas as pd
-    import plotly.express as px
-
     def show_water_quality_dashboard():
         st.title("💧 Мониторинг качества поверхностных вод")
         st.markdown("""
@@ -9388,8 +9383,7 @@ with tabs[7]:
     df = pd.DataFrame(water_2025)
 
     # --- 2. НАСТРОЙКА СТРАНИЦЫ ---
-    st.set_page_config(page_title="Водные ресурсы Астаны 2025", layout="wide")
-    st.title("🛡️ Состояние поверхностных вод Астаны — 2025")
+    st.title("🛡️ Состояние поверхностных вод")
 
     # --- 3. ВЕРХНЯЯ ПАНЕЛЬ: КАРТОЧКИ ИНЦИДЕНТОВ ---
     st.subheader("⚠️ Экстренные показатели (р. Сарыбулак)")
