@@ -9372,7 +9372,6 @@ with tabs[7]:
             obj_info = df[df['Объект'] == selected_obj].iloc[0]
             st.write(f"**{obj_info['Характеристика']}**")
             st.caption(f"ℹ️ {obj_info['Пригодность']}")
-        st.write("---") # Линия отсечки между областями
 
         
     def show_akmola_dashboard():
@@ -9440,7 +9439,8 @@ with tabs[7]:
 
             # --- 4. ВИЗУАЛИЗАЦИЯ КЛАССОВ (Radial Chart) ---
 
-        
+ # --- 3. В САМОМ КОНЦЕ: ЗАПУСК ПРИЛОЖЕНИЯ ---
+    st.title("💧 Мониторинг качества поверхностных вод")       
     show_akmola_dashboard()        
     
     show_atyrau_dashboard()
