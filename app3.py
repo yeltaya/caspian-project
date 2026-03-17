@@ -9630,19 +9630,29 @@ with tabs[8]:
             * 🇦🇿 Азербайджан
             """)
 
-    # Специальный блок: Казгидромет как площадка (Платформа)
+# Специальный блок: Казгидромет как площадка (Светлый вариант без синего фона)
     st.write("")
     st.markdown("""
-        <div style="background-color: #1f4e78; padding: 20px; border-radius: 12px; color: white;">
-            <h4 style="margin-top: 0; color: #ffcc00;">🚀 Казгидромет — международная образовательная платформа</h4>
-            <p>В отчетном периоде на базе РГП «Казгидромет» проведены ключевые международные мероприятия:</p>
+        <div style="border: 2px solid #1f4e78; padding: 25px; border-radius: 12px; background-color: #fcfdfe;">
+            <h4 style="margin-top: 0; color: #1f4e78; border-bottom: 1px solid #e6e9ef; padding-bottom: 10px;">
+                🚀 Казгидромет — международная образовательная платформа
+            </h4>
+            <p style="color: #333; margin-top: 15px;">В отчетном периоде на базе РГП «Казгидромет» проведены ключевые международные мероприятия:</p>
             <ul style="list-style-type: none; padding-left: 0;">
-                <li>📍 <b>Семинар ВМО:</b> Управление климатическими данными (эксперты из 8 стран: Канада, Бразилия, Франция, Германия и др.).</li>
-                <li>📍 <b>Семинар GIZ:</b> Внедрение гидрологической модели SWIM для трансграничных бассейнов ЦА.</li>
-                <li>📍 <b>Технологический воркшоп:</b> Практическое применение приложения Snowmapper.</li>
+                <li style="margin-bottom: 10px;">
+                    <span style="color: #1f4e78;">📍</span> <b>Семинар ВМО:</b> Управление климатическими данными 
+                    <br><small style="color: #666; padding-left: 25px;">(Эксперты из 8 стран: Турция, Германия, Франция, Канада, Бразилия, Австралия, Индонезия)</small>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <span style="color: #1f4e78;">📍</span> <b>Семинар GIZ:</b> Внедрение гидрологической модели SWIM для трансграничных бассейнов ЦА
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <span style="color: #1f4e78;">📍</span> <b>Технологический воркшоп:</b> Практическое применение приложения Snowmapper
+                </li>
             </ul>
         </div>
     """, unsafe_allow_html=True)
+    
     
     
 
