@@ -9399,7 +9399,7 @@ with tabs[7]:
             ]
 
 
-        render_charts(pd.DataFrame(water_data), "akmola")
+        render_charts(pd.DataFrame(water_2025), "akmola")
             
     def show_atyrau_dashboard(): 
         st.header("📍 Атырауская область")  
@@ -9432,13 +9432,12 @@ with tabs[7]:
                  "Пригодность": "Ограничения для лососевых рыб. Для питья нужна очистка. Рекреация без ограничений.", "Показатели": "БПК5, ХПК, магний, нефтепродукты"}
             ]
 
-        render_charts(pd.DataFrame(water_data), "atyrau")           
+        render_charts(pd.DataFrame(water_2025), "atyrau")           
 
  # --- 3. В САМОМ КОНЦЕ: ЗАПУСК ПРИЛОЖЕНИЯ ---
     st.title("💧 Мониторинг качества поверхностных вод")   
     
     show_akmola_dashboard()        
-    
     show_atyrau_dashboard()
 
 
