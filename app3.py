@@ -9460,72 +9460,57 @@ with tabs[8]:
     # --- НАСТРОЙКА ВКЛАДКИ МЕЖДУНАРОДНОГО СОТРУДНИЧЕСТВА ---
     st.header("🌐 Международное сотрудничество")
     
-
     def create_partner_grid():
-        st.title("Международные партнеры")
-
-        # CSS для красивых карточек
+        # Ваше предложение о важности сотрудничества
         st.markdown("""
-        <style>
-        .partner-card {
-            border: 1px solid #e6e9ef;
-            border-radius: 10px;
-            padding: 20px;
-            background-color: white;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 180px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-        }
-        .partner-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
-            border-color: #1f4e78;
-        }
-        .partner-logo {
-            max-width: 100px;
-            max-height: 60px;
-            margin-bottom: 15px;
-            filter: grayscale(20%);
-        }
-        .partner-name {
-            font-weight: bold;
-            color: #1f4e78;
-            font-size: 0.9em;
-        }
-        </style>
+            <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 30px;">
+                <h3 style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4;">
+                    «Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».
+                </h3>
+            </div>
         """, unsafe_allow_html=True)
 
-        # Список партнеров (добавьте свои ссылки на логотипы или локальные пути)
+        # Путь к папке (если файлы в папке assets в корне репозитория)
+        # Если файлы лежат прямо в корне, уберите 'assets/' из путей ниже
         partners = [
-            {"name": "ВМО", "url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/WMO_logo.svg"},
-            {"name": "МСГ-СНГ", "url": "https://upload.wikimedia.org/wikipedia/commons/d/d0/CIS_Flag.svg"},
-            {"name": "КАСПКОМ", "url": "https://www.wmo.int/pages/prog/hwrp/images/wmo_logo.png"}, # Замените на реальный
-            {"name": "ПРООН", "url": "https://upload.wikimedia.org/wikipedia/commons/2/2b/UNDP_logo.svg"},
-            {"name": "Всемирный банк", "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/The_World_Bank_logo.svg"},
-            {"name": "EUMETSAT", "url": "https://upload.wikimedia.org/wikipedia/en/3/36/EUMETSAT_logo.svg"},
-            {"name": "Адаптационный фонд", "url": "https://www.adaptation-fund.org/wp-content/themes/adaptation-fund/img/logo.png"},
-            {"name": "UNESCO", "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/UNESCO_logo.svg"}
+            {"name": "ВМО", "image": "assets/wmo_logo.png"},
+            {"name": "МСГ-СНГ", "image": "assets/cis_logo.png"},
+            {"name": "КАСПКОМ", "image": "assets/caspcom_logo.png"},
+            {"name": "ПРООН", "image": "assets/undp_logo.png"},
+            {"name": "Всемирный банк", "image": "assets/worldbank_logo.png"},
+            {"name": "EUMETSAT", "image": "assets/eumetsat_logo.png"},
+            {"name": "Адаптационный фонд", "image": "assets/af_logo.png"},
+            {"name": "UNESCO", "image": "assets/unesco_logo.png"}
         ]
 
-        # Создаем сетку (например, по 4 карточки в ряд)
+        # Сетка
         cols = st.columns(4)
         
         for i, partner in enumerate(partners):
             with cols[i % 4]:
-                st.markdown(f"""
-                <div class="partner-card">
-                    <img src="{partner['url']}" class="partner-logo">
-                    <div class="partner-name">{partner['name']}</div>
-                </div>
-                """, unsafe_allow_html=True)
-                st.write("") # Отступ
+                # В Streamlit для локальных файлов лучше использовать st.image вместо чистого HTML
+                # чтобы избежать проблем с путями в браузере
+                st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; margin-top: 10px;">{partner["name"]}</div>', unsafe_allow_html=True)
+                try:
+                    st.image(partner["image"], use_container_width=True)
+                except:
+                    st.error(f"Файл {partner['image']} не найден")
+
+    # Настройка стилей (опционально для красоты)
+    st.markdown("""
+    <style>
+        [data-testid="column"] {
+            border: 1px solid #e6e9ef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 5px;
+            background-color: white;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
     create_partner_grid()
+
 
     
 
