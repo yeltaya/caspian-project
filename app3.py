@@ -9352,12 +9352,11 @@ with tabs[7]:
         
         
 
-    def show_water_quality_dashboard():
-        st.title("💧 Мониторинг качества поверхностных вод")
+    st.title("💧 Мониторинг качества поверхностных вод")
         
-    def show_akmola_dashboard():       
+    def show_akmola_dashboard():
+        st.subheader("📍 Акмолинская область")  
         st.markdown("""
-        **Регион:** Акмолинская область. 
         *Наблюдение ведется на 5 водных объектах (17 створа) по 37 показателям.*
         """)
 
