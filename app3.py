@@ -9450,50 +9450,40 @@ with tabs[7]:
 
 
         
-
-
+  
 with tabs[8]:
     st.header("🌐 Международное сотрудничество")
     
-    # CSS для выравнивания карточек и логотипов
+    # CSS: Немного уменьшим min-height и padding, так как карточки в одну строку будут уже
     st.markdown("""
         <style>
-        /* Стиль для всей колонки (карточки) */
         [data-testid="column"] {
             border: 1px solid #e6e9ef;
-            border-radius: 12px;
-            padding: 20px !important;
+            border-radius: 10px;
+            padding: 10px !important;
             background-color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
             transition: transform 0.2s ease;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            min-height: 220px; /* Фиксированная высота карточки */
+            justify-content: center;
+            align-items: center;
+            min-height: 180px; 
         }
         
         [data-testid="column"]:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             border-color: #1f4e78;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
-        }
-
-        /* Контейнер для имитации центрирования картинки */
-        .img-container {
-            height: 100px; /* Высота зоны для логотипа */
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    # Цитата
+    # Цитата (без изменений)
     st.markdown("""
-        <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 40px; background-color: #f8f9fa; padding: 15px;">
-            <h3 style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4; margin: 0;">
+        <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 30px; background-color: #f8f9fa; padding: 15px;">
+            <p style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4; margin: 0; font-size: 1.1rem;">
                 «Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».
-            </h3>
+            </p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -9504,23 +9494,25 @@ with tabs[8]:
         {"name": "ПРООН", "image": "undp_logo.png"},
         {"name": "Всемирный банк", "image": "worldbank_logo.png"},
         {"name": "EUMETSAT", "image": "eumetsat_logo.png"},
+        {"name": "UNESCO", "image": "unesco_logo.png"},
     ]
 
-    # Создаем ряды по 4 колонки
-    for i in range(0, len(partners), 4):
-        cols = st.columns(4)
-        for j, partner in enumerate(partners[i:i+4]):
-            with cols[j]:
-                # Название сверху
-                st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; margin-bottom: 10px; height: 40px; display: flex; align-items: center; justify-content: center;">{partner["name"]}</div>', unsafe_allow_html=True)
+    # Создаем ровно столько колонок, сколько партнеров в списке
+    cols = st.columns(len(partners))
+
+    for j, partner in enumerate(partners):
+        with cols[j]:
+            # Название организации
+            st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; font-size: 0.8rem; margin-bottom: 8px; height: 30px; display: flex; align-items: center; justify-content: center;">{partner["name"]}</div>', unsafe_allow_html=True)
+            
+            # Логотип
+            try:
+                # В одну строку лучше использовать use_container_width=True, 
+                # чтобы они автоматически подстраивались под узкие колонки
+                st.image(partner["image"], use_container_width=True)
+            except:
+                st.caption(f"Ошибка {partner['name']}")
                 
-                # Логотип
-                try:
-                    # width=150 ограничивает гигантские логотипы, делая их аккуратными
-                    st.image(partner["image"], width=150) 
-                except:
-                    st.caption(f"Логотип {partner['name']} не найден")
-                    
 
     
 
