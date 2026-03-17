@@ -9526,7 +9526,7 @@ with tabs[7]:
     
     show_akmola_dashboard()        
     show_atyrau_dashboard()
-    show_turkastan_dashboard()
+    show_turkestan_dashboard()
     show_karagandy_dashboard()
 
         
