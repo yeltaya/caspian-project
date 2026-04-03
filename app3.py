@@ -3085,7 +3085,7 @@ with tabs[1]:
         col_climat_data, col_viz1 = st.columns([1.2, 1], gap="medium")
 
         with col_climat_data:
-            st.markdown("#### 📜 Климатическая характеристика: Март")
+            st.markdown("#### 📜 Климатическая характеристика: Апрель")
                 
                 # ВАЖНО: Обновляем стили для увеличения шрифта
             st.markdown("""
@@ -3122,25 +3122,25 @@ with tabs[1]:
                 <div style="display: flex; gap: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
                         <div class="section-title">🌡️ Температура</div>
-                        <div class="info-item">🔹 Север: <span class="val-bold">-9...-14°С</span></div>
-                        <div class="info-item">🔹 Юг: <span class="val-bold">+6...+8°С</span></div>
+                        <div class="info-item">🔹 Север: <span class="val-bold">-1...+5°С</span></div>
+                        <div class="info-item">🔹 Юг: <span class="val-bold">+9...+16°С</span></div>
                     </div>
                     <div class="big-climate-card" style="flex: 1;">
                         <div class="section-title">❄️ Экстремумы</div>
-                        <div class="info-item">🔴 Тепло: <span class="val-bold">до +35°С</span></div>
-                        <div class="info-item">🔵 Холод: <span class="val-bold">до -47°С</span></div>
+                        <div class="info-item">🔴 Тепло: <span class="val-bold">до +39°С</span></div>
+                        <div class="info-item">🔵 Холод: <span class="val-bold">до -20°С</span></div>
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
                         <div class="section-title">💧 Осадки</div>
-                        <div class="info-item">📅 В среднем: <span class="val-bold">14-25 мм</span></div>
+                        <div class="info-item">📅 В среднем: <span class="val-bold">15-35 мм</span></div>
                         <div class="info-item">📅 Вид: <span class="val-bold">смешанные</span></div>
                     </div>
                     <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
                         <div class="section-title">🌬️ Явления</div>
-                        <div class="info-item">🚩 Метели: <span class="val-bold">до 20 дн.</span></div>
-                        <div class="info-item">⚡ Гололед: <span class="val-bold">2-3 раза</span></div>
+                        <div class="info-item">🚩 Туман: <span class="val-bold">2-5 суток</span></div>
+                        <div class="info-item">⚡ Метель: <span class="val-bold">5-7 суток</span></div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -3547,8 +3547,7 @@ with tabs[1]:
                         <div class="no-img-header">{sector['title']}</div>
                         <div class="no-img-body">{sector['desc']}</div>
                     </div>
-                """, unsafe_allow_html=True)
-                
+                """, unsafe_allow_html=True)             
                 
 
 with tabs[2]:
