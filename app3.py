@@ -3552,10 +3552,7 @@ with tabs[1]:
                 
 
 with tabs[2]:
-    st.title("Агрометеорологические прогнозы")
-    
-    # Настройка страницы
-    st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
 
 
     # Добавляем стили для меток дат
@@ -7399,7 +7396,7 @@ with tabs[6]:
                 <h4 style="margin-top: 0; color: #d32f2f;">Беспрецедентный рост</h4>
                 <p style="font-size: 1rem; line-height: 1.5;">
                     <span style="font-weight: 800; font-size: 1.2rem;">2025 год</span> официально признан самым жарким в истории наблюдений Казахстана.
-                    Отклонение от нормы составило рекордные <b>+2,96°С</b>.
+                    Климат стал теплее обычного почти на <b>3 градуса</b> (+2,96°C).
                 </p>
                 <p style="font-size: 0.9rem; color: #666;">
                     Примечательно, что <b>9 из 10</b> самых теплых лет пришлись на XXI век, что подтверждает ускорение глобального потепления.
@@ -7408,7 +7405,7 @@ with tabs[6]:
         """, unsafe_allow_html=True)
 
     with col_chart:
-        st.caption("Ранг лет с наибольшими положительными аномалиями (1941–2025)")
+        st.caption("Самые теплые годы в Казахстане (1941–2025)")
         
         # Генерация HTML для инфографики
         rows_html = ""
@@ -7460,20 +7457,20 @@ with tabs[6]:
     
     col_info2, col_chart2, col_map2 = st.columns([1, 1, 1], gap="large")
     
-    # --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
+# --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
+    # Гамма синхронизирована с оранжевыми оттенками карты аномалий
     rank_data_precip = [
-        {"rank": 1, "year": 1944, "value": 73.5, "color": "#E65100"},
-        {"rank": 2, "year": 1975, "value": 77.0, "color": "#EF6C00"},
-        {"rank": 3, "year": 1974, "value": 78.3, "color": "#F57C00"},
-        {"rank": 4, "year": 1995, "value": 78.8, "color": "#FB8C00"},
-        {"rank": 5, "year": 1991, "value": 78.9, "color": "#FF9800"},
-        {"rank": 6, "year": 2008, "value": 81.6, "color": "#FFA726"},
-        {"rank": 7, "year": 1955, "value": 82.4, "color": "#FFB74D"},
-        {"rank": 8, "year": 1936, "value": 82.6, "color": "#FFCC80"},
-        {"rank": 9, "year": 2020, "value": 85.2, "color": "#FFE0B2"},
-        {"rank": 10, "year": 2021, "value": 85.5, "color": "#FFF3E0"}
+        {"rank": 1, "year": 1944, "value": 73.5, "color": "#B85B28"}, # Насыщенный коричнево-оранжевый
+        {"rank": 2, "year": 1975, "value": 77.0, "color": "#D47A3B"},
+        {"rank": 3, "year": 1974, "value": 78.3, "color": "#E6914B"},
+        {"rank": 4, "year": 1995, "value": 78.8, "color": "#F2A762"},
+        {"rank": 5, "year": 1991, "value": 78.9, "color": "#F7B97D"},
+        {"rank": 6, "year": 2008, "value": 81.6, "color": "#FACB96"},
+        {"rank": 7, "year": 1955, "value": 82.4, "color": "#FBD9B0"},
+        {"rank": 8, "year": 1936, "value": 82.6, "color": "#FDE5C7"},
+        {"rank": 9, "year": 2020, "value": 85.2, "color": "#FEF0DE"},
+        {"rank": 10, "year": 2021, "value": 85.5, "color": "#FFF8F0"}  # Самый светлый, почти песочный
     ]
-
     
  
     with col_info2:
@@ -8694,8 +8691,6 @@ with tabs[6]:
         else:
             st.info("Данные по зонам уточняются.")
             
-            
- 
  
 # --- 5. ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКОВ ОБЛАСТИ ---
         # Извлекаем топ лет и рекорды осадков именно для выбранной области
@@ -8706,7 +8701,7 @@ with tabs[6]:
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
     st.markdown("---")
             # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
-    st.markdown("### 📊 Климатические тренды")      
+    st.markdown("### 📊 Климатические тренды областей")      
      
     col_l, col_r = st.columns(2)
 
@@ -8777,7 +8772,8 @@ with tabs[6]:
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("---")    
+    st.markdown("---")  
+    
 # --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА ---
     st.markdown("### 📉 Статистический анализ")
 
@@ -8813,7 +8809,7 @@ with tabs[6]:
             st.caption(f"💡 Макс: {extreme['max']}, Мин: {extreme['min']}")
 
         with t_col2:
-            st.markdown("**🏆 Топ лет**")
+            st.markdown("**🏆 Самые теплые годы**")
             # Используем данные ТОП-5 из вашего словаря
             top_data = reg.get('top_years', [])
             if top_data:
@@ -8847,7 +8843,7 @@ with tabs[6]:
             st.caption(f"Процент от нормы: {current_precip_anom + 100:.1f}%")
 
         with p_col2:
-            st.markdown("**🏆 Рекорды осадков**")
+            st.markdown("**🏆 Самые сухие годы**")
             
             # 1. Получаем список из базы (тот, что вы прислали)
             records = reg.get("top_precip_years", [])
