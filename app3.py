@@ -3689,7 +3689,7 @@ with tabs[2]:
             return ""
 
         # Применяем стили ко всем столбцам, кроме первого ("культура")
-        styled_df = df.style.applymap(style_cells, subset=months)
+        styled_df = df.style.map(style_cells, subset=months)
 
         # 3. Отображение
         # Используем статичную таблицу или dataframe. 
