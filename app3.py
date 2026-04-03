@@ -3154,27 +3154,25 @@ with tabs[1]:
     if __name__ == "__main__":
         show_forecast_process()
     
- 
     import streamlit as st
     import pandas as pd
     import plotly.graph_objects as go
     import os
 
-    # --- НАСТРОЙКИ ПУТЕЙ ---
-    # Создаем отдельную папку для областей, чтобы не перемешивать с другими CSV
-    DATA_DIR = "regions_data" 
+    # --- 1. КОНФИГУРАЦИЯ СТРАНИЦЫ (ОБЯЗАТЕЛЬНО ПЕРВОЙ) ---
+    st.set_page_config(layout="wide", page_title="Прогноз на апрель 2026")
 
-    # Создаем папку, если она еще не создана
+    # --- 2. НАСТРОЙКИ ПУТЕЙ ---
+    DATA_DIR = "regions_data" 
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
-    # --- ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
+    # --- 3. ФУНКЦИИ ---
     def get_available_regions(directory):
-        # Берем только CSV файлы из конкретной папки
         files = [f for f in os.listdir(directory) if f.endswith('.csv')]
         return {f.replace('.csv', ''): os.path.join(directory, f) for f in files}
 
-    # --- СТИЛИ (CSS) ---
+    # --- 4. СТИЛИ (CSS) ---
     st.markdown("""
         <style>
         .big-climate-card {
@@ -3204,186 +3202,185 @@ with tabs[1]:
         </style>
     """, unsafe_allow_html=True)
 
-    # --- ОСНОВНОЙ ИНТЕРФЕЙС ---
-    st.title("Прогноз на Апрель")
-    
-    
-    # Словарь с расширенными характеристиками
-    region_descriptions = {
-        "Алматинская область": {
-            "temp_north": "-2...+3°С",
-            "temp_south": "+12...+17°С",
-            "heat_record": "до +32°С",
-            "cold_record": "до -10°С",
-            "precip_val": "35-55 мм",
-            "precip_type": "преимущ. дождь",
-            "wind_event": "Ветер 15-20 м/с",
-            "storm_event": "Гроза (2-4 дня)"
-        },
-        "Акмолинская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Актюбинская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Атырауская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Восточно-Казахстанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Жамбылская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Жетсісуская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Западно-Казахстанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Карагандинская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Костанайская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Кызылординская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Мангистауская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Область Абай": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Павлодарская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Северо-Казахстанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Туркестанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Улытауская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
+    # --- 5. ДАННЫЕ ОПИСАНИЙ ---
+        region_descriptions = {
+            "Алматинская область": {
+                "temp_north": "-2...+3°С",
+                "temp_south": "+12...+17°С",
+                "heat_record": "до +32°С",
+                "cold_record": "до -10°С",
+                "precip_val": "35-55 мм",
+                "precip_type": "преимущ. дождь",
+                "wind_event": "Ветер 15-20 м/с",
+                "storm_event": "Гроза (2-4 дня)"
+            },
+            "Акмолинская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Актюбинская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Атырауская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Восточно-Казахстанская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Жамбылская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Жетсісуская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Западно-Казахстанская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Карагандинская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Костанайская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Кызылординская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Мангистауская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Область Абай": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Павлодарская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Северо-Казахстанская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Туркестанская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Улытауская область": {
+                "temp_north": "-5...0°С",
+                "temp_south": "+5...+10°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            }
+            # Добавьте другие области по этому шаблону
         }
-        # Добавьте другие области по этому шаблону
-    }
 
-    # Получаем список файлов из целевой директории
+
+    # --- 6. ОСНОВНОЙ ИНТЕРФЕЙС ---
+    st.title("Прогноз на Апрель 2026")
+
     regions_dict = get_available_regions(DATA_DIR)
 
     if not regions_dict:
@@ -3392,40 +3389,38 @@ with tabs[1]:
         selected_region_name = st.selectbox("Выберите область:", sorted(list(regions_dict.keys())))
         file_path = regions_dict[selected_region_name]
         
-        # --- ДОБАВЬТЕ ЭТОТ БЛОК ---
         info = region_descriptions.get(selected_region_name, {
             "temp_north": "нет данных", "temp_south": "нет данных",
             "heat_record": "нет данных", "cold_record": "нет данных",
             "precip_val": "нет данных", "precip_type": "нет данных",
             "wind_event": "нет данных", "storm_event": "нет данных"
         })
-        # --------------------------
         
-        # Чтение данных
+        # Чтение данных с обработкой ошибок
+        df = None
         try:
+            # Пробуем разные кодировки и разделители
             df = pd.read_csv(file_path, sep=';', encoding='cp1251')
-        except:
-            df = pd.read_csv(file_path, sep=';', encoding='utf-8-sig')
+        except Exception:
+            try:
+                df = pd.read_csv(file_path, sep=',', encoding='utf-8-sig')
+            except Exception as e:
+                st.error(f"Не удалось прочитать файл: {e}")
 
         if df is not None:
-            df.columns = df.columns.str.strip()
+            df.columns = df.columns.str.strip() # Очистка имен колонок
             
-            required_columns = ['норма', 'max', 'min', 'Ср.зн.']
+            # Проверка наличия колонок (с учетом вашего кода)
+            required_columns = ['норма', 'max', 'min', 'Ср.зн.', 'День']
             missing_cols = [c for c in required_columns if c not in df.columns]
             
             if missing_cols:
                 st.error(f"В файле не найдены колонки: {', '.join(missing_cols)}")
             else:
-                # Расчеты для динамического левого блока
-                avg_norm = df['норма'].mean()
-                peak_max = df['max'].max()
-                peak_min = df['min'].min()
-
                 col_left, col_right = st.columns([1.2, 1.3], gap="large")
 
                 with col_left:
                     st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
-                    
                     st.markdown(f"""
                     <div style="display: flex; gap: 10px;">
                         <div class="big-climate-card" style="flex: 1;">
@@ -3439,7 +3434,6 @@ with tabs[1]:
                             <div class="info-item">🔵 Холод: <span class="val-bold">{info['cold_record']}</span></div>
                         </div>
                     </div>
-
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
                         <div class="big-climate-card" style="flex: 1;">
                             <div class="section-title">💧 Осадки</div>
@@ -3453,33 +3447,57 @@ with tabs[1]:
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
-    
 
-                # --- ПРАВЫЙ БЛОК (ГРАФИК) ---
                 with col_right:
                     st.markdown("#### 📊 График прогноза")
                     fig = go.Figure()
                     
-                    # Коридор min-max
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['max'], mode='lines', line=dict(width=0), showlegend=False))
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['min'], mode='lines', line=dict(width=0), 
-                                             fill='tonexty', fillcolor='rgba(0, 100, 255, 0.1)', name='Коридор (min-max)'))
-                    # Линия нормы
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['норма'], mode='lines', 
-                                             line=dict(color='green', dash='dash'), name='Климат. норма'))
-                    # Линия прогноза
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['Ср.зн.'], mode='lines+markers', 
-                                             line=dict(color='#e74c3c', width=3), marker=dict(size=6), name='Прогноз Ср.зн.'))
+                    # 1. Верхняя линия (max)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['max'], 
+                        mode='lines', line=dict(width=0), 
+                        showlegend=False, hoverinfo='skip'
+                    ))
+                    
+                    # 2. Нижняя линия (min) с заливкой К ВЕРХНЕЙ линии
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['min'], 
+                        mode='lines', line=dict(width=0),
+                        fill='tonexty', 
+                        fillcolor='rgba(0, 100, 255, 0.1)', 
+                        name='Коридор (min-max)'
+                    ))
+                    
+                    # 3. Линия нормы
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['норма'], 
+                        mode='lines', 
+                        line=dict(color='green', dash='dash'), 
+                        name='Климат. норма'
+                    ))
+                    
+                    # 4. Линия прогноза (основная)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['Ср.зн.'], 
+                        mode='lines+markers', 
+                        line=dict(color='#e74c3c', width=3), 
+                        marker=dict(size=6), 
+                        name='Прогноз Ср.зн.'
+                    ))
 
                     fig.update_layout(
                         height=450, 
+                        plot_bgcolor='rgba(0,0,0,0)',
                         margin=dict(l=0, r=0, t=30, b=0), 
                         hovermode="x unified",
+                        xaxis=dict(gridcolor='#f0f0f0', title="День месяца"),
+                        yaxis=dict(gridcolor='#f0f0f0', title="Температура, °C"),
                         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
                     )
                     st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
+
 
  
    
