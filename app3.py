@@ -3203,7 +3203,7 @@ with tabs[1]:
     """, unsafe_allow_html=True)
 
     # --- 5. ДАННЫЕ ОПИСАНИЙ ---
-        region_descriptions = {
+    region_descriptions = {
             "Алматинская область": {
                 "temp_north": "-2...+3°С",
                 "temp_south": "+12...+17°С",
@@ -3375,7 +3375,7 @@ with tabs[1]:
                 "storm_event": "Гололед (1-2 дня)"
             }
             # Добавьте другие области по этому шаблону
-        }
+    }
 
 
     # --- 6. ОСНОВНОЙ ИНТЕРФЕЙС ---
