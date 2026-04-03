@@ -3452,50 +3452,76 @@ with tabs[1]:
                     st.markdown("#### 📊 График прогноза")
                     fig = go.Figure()
                     
-                    # 1. Верхняя линия (max)
-                    fig.add_trace(go.Scatter(
-                        x=df['День'], y=df['max'], 
-                        mode='lines', line=dict(width=0), 
-                        showlegend=False, hoverinfo='skip'
-                    ))
-                    
-                    # 2. Нижняя линия (min) с заливкой К ВЕРХНЕЙ линии
-                    fig.add_trace(go.Scatter(
-                        x=df['День'], y=df['min'], 
-                        mode='lines', line=dict(width=0),
-                        fill='tonexty', 
-                        fillcolor='rgba(0, 100, 255, 0.1)', 
-                        name='Коридор (min-max)'
-                    ))
-                    
-                    # 3. Линия нормы
+                    # 1. Линия нормы (Зеленая - как база)
                     fig.add_trace(go.Scatter(
                         x=df['День'], y=df['норма'], 
                         mode='lines', 
-                        line=dict(color='green', dash='dash'), 
+                        line=dict(color='#27ae60', width=3), 
                         name='Климат. норма'
                     ))
                     
-                    # 4. Линия прогноза (основная)
+                    # 2. Максимальная температура (Красная)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['max'], 
+                        mode='lines+markers', 
+                        line=dict(color='#ff0000', width=3), 
+                        marker=dict(size=4),
+                        name='Максимум'
+                    ))
+                    
+                    # 3. Среднее значение (Черная)
                     fig.add_trace(go.Scatter(
                         x=df['День'], y=df['Ср.зн.'], 
                         mode='lines+markers', 
-                        line=dict(color='#e74c3c', width=3), 
-                        marker=dict(size=6), 
-                        name='Прогноз Ср.зн.'
+                        line=dict(color='#000000', width=3), 
+                        marker=dict(size=4),
+                        name='Среднее значение'
+                    ))
+                    
+                    # 4. Минимальная температура (Синяя/Голубая)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['min'], 
+                        mode='lines+markers', 
+                        line=dict(color='#00bfff', width=3), 
+                        marker=dict(size=4),
+                        name='Минимум'
                     ))
 
+                    # Настройка осей для сходства с оригиналом
                     fig.update_layout(
-                        height=450, 
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        margin=dict(l=0, r=0, t=30, b=0), 
+                        height=500, 
+                        plot_bgcolor='white',
+                        margin=dict(l=40, r=40, t=30, b=40), 
                         hovermode="x unified",
-                        xaxis=dict(gridcolor='#f0f0f0', title="День месяца"),
-                        yaxis=dict(gridcolor='#f0f0f0', title="Температура, °C"),
-                        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                        xaxis=dict(
+                            title="Число месяца",
+                            tickmode='linear',
+                            dtick=2,
+                            gridcolor='#eeeeee', 
+                            linecolor='blue', # Синяя рамка как на фото
+                            linewidth=2,
+                            mirror=True
+                        ),
+                        yaxis=dict(
+                            title="Температура, °C",
+                            gridcolor='#eeeeee', 
+                            linecolor='blue', # Синяя рамка как на фото
+                            linewidth=2,
+                            mirror=True,
+                            zeroline=True,
+                            zerolinecolor='black',
+                            range=[-15, 35] # Диапазон как на вашем скриншоте
+                        ),
+                        legend=dict(
+                            orientation="h", 
+                            yanchor="bottom", 
+                            y=1.02, 
+                            xanchor="right", 
+                            x=1
+                        )
                     )
                     st.plotly_chart(fig, use_container_width=True)
-
+                
     st.divider()
 
 
