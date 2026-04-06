@@ -512,7 +512,7 @@ with tabs[0]:
             # БЛОК 1: ПРОГНОЗ ПОГОДЫ
             st.markdown("""
                 <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #0066CC; min-height: 250px;">
-                    <h3 style="color: #003366; margin-top: 0;">🌤️ ПРОГНОЗ ПОГОДЫ</h3>
+                    <h3 style="color: #003366; margin-top: 0;">🌤️ Прогноз погоды</h3>
                     <ul style="font-size: 1.1rem; color: #1a202c; line-height: 1.6;">
                         <li><b>Временное разрешение:</b> от 2-х часов до сезона</li>
                         <li><b>Режим:</b> непрерывно (24/7)</li>
@@ -528,7 +528,7 @@ with tabs[0]:
             try:
                 st.image("station1.gif", 
                          caption="Прогноз количества осадков", 
-                         width=550)
+                         width=400)
             except Exception:
                 st.warning("Файл station1.gif не найден в папке с проектом.")
                 
@@ -554,7 +554,7 @@ with tabs[0]:
             try:
                 st.image("agro.gif", 
                          caption="Агропрогнозы", 
-                         width=500)
+                         width=600)
             except Exception:
                 st.warning("Файл agro.gif не найден в папке с проектом.")
                 
@@ -610,66 +610,82 @@ with tabs[0]:
 
     def show_digital_solutions():
         st.markdown("""
-            <h2 style='text-align: center; color: #003366; margin-top: 50px; margin-bottom: 30px;'>
-                Цифровые решения и прогностические системы
+            <h2 style='text-align: center; color: #003366; margin-top: 50px; margin-bottom: 10px;'>
+                Цифровая экосистема «Казгидромет»
             </h2>
+            <p style='text-align: center; color: #666; margin-bottom: 40px;'>Интеграция прогнозных моделей и Big Data решений</p>
         """, unsafe_allow_html=True)
 
-        # Создаем 4 колонки для карточек
         col1, col2, col3, col4 = st.columns(4)
 
-        # Стиль для карточек (индивидуальный для каждой)
+        # Улучшенный стиль карточек
         card_style = """
-            <div style="
-                background-color: #ffffff;
-                padding: 20px;
-                border-radius: 15px;
-                border: 1px solid #e0e0e0;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                height: 280px;
-                transition: transform 0.3s;
-            ">
-                <h3 style="color: #0066CC; text-align: center;">{icon}</h3>
-                <h4 style="color: #003366; text-align: center; margin-bottom: 10px;">{title}</h4>
-                <p style="font-size: 0.9rem; color: #4a5568; line-height: 1.4; text-align: justify;">
+        <div style="
+            background: linear-gradient(145deg, #ffffff, #f0f4f8);
+            padding: 25px 20px;
+            border-radius: 20px;
+            border: 1px solid #e1e8ed;
+            box-shadow: 5px 5px 15px #d1d9e6, -5px -5px 15px #ffffff;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        ">
+            <div>
+                <div style="font-size: 3rem; margin-bottom: 15px; text-align: center;">{icon}</div>
+                <h4 style="color: #003366; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-bottom: 2px solid {color}; padding-bottom: 5px;">{title}</h4>
+                <p style="font-size: 0.85rem; color: #4a5568; line-height: 1.5; text-align: center;">
                     {text}
                 </p>
             </div>
+            
+            <div style="margin-top: 15px;">
+                <div style="height: 4px; width: 100%; background-color: #e0e0e0; border-radius: 2px; margin-bottom: 10px;">
+                    <div style="height: 100%; width: {load}%; background-color: {color}; border-radius: 2px;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #888;">
+                    <span>Статус: Активен</span>
+                    <span>{load}% точность</span>
+                </div>
+            </div>
+        </div>
         """
 
         with col1:
             st.markdown(card_style.format(
-                icon="🌀", 
-                title="WRF", 
-                text="Высокоточная численная модель прогноза погоды. Позволяет моделировать атмосферные процессы с детализацией до конкретного района."
+                icon="🌀", title="WRF", color="#0066CC", load="94",
+                text="Численное моделирование метеорологических процессов с сеткой до 2 км."
             ), unsafe_allow_html=True)
 
         with col2:
             st.markdown(card_style.format(
-                icon="🌫️", 
-                title="SILAM", 
-                text="Система моделирования рассеивания загрязняющих веществ. Используется для оценки качества воздуха и прогнозирования НМУ."
+                icon="🌫️", title="SILAM", color="#6366f1", load="88",
+                text="Глобальное и региональное моделирование состава атмосферы и качества воздуха."
             ), unsafe_allow_html=True)
 
         with col3:
             st.markdown(card_style.format(
-                icon="🌾", 
-                title="AGRODATA", 
-                text="Интеллектуальная платформа для аграриев. Анализ влажности почвы, фаз роста культур и рекомендации по посевным работам."
+                icon="🌾", title="AGRODATA", color="#10b981", load="91",
+                text="Платформа принятия решений для АПК на основе спутниковых и наземных данных."
             ), unsafe_allow_html=True)
 
         with col4:
             st.markdown(card_style.format(
-                icon="📱", 
-                title="Air.kz", 
-                text="Мобильное приложение для граждан. Мониторинг качества воздуха в реальном времени во всех городах Казахстана."
+                icon="📱", title="Air.kz", color="#ef4444", load="99",
+                text="Единое окно мониторинга качества воздуха для населения и госорганов."
             ), unsafe_allow_html=True)
 
-        # Нижняя панель с дополнительными приложениями
-        st.markdown("---")
-        st.info("💡 Данные системы интегрированы в единую цифровую экосистему мониторинга Казгидромета.")
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Визуальный "подвал" блока
+        st.write("---")
+        c1, c2, c3 = st.columns([1, 2, 1])
+        with c2:
+            st.success("🛰️ **Технологический стек:** Спутниковое зондирование + Сеть наземных станций + Суперкомпьютерные вычисления")
 
     show_digital_solutions()
+
 
 
 
