@@ -466,7 +466,6 @@ with tabs[0]:
                     """, unsafe_allow_html=True)
 
                 st.markdown("---")
-                show_dashboard()
 
     # 1. Сначала определяем функцию
     def show_strategic_funnel(column):
