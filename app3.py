@@ -9463,7 +9463,10 @@ with tabs[7]:
     st.title("🍀 Экологический мониторинг городов Казахстана")
 
     # Выпадающий список (Dropdown)
-    city = st.selectbox("Выберите город:", ["Актау", "Актобе", "Астана", "Алматы", "Атырау", "Караганда", "Кокшетау", "Костанай", "Кызыорда", "Павлодар", "Петропавловск", "Семей", "Тараз", "Туркестан", "Усть-Каменогорск", "Уральск", "Шымкент"])
+    city = st.selectbox("Выберите город:", list(kazakhstan_pollution_data.keys()))
+    # 3. ПОЛУЧАЕМ ДАННЫЕ ДЛЯ ВЫБРАННОГО ГОРОДА
+# Теперь heatmap_data ТОЧНО определена до того, как попадет в Plotly
+    heatmap_data = kazakhstan_pollution_data[city]
 
     # Переключатель (Tabs)
     tab1, tab2, tab3 = st.tabs(["📊 Число случаев превышения ПДК в 2025 г.", "📈 Годовая динамика", "🎯 Сравнение с ПДК"])
@@ -9472,14 +9475,15 @@ with tabs[7]:
     with tab1:
         st.subheader(f"Карта загрязнений по месяцам ({city})")
         fig_heat = px.imshow(
-            heatmap_data,
+            heatmap_data, # Теперь ошибки не будет
             labels=dict(x="Месяц", y="Примесь", color="Случаев > ПДК"),
             x=months,
             y=pollutants,
-            color_continuous_scale="Reds", # Градиент от белого к красному
+            color_continuous_scale="Reds",
             aspect="auto"
         )
         st.plotly_chart(fig_heat, use_container_width=True)
+    
         st.info("Чем насыщеннее красный цвет, тем чаще фиксировались превышения нормы в этот период.")
 
     # --- TAB 2: ГОДОВАЯ ДИНАМИКА И СЛАЙДЕР ---
