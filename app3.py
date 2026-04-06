@@ -495,50 +495,81 @@ with tabs[0]:
         with column:
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-    # 2. Создаем колонки (например, воронка посередине)
-    col_info, col_chart, col_stats = st.columns([1, 2, 1])
 
-    with col_info:
-        st.markdown("### 📊 Масштаб")
-        st.write("Общее количество объектов превышает **1190 единиц**, обеспечивая полный охват территории Казахстана.")
-        st.metric("Общий охват", "100%", help="Государственная сеть мониторинга")
+    import streamlit as st
 
-    # Вызываем график в центральную колонку
-    show_strategic_funnel(col_chart)
+    def show_economic_info():
+        st.markdown("""
+            <h2 style='text-align: center; color: #003366; margin-bottom: 40px;'>
+                Обеспечение гидрометеорологической и экологической информацией отраслей экономики
+            </h2>
+        """, unsafe_allow_html=True)
 
-    with col_stats:
-        st.markdown("### ⚡ Модернизация")
-        st.write("Более **65%** постов переведены на автоматический режим передачи данных 24/7.")
-        st.metric("Автоматизация", "+12%", delta_color="normal")
-        
+        # Создаем два основных столбца
+        col_left, col_right = st.columns(2, gap="large")
 
-
- 
-    col_a, col_b = st.columns([1, 2])
-        
-    with col_a:
-            st.markdown("### 🔍 Приоритетные зоны")
-            st.warning("**Воздух:** Особое внимание промышленным центрам (Усть-Каменогорск, Караганда, Темиртау).")
-            st.info("**Вода:** Контроль трансграничных артерий (р. Жайык, р. Сырдария, р. Ертис).")
-            st.success("**Каспий:** Мониторинг прибрежной зоны для сохранения биоразнообразия.")
+        with col_left:
+            # БЛОК 1: ПРОГНОЗ ПОГОДЫ
+            st.markdown("""
+                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #0066CC; min-height: 250px;">
+                    <h3 style="color: #003366; margin-top: 0;">1. 🌤️ ПРОГНОЗ ПОГОДЫ</h3>
+                    <ul style="font-size: 1.1rem; color: #1a202c; line-height: 1.6;">
+                        <li><b>Спектр:</b> от 2-х часов до сезона</li>
+                        <li><b>Режим:</b> непрерывно (24/7)</li>
+                        <li><b>Охват:</b> вся территория Казахстана</li>
+                    </ul>
+                </div>
+            """, unsafe_allow_html=True)
             
-    with col_b:
-            # Визуализация охвата (пример графика)
-            labels = ['Атмосферный воздух', 'Поверхностные воды', 'Почвенный покров', 'Радиационный фон']
-            values = [40, 30, 15, 15]
+            st.write("") # Отступ
             
-            fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.4, marker_colors=['#1e3d59', '#17a2b8', '#ff6e40', '#ffc107'])])
-            fig.update_layout(title_text="Структура государственного мониторинга", height=350, margin=dict(t=50, b=0, l=0, r=0))
-            st.plotly_chart(fig, use_container_width=True)
+            # ГИФКА (Размещаем под первым блоком)
+            # Замените 'your_weather_gif.gif' на путь к вашему файлу или URL
+            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2Z4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKMGpxxS1UCZ9Ly/giphy.gif", 
+                     caption="Оперативный мониторинг атмосферных явлений", 
+                     use_container_width=True)
 
-        # --- ФУТЕР (НИЖНЯЯ ПАНЕЛЬ) ---
-    st.markdown("""
-            <div style="text-align:center; padding:20px; color:gray; font-size:0.8em; border-top:1px solid #eee;">
-                Данные сформированы на основе автоматизированной информационной системы государственного экологического мониторинга (АИС ГЭМ).<br>
-                <b>© 2026 РГП «Казгидромет» | Министерство экологии и природных ресурсов РК</b>
-            </div>
-    """, unsafe_allow_html=True)
-        
+        with col_right:
+            # БЛОК 2: АГРОМЕТЕО
+            st.markdown("""
+                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #2E7D32; margin-bottom: 20px;">
+                    <h3 style="color: #2E7D32; margin-top: 0;">2. 🌱 Агрометеорологические прогнозы</h3>
+                    <p style="font-size: 1rem; color: #1a202c;">
+                        Охват всех ключевых <b>зерносеющих регионов</b> Казахстана.<br>
+                        Оценка урожайности и рисков возникновения засухи.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+
+            # БЛОК 3: ГИДРОЛОГИЯ
+            st.markdown("""
+                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #004a99; margin-bottom: 20px;">
+                    <h3 style="color: #004a99; margin-top: 0;">3. 💧 Гидрологические прогнозы</h3>
+                    <p style="font-size: 1rem; color: #1a202c;">
+                        Мониторинг <b>равнинных и горных рек</b>.<br>
+                        Оперативная оценка паводкоопасных регионов и притока к водохранилищам.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+
+            # БЛОК 4: ЭКОЛОГИЯ
+            st.markdown("""
+                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #CC0000;">
+                    <h3 style="color: #CC0000; margin-top: 0;">4. 🧪 Экологическая оценка</h3>
+                    <p style="font-size: 1rem; color: #1a202c;">
+                        Прогноз <b>НМУ</b> (неблагоприятных метеоусловий) по крупным городам Казахстана.<br>
+                        Контроль качества атмосферного воздуха.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+
+    show_economic_info()
+
+
+
+
+
+
     
 #МОНИТОРИНГ
 with tabs[1]:
