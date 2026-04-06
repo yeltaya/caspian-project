@@ -305,7 +305,7 @@ with tabs[0]:
 
     def show_top_banner():
         # Создаем 3 колонки
-        col_logo, col_main, col_vectors = st.columns([1, 3, 2])
+        col_logo, col_main = st.columns([1, 3])
 
         with col_logo:
             # Используем ваше локальное имя файла
@@ -325,35 +325,7 @@ with tabs[0]:
             и <span class="quote-highlight">экологической безопасности</span> страны.           
                     </p>
                 </div>
-                """, unsafe_allow_html=True)
-
-        with col_vectors:
-            # Блок 1
-            st.markdown("""
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                    <div style="font-size: 1.3rem; line-height: 1.4; color: #334e68;">
-                        <b style="color: #003366;">Безопасность:</b> непрерывный гидрометеорологический и экологический мониторинг
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            # Блок 2
-            st.markdown("""
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                    <div style="font-size: 1.3rem; line-height: 1.4; color: #334e68;">
-                        <b style="color: #003366;">Информирование:</b> открытый доступ к гидрометеорологическим данным
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            # Блок 3
-            st.markdown("""
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 1.3rem; line-height: 1.4; color: #334e68;">
-                        <b style="color: #003366;">Инновации:</b> модернизация государственной сети и внедрение автоматизации
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)            
+                """, unsafe_allow_html=True) 
                
     # Не забудьте вызвать функцию
     show_top_banner()
