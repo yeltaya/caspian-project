@@ -304,111 +304,43 @@ tabs = st.tabs([
 with tabs[0]:
 
     def show_top_banner():
-        # Создаем три колонки с разными пропорциями: 1 (лого) : 3 (текст) : 2 (векторы)
-        col_logo, col_main, col_vectors = st.columns([1, 3.5, 2.5], gap="large")
+        # Создаем 3 колонки
+        col_logo, col_main, col_vectors = st.columns([1, 3, 2])
 
         with col_logo:
-            # Вставьте путь к вашему файлу логотипа или URL
-            st.image("https://www.kazhydromet.kz/themes/kazhydromet/assets/images/logo.png", width=150)
+            # Используем ваше локальное имя файла
+            try:
+                st.image("КГМ.png", width=120)
+            except:
+                st.error("Логотип 'КГМ.png' не найден")
 
         with col_main:
+            # Используем встроенный стиль через style в div, это надежнее
             st.markdown("""
-                <style>
-                .main-quote {
-                    border-left: 5px solid #004a99;
-                    padding-left: 25px;
-                    margin-top: 10px;
-                }
-                .quote-text-large {
-                    font-size: 1.6rem; /* Увеличенный шрифт */
-                    color: #1a202c;
-                    line-height: 1.4;
-                    margin: 0;
-                }
-                .brand-blue {
-                    color: #004a99;
-                    font-weight: 800;
-                }
-                </style>
-                <div class="main-quote">
-                    <p class="quote-text-large">
-                    <span class="quote-brand">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
-            Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
+                <div style="border-left: 5px solid #004a99; padding-left: 20px; margin-top: 10px;">
+                    <p style="font-size: 1.5rem; color: #1a202c; line-height: 1.3; margin: 0;">
+                        <b style="color: #004a99;">«Казгидромет»</b>: профессиональный мониторинг и аналитика окружающей среды. 
+                        Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
             обеспечивая точность данных для <span class="quote-highlight">стратегического планирования</span> 
             и <span class="quote-highlight">экологической безопасности</span> страны.           
                     </p>
                 </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
         with col_vectors:
+            # Простой и чистый блок векторов
             st.markdown("""
-                <style>
-                .vector-container {
-                    background: #ffffff;
-                    padding: 20px;
-                    border-radius: 16px;
-                    border: 1px solid #eef2f6;
-                    box-shadow: 0 4px 15px rgba(0, 74, 153, 0.05);
-                }
-                .vector-title {
-                    color: #004a99;
-                    font-weight: 800;
-                    font-size: 1.1rem;
-                    margin-bottom: 15px;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-                .vector-item {
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 12px;
-                    margin-bottom: 12px;
-                    padding: 8px;
-                    border-radius: 8px;
-                    transition: background 0.3s;
-                }
-                .vector-item:hover {
-                    background: #f8fafc;
-                }
-                .vector-icon {
-                    font-size: 1.2rem;
-                    min-width: 24px;
-                }
-                .vector-text {
-                    font-size: 0.95rem;
-                    color: #334e68;
-                    line-height: 1.4;
-                    font-weight: 500;
-                }
-                </style>
-
-                <div class="vector-container">
-                    <div class="vector-title">
-                        <span>🎯 Ключевые векторы</span>
-                    </div>
-                    
-                    <div class="vector-item">
-                        <span class="vector-icon">🛡️</span>
-                        <span class="vector-text">Предотвращение <b>трансграничных</b> экологических рисков</span>
-                    </div>
-                    
-                    <div class="vector-item">
-                        <span class="vector-icon">📢</span>
-                        <span class="vector-text">Достоверное информирование <b>населения РК</b></span>
-                    </div>
-                    
-                    <div class="vector-item" style="margin-bottom: 0;">
-                        <span class="vector-icon">⚡</span>
-                        <span class="vector-text">Цифровой контроль <b>«Слышащее государство»</b></span>
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <b style="color: #004a99; display: block; margin-bottom: 8px;">🎯 КЛЮЧЕВЫЕ ВЕКТОРЫ:</b>
+                    <div style="font-size: 0.9rem; line-height: 1.4; color: #334e68;">
+                        • Безопасность <b>трансграничных</b> рисков<br>
+                        • Информирование <b>прямой доступ к гидрометеорологическим данным</b><br>
+                        • Контроль <b>«Слышащее государство»</b>
                     </div>
                 </div>
-            """, unsafe_allow_html=True)
-    
+                """, unsafe_allow_html=True)
 
-    # Вызов баннера
+    # Не забудьте вызвать функцию
     show_top_banner()
 
     
