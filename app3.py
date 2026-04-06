@@ -527,11 +527,11 @@ with tabs[0]:
             st.write("") # Небольшой вертикальный отступ для чистоты дизайна
             
             try:
-                st.image("Precipitation.gif", 
+                st.image("station1.gif", 
                          caption="Прогноз количества осадков", 
                          use_container_width=True)
             except Exception:
-                st.warning("Файл Precipitation.gif не найден в папке с проектом.")
+                st.warning("Файл station1.gif не найден в папке с проектом.")
                 
 
         with col_right:
