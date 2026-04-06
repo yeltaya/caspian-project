@@ -331,7 +331,7 @@ with tabs[0]:
             # Блок 1
             st.markdown("""
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                    <div style="font-size: 1.5rem; line-height: 1.4; color: #334e68;">
+                    <div style="font-size: 1.3rem; line-height: 1.4; color: #334e68;">
                         <b style="color: #003366;">Безопасность:</b> непрерывный гидрометеорологический и экологический мониторинг
                     </div>
                 </div>
@@ -340,7 +340,7 @@ with tabs[0]:
             # Блок 2
             st.markdown("""
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                    <div style="font-size: 1.5rem; line-height: 1.4; color: #334e68;">
+                    <div style="font-size: 1.3rem; line-height: 1.4; color: #334e68;">
                         <b style="color: #003366;">Информирование:</b> открытый доступ к гидрометеорологическим данным
                     </div>
                 </div>
@@ -349,7 +349,7 @@ with tabs[0]:
             # Блок 3
             st.markdown("""
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 1.5rem; line-height: 1.4; color: #334e68;">
+                    <div style="font-size: 1.3rem; line-height: 1.4; color: #334e68;">
                         <b style="color: #003366;">Инновации:</b> модернизация государственной сети и внедрение автоматизации
                     </div>
                 </div>
@@ -368,6 +368,86 @@ with tabs[0]:
     m2.metric("История", "100+ лет наблюдений", "24/7")
     m3.metric("Команда", "3160", "сотрудников в штате")
     m4.metric("Глобальный обмен данными", "WMO", "с 1993 года")
+
+
+    import streamlit as st
+    import pandas as pd
+    import folium
+    from streamlit_folium import st_folium
+    import re
+
+    # Функция для конвертации координат "44° 7' 54" в 44.1316
+    def dms_to_decimal(dms_str):
+        try:
+            if pd.isna(dms_str): return None
+            # Извлекаем числа из строки
+            numbers = re.findall(r"[-+]?\d*\.\d+|\d+", str(dms_str))
+            if len(numbers) >= 3:
+                deg, mn, sec = map(float, numbers[:3])
+                return deg + mn/60 + sec/3600
+            return float(numbers[0]) # Если уже десятичное
+        except:
+            return None
+
+    def draw_kazakhstan_map():
+        st.subheader("📍 Национальная наблюдательная сеть на карте")
+
+        # Читаем файл (убедитесь, что название совпадает)
+        try:
+            df = pd.read_excel("station.xlsx")
+            
+            # Обработка координат
+            df['lat'] = df['широта'].apply(dms_to_decimal)
+            df['lon'] = df['долгота'].apply(dms_to_decimal)
+            
+            # Очистка от пустых строк
+            df = df.dropna(subset=['lat', 'lon'])
+
+            # Настройка цветов для направлений
+            color_map = {
+                "Гидрология": "blue",
+                "Метеорология": "orange",
+                "Экология": "red",
+                "Агрометео": "green"
+            }
+
+            # Создание карты (центр Казахстана)
+            m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
+
+            # Добавляем точки
+            for _, row in df.iterrows():
+                icon_color = color_map.get(row['Направление'], 'gray')
+                
+                folium.CircleMarker(
+                    location=[row['lat'], row['lon']],
+                    radius=5,
+                    popup=f"<b>{row['Станция/пост']}</b><br>{row['Направление']}",
+                    color=icon_color,
+                    fill=True,
+                    fill_opacity=0.7
+                ).add_to(m)
+
+            # Вывод легенды
+            st.markdown("""
+            <div style="display: flex; gap: 20px; font-size: 14px; margin-bottom: 10px;">
+                <div><span style="color: blue;">●</span> Гидрология</div>
+                <div><span style="color: orange;">●</span> Метеорология</div>
+                <div><span style="color: green;">●</span> Агрометео</div>
+                <div><span style="color: red;">●</span> Экология</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Отрисовка
+            st_folium(m, width="100%", height=600)
+
+        except Exception as e:
+            st.error(f"Ошибка при чтении файла station.xlsx: {e}")
+
+    # Запуск
+    draw_kazakhstan_map()
+
+
+
 
     import plotly.graph_objects as go
     import streamlit as st
@@ -392,11 +472,6 @@ with tabs[0]:
         ))
 
         fig.update_layout(
-            title = {
-                'text': "СТРУКТУРА СЕТИ",
-                'y': 0.9, 'x': 0.5, 'xanchor': 'center',
-                'font': {'size': 20, 'color': '#003366'}
-            },
             paper_bgcolor = 'rgba(0,0,0,0)',
             plot_bgcolor = 'rgba(0,0,0,0)',
             margin = dict(l=10, r=10, t=50, b=10),
