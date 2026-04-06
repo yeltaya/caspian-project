@@ -9330,85 +9330,83 @@ with tabs[7]:
     heatmap_data, current_pollutants = kazakhstan_pollution_data[city]
 
 
-
-
-    # Данные по годам (Line Chart / Slider)
-    years = list(range(2015, 2026))
-    yearly_data = {
-        'PM-2.5': [0, 3.9, 4.4, 5.2, 6.3, 5.8, 6.3, 6.0, 4.9, 5.7, 4.7],
-        'NO2': [8.7, 5.0, 2.5, 9.1, 9.5, 4.8, 5.3, 5.2, 9.6, 5.1, 5.3]
-    }
-
     # --- 2. ИНТЕРФЕЙС ---
     st.set_page_config(page_title="Эко-Мониторинг Казахстана", layout="wide")
     st.title("🍀 Экологический мониторинг городов Казахстана")
 
-    # --- В ИНТЕРФЕЙСЕ STREAMLIT ---
-    # Выбор города
+    # Выбор города — он стоит НАД вкладками, поэтому влияет на всё сразу
     city = st.selectbox(
-        "Выберите город:", 
+        "Выберите город для анализа:", 
         list(kazakhstan_pollution_data.keys()), 
-        key="city_selector_unique"  # Любая уникальная строка
+        key="main_city_selector"
     )
 
-    # Извлечение данных и подписей для выбранного города
+    # Сразу извлекаем данные для выбранного города
     heatmap_data, current_pollutants = kazakhstan_pollution_data[city]
 
-    # Отрисовка
-    months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
-    fig_heat = px.imshow(
-        heatmap_data,
-        labels=dict(x="Месяц", y="Примесь", color="Случаев > ПДК"),
-        x=months,
-        y=current_pollutants, # Используем список подписей именно для этого города
-        color_continuous_scale="Reds",
-        aspect="auto"
-    )
-    st.plotly_chart(fig_heat, use_container_width=True)  
-    st.info("Чем насыщеннее красный цвет, тем чаще фиксировались превышения нормы в этот период.")
+    st.divider() # Красивая линия под выбором города
 
-    # --- TAB 2: ГОДОВАЯ ДИНАМИКА И СЛАЙДЕР ---
+    # --- 4. СОЗДАНИЕ ВКЛАДОК ---
+    tab1, tab2, tab3 = st.tabs([
+        "📊 Тепловая карта (2025)", 
+        "📈 Годовая динамика", 
+        "🎯 Профиль загрязнения"
+    ])
+
+    with tab1:
+        st.subheader(f"Карта превышений ПДК по месяцам: {city}")
+        months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
+        
+        fig_heat = px.imshow(
+            heatmap_data,
+            labels=dict(x="Месяц", y="Примесь", color="Случаев > ПДК"),
+            x=months,
+            y=current_pollutants,
+            color_continuous_scale="Reds",
+            aspect="auto",
+            text_auto=True
+        )
+        st.plotly_chart(fig_heat, use_container_width=True)
+        st.info("💡 Насыщенность цвета показывает частоту превышений нормы.")
+        
+    # --- TAB 2: ГОДОВАЯ ДИНАМИКА ---
     with tab2:
-        st.subheader("Изменение кратности превышения ПДК")
+        st.subheader(f"Тренд загрязнения: {city}")
+        
+        years = list(range(2015, 2026))
         year_range = st.select_slider(
-            "Выберите период:",
+            "Выберите временной интервал:",
             options=years,
-            value=(2015, 2025)
+            value=(2018, 2025),
+            key="year_slider"
         )
         
-        # Фильтрация данных по годам (упрощенно)
-        filtered_years = [y for y in years if year_range[0] <= y <= year_range[1]]
-        
-        fig_line = go.Figure()
-        for pol, vals in yearly_data.items():
-            fig_line.add_trace(go.Scatter(x=filtered_years, y=vals, name=pol, mode='lines+markers'))
-        
-        fig_line.update_layout(xaxis_title="Год", yaxis_title="Кратность превышения")
-        st.plotly_chart(fig_line, use_container_width=True)
+        # Здесь должна быть логика фильтрации yearly_data (зависит от вашей структуры данных)
+        # Это пример заглушки:
+        st.warning("Для этой вкладки требуются исторические данные по годам.")
 
     # --- TAB 3: РАДАРНАЯ ДИАГРАММА ---
     with tab3:
-        st.subheader("Профиль загрязнения города (Radar Chart)")
+        st.subheader(f"Экологический 'отпечаток': {city}")
         
-        # Пример данных для радара (средняя кратность за последний год)
-        radar_values = [2.0, 4.7, 2.3, 2.0, 4.8, 5.3, 9.6, 2.0] # Значения из вашей таблицы 2025
+        # Берем средние значения из нашего текущего heatmap_data для примера
+        radar_values = np.mean(heatmap_data, axis=1) 
         
         fig_radar = go.Figure()
         fig_radar.add_trace(go.Scatterpolar(
             r=radar_values,
-            theta=pollutants,
+            theta=current_pollutants,
             fill='toself',
             name=city,
             line_color='red'
         ))
         
         fig_radar.update_layout(
-            polar=dict(radialaxis=dict(visible=True, range=[0, 10])),
+            polar=dict(radialaxis=dict(visible=True)),
             showlegend=False
         )
         st.plotly_chart(fig_radar, use_container_width=True)
-        st.write("Радар показывает 'отпечаток' города: чем больше площадь фигуры, тем выше общий уровень загрязнения.")
-        
+        st.write("Радарная диаграмма наглядно показывает, какие именно вещества вносят наибольший вклад в загрязнение данного города.")
         
 
     # --- ОБЩИЙ ЗАГОЛОВОК САЙТА ---
