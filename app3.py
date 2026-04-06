@@ -468,6 +468,10 @@ with tabs[0]:
                 st.markdown("---")
                 st.caption("Данные соответствуют национальной наблюдательной сети РК")
 
+# ДОБАВЬТЕ ЭТИ ДВЕ СТРОКИ НИЖЕ (на уровне с try)
+        except Exception as e:
+        st.error(f"Ошибка при загрузке дашборда: {e}")
+
     show_dashboard()
 
 
