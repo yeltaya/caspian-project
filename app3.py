@@ -481,11 +481,6 @@ with tabs[0]:
         except Exception as e:
             st.error(f"Ошибка: {e}. Убедитесь, что файл station.xlsx в порядке.")
 
-    show_dashboard()
-
-
-
-
     import plotly.graph_objects as go
     import streamlit as st
 
