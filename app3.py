@@ -303,87 +303,57 @@ tabs = st.tabs([
 #ОБЗОР
 with tabs[0]:
 
-    def show_general_overview():
-        # 1. СТИЛИ (CSS)
-        st.markdown("""
-            <style>
-            .kaz-wrapper {
-                text-align: center;
-                border: 1px solid #e2e8f0;
-                border-radius: 20px;
-                padding: 30px;
-                background-color: #ffffff;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-                margin-bottom: 25px;
-            }
-            .kaz-title-main {
-                font-size: 2.5rem;
-                font-weight: 900;
-                color: #1a202c;
-                margin: 0;
-            }
-            .kaz-subtitle-main {
-                letter-spacing: 2px;
-                color: #4a5568;
-                text-transform: uppercase;
-                font-size: 0.9rem;
-                margin-bottom: 30px;
-            }
-            .stats-grid {
-                display: flex;
-                justify-content: space-around;
-                border-top: 1px solid #edf2f7;
-                padding-top: 25px;
-            }
-            .stat-box {
-                flex: 1;
-            }
-            .stat-box h3 {
-                color: #004a99 !important;
-                font-size: 1.1rem !important;
-                margin-bottom: 5px !important;
-            }
-            .stat-box p {
-                color: #718096;
-                font-size: 0.85rem;
-            }
-            </style>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+        <style>
+        .executive-quote {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 10px 30px rgba(0, 74, 153, 0.04);
+            margin: 30px 0;
+            position: relative;
+            text-align: center;
+        }
+        /* Декоративная статусная полоса слева */
+        .executive-quote::before {
+            content: "";
+            position: absolute;
+            left: 0; top: 20%; bottom: 20%;
+            width: 5px;
+            background: linear-gradient(180deg, #004a99 0%, #63b3ed 100%);
+            border-radius: 0 5px 5px 0;
+        }
+        .quote-text {
+            font-size: 1.35rem;
+            color: #1a202c;
+            line-height: 1.6;
+            font-weight: 400;
+            margin: 0 auto;
+            max-width: 900px;
+        }
+        .quote-brand {
+            color: #004a99;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .quote-highlight {
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+        }
+        </style>
 
-        # 2. СТРУКТУРА (HTML)
-        st.markdown("""
-            <div class="kaz-wrapper">
-                <h1 class="kaz-title-main">КАЗГИДРОМЕТ</h1>
-                <p class="kaz-subtitle-main">Национальный экологический суверенитет</p>
-                
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <h3>🇰🇿 БЕЗОПАСНОСТЬ</h3>
-                        <p>Защита национальных интересов</p>
-                    </div>
-                    <div style="width: 1px; background: #edf2f7; height: 50px;"></div>
-                    <div class="stat-box">
-                        <h3>📊 АНАЛИТИКА</h3>
-                        <p>База для госрешений</p>
-                    </div>
-                    <div style="width: 1px; background: #edf2f7; height: 50px;"></div>
-                    <div class="stat-box">
-                        <h3>🌐 ПРЕСТИЖ</h3>
-                        <p>Мировые стандарты</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="background-color: #f8fafc; padding: 25px; border-radius: 15px; border-left: 5px solid #004a99;">
-                <h3 style="color: #004a99; margin-top:0;">🌍 Глобальный мониторинг — Национальная безопасность</h3>
-                <p style="font-size: 1.05em; color: #334e68; line-height: 1.6;">
-                    «Казгидромет» — фундамент гидрометеорологической и экологической стабильности Казахстана. 
-                    Опираясь на вековой опыт и данные государственной наблюдательной сети, мы создаем качественные 
-                    аналитические продукты для стратегических отраслей экономики.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
-    
+        <div class="executive-quote">
+            <p class="quote-text">
+                <span class="quote-brand">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
+                Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
+                обеспечивая точность данных для <span class="quote-highlight">стратегического планирования</span> 
+                и <span class="quote-highlight">экологической безопасности</span> страны.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
+
 
         # --- ТЕКСТОВЫЙ БЛОК ---
         col1, col2 = st.columns([2, 1])
