@@ -318,8 +318,8 @@ with tabs[0]:
             # Используем встроенный стиль через style в div, это надежнее
             st.markdown("""
                 <div style="border-left: 5px solid #004a99; padding-left: 20px; margin-top: 10px;">
-                    <p style="font-size: 1.5rem; color: #1a202c; line-height: 1.3; margin: 0;">
-                        <b style="color: #003366;">«Казгидромет»</b>: профессиональный мониторинг и аналитика окружающей среды. 
+                    <p style="font-size: 2.0rem; color: #1a202c; line-height: 1.3; margin: 0;">
+                        <b style="color: #003366;">Национальная гидрометеорологическая служба Казахстана («Казгидромет»)</b>: профессиональный мониторинг и аналитика окружающей среды. 
                         Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
             обеспечивая точность данных для <span class="quote-highlight">стратегического планирования</span> 
             и <span class="quote-highlight">экологической безопасности</span> страны.           
@@ -331,7 +331,7 @@ with tabs[0]:
             # Блок 1
             st.markdown("""
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                    <div style="font-size: 0.9rem; line-height: 1.4; color: #334e68;">
+                    <div style="font-size: 1.5rem; line-height: 1.4; color: #334e68;">
                         <b style="color: #003366;">Безопасность:</b> непрерывный гидрометеорологический и экологический мониторинг
                     </div>
                 </div>
@@ -340,7 +340,7 @@ with tabs[0]:
             # Блок 2
             st.markdown("""
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
-                    <div style="font-size: 0.9rem; line-height: 1.4; color: #334e68;">
+                    <div style="font-size: 1.5rem; line-height: 1.4; color: #334e68;">
                         <b style="color: #003366;">Информирование:</b> открытый доступ к гидрометеорологическим данным
                     </div>
                 </div>
@@ -349,26 +349,25 @@ with tabs[0]:
             # Блок 3
             st.markdown("""
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.9rem; line-height: 1.4; color: #334e68;">
+                    <div style="font-size: 1.5rem; line-height: 1.4; color: #334e68;">
                         <b style="color: #003366;">Инновации:</b> модернизация государственной сети и внедрение автоматизации
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
-                
-                
+                """, unsafe_allow_html=True)            
+               
     # Не забудьте вызвать функцию
     show_top_banner()
     st.markdown("---")
     
 
         # --- СЕКЦИЯ 2: МАСШТАБ ИНФРАСТРУКТУРЫ ---
-    st.subheader("📊 Масштаб национальной сети")
+    st.subheader("📊 Государственная наблюдательная сеть")
         
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Воздушный бассейн", "170 станций", "все регионы РК")
-    m2.metric("Водные ресурсы", "143 объекта", "реки, озера, моря")
-    m3.metric("Лабораторная сеть", "15 филиалов", "аккредитация ISO")
-    m4.metric("Частота замеров", "24/7", "онлайн-мониторинг")
+    m1.metric("Мониторинг", "1065 станций и постов", "все регионы РК")
+    m2.metric("История", "100+ лет наблюдений", "24/7")
+    m3.metric("Команда", "3160", "сотрудников в штате")
+    m4.metric("Глобальный обмен данными", "WMO", "с 1993 года")
 
         # --- СЕКЦИЯ 3: СТРАТЕГИЧЕСКАЯ КАРТА (ИНТЕРАКТИВ) ---
     st.markdown("---")
