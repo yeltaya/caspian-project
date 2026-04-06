@@ -362,8 +362,6 @@ with tabs[0]:
             elif len(numbers) == 1:
                 return float(numbers[0])
             return None
-        except:
-            return None
 
             with col_map:
                 st.markdown("#### 🗺️ Интерактивная карта сети")
