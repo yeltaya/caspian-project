@@ -516,7 +516,6 @@ with tabs[0]:
                     <ul style="font-size: 1.1rem; color: #1a202c; line-height: 1.6;">
                         <li><b>Временное разрешение:</b> от 2-х часов до сезона</li>
                         <li><b>Режим:</b> непрерывно (24/7)</li>
-                        <li><b>Охват:</b> вся территория Казахстана</li>
                     </ul>
                 </div>
             """, unsafe_allow_html=True)
@@ -567,7 +566,7 @@ with tabs[0]:
             # БЛОК 3: ГИДРОЛОГИЯ
             st.markdown("""
                 <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #004a99; margin-bottom: 20px;">
-                    <h3 style="color: #004a99; margin-top: 0;">3. 💧 Гидрологические прогнозы</h3>
+                    <h3 style="color: #004a99; margin-top: 0;">💧 Гидрологические прогнозы</h3>
                     <p style="font-size: 1rem; color: #1a202c;">
                         Мониторинг <b>равнинных и горных рек</b>.<br>
                         Оперативная оценка паводкоопасных регионов и притока к водохранилищам.
@@ -589,7 +588,7 @@ with tabs[0]:
             # БЛОК 4: ЭКОЛОГИЯ
             st.markdown("""
                 <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #CC0000;">
-                    <h3 style="color: #CC0000; margin-top: 0;">4. 🧪 Экологическая оценка</h3>
+                    <h3 style="color: #CC0000; margin-top: 0;">🧪 Экологическая оценка</h3>
                     <p style="font-size: 1rem; color: #1a202c;">
                         Прогноз <b>НМУ</b> (неблагоприятных метеоусловий) по крупным городам Казахстана.<br>
                         Контроль качества атмосферного воздуха.
@@ -608,6 +607,69 @@ with tabs[0]:
                 st.warning("Файл eco.gif не найден в папке с проектом.")
                 
     show_economic_info()
+
+    def show_digital_solutions():
+        st.markdown("""
+            <h2 style='text-align: center; color: #003366; margin-top: 50px; margin-bottom: 30px;'>
+                Цифровые решения и прогностические системы
+            </h2>
+        """, unsafe_allow_html=True)
+
+        # Создаем 4 колонки для карточек
+        col1, col2, col3, col4 = st.columns(4)
+
+        # Стиль для карточек (индивидуальный для каждой)
+        card_style = """
+            <div style="
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 15px;
+                border: 1px solid #e0e0e0;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                height: 280px;
+                transition: transform 0.3s;
+            ">
+                <h3 style="color: #0066CC; text-align: center;">{icon}</h3>
+                <h4 style="color: #003366; text-align: center; margin-bottom: 10px;">{title}</h4>
+                <p style="font-size: 0.9rem; color: #4a5568; line-height: 1.4; text-align: justify;">
+                    {text}
+                </p>
+            </div>
+        """
+
+        with col1:
+            st.markdown(card_style.format(
+                icon="🌀", 
+                title="WRF", 
+                text="Высокоточная численная модель прогноза погоды. Позволяет моделировать атмосферные процессы с детализацией до конкретного района."
+            ), unsafe_allow_html=True)
+
+        with col2:
+            st.markdown(card_style.format(
+                icon="🌫️", 
+                title="SILAM", 
+                text="Система моделирования рассеивания загрязняющих веществ. Используется для оценки качества воздуха и прогнозирования НМУ."
+            ), unsafe_allow_html=True)
+
+        with col3:
+            st.markdown(card_style.format(
+                icon="🌾", 
+                title="AGRODATA", 
+                text="Интеллектуальная платформа для аграриев. Анализ влажности почвы, фаз роста культур и рекомендации по посевным работам."
+            ), unsafe_allow_html=True)
+
+        with col4:
+            st.markdown(card_style.format(
+                icon="📱", 
+                title="Air.kz", 
+                text="Мобильное приложение для граждан. Мониторинг качества воздуха в реальном времени во всех городах Казахстана."
+            ), unsafe_allow_html=True)
+
+        # Нижняя панель с дополнительными приложениями
+        st.markdown("---")
+        st.info("💡 Данные системы интегрированы в единую цифровую экосистему мониторинга Казгидромета.")
+
+    show_digital_solutions()
 
 
 
