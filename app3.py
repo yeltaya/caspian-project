@@ -365,7 +365,7 @@ with tabs[0]:
         except:
             return None
 
-        with col_map:
+            with col_map:
                 st.markdown("#### 🗺️ Интерактивная карта сети")
                 
                 # Центрируем карту
