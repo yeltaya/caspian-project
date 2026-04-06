@@ -433,39 +433,43 @@ with tabs[0]:
             with col_info:
                 st.markdown("#### 📊 Статистика сети")
                 
-                # Общее количество
-                total_points = len(df)
+                # Ваши эталонные данные
+                stats_data = {
+                    "Метеорология": 351,
+                    "Гидрология": 442,
+                    "Агрометео": 226,
+                    "Экология": 175
+                }
+                
+                # Общая сумма
+                total_points = sum(stats_data.values())
                 st.metric("Всего пунктов наблюдения", total_points)
                 
                 st.markdown("---")
                 
-                # Группировка по направлениям для вывода списка
-                stats = df['Направление'].value_counts()
-                
-                for navr, count in stats.items():
-                    # Подбираем эмодзи для красоты
-                    emoji = "💧" if "Гидр" in navr else "🌤️" if "Мет" in navr else "🌱" if "Агр" in navr else "🧪"
+                # Отрисовка карточек по вашему списку
+                for navr, count in stats_data.items():
+                    # Подбираем эмодзи
+                    if "Гидр" in navr: emoji, color = "💧", "#0066CC"
+                    elif "Мет" in navr: emoji, color = "🌤️", "#FF9900"
+                    elif "Агр" in navr: emoji, color = "🌱", "#2E7D32"
+                    else: emoji, color = "🧪", "#CC0000"
                     
                     st.markdown(f"""
-                    <div style="background-color: #f8fafc; padding: 10px; border-radius: 8px; border-left: 5px solid #004a99; margin-bottom: 10px;">
-                        <span style="font-size: 1.1rem;">{emoji} <b>{navr}</b></span><br>
-                        <span style="font-size: 1.5rem; font-weight: bold; color: #004a99;">{count}</span> 
-                        <span style="font-size: 0.9rem; color: #666;">постов/станций</span>
+                    <div style="background-color: #f8fafc; padding: 12px; border-radius: 10px; border-left: 5px solid {color}; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: 600; color: #334e68;">{emoji} {navr}</span>
+                            <span style="font-size: 1.6rem; font-weight: 800; color: {color};">{count}</span>
+                        </div>
+                        <div style="text-align: right; font-size: 0.8rem; color: #666; margin-top: -5px;">единиц</div>
                     </div>
                     """, unsafe_allow_html=True)
 
                 st.markdown("---")
-                st.info("""
-                **Виды наблюдений:**
-                * Гидрологический режим рек
-                * Метеорологические параметры
-                * Качество атмосферного воздуха
-                * Состояние почв и агрокультур
-                """)
+                st.caption("Данные соответствуют национальной наблюдательной сети РК")
+    
 
-        except Exception as e:
-            st.error(f"Ошибка: {e}. Убедитесь, что файл station.xlsx в порядке.")
-
+                st.markdown("---")
     show_dashboard()
 
 
