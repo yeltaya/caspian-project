@@ -328,27 +328,34 @@ with tabs[0]:
                 """, unsafe_allow_html=True)
 
         with col_vectors:
-            # Простой и чистый блок векторов
+            # Блок 1
             st.markdown("""
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.9rem; line-height: 1.4; color: #003366;">
-                        <b>Безопасность:</b> непрерывный гидрометеорологичексий и экологический мониторинг <br>
-                </div>
-                """, unsafe_allow_html=True)
-                
-            st.markdown("""
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.9rem; line-height: 1.4; color: #003366;">
-                        <b>Информирование:</b> открытый доступ к гидрометеорологическим данным <br>
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <div style="font-size: 0.9rem; line-height: 1.4; color: #334e68;">
+                        <b style="color: #003366;">Безопасность:</b> непрерывный гидрометеорологический и экологический мониторинг
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             
+            # Блок 2
+            st.markdown("""
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                    <div style="font-size: 0.9rem; line-height: 1.4; color: #334e68;">
+                        <b style="color: #003366;">Информирование:</b> открытый доступ к гидрометеорологическим данным
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Блок 3
             st.markdown("""
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.9rem; line-height: 1.4; color: #003366;">
-                        <b>Инновации:</b> модернизация государственной наблюдательной сети и внедрение автоматизированных систем контроля <br>
+                    <div style="font-size: 0.9rem; line-height: 1.4; color: #334e68;">
+                        <b style="color: #003366;">Инновации:</b> модернизация государственной сети и внедрение автоматизации
+                    </div>
                 </div>
-                """, unsafe_allow_html=True)                
+                """, unsafe_allow_html=True)
+                
+                
     # Не забудьте вызвать функцию
     show_top_banner()
     st.markdown("---")
