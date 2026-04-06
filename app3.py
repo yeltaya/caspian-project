@@ -467,7 +467,9 @@ with tabs[0]:
 
                 st.markdown("---")
                 st.caption("Данные соответствуют национальной наблюдательной сети РК")   
-
+        except Exception as e:
+            st.error(f"Произошла ошибка: {e}")
+        
     # 1. Сначала определяем функцию
     def show_strategic_funnel(column):
         labels = ["Метеорология", "Гидрология", "Агрометео", "Экология"]
