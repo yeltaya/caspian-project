@@ -468,10 +468,6 @@ with tabs[0]:
                 st.markdown("---")
                 st.caption("Данные соответствуют национальной наблюдательной сети РК")   
 
-    show_dashboard()
-
-
-
 
     import plotly.graph_objects as go
     import streamlit as st
