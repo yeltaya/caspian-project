@@ -529,7 +529,7 @@ with tabs[0]:
             try:
                 st.image("station1.gif", 
                          caption="Прогноз количества осадков", 
-                         width=350)
+                         width=550)
             except Exception:
                 st.warning("Файл station1.gif не найден в папке с проектом.")
                 
@@ -554,15 +554,16 @@ with tabs[0]:
             
             try:
                 st.image("agro.gif", 
-                         caption="Прогноз количества осадков", 
-                         width=350)
+                         caption="Агропрогнозы", 
+                         width=500)
             except Exception:
                 st.warning("Файл agro.gif не найден в папке с проектом.")
                 
             
+        # Создаем два основных столбца
+        col_1, col_2 = st.columns(2, gap="large")            
             
-            
-
+        with col_1:
             # БЛОК 3: ГИДРОЛОГИЯ
             st.markdown("""
                 <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #004a99; margin-bottom: 20px;">
@@ -573,7 +574,18 @@ with tabs[0]:
                     </p>
                 </div>
             """, unsafe_allow_html=True)
-
+            
+    # ГИФКА (Размещаем под первым блоком)
+            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
+            
+            try:
+                st.image("hydro.gif", 
+                         caption="Гидрология", 
+                         width=550)
+            except Exception:
+                st.warning("Файл hydro.gif не найден в папке с проектом.")
+                
+        with col_2:
             # БЛОК 4: ЭКОЛОГИЯ
             st.markdown("""
                 <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #CC0000;">
@@ -584,7 +596,17 @@ with tabs[0]:
                     </p>
                 </div>
             """, unsafe_allow_html=True)
-
+    # ГИФКА (Размещаем под первым блоком)
+    
+            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
+            
+            try:
+                st.image("eco.gif", 
+                         caption="Гидрология", 
+                         width=550)
+            except Exception:
+                st.warning("Файл eco.gif не найден в папке с проектом.")
+                
     show_economic_info()
 
 
