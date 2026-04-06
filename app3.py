@@ -527,7 +527,7 @@ with tabs[0]:
             st.write("") # Небольшой вертикальный отступ для чистоты дизайна
             
             try:
-                st.image("Precipotation.gif", 
+                st.image("Precipitation.gif", 
                          caption="Прогноз количества осадков", 
                          use_container_width=True)
             except Exception:
