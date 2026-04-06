@@ -468,11 +468,6 @@ with tabs[0]:
                 st.markdown("---")
                 show_dashboard()
 
-
-
-    import plotly.graph_objects as go
-    import streamlit as st
-
     # 1. Сначала определяем функцию
     def show_strategic_funnel(column):
         labels = ["Метеорология", "Гидрология", "Агрометео", "Экология"]
