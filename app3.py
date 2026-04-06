@@ -315,17 +315,20 @@ with tabs[0]:
                 st.error("Логотип 'КГМ.png' не найден")
 
         with col_main:
-            # Используем встроенный стиль через style в div, это надежнее
             st.markdown("""
                 <div style="border-left: 5px solid #004a99; padding-left: 20px; margin-top: 10px;">
-                    <p style="font-size: 2.5rem; color: #1a202c; line-height: 1.3; margin: 0;">
-                        <b style="color: #003366;">Национальная гидрометеорологическая служба Казахстана («Казгидромет»)</b>
-                       Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
-            обеспечивая точность данных для <span class="quote-highlight">стратегического планирования</span> 
-            и <span class="quote-highlight">экологической безопасности</span> страны.           
+                    <p style="font-size: 2.5rem; color: #003366; line-height: 1.2; margin: 0; font-weight: bold;">
+                        Национальная гидрометеорологическая служба Казахстана («Казгидромет»)
+                    </p>
+                    
+                    <p style="font-size: 1.8rem; color: #1a202c; line-height: 1.4; margin-top: 15px;">
+                        Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
+                        обеспечивая точность данных для <span style="color: #004a99; font-weight: 600;">стратегического планирования</span> 
+                        и <span style="color: #004a99; font-weight: 600;">экологической безопасности</span> страны.
                     </p>
                 </div>
-                """, unsafe_allow_html=True) 
+                """, unsafe_allow_html=True)
+                
                
     # Не забудьте вызвать функцию
     show_top_banner()
@@ -362,73 +365,67 @@ with tabs[0]:
         except:
             return None
 
-    def show_dashboard():
-        try:
-            # Загрузка данных
-            df = pd.read_excel("station.xlsx")
-            df.columns = df.columns.str.strip()
-            df['lat'] = df['широта'].apply(dms_to_decimal)
-            df['long'] = df['долгота'].apply(dms_to_decimal)
-            df = df.dropna(subset=['lat', 'long'])
+        with col_map:
+                st.markdown("#### 🗺️ Интерактивная карта сети")
+                
+                # Центрируем карту
+                m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
 
-            # Создаем две колонки: 70% для карты, 30% для инфо
-            col_map, col_info = st.columns([2.5, 1], gap="medium")
+                # Темно-синий цвет Казгидромета
+                brand_blue = "#003366"
 
-            with col_map:
-                    st.markdown("#### 🗺️ Интерактивная карта сети")
+                for _, row in df.iterrows():
+                    navr = row['Направление']
                     
-                    # 1. Центрируем карту
-                    m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
+                    # Подбираем символ (используем более простые символы для лучшего вида)
+                    if "Гидр" in navr:
+                        symbol = "💧" 
+                    elif "Мет" in navr:
+                        symbol = "🌤️" 
+                    elif "Агр" in navr:
+                        symbol = "🌱" 
+                    else: # Экология
+                        symbol = "🧪" 
+                    
+                    # Маркер: темно-синий круг, внутри белый символ
+                    folium.Marker(
+                        location=[row['lat'], row['long']],
+                        icon=folium.DivIcon(html=f"""
+                            <div style="
+                                background-color: {brand_blue};
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 50%;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                border: 2px solid white;
+                                box-shadow: 0 0 5px rgba(0,0,0,0.3);
+                                font-size: 12pt;
+                                ">
+                                {symbol}
+                            </div>"""),
+                        popup=f"<b>{row['Станция/пост']}</b><br>{navr}"
+                    ).add_to(m)
 
-                    # 2. Добавляем точки с эмодзи
-                    for _, row in df.iterrows():
-                        navr = row['Направление']
-                        
-                        # Логика подбора эмодзи и цвета
-                        if "Гидр" in navr:
-                            emoji, color = "💧", "#0066CC"
-                        elif "Мет" in navr:
-                            emoji, color = "🌤️", "#FF9900"
-                        elif "Агр" in navr:
-                            emoji, color = "🌱", "#2E7D32"
-                        else: # Экология
-                            emoji, color = "🧪", "#CC0000"
-                        
-                        # Используем DivIcon для отображения эмодзи
-                        folium.Marker(
-                            location=[row['lat'], row['long']],
-                            icon=folium.DivIcon(html=f"""
-                                <div style="
-                                    font-size: 16pt; 
-                                    text-shadow: 0 0 3px white;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    ">
-                                    {emoji}
-                                </div>"""),
-                            popup=f"<b>{row['Станция/пост']}</b><br>{navr}"
-                        ).add_to(m)
+                # Легенда в новом стиле
+                legend_html = f'''
+                    <div style="
+                        position: fixed; 
+                        bottom: 50px; left: 50px; width: 200px;
+                        background-color: white; border: 1px solid {brand_blue}; z-index:9999; font-size:14px;
+                        padding: 15px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+                        ">
+                        <b style="color: {brand_blue};">Условные обозначения:</b><br><br>
+                        <span style="display: inline-block; width: 20px; text-align: center;">💧</span> — Гидрология <br>
+                        <span style="display: inline-block; width: 20px; text-align: center;">🌤️</span> — Метеорология <br>
+                        <span style="display: inline-block; width: 20px; text-align: center;">🌱</span> — Агрометео <br>
+                        <span style="display: inline-block; width: 20px; text-align: center;">🧪</span> — Экология
+                    </div>
+                '''
+                m.get_root().html.add_child(folium.Element(legend_html))
 
-                    # 3. Добавляем легенду прямо на карту (через HTML/MacroElement)
-                    legend_html = f'''
-                        <div style="
-                            position: fixed; 
-                            bottom: 50px; left: 50px; width: 180px; height: 130px; 
-                            background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-                            padding: 10px; border-radius: 10px; opacity: 0.9;
-                            ">
-                            <b>Легенда:</b><br>
-                            💧 Гидрология <br>
-                            🌤️ Метеорология <br>
-                            🌱 Агрометео <br>
-                            🧪 Экология
-                        </div>
-                    '''
-                    m.get_root().html.add_child(folium.Element(legend_html))
-
-                    # 4. Отображение
-                    st_folium(m, width="100%", height=650, returned_objects=[])
+                st_folium(m, width="100%", height=650, returned_objects=[])
                 
 
             with col_info:
