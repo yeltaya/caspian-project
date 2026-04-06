@@ -516,6 +516,7 @@ with tabs[0]:
                     <ul style="font-size: 1.1rem; color: #1a202c; line-height: 1.6;">
                         <li><b>Временное разрешение:</b> от 2-х часов до сезона</li>
                         <li><b>Режим:</b> непрерывно (24/7)</li>
+                    </ul>
                 </div>
             """, unsafe_allow_html=True)
             
