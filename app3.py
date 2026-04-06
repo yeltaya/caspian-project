@@ -376,75 +376,97 @@ with tabs[0]:
     from streamlit_folium import st_folium
     import re
 
-    # Функция для конвертации координат "44° 7' 54" в 44.1316
+    # Функция конвертации координат
     def dms_to_decimal(dms_str):
         try:
-            if pd.isna(dms_str): return None
-            # Извлекаем числа из строки
+            if pd.isna(dms_str) or str(dms_str).strip() == "": return None
             numbers = re.findall(r"[-+]?\d*\.\d+|\d+", str(dms_str))
             if len(numbers) >= 3:
                 deg, mn, sec = map(float, numbers[:3])
                 return deg + mn/60 + sec/3600
-            return float(numbers[0]) # Если уже десятичное
+            elif len(numbers) == 1:
+                return float(numbers[0])
+            return None
         except:
             return None
 
-    def draw_kazakhstan_map():
-        st.subheader("📍 Национальная наблюдательная сеть на карте")
-
-        # Читаем файл (убедитесь, что название совпадает)
+    def show_dashboard():
         try:
+            # Загрузка данных
             df = pd.read_excel("station.xlsx")
-            
-            # Обработка координат
+            df.columns = df.columns.str.strip()
             df['lat'] = df['широта'].apply(dms_to_decimal)
-            df['lon'] = df['долгота'].apply(dms_to_decimal)
-            
-            # Очистка от пустых строк
-            df = df.dropna(subset=['lat', 'lon'])
+            df['long'] = df['долгота'].apply(dms_to_decimal)
+            df = df.dropna(subset=['lat', 'long'])
 
-            # Настройка цветов для направлений
-            color_map = {
-                "Гидрология": "blue",
-                "Метеорология": "orange",
-                "Экология": "red",
-                "Агрометео": "green"
-            }
+            # Создаем две колонки: 70% для карты, 30% для инфо
+            col_map, col_info = st.columns([2.5, 1], gap="medium")
 
-            # Создание карты (центр Казахстана)
-            m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
-
-            # Добавляем точки
-            for _, row in df.iterrows():
-                icon_color = color_map.get(row['Направление'], 'gray')
+            with col_map:
+                st.markdown("#### 🗺️ Интерактивная карта сети")
                 
-                folium.CircleMarker(
-                    location=[row['lat'], row['lon']],
-                    radius=5,
-                    popup=f"<b>{row['Станция/пост']}</b><br>{row['Направление']}",
-                    color=icon_color,
-                    fill=True,
-                    fill_opacity=0.7
-                ).add_to(m)
+                # Цветовая схема
+                color_map = {
+                    "Гидрология": "#0066CC",
+                    "Метеорология": "#FF9900",
+                    "Экология": "#CC0000",
+                    "Агрометеорология": "#2E7D32"
+                }
 
-            # Вывод легенды
-            st.markdown("""
-            <div style="display: flex; gap: 20px; font-size: 14px; margin-bottom: 10px;">
-                <div><span style="color: blue;">●</span> Гидрология</div>
-                <div><span style="color: orange;">●</span> Метеорология</div>
-                <div><span style="color: green;">●</span> Агрометео</div>
-                <div><span style="color: red;">●</span> Экология</div>
-            </div>
-            """, unsafe_allow_html=True)
+                m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
 
-            # Отрисовка
-            st_folium(m, width="100%", height=600)
+                for _, row in df.iterrows():
+                    icon_color = color_map.get(row['Направление'], '#666666')
+                    folium.CircleMarker(
+                        location=[row['lat'], row['long']],
+                        radius=5,
+                        popup=f"<b>{row['Станция/пост']}</b><br>{row['Направление']}",
+                        color=icon_color,
+                        fill=True,
+                        fill_color=icon_color,
+                        fill_opacity=0.7,
+                        weight=1
+                    ).add_to(m)
+
+                st_folium(m, width="100%", height=650, returned_objects=[])
+
+            with col_info:
+                st.markdown("#### 📊 Статистика сети")
+                
+                # Общее количество
+                total_points = len(df)
+                st.metric("Всего пунктов наблюдения", total_points)
+                
+                st.markdown("---")
+                
+                # Группировка по направлениям для вывода списка
+                stats = df['Направление'].value_counts()
+                
+                for navr, count in stats.items():
+                    # Подбираем эмодзи для красоты
+                    emoji = "💧" if "Гидр" in navr else "🌤️" if "Мет" in navr else "🌱" if "Агр" in navr else "🧪"
+                    
+                    st.markdown(f"""
+                    <div style="background-color: #f8fafc; padding: 10px; border-radius: 8px; border-left: 5px solid #004a99; margin-bottom: 10px;">
+                        <span style="font-size: 1.1rem;">{emoji} <b>{navr}</b></span><br>
+                        <span style="font-size: 1.5rem; font-weight: bold; color: #004a99;">{count}</span> 
+                        <span style="font-size: 0.9rem; color: #666;">постов/станций</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                st.markdown("---")
+                st.info("""
+                **Виды наблюдений:**
+                * Гидрологический режим рек
+                * Метеорологические параметры
+                * Качество атмосферного воздуха
+                * Состояние почв и агрокультур
+                """)
 
         except Exception as e:
-            st.error(f"Ошибка при чтении файла station.xlsx: {e}")
+            st.error(f"Ошибка: {e}. Убедитесь, что файл station.xlsx в порядке.")
 
-    # Запуск
-    draw_kazakhstan_map()
+    show_dashboard()
 
 
 
