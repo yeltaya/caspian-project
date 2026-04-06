@@ -304,67 +304,86 @@ tabs = st.tabs([
 with tabs[0]:
 
     def show_general_overview():
-        # --- БЛОК ЗАГОЛОВКА И КАРТОЧЕК ---
+        # 1. СТИЛИ (CSS)
         st.markdown("""
             <style>
-            .main-header {
+            .kaz-wrapper {
                 text-align: center;
-                padding: 20px;
-                margin-bottom: 20px;
+                border: 1px solid #e2e8f0;
+                border-radius: 20px;
+                padding: 30px;
+                background-color: #ffffff;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+                margin-bottom: 25px;
             }
-            .stats-row {
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                text-align: center;
-                padding: 20px;
-                border-top: 1px solid #e2e8f0;
-                border-bottom: 1px solid #e2e8f0;
-                margin-bottom: 30px;
-            }
-            .stat-card {
-                flex: 1;
-                padding: 10px;
-            }
-            .stat-card h3 {
-                color: #004a99;
-                margin-bottom: 5px;
-                font-size: 1.2rem;
-            }
-            .stat-card p {
-                color: #718096;
-                font-size: 0.9rem;
+            .kaz-title-main {
+                font-size: 2.5rem;
+                font-weight: 900;
+                color: #1a202c;
                 margin: 0;
             }
-            .v-divider {
-                width: 1px;
-                background: #e2e8f0;
-                height: 50px;
+            .kaz-subtitle-main {
+                letter-spacing: 2px;
+                color: #4a5568;
+                text-transform: uppercase;
+                font-size: 0.9rem;
+                margin-bottom: 30px;
+            }
+            .stats-grid {
+                display: flex;
+                justify-content: space-around;
+                border-top: 1px solid #edf2f7;
+                padding-top: 25px;
+            }
+            .stat-box {
+                flex: 1;
+            }
+            .stat-box h3 {
+                color: #004a99 !important;
+                font-size: 1.1rem !important;
+                margin-bottom: 5px !important;
+            }
+            .stat-box p {
+                color: #718096;
+                font-size: 0.85rem;
             }
             </style>
+        """, unsafe_allow_html=True)
 
-            <div class="main-header">
-                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0;">КАЗГИДРОМЕТ</h1>
-                <p style="letter-spacing: 2px; color: #4a5568;">НАЦИОНАЛЬНЫЙ ЭКОЛОГИЧЕСКИЙ СУВЕРЕНИТЕТ</p>
+        # 2. СТРУКТУРА (HTML)
+        st.markdown("""
+            <div class="kaz-wrapper">
+                <h1 class="kaz-title-main">КАЗГИДРОМЕТ</h1>
+                <p class="kaz-subtitle-main">Национальный экологический суверенитет</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <h3>🇰🇿 БЕЗОПАСНОСТЬ</h3>
+                        <p>Защита национальных интересов</p>
+                    </div>
+                    <div style="width: 1px; background: #edf2f7; height: 50px;"></div>
+                    <div class="stat-box">
+                        <h3>📊 АНАЛИТИКА</h3>
+                        <p>База для госрешений</p>
+                    </div>
+                    <div style="width: 1px; background: #edf2f7; height: 50px;"></div>
+                    <div class="stat-box">
+                        <h3>🌐 ПРЕСТИЖ</h3>
+                        <p>Мировые стандарты</p>
+                    </div>
+                </div>
             </div>
-
-            <div class="stats-row">
-                <div class="stat-card">
-                    <h3>🇰🇿 БЕЗОПАСНОСТЬ</h3>
-                    <p>Защита национальных интересов</p>
-                </div>
-                <div class="v-divider"></div>
-                <div class="stat-card">
-                    <h3>📊 АНАЛИТИКА</h3>
-                    <p>База для государственных решений</p>
-                </div>
-                <div class="v-divider"></div>
-                <div class="stat-card">
-                    <h3>🌐 ПРЕСТИЖ</h3>
-                    <p>Мировые стандарты мониторинга</p>
-                </div>
+            
+            <div style="background-color: #f8fafc; padding: 25px; border-radius: 15px; border-left: 5px solid #004a99;">
+                <h3 style="color: #004a99; margin-top:0;">🌍 Глобальный мониторинг — Национальная безопасность</h3>
+                <p style="font-size: 1.05em; color: #334e68; line-height: 1.6;">
+                    «Казгидромет» — фундамент гидрометеорологической и экологической стабильности Казахстана. 
+                    Опираясь на вековой опыт и данные государственной наблюдательной сети, мы создаем качественные 
+                    аналитические продукты для стратегических отраслей экономики.
+                </p>
             </div>
         """, unsafe_allow_html=True)
+    
 
         # --- ТЕКСТОВЫЙ БЛОК ---
         col1, col2 = st.columns([2, 1])
