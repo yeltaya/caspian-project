@@ -529,7 +529,7 @@ with tabs[0]:
             try:
                 st.image("station1.gif", 
                          caption="Прогноз количества осадков", 
-                         use_container_width=True)
+                         width=350)
             except Exception:
                 st.warning("Файл station1.gif не найден в папке с проектом.")
                 
@@ -555,7 +555,7 @@ with tabs[0]:
             try:
                 st.image("agro.gif", 
                          caption="Прогноз количества осадков", 
-                         use_container_width=True)
+                         width=350)
             except Exception:
                 st.warning("Файл agro.gif не найден в папке с проектом.")
                 
