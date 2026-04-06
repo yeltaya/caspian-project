@@ -302,8 +302,6 @@ tabs = st.tabs([
 
 #ОБЗОР
 with tabs[0]:
-    def show_general_overview():
-        # --- БАННЕР / ЗАГОЛОВОК ---
         st.markdown("""
             <div style="background-color:#1e3d59; padding:25px; border-radius:10px; border-left: 8px solid #ff6e40">
                 <h1 style="color:white; margin:0;">Национальная система экологического мониторинга</h1>
