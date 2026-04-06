@@ -310,7 +310,7 @@ with tabs[0]:
         with col_logo:
             # Используем ваше локальное имя файла
             try:
-                st.image("КГМ.png", width=200)
+                st.image("КГМ.png", width=250)
             except:
                 st.error("Логотип 'КГМ.png' не найден")
 
@@ -335,10 +335,23 @@ with tabs[0]:
                         <b>Безопасность:</b> непрерывный гидрометеорологичексий и экологический мониторинг <br>
                 </div>
                 """, unsafe_allow_html=True)
-
+                
+            st.markdown("""
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.9rem; line-height: 1.4; color: #003366;">
+                        <b>Информирование:</b> открытый доступ к гидрометеорологическим данным <br>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("""
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.9rem; line-height: 1.4; color: #003366;">
+                        <b>Инновации:</b> модернизация государственной наблюдательной сети и внедрение автоматизированных систем контроля <br>
+                </div>
+                """, unsafe_allow_html=True)                
     # Не забудьте вызвать функцию
     show_top_banner()
-
+    st.markdown("---")
     
 
         # --- СЕКЦИЯ 2: МАСШТАБ ИНФРАСТРУКТУРЫ ---
