@@ -373,16 +373,47 @@ with tabs[0]:
     st.markdown("---")
  
     import plotly.graph_objects as go
+    import streamlit as st
 
-    fig = go.Figure(go.Funnel(
-        y = ["Метеорология (351)", "Гидрология (442)", "Агрометео (226)", "Экология (175)"],
-        x = [351, 442, 226, 175],
-        textinfo = "value+percent initial",
-        marker = {"color": ["#004a99", "#1f77b4", "#2ca02c", "#d62728"]}
-    ))
+    def show_strategic_funnel():
+        # Данные
+        labels = ["Метеорология", "Гидрология", "Агрометеорология", "Экология"]
+        values = [351, 442, 226, 175]
+        
+        # Цвета: Глубокий синий -> Насыщенный лазурный -> Эко-зеленый -> Благородный красный
+        colors = ["#003366", "#0066CC", "#2E7D32", "#C62828"]
 
-    fig.update_layout(title_text="Иерархия национальной наблюдательной сети", title_x=0.5)
-    st.plotly_chart(fig, use_container_width=True)
+        fig = go.Figure(go.Funnel(
+            y = labels,
+            x = values,
+            textinfo = "label+value",
+            textposition = "inside",
+            insidetextfont = {"size": 18, "color": "white", "family": "Arial Black"},
+            marker = {
+                "color": colors,
+                "line": {"width": [2, 2, 2, 2], "color": "white"} # Белые разделители для четкости
+            },
+            connector = {"line": {"color": "#e2e8f0", "width": 2}} # Линии связи между блоками
+        ))
+
+        fig.update_layout(
+            title = {
+                'text': "МАСШТАБ НАЦИОНАЛЬНОЙ НАБЛЮДАТЕЛЬНОЙ СЕТИ",
+                'y': 0.95, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top',
+                'font': {'size': 24, 'color': '#003366', 'family': 'Arial'}
+            },
+            paper_bgcolor = 'rgba(0,0,0,0)', # Прозрачный фон для интеграции в дизайн
+            plot_bgcolor = 'rgba(0,0,0,0)',
+            margin = dict(l=20, r=20, t=80, b=20),
+            showlegend = False,
+            height = 500
+        )
+
+        # Отображение в Streamlit
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+    show_strategic_funnel()
+
 
 
  
