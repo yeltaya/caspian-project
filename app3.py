@@ -618,74 +618,163 @@ with tabs[0]:
 
         col1, col2, col3, col4 = st.columns(4)
 
-        # Улучшенный стиль карточек
-        card_style = """
-        <div style="
-            background: linear-gradient(145deg, #ffffff, #f0f4f8);
-            padding: 25px 20px;
-            border-radius: 20px;
-            border: 1px solid #e1e8ed;
-            box-shadow: 5px 5px 15px #d1d9e6, -5px -5px 15px #ffffff;
-            height: 350px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-        ">
-            <div>
-                <div style="font-size: 3rem; margin-bottom: 15px; text-align: center;">{icon}</div>
-                <h4 style="color: #003366; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-bottom: 2px solid {color}; padding-bottom: 5px;">{title}</h4>
-                <p style="font-size: 0.85rem; color: #4a5568; line-height: 1.5; text-align: center;">
-                    {text}
-                </p>
-            </div>
-            
-            <div style="margin-top: 15px;">
-                <div style="height: 4px; width: 100%; background-color: #e0e0e0; border-radius: 2px; margin-bottom: 10px;">
-                    <div style="height: 100%; width: {load}%; background-color: {color}; border-radius: 2px;"></div>
+        # Вспомогательная функция для генерации HTML карточки
+        def create_card(icon, title, color, load, text):
+            return f"""
+            <div style="
+                background: linear-gradient(145deg, #ffffff, #f0f4f8);
+                padding: 25px 20px;
+                border-radius: 20px;
+                border: 1px solid #e1e8ed;
+                box-shadow: 5px 5px 15px #d1d9e6, -5px -5px 15px #ffffff;
+                height: 380px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            ">
+                <div>
+                    <div style="font-size: 3rem; margin-bottom: 15px; text-align: center;">{icon}</div>
+                    <h4 style="color: #003366; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-bottom: 2px solid {color}; padding-bottom: 5px;">{title}</h4>
+                    <p style="font-size: 0.9rem; color: #4a5568; line-height: 1.5; text-align: center;">
+                        {text}
+                    </p>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #888;">
-                    <span>Статус: Активен</span>
-                    <span>{load}% точность</span>
+                
+                <div style="margin-top: 15px;">
+                    <div style="height: 6px; width: 100%; background-color: #e0e0e0; border-radius: 3px; margin-bottom: 10px; overflow: hidden;">
+                        <div style="height: 100%; width: {load}%; background-color: {color}; border-radius: 3px;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888;">
+                        <span>Статус: Активен</span>
+                        <span>{load}% точность</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        """
+            """
 
         with col1:
-            st.markdown(card_style.format(
-                icon="🌀", title="WRF", color="#0066CC", load="94",
-                text="Численное моделирование метеорологических процессов с сеткой до 2 км."
-            ), unsafe_allow_html=True)
+            st.markdown(create_card("🌀", "WRF", "#0066CC", "94", "Численное моделирование метеорологических процессов с сеткой до 2 км."), unsafe_allow_html=True)
 
         with col2:
-            st.markdown(card_style.format(
-                icon="🌫️", title="SILAM", color="#6366f1", load="88",
-                text="Глобальное и региональное моделирование состава атмосферы и качества воздуха."
-            ), unsafe_allow_html=True)
+            st.markdown(create_card("🌫️", "SILAM", "#6366f1", "88", "Глобальное и региональное моделирование состава атмосферы и качества воздуха."), unsafe_allow_html=True)
 
         with col3:
-            st.markdown(card_style.format(
-                icon="🌾", title="AGRODATA", color="#10b981", load="91",
-                text="Платформа принятия решений для АПК на основе спутниковых и наземных данных."
-            ), unsafe_allow_html=True)
+            st.markdown(create_card("🌾", "AGRODATA", "#10b981", "91", "Платформа принятия решений для АПК на основе спутниковых и наземных данных."), unsafe_allow_html=True)
 
         with col4:
-            st.markdown(card_style.format(
-                icon="📱", title="Air.kz", color="#ef4444", load="99",
-                text="Единое окно мониторинга качества воздуха для населения и госорганов."
-            ), unsafe_allow_html=True)
+            st.markdown(create_card("📱", "Air.kz", "#ef4444", "99", "Единое окно мониторинга качества воздуха для населения и госорганов."), unsafe_allow_html=True)
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("---", unsafe_allow_html=True)
+        st.info("🛰️ **Технологический стек:** Спутниковое зондирование + Сеть наземных станций + Суперкомпьютерные вычисления")
         
-        # Визуальный "подвал" блока
-        st.write("---")
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c2:
-            st.success("🛰️ **Технологический стек:** Спутниковое зондирование + Сеть наземных станций + Суперкомпьютерные вычисления")
 
-    show_digital_solutions()
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import plotly.graph_objects as go
+    import io
+    import matplotlib.pyplot as plt
+    import matplotlib.animation as animation
+    from src.utils import dms_to_decimal # если функция в другом файле
 
+    def show_science_block():
+        st.markdown("""
+            <h2 style='text-align: center; color: #003366; margin-top: 50px;'>🔬 Научные исследования и мониторинг</h2>
+            <p style='text-align: center; color: #666; margin-bottom: 40px;'>Анализ долгосрочных изменений природной среды Казахстана</p>
+        """, unsafe_allow_html=True)
+
+        # --- НАПРАВЛЕНИЕ 1: КЛИМАТ ---
+        st.markdown("### 1. Изменение климата Казахстана")
+        col_cl_text, col_cl_graph = st.columns([1, 2])
+        
+        with col_cl_text:
+            st.write("""
+                Наблюдается устойчивая тенденция к повышению среднегодовой температуры воздуха. 
+                За последние 130 лет темпы потепления в Казахстане опережают среднеглобальные значения.
+                
+                **Ключевые показатели:**
+                * Рост температуры: +0.3°C каждые 10 лет.
+                * Участились периоды экстремальной жары.
+                * Сокращение площади ледников в горных регионах.
+            """)
+            st.info("📊 На графике представлена динамика с 1894 года. Красная линия — долгосрочный тренд потепления.")
+
+        with col_cl_graph:
+            # Здесь мы вставляем ваш matplotlib график
+            # Для производительности в Streamlit лучше использовать статичное фото 
+            # или отрендеренный HTML анимации
+            years = np.arange(1894, 2026)
+            temp_series = [5.3, 6.1, 5.5, 5.4, 4.7, 7.1, 5.6, 6.4, 6.6, 5.8, 6.4, 5.8, 6.4, 5.3, 5.1, 6.8, 6.3, 5.7, 6.0, 6.8, 7.0, 7.6, 6.0, 6.7, 5.6, 5.9, 5.5, 6.7, 7.2, 6.9, 6.3, 7.6, 6.5, 6.2, 5.2, 5.0, 6.1, 5.6, 6.9, 5.7, 5.3, 6.4, 6.6, 6.0, 6.8, 6.8, 7.0, 6.5, 6.1, 5.9, 7.3, 5.4, 6.4, 6.6, 7.3, 5.7, 5.3, 6.5, 5.9, 6.7, 5.0, 7.1, 5.8, 6.6, 6.5, 5.7, 5.6, 7.5, 7.8, 7.8, 6.0, 7.3, 6.9, 7.1, 6.4, 4.6, 6.6, 7.4, 5.5, 7.0, 6.3, 7.8, 5.6, 7.1, 7.0, 7.4, 6.7, 8.0, 7.3, 8.7, 5.9, 6.6, 6.9, 6.5, 7.6, 7.9, 8.0, 7.9, 7.2, 5.9, 6.8, 8.7, 6.1, 8.1, 7.4, 8.4, 8.2, 8.2, 8.5, 7.6, 8.9, 8.4, 8.1, 8.8, 8.4, 7.9, 8.3, 7.2, 7.8, 9.1, 7.4, 8.9, 8.8, 8.7, 7.5, 8.9, 9.3, 9.0, 9.2, 10.1, 9.1, 10.4]
+            
+            fig_cl, ax = plt.subplots(figsize=(10, 5))
+            ax.plot(years, temp_series, color='gray', alpha=0.3, label='Годовые данные')
+            # Упрощенный тренд для отображения
+            z = np.polyfit(years, temp_series, 1)
+            p = np.poly1d(z)
+            ax.plot(years, p(years), "r--", linewidth=2, label='Линия тренда')
+            ax.set_ylabel('°C')
+            ax.legend()
+            st.pyplot(fig_cl)
+
+        st.markdown("---")
+
+        # --- НАПРАВЛЕНИЕ 2: КАСПИЙ ---
+        st.markdown("### 2. Колебания уровня Каспийского моря")
+        
+        # Текст перед графиком
+        st.write("""
+            Уровень Каспийского моря подвержен значительным многолетним колебаниям, обусловленным как климатическими факторами 
+            (сток рек, испарение), так и тектоническими процессами.
+        """)
+
+        # Данные Каспия (сокращенно для примера из вашего кода)
+        data_caspian = """
+        Year Level
+        1990 -27.52
+        1995 -26.62
+        2000 -27.08
+        2005 -26.91
+        2010 -27.25
+        2015 -27.98
+        2020 -28.24
+        2024 -29.05
+        """
+        df_casp = pd.read_csv(io.StringIO(data_caspian), sep=r'\s+')
+
+        fig_casp = go.Figure()
+        
+        # Добавляем линию уровня
+        fig_casp.add_trace(go.Scatter(
+            x=df_casp['Year'], 
+            y=df_casp['Level'],
+            mode='lines+markers',
+            line=dict(color='#1E3A8A', width=4),
+            fill='tozeroy',
+            fillcolor='rgba(30, 58, 138, 0.1)',
+            name='Уровень моря'
+        ))
+
+        fig_casp.update_layout(
+            title="Динамика уровня моря (Балтийская система высот)",
+            xaxis_title="Год",
+            yaxis_title="Уровень, м",
+            template="plotly_white",
+            height=450
+        )
+
+        # Добавляем аннотацию текущего состояния
+        fig_casp.add_annotation(
+            x=2024, y=-29.05,
+            text="Текущий регрессивный тренд",
+            showarrow=True, arrowhead=1, ax=-50, ay=-40
+        )
+
+        st.plotly_chart(fig_casp, use_container_width=True)
+
+        st.warning("⚠️ С 2005 года наблюдается интенсивное снижение уровня моря, что требует особого внимания к прибрежной инфраструктуре.")
+
+    # Вызов функции в приложении
+    show_science_block()
 
 
 
