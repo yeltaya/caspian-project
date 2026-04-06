@@ -9360,10 +9360,8 @@ with tabs[7]:
         color_continuous_scale="Reds",
         aspect="auto"
     )
-    st.plotly_chart(fig_heat, use_container_width=True)
-
-    
-        st.info("Чем насыщеннее красный цвет, тем чаще фиксировались превышения нормы в этот период.")
+    st.plotly_chart(fig_heat, use_container_width=True)  
+    st.info("Чем насыщеннее красный цвет, тем чаще фиксировались превышения нормы в этот период.")
 
     # --- TAB 2: ГОДОВАЯ ДИНАМИКА И СЛАЙДЕР ---
     with tab2:
