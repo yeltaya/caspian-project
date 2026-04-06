@@ -6,3 +6,5 @@ geopandas
 streamlit-folium
 openpyxl
 pyvis
+numpy
+matplotlib
