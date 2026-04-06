@@ -466,10 +466,8 @@ with tabs[0]:
                     """, unsafe_allow_html=True)
 
                 st.markdown("---")
-                st.caption("Данные соответствуют национальной наблюдательной сети РК")
-    
+                st.caption("Данные соответствуют национальной наблюдательной сети РК")   
 
-                st.markdown("---")
     show_dashboard()
 
 
