@@ -9345,7 +9345,11 @@ with tabs[7]:
 
     # --- В ИНТЕРФЕЙСЕ STREAMLIT ---
     # Выбор города
-    city = st.selectbox("Выберите город:", list(kazakhstan_pollution_data.keys()))
+    city = st.selectbox(
+        "Выберите город:", 
+        list(kazakhstan_pollution_data.keys()), 
+        key="city_selector_unique"  # Любая уникальная строка
+    )
 
     # Извлечение данных и подписей для выбранного города
     heatmap_data, current_pollutants = kazakhstan_pollution_data[city]
