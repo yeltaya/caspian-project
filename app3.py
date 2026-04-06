@@ -302,114 +302,89 @@ tabs = st.tabs([
 
 #ОБЗОР
 with tabs[0]:
-    st.markdown("""
-        <style>
-        .main-container {
-            font-family: 'Inter', sans-serif;
-        }
-        .kaz-header {
-            position: relative;
-            padding: 40px 20px;
-            background: #ffffff;
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 30px rgba(0, 74, 153, 0.03);
-            text-align: center;
-            overflow: hidden;
-        }
-        /* Декоративный элемент сверху */
-        .kaz-header::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #004a99 0%, #63b3ed 100%);
-        }
-        .kaz-title {
-            color: #1a202c;
-            font-size: 3rem;
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -1px;
-        }
-        .kaz-subtitle {
-            color: #4a5568;
-            font-size: 1.2rem;
-            font-weight: 400;
-            margin-top: 10px;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .stats-container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-        .stat-item {
-            flex: 1;
-            min-width: 200px;
-            padding: 20px;
-            transition: transform 0.3s ease;
-        }
-        .stat-item:hover {
-            transform: translateY(-5px);
-        }
-        .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-        .stat-h {
-            color: #004a99;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-        }
-        .stat-p {
-            color: #718096;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin: 0;
-        }
-        .divider {
-            width: 1px;
-            background: #e2e8f0;
-            height: 80px;
-            align-self: center;
-        }
-        </style>
 
-        <div class="kaz-header">
-            <h1 class="kaz-title">КАЗГИДРОМЕТ</h1>
-            <p class="kaz-subtitle">Национальный экологический суверенитет</p>
-            
-            <div class="stats-container">
-                <div class="stat-item">
-                    <span class="stat-icon">🇰🇿</span>
-                    <p class="stat-h">БЕЗОПАСНОСТЬ</p>
-                    <p class="stat-p">Защита национальных интересов и экологический щит</p>
+    def show_general_overview():
+        # --- БЛОК ЗАГОЛОВКА И КАРТОЧЕК ---
+        st.markdown("""
+            <style>
+            .main-header {
+                text-align: center;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            .stats-row {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+                border-top: 1px solid #e2e8f0;
+                border-bottom: 1px solid #e2e8f0;
+                margin-bottom: 30px;
+            }
+            .stat-card {
+                flex: 1;
+                padding: 10px;
+            }
+            .stat-card h3 {
+                color: #004a99;
+                margin-bottom: 5px;
+                font-size: 1.2rem;
+            }
+            .stat-card p {
+                color: #718096;
+                font-size: 0.9rem;
+                margin: 0;
+            }
+            .v-divider {
+                width: 1px;
+                background: #e2e8f0;
+                height: 50px;
+            }
+            </style>
+
+            <div class="main-header">
+                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0;">КАЗГИДРОМЕТ</h1>
+                <p style="letter-spacing: 2px; color: #4a5568;">НАЦИОНАЛЬНЫЙ ЭКОЛОГИЧЕСКИЙ СУВЕРЕНИТЕТ</p>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <h3>🇰🇿 БЕЗОПАСНОСТЬ</h3>
+                    <p>Защита национальных интересов</p>
                 </div>
-                
-                <div class="divider"></div>
-                
-                <div class="stat-item">
-                    <span class="stat-icon">📊</span>
-                    <p class="stat-h">АНАЛИТИКА</p>
-                    <p class="stat-p">Прогнозная модель для принятия госрешений</p>
+                <div class="v-divider"></div>
+                <div class="stat-card">
+                    <h3>📊 АНАЛИТИКА</h3>
+                    <p>База для государственных решений</p>
                 </div>
-                
-                <div class="divider"></div>
-                
-                <div class="stat-item">
-                    <span class="stat-icon">🌐</span>
-                    <p class="stat-h">ПРЕСТИЖ</p>
-                    <p class="stat-p">Интеграция в глобальную сеть мониторинга</p>
+                <div class="v-divider"></div>
+                <div class="stat-card">
+                    <h3>🌐 ПРЕСТИЖ</h3>
+                    <p>Мировые стандарты мониторинга</p>
                 </div>
             </div>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+        # --- ТЕКСТОВЫЙ БЛОК ---
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.subheader("🇰🇿 Государственный приоритет")
+            st.write("""
+                Мониторинг окружающей среды является фундаментом **экологической безопасности** Республики Казахстан. 
+                Данные «Казгидромета» служат основой для принятия межгосударственных решений, 
+                выполнения обязательств по **Парижскому соглашению** и обеспечения устойчивого развития регионов.
+            """)
+        
+        with col2:
+            # Пример вывода ключевых метрик через стандартные компоненты Streamlit
+            st.metric("Станций мониторинга", "170", "+5 в 2026")
+            st.metric("Точность прогнозов", "96%", "ISO 9001")
+
+    # Вызов функции в основном коде
+    # show_general_overview()
+
 
 
         # --- СЕКЦИЯ 1: ГЛОБАЛЬНАЯ МИССИЯ (ДЛЯ ГЛАВ ГОСУДАРСТВ) ---
