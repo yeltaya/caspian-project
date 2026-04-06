@@ -466,10 +466,16 @@ with tabs[0]:
                     """, unsafe_allow_html=True)
 
                 st.markdown("---")
-                st.caption("Данные соответствуют национальной наблюдательной сети РК")   
-        except Exception as e:
-            st.error(f"Произошла ошибка: {e}")
-        
+                st.caption("Данные соответствуют национальной наблюдательной сети РК")
+
+    show_dashboard()
+
+
+
+
+    import plotly.graph_objects as go
+    import streamlit as st
+
     # 1. Сначала определяем функцию
     def show_strategic_funnel(column):
         labels = ["Метеорология", "Гидрология", "Агрометео", "Экология"]
