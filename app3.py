@@ -512,9 +512,9 @@ with tabs[0]:
             # БЛОК 1: ПРОГНОЗ ПОГОДЫ
             st.markdown("""
                 <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #0066CC; min-height: 250px;">
-                    <h3 style="color: #003366; margin-top: 0;">1. 🌤️ ПРОГНОЗ ПОГОДЫ</h3>
+                    <h3 style="color: #003366; margin-top: 0;">🌤️ ПРОГНОЗ ПОГОДЫ</h3>
                     <ul style="font-size: 1.1rem; color: #1a202c; line-height: 1.6;">
-                        <li><b>Спектр:</b> от 2-х часов до сезона</li>
+                        <li><b>Временное разрешение:</b> от 2-х часов до сезона</li>
                         <li><b>Режим:</b> непрерывно (24/7)</li>
                         <li><b>Охват:</b> вся территория Казахстана</li>
                     </ul>
@@ -523,11 +523,16 @@ with tabs[0]:
             
             st.write("") # Отступ
             
-            # ГИФКА (Размещаем под первым блоком)
-            # Замените 'your_weather_gif.gif' на путь к вашему файлу или URL
-            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2Z4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4eGZ4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKMGpxxS1UCZ9Ly/giphy.gif", 
-                     caption="Оперативный мониторинг атмосферных явлений", 
-                     use_container_width=True)
+    # ГИФКА (Размещаем под первым блоком)
+            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
+            
+            try:
+                st.image("Precipotation.gif", 
+                         caption="Прогноз количества осадков", 
+                         use_container_width=True)
+            except Exception:
+                st.warning("Файл Precipotation.gif не найден в папке с проектом.")
+                
 
         with col_right:
             # БЛОК 2: АГРОМЕТЕО
