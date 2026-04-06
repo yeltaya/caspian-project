@@ -433,42 +433,120 @@ with tabs[0]:
             with col_info:
                 st.markdown("#### 📊 Статистика сети")
                 
-                # Ваши эталонные данные
-                stats_data = {
-                    "Метеорология": 351,
-                    "Гидрология": 442,
-                    "Агрометео": 226,
-                    "Экология": 175
-                }
-                
-                # Общая сумма
-                total_points = sum(stats_data.values())
+                # Общее количество
+                total_points = len(df)
                 st.metric("Всего пунктов наблюдения", total_points)
                 
                 st.markdown("---")
                 
-                # Отрисовка карточек по вашему списку
-                for navr, count in stats_data.items():
-                    # Подбираем эмодзи
-                    if "Гидр" in navr: emoji, color = "💧", "#0066CC"
-                    elif "Мет" in navr: emoji, color = "🌤️", "#FF9900"
-                    elif "Агр" in navr: emoji, color = "🌱", "#2E7D32"
-                    else: emoji, color = "🧪", "#CC0000"
+                # Группировка по направлениям для вывода списка
+                stats = df['Направление'].value_counts()
+                
+                for navr, count in stats.items():
+                    # Подбираем эмодзи для красоты
+                    emoji = "💧" if "Гидр" in navr else "🌤️" if "Мет" in navr else "🌱" if "Агр" in navr else "🧪"
                     
                     st.markdown(f"""
-                    <div style="background-color: #f8fafc; padding: 12px; border-radius: 10px; border-left: 5px solid {color}; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 1.1rem; font-weight: 600; color: #334e68;">{emoji} {navr}</span>
-                            <span style="font-size: 1.6rem; font-weight: 800; color: {color};">{count}</span>
-                        </div>
-                        <div style="text-align: right; font-size: 0.8rem; color: #666; margin-top: -5px;">единиц</div>
+                    <div style="background-color: #f8fafc; padding: 10px; border-radius: 8px; border-left: 5px solid #004a99; margin-bottom: 10px;">
+                        <span style="font-size: 1.1rem;">{emoji} <b>{navr}</b></span><br>
+                        <span style="font-size: 1.5rem; font-weight: bold; color: #004a99;">{count}</span> 
+                        <span style="font-size: 0.9rem; color: #666;">постов/станций</span>
                     </div>
                     """, unsafe_allow_html=True)
 
                 st.markdown("---")
+                st.info("""
+                **Виды наблюдений:**
+                * Гидрологический режим рек
+                * Метеорологические параметры
+                * Качество атмосферного воздуха
+                * Состояние почв и агрокультур
+                """)
+
+        except Exception as e:
+            st.error(f"Ошибка: {e}. Убедитесь, что файл station.xlsx в порядке.")
+
+    show_dashboard()
 
 
 
+
+    import plotly.graph_objects as go
+    import streamlit as st
+
+    # 1. Сначала определяем функцию
+    def show_strategic_funnel(column):
+        labels = ["Метеорология", "Гидрология", "Агрометео", "Экология"]
+        values = [351, 442, 226, 175]
+        colors = ["#003366", "#0066CC", "#2E7D32", "#C62828"]
+
+        fig = go.Figure(go.Funnel(
+            y = labels,
+            x = values,
+            textinfo = "label+value",
+            textposition = "inside",
+            insidetextfont = {"size": 16, "color": "white", "family": "Arial Black"},
+            marker = {
+                "color": colors,
+                "line": {"width": [2, 2, 2, 2], "color": "white"}
+            },
+            connector = {"line": {"color": "#e2e8f0", "width": 2}}
+        ))
+
+        fig.update_layout(
+            paper_bgcolor = 'rgba(0,0,0,0)',
+            plot_bgcolor = 'rgba(0,0,0,0)',
+            margin = dict(l=10, r=10, t=50, b=10),
+            showlegend = False,
+            height = 450
+        )
+
+        with column:
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+    # 2. Создаем колонки (например, воронка посередине)
+    col_info, col_chart, col_stats = st.columns([1, 2, 1])
+
+    with col_info:
+        st.markdown("### 📊 Масштаб")
+        st.write("Общее количество объектов превышает **1190 единиц**, обеспечивая полный охват территории Казахстана.")
+        st.metric("Общий охват", "100%", help="Государственная сеть мониторинга")
+
+    # Вызываем график в центральную колонку
+    show_strategic_funnel(col_chart)
+
+    with col_stats:
+        st.markdown("### ⚡ Модернизация")
+        st.write("Более **65%** постов переведены на автоматический режим передачи данных 24/7.")
+        st.metric("Автоматизация", "+12%", delta_color="normal")
+        
+
+
+ 
+    col_a, col_b = st.columns([1, 2])
+        
+    with col_a:
+            st.markdown("### 🔍 Приоритетные зоны")
+            st.warning("**Воздух:** Особое внимание промышленным центрам (Усть-Каменогорск, Караганда, Темиртау).")
+            st.info("**Вода:** Контроль трансграничных артерий (р. Жайык, р. Сырдария, р. Ертис).")
+            st.success("**Каспий:** Мониторинг прибрежной зоны для сохранения биоразнообразия.")
+            
+    with col_b:
+            # Визуализация охвата (пример графика)
+            labels = ['Атмосферный воздух', 'Поверхностные воды', 'Почвенный покров', 'Радиационный фон']
+            values = [40, 30, 15, 15]
+            
+            fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.4, marker_colors=['#1e3d59', '#17a2b8', '#ff6e40', '#ffc107'])])
+            fig.update_layout(title_text="Структура государственного мониторинга", height=350, margin=dict(t=50, b=0, l=0, r=0))
+            st.plotly_chart(fig, use_container_width=True)
+
+        # --- ФУТЕР (НИЖНЯЯ ПАНЕЛЬ) ---
+    st.markdown("""
+            <div style="text-align:center; padding:20px; color:gray; font-size:0.8em; border-top:1px solid #eee;">
+                Данные сформированы на основе автоматизированной информационной системы государственного экологического мониторинга (АИС ГЭМ).<br>
+                <b>© 2026 РГП «Казгидромет» | Министерство экологии и природных ресурсов РК</b>
+            </div>
+    """, unsafe_allow_html=True)
         
     
 #МОНИТОРИНГ
