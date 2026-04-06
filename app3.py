@@ -302,14 +302,27 @@ tabs = st.tabs([
 
 #ОБЗОР
 with tabs[0]:
-        st.markdown("""
-            <div style="background-color:#1e3d59; padding:25px; border-radius:10px; border-left: 8px solid #ff6e40">
-                <h1 style="color:white; margin:0;">Национальная система экологического мониторинга</h1>
-                <p style="color:#d1d1d1; font-size:1.2em;">Стратегический аналитический отчет РГП «Казгидромет»</p>
+    st.markdown("""
+        <div style="background-color: #004a99; padding: 40px; border-radius: 20px; color: white; text-align: center;">
+            <h1 style="color: white; font-weight: 900;">КАЗГИДРОМЕТ</h1>
+            <p style="font-size: 1.4em; opacity: 0.9; margin-bottom: 30px;">Единая государственная система мониторинга окружающей среды</p>
+            <div style="display: flex; justify-content: space-around; gap: 20px;">
+                <div style="flex: 1;">
+                    <h3 style="color: #63b3ed;">🛡️ Безопасность</h3>
+                    <p style="font-size: 0.9em;">Предотвращение ЧС и экологических угроз</p>
+                </div>
+                <div style="flex: 1; border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">
+                    <h3 style="color: #63b3ed;">📊 Аналитика</h3>
+                    <p style="font-size: 0.9em;">Точные данные для госуправления</p>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="color: #63b3ed;">🌍 Престиж</h3>
+                    <p style="font-size: 0.9em;">Международные стандарты мониторинга</p>
+                </div>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+    """, unsafe_allow_html=True)
 
-        st.write("") # Отступ
 
         # --- СЕКЦИЯ 1: ГЛОБАЛЬНАЯ МИССИЯ (ДЛЯ ГЛАВ ГОСУДАРСТВ) ---
         col_mission, col_logo = st.columns([2, 1])
