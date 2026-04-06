@@ -533,18 +533,35 @@ with tabs[0]:
             except Exception:
                 st.warning("Файл station1.gif не найден в папке с проектом.")
                 
+                
 
         with col_right:
             # БЛОК 2: АГРОМЕТЕО
             st.markdown("""
                 <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #2E7D32; margin-bottom: 20px;">
-                    <h3 style="color: #2E7D32; margin-top: 0;">2. 🌱 Агрометеорологические прогнозы</h3>
+                    <h3 style="color: #2E7D32; margin-top: 0;">🌱 Агрометеорологические прогнозы</h3>
                     <p style="font-size: 1rem; color: #1a202c;">
                         Охват всех ключевых <b>зерносеющих регионов</b> Казахстана.<br>
                         Оценка урожайности и рисков возникновения засухи.
                     </p>
                 </div>
             """, unsafe_allow_html=True)
+            
+            st.write("") # Отступ
+            
+    # ГИФКА (Размещаем под первым блоком)
+            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
+            
+            try:
+                st.image("agro.gif", 
+                         caption="Прогноз количества осадков", 
+                         use_container_width=True)
+            except Exception:
+                st.warning("Файл agro.gif не найден в папке с проектом.")
+                
+            
+            
+            
 
             # БЛОК 3: ГИДРОЛОГИЯ
             st.markdown("""
