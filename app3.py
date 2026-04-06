@@ -375,32 +375,61 @@ with tabs[0]:
             col_map, col_info = st.columns([2.5, 1], gap="medium")
 
             with col_map:
-                st.markdown("#### 🗺️ Интерактивная карта сети")
+                    st.markdown("#### 🗺️ Интерактивная карта сети")
+                    
+                    # 1. Центрируем карту
+                    m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
+
+                    # 2. Добавляем точки с эмодзи
+                    for _, row in df.iterrows():
+                        navr = row['Направление']
+                        
+                        # Логика подбора эмодзи и цвета
+                        if "Гидр" in navr:
+                            emoji, color = "💧", "#0066CC"
+                        elif "Мет" in navr:
+                            emoji, color = "🌤️", "#FF9900"
+                        elif "Агр" in navr:
+                            emoji, color = "🌱", "#2E7D32"
+                        else: # Экология
+                            emoji, color = "🧪", "#CC0000"
+                        
+                        # Используем DivIcon для отображения эмодзи
+                        folium.Marker(
+                            location=[row['lat'], row['long']],
+                            icon=folium.DivIcon(html=f"""
+                                <div style="
+                                    font-size: 16pt; 
+                                    text-shadow: 0 0 3px white;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    ">
+                                    {emoji}
+                                </div>"""),
+                            popup=f"<b>{row['Станция/пост']}</b><br>{navr}"
+                        ).add_to(m)
+
+                    # 3. Добавляем легенду прямо на карту (через HTML/MacroElement)
+                    legend_html = f'''
+                        <div style="
+                            position: fixed; 
+                            bottom: 50px; left: 50px; width: 180px; height: 130px; 
+                            background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
+                            padding: 10px; border-radius: 10px; opacity: 0.9;
+                            ">
+                            <b>Легенда:</b><br>
+                            💧 Гидрология <br>
+                            🌤️ Метеорология <br>
+                            🌱 Агрометео <br>
+                            🧪 Экология
+                        </div>
+                    '''
+                    m.get_root().html.add_child(folium.Element(legend_html))
+
+                    # 4. Отображение
+                    st_folium(m, width="100%", height=650, returned_objects=[])
                 
-                # Цветовая схема
-                color_map = {
-                    "Гидрология": "#0066CC",
-                    "Метеорология": "#FF9900",
-                    "Экология": "#CC0000",
-                    "Агрометеорология": "#2E7D32"
-                }
-
-                m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
-
-                for _, row in df.iterrows():
-                    icon_color = color_map.get(row['Направление'], '#666666')
-                    folium.CircleMarker(
-                        location=[row['lat'], row['long']],
-                        radius=5,
-                        popup=f"<b>{row['Станция/пост']}</b><br>{row['Направление']}",
-                        color=icon_color,
-                        fill=True,
-                        fill_color=icon_color,
-                        fill_opacity=0.7,
-                        weight=1
-                    ).add_to(m)
-
-                st_folium(m, width="100%", height=650, returned_objects=[])
 
                 with col_info:
                         st.markdown("#### 📊 Статистика сети")
@@ -409,7 +438,7 @@ with tabs[0]:
                         stats_data = {
                             "Метеорология": 351,
                             "Гидрология": 442,
-                            "Агрометео": 226,
+                            "Агрометеорология": 226,
                             "Экология": 175
                         }
                         
