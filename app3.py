@@ -369,16 +369,13 @@ with tabs[0]:
     m3.metric("Команда", "3160", "сотрудников в штате")
     m4.metric("Глобальный обмен данными", "WMO", "с 1993 года")
 
-    col_1, col_2, col_3  = st.columns([1, 1, 1])
- 
     import plotly.graph_objects as go
     import streamlit as st
-    
-    with col_a:
-        labels = ["Метеорология", "Гидрология", "Агрометеорология", "Экология"]
+
+    # 1. Сначала определяем функцию
+    def show_strategic_funnel(column):
+        labels = ["Метеорология", "Гидрология", "Агрометео", "Экология"]
         values = [351, 442, 226, 175]
-        
-        # Цвета: Глубокий синий -> Насыщенный лазурный -> Эко-зеленый -> Благородный красный
         colors = ["#003366", "#0066CC", "#2E7D32", "#C62828"]
 
         fig = go.Figure(go.Funnel(
@@ -386,32 +383,46 @@ with tabs[0]:
             x = values,
             textinfo = "label+value",
             textposition = "inside",
-            insidetextfont = {"size": 18, "color": "white", "family": "Arial Black"},
+            insidetextfont = {"size": 16, "color": "white", "family": "Arial Black"},
             marker = {
                 "color": colors,
-                "line": {"width": [2, 2, 2, 2], "color": "white"} # Белые разделители для четкости
+                "line": {"width": [2, 2, 2, 2], "color": "white"}
             },
-            connector = {"line": {"color": "#e2e8f0", "width": 2}} # Линии связи между блоками
+            connector = {"line": {"color": "#e2e8f0", "width": 2}}
         ))
 
         fig.update_layout(
             title = {
-                'text': "МАСШТАБ НАЦИОНАЛЬНОЙ НАБЛЮДАТЕЛЬНОЙ СЕТИ",
-                'y': 0.95, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top',
-                'font': {'size': 24, 'color': '#003366', 'family': 'Arial'}
+                'text': "СТРУКТУРА СЕТИ",
+                'y': 0.9, 'x': 0.5, 'xanchor': 'center',
+                'font': {'size': 20, 'color': '#003366'}
             },
-            paper_bgcolor = 'rgba(0,0,0,0)', # Прозрачный фон для интеграции в дизайн
+            paper_bgcolor = 'rgba(0,0,0,0)',
             plot_bgcolor = 'rgba(0,0,0,0)',
-            margin = dict(l=20, r=20, t=80, b=20),
+            margin = dict(l=10, r=10, t=50, b=10),
             showlegend = False,
-            height = 500
+            height = 450
         )
 
-        # Отображение в Streamlit
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        with column:
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-    show_strategic_funnel()
+    # 2. Создаем колонки (например, воронка посередине)
+    col_info, col_chart, col_stats = st.columns([1, 2, 1])
 
+    with col_info:
+        st.markdown("### 📊 Масштаб")
+        st.write("Общее количество объектов превышает **1190 единиц**, обеспечивая полный охват территории Казахстана.")
+        st.metric("Общий охват", "100%", help="Государственная сеть мониторинга")
+
+    # Вызываем график в центральную колонку
+    show_strategic_funnel(col_chart)
+
+    with col_stats:
+        st.markdown("### ⚡ Модернизация")
+        st.write("Более **65%** постов переведены на автоматический режим передачи данных 24/7.")
+        st.metric("Автоматизация", "+12%", delta_color="normal")
+        
 
 
  
