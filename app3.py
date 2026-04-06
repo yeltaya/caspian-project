@@ -372,8 +372,7 @@ with tabs[0]:
 
     import streamlit as st
     import pandas as pd
-    import folium
-    from streamlit_folium import st_folium
+    import plotly.graph_objects as go
     import re
 
     # Функция конвертации координат
@@ -390,7 +389,7 @@ with tabs[0]:
         except:
             return None
 
-    def show_dashboard():
+    def show_static_dashboard():
         try:
             # Загрузка данных
             df = pd.read_excel("station.xlsx")
@@ -399,36 +398,54 @@ with tabs[0]:
             df['long'] = df['долгота'].apply(dms_to_decimal)
             df = df.dropna(subset=['lat', 'long'])
 
-            # Создаем две колонки: 70% для карты, 30% для инфо
+            # Создаем колонки
             col_map, col_info = st.columns([2.5, 1], gap="medium")
 
             with col_map:
-                st.markdown("#### 🗺️ Интерактивная карта сети")
+                st.markdown("#### 🌍 Дислокация объектов мониторинга")
                 
-                # Цветовая схема
+                # Настройка цветов
                 color_map = {
                     "Гидрология": "#0066CC",
                     "Метеорология": "#FF9900",
                     "Экология": "#CC0000",
-                    "Агрометеорология": "#2E7D32"
+                    "Агрометео": "#2E7D32"
                 }
+                df['color'] = df['Направление'].map(color_map).fillna('#666666')
 
-                m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
+                # Создание статичной карты через Plotly
+                fig = go.Figure()
 
-                for _, row in df.iterrows():
-                    icon_color = color_map.get(row['Направление'], '#666666')
-                    folium.CircleMarker(
-                        location=[row['lat'], row['long']],
-                        radius=5,
-                        popup=f"<b>{row['Станция/пост']}</b><br>{row['Направление']}",
-                        color=icon_color,
-                        fill=True,
-                        fill_color=icon_color,
-                        fill_opacity=0.7,
-                        weight=1
-                    ).add_to(m)
+                # Добавляем точки
+                fig.add_trace(go.Scattermapbox(
+                    lat=df['lat'],
+                    lon=df['long'],
+                    mode='markers',
+                    marker=go.scattermapbox.Marker(
+                        size=8,
+                        color=df['color'],
+                        opacity=0.8
+                    ),
+                    text=df['Станция/пост'],
+                    hoverinfo='text' # Оставляем только название при наведении, или можно 'none' для полной статики
+                ))
 
-                st_folium(m, width="100%", height=650, returned_objects=[])
+                # Настройка внешнего вида карты
+                fig.update_layout(
+                    mapbox=dict(
+                        style="carto-positron", # Светлая официальная подложка
+                        center=dict(lat=48.0, lon=67.0),
+                        zoom=4.2,
+                    ),
+                    margin={"r":0,"t":0,"l":0,"b":0},
+                    showlegend=False,
+                    height=650,
+                    dragmode=False, # ОТКЛЮЧАЕТ ПЕРЕМЕЩЕНИЕ КАРТЫ
+                )
+
+                # Отображение карты без панели инструментов
+                st.plotly_chart(fig, use_container_width=True, config={'staticPlot': True})
+            
 
             with col_info:
                 st.markdown("#### 📊 Статистика сети")
