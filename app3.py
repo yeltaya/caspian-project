@@ -303,76 +303,58 @@ tabs = st.tabs([
 #ОБЗОР
 with tabs[0]:
 
-    st.markdown("""
-        <style>
-        .executive-quote {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid #eef2f6;
-            box-shadow: 0 10px 30px rgba(0, 74, 153, 0.04);
-            margin: 30px 0;
-            position: relative;
-            text-align: center;
-        }
-        /* Декоративная статусная полоса слева */
-        .executive-quote::before {
-            content: "";
-            position: absolute;
-            left: 0; top: 20%; bottom: 20%;
-            width: 5px;
-            background: linear-gradient(180deg, #004a99 0%, #63b3ed 100%);
-            border-radius: 0 5px 5px 0;
-        }
-        .quote-text {
-            font-size: 1.35rem;
-            color: #1a202c;
-            line-height: 1.6;
-            font-weight: 400;
-            margin: 0 auto;
-            max-width: 900px;
-        }
-        .quote-brand {
-            color: #004a99;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-        .quote-highlight {
-            border-bottom: 2px solid #e2e8f0;
-            font-weight: 600;
-        }
-        </style>
+def show_top_banner():
+    # Создаем три колонки с разными пропорциями: 1 (лого) : 3 (текст) : 2 (векторы)
+    col_logo, col_main, col_vectors = st.columns([1, 3.5, 2.5], gap="large")
 
-        <div class="executive-quote">
-            <p class="quote-text">
-                <span class="quote-brand">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
-                Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
-                обеспечивая точность данных для <span class="quote-highlight">стратегического планирования</span> 
-                и <span class="quote-highlight">экологической безопасности</span> страны.
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-
-       # --- СЕКЦИЯ 1: ГЛОБАЛЬНАЯ МИССИЯ (ДЛЯ ГЛАВ ГОСУДАРСТВ) ---
-    col_mission, col_logo = st.columns([2, 1])
-    with col_mission:
-        st.markdown("""
-            ### 🇰🇿 Государственный приоритет
-            Мониторинг окружающей среды является фундаментом **экологической безопасности** Республики Казахстан. 
-            Данные «Казгидромета» служат основой для принятия межгосударственных решений, выполнения обязательств по 
-            **Парижскому соглашению** и обеспечения устойчивого развития регионов.
-            
-            **Ключевые векторы:**
-            * Предотвращение трансграничных экологических рисков.
-            * Обеспечение населения достоверной информацией о качестве жизни.
-            * Цифровизация экологического контроля в рамках концепции «Слышащее государство».
-            """)
-            
     with col_logo:
-            # Здесь можно вставить изображение сети станций или герб/логотип
-            st.image("https://img.icons8.com/fluency/240/checked-user-male.png", caption="Статус: Государственный контроль", width=200)
+        # Вставьте путь к вашему файлу логотипа или URL
+        st.image("https://www.kazhydromet.kz/themes/kazhydromet/assets/images/logo.png", width=150)
 
-    st.divider()
+    with col_main:
+        st.markdown("""
+            <style>
+            .main-quote {
+                border-left: 5px solid #004a99;
+                padding-left: 25px;
+                margin-top: 10px;
+            }
+            .quote-text-large {
+                font-size: 1.6rem; /* Увеличенный шрифт */
+                color: #1a202c;
+                line-height: 1.4;
+                margin: 0;
+            }
+            .brand-blue {
+                color: #004a99;
+                font-weight: 800;
+            }
+            </style>
+            <div class="main-quote">
+                <p class="quote-text-large">
+                    <span class="brand-blue">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
+                    Фундаментальный опыт и инновации для 
+                    <b>стратегического планирования</b> и <b>безопасности</b> страны.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col_vectors:
+        st.markdown("""
+            <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <p style="color: #004a99; font-weight: 700; margin-bottom: 10px; font-size: 1.1rem;">📊 Ключевые векторы:</p>
+                <ul style="font-size: 0.95rem; color: #4a5568; padding-left: 20px; margin: 0;">
+                    <li style="margin-bottom: 5px;">Предотвращение трансграничных рисков</li>
+                    <li style="margin-bottom: 5px;">Достоверная информация для населения</li>
+                    <li>Цифровизация контроля «Слышащее государство»</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+
+# Вызов баннера
+show_top_banner()
+
+    
 
         # --- СЕКЦИЯ 2: МАСШТАБ ИНФРАСТРУКТУРЫ ---
     st.subheader("📊 Масштаб национальной сети")
