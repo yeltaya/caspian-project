@@ -466,14 +466,7 @@ with tabs[0]:
                     """, unsafe_allow_html=True)
 
                 st.markdown("---")
-                st.caption("Данные соответствуют национальной наблюдательной сети РК")
-
-# ДОБАВЬТЕ ЭТИ ДВЕ СТРОКИ НИЖЕ (на уровне с try)
-        except Exception as e:
-        st.error(f"Ошибка при загрузке дашборда: {e}")
-
-    show_dashboard()
-
+                show_dashboard()
 
 
 
