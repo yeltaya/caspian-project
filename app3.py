@@ -303,56 +303,56 @@ tabs = st.tabs([
 #ОБЗОР
 with tabs[0]:
 
-def show_top_banner():
-    # Создаем три колонки с разными пропорциями: 1 (лого) : 3 (текст) : 2 (векторы)
-    col_logo, col_main, col_vectors = st.columns([1, 3.5, 2.5], gap="large")
+    def show_top_banner():
+        # Создаем три колонки с разными пропорциями: 1 (лого) : 3 (текст) : 2 (векторы)
+        col_logo, col_main, col_vectors = st.columns([1, 3.5, 2.5], gap="large")
 
-    with col_logo:
-        # Вставьте путь к вашему файлу логотипа или URL
-        st.image("https://www.kazhydromet.kz/themes/kazhydromet/assets/images/logo.png", width=150)
+        with col_logo:
+            # Вставьте путь к вашему файлу логотипа или URL
+            st.image("https://www.kazhydromet.kz/themes/kazhydromet/assets/images/logo.png", width=150)
 
-    with col_main:
-        st.markdown("""
-            <style>
-            .main-quote {
-                border-left: 5px solid #004a99;
-                padding-left: 25px;
-                margin-top: 10px;
-            }
-            .quote-text-large {
-                font-size: 1.6rem; /* Увеличенный шрифт */
-                color: #1a202c;
-                line-height: 1.4;
-                margin: 0;
-            }
-            .brand-blue {
-                color: #004a99;
-                font-weight: 800;
-            }
-            </style>
-            <div class="main-quote">
-                <p class="quote-text-large">
-                    <span class="brand-blue">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
-                    Фундаментальный опыт и инновации для 
-                    <b>стратегического планирования</b> и <b>безопасности</b> страны.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+        with col_main:
+            st.markdown("""
+                <style>
+                .main-quote {
+                    border-left: 5px solid #004a99;
+                    padding-left: 25px;
+                    margin-top: 10px;
+                }
+                .quote-text-large {
+                    font-size: 1.6rem; /* Увеличенный шрифт */
+                    color: #1a202c;
+                    line-height: 1.4;
+                    margin: 0;
+                }
+                .brand-blue {
+                    color: #004a99;
+                    font-weight: 800;
+                }
+                </style>
+                <div class="main-quote">
+                    <p class="quote-text-large">
+                        <span class="brand-blue">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
+                        Фундаментальный опыт и инновации для 
+                        <b>стратегического планирования</b> и <b>безопасности</b> страны.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
 
-    with col_vectors:
-        st.markdown("""
-            <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <p style="color: #004a99; font-weight: 700; margin-bottom: 10px; font-size: 1.1rem;">📊 Ключевые векторы:</p>
-                <ul style="font-size: 0.95rem; color: #4a5568; padding-left: 20px; margin: 0;">
-                    <li style="margin-bottom: 5px;">Предотвращение трансграничных рисков</li>
-                    <li style="margin-bottom: 5px;">Достоверная информация для населения</li>
-                    <li>Цифровизация контроля «Слышащее государство»</li>
-                </ul>
-            </div>
-        """, unsafe_allow_html=True)
+        with col_vectors:
+            st.markdown("""
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <p style="color: #004a99; font-weight: 700; margin-bottom: 10px; font-size: 1.1rem;">📊 Ключевые векторы:</p>
+                    <ul style="font-size: 0.95rem; color: #4a5568; padding-left: 20px; margin: 0;">
+                        <li style="margin-bottom: 5px;">Предотвращение трансграничных рисков</li>
+                        <li style="margin-bottom: 5px;">Достоверная информация для населения</li>
+                        <li>Цифровизация контроля «Слышащее государство»</li>
+                    </ul>
+                </div>
+            """, unsafe_allow_html=True)
 
-# Вызов баннера
-show_top_banner()
+    # Вызов баннера
+    show_top_banner()
 
     
 
