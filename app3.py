@@ -369,14 +369,12 @@ with tabs[0]:
     m3.metric("Команда", "3160", "сотрудников в штате")
     m4.metric("Глобальный обмен данными", "WMO", "с 1993 года")
 
-        # --- СЕКЦИЯ 3: СТРАТЕГИЧЕСКАЯ КАРТА (ИНТЕРАКТИВ) ---
-    st.markdown("---")
+    col_1, col_2, col_3  = st.columns([1, 1, 1])
  
     import plotly.graph_objects as go
     import streamlit as st
-
-    def show_strategic_funnel():
-        # Данные
+    
+    with col_a:
         labels = ["Метеорология", "Гидрология", "Агрометеорология", "Экология"]
         values = [351, 442, 226, 175]
         
