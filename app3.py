@@ -531,7 +531,7 @@ with tabs[0]:
                          caption="Прогноз количества осадков", 
                          use_container_width=True)
             except Exception:
-                st.warning("Файл Precipotation.gif не найден в папке с проектом.")
+                st.warning("Файл Precipitation.gif не найден в папке с проектом.")
                 
 
         with col_right:
