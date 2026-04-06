@@ -467,52 +467,6 @@ with tabs[0]:
 
                 st.markdown("---")
 
-    # 1. Сначала определяем функцию
-    def show_strategic_funnel(column):
-        labels = ["Метеорология", "Гидрология", "Агрометео", "Экология"]
-        values = [351, 442, 226, 175]
-        colors = ["#003366", "#0066CC", "#2E7D32", "#C62828"]
-
-        fig = go.Figure(go.Funnel(
-            y = labels,
-            x = values,
-            textinfo = "label+value",
-            textposition = "inside",
-            insidetextfont = {"size": 16, "color": "white", "family": "Arial Black"},
-            marker = {
-                "color": colors,
-                "line": {"width": [2, 2, 2, 2], "color": "white"}
-            },
-            connector = {"line": {"color": "#e2e8f0", "width": 2}}
-        ))
-
-        fig.update_layout(
-            paper_bgcolor = 'rgba(0,0,0,0)',
-            plot_bgcolor = 'rgba(0,0,0,0)',
-            margin = dict(l=10, r=10, t=50, b=10),
-            showlegend = False,
-            height = 450
-        )
-
-        with column:
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-    # 2. Создаем колонки (например, воронка посередине)
-    col_info, col_chart, col_stats = st.columns([1, 2, 1])
-
-    with col_info:
-        st.markdown("### 📊 Масштаб")
-        st.write("Общее количество объектов превышает **1190 единиц**, обеспечивая полный охват территории Казахстана.")
-        st.metric("Общий охват", "100%", help="Государственная сеть мониторинга")
-
-    # Вызываем график в центральную колонку
-    show_strategic_funnel(col_chart)
-
-    with col_stats:
-        st.markdown("### ⚡ Модернизация")
-        st.write("Более **65%** постов переведены на автоматический режим передачи данных 24/7.")
-        st.metric("Автоматизация", "+12%", delta_color="normal")
-        
 
 
  
