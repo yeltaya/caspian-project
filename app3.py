@@ -675,7 +675,6 @@ with tabs[0]:
     import io
     import matplotlib.pyplot as plt
     import matplotlib.animation as animation
-    from src.utils import dms_to_decimal # если функция в другом файле
 
     def show_science_block():
         st.markdown("""
