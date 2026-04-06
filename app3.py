@@ -332,24 +332,81 @@ with tabs[0]:
                 </style>
                 <div class="main-quote">
                     <p class="quote-text-large">
-                        <span class="brand-blue">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
-                        Фундаментальный опыт и инновации для 
-                        <b>стратегического планирования</b> и <b>безопасности</b> страны.
+                    <span class="quote-brand">«Казгидромет»</span>: профессиональный мониторинг и аналитика окружающей среды. 
+            Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
+            обеспечивая точность данных для <span class="quote-highlight">стратегического планирования</span> 
+            и <span class="quote-highlight">экологической безопасности</span> страны.           
                     </p>
                 </div>
             """, unsafe_allow_html=True)
 
         with col_vectors:
             st.markdown("""
-                <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <p style="color: #004a99; font-weight: 700; margin-bottom: 10px; font-size: 1.1rem;">📊 Ключевые векторы:</p>
-                    <ul style="font-size: 0.95rem; color: #4a5568; padding-left: 20px; margin: 0;">
-                        <li style="margin-bottom: 5px;">Предотвращение трансграничных рисков</li>
-                        <li style="margin-bottom: 5px;">Достоверная информация для населения</li>
-                        <li>Цифровизация контроля «Слышащее государство»</li>
-                    </ul>
+                <style>
+                .vector-container {
+                    background: #ffffff;
+                    padding: 20px;
+                    border-radius: 16px;
+                    border: 1px solid #eef2f6;
+                    box-shadow: 0 4px 15px rgba(0, 74, 153, 0.05);
+                }
+                .vector-title {
+                    color: #004a99;
+                    font-weight: 800;
+                    font-size: 1.1rem;
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+                .vector-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    margin-bottom: 12px;
+                    padding: 8px;
+                    border-radius: 8px;
+                    transition: background 0.3s;
+                }
+                .vector-item:hover {
+                    background: #f8fafc;
+                }
+                .vector-icon {
+                    font-size: 1.2rem;
+                    min-width: 24px;
+                }
+                .vector-text {
+                    font-size: 0.95rem;
+                    color: #334e68;
+                    line-height: 1.4;
+                    font-weight: 500;
+                }
+                </style>
+
+                <div class="vector-container">
+                    <div class="vector-title">
+                        <span>🎯 Ключевые векторы</span>
+                    </div>
+                    
+                    <div class="vector-item">
+                        <span class="vector-icon">🛡️</span>
+                        <span class="vector-text">Предотвращение <b>трансграничных</b> экологических рисков</span>
+                    </div>
+                    
+                    <div class="vector-item">
+                        <span class="vector-icon">📢</span>
+                        <span class="vector-text">Достоверное информирование <b>населения РК</b></span>
+                    </div>
+                    
+                    <div class="vector-item" style="margin-bottom: 0;">
+                        <span class="vector-icon">⚡</span>
+                        <span class="vector-text">Цифровой контроль <b>«Слышащее государство»</b></span>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
+    
 
     # Вызов баннера
     show_top_banner()
