@@ -686,9 +686,12 @@ with tabs[0]:
             </div>
         """, unsafe_allow_html=True)
 
+        # Устанавливаем общую высоту для обоих графиков
+        CHART_HEIGHT = 400
+
         col_left, col_right = st.columns(2, gap="large")
 
-        # --- ЛЕВЫЙ БЛОК: КЛИМАТ ---
+        # --- ЛЕВЫЙ БЛОК: КЛИМАТ (Plotly Интерактивный) ---
         with col_left:
             st.markdown("### 🌡️ Климат Казахстана")
             st.write("""
@@ -696,22 +699,47 @@ with tabs[0]:
                 
                 **Ключевые факты:**
                 * Средний рост: **+0.3°C** за десятилетие.
-                * Участились периоды экстремальной жары (выше **35°C**).
+                * Участились периоды экстремальной жары.
                 * Тренд потепления носит устойчивый характер.
             """)
             
             years_temp = np.arange(1894, 2026)
             temp_series = [5.3, 6.1, 5.5, 5.4, 4.7, 7.1, 5.6, 6.4, 6.6, 5.8, 6.4, 5.8, 6.4, 5.3, 5.1, 6.8, 6.3, 5.7, 6.0, 6.8, 7.0, 7.6, 6.0, 6.7, 5.6, 5.9, 5.5, 6.7, 7.2, 6.9, 6.3, 7.6, 6.5, 6.2, 5.2, 5.0, 6.1, 5.6, 6.9, 5.7, 5.3, 6.4, 6.6, 6.0, 6.8, 6.8, 7.0, 6.5, 6.1, 5.9, 7.3, 5.4, 6.4, 6.6, 7.3, 5.7, 5.3, 6.5, 5.9, 6.7, 5.0, 7.1, 5.8, 6.6, 6.5, 5.7, 5.6, 7.5, 7.8, 7.8, 6.0, 7.3, 6.9, 7.1, 6.4, 4.6, 6.6, 7.4, 5.5, 7.0, 6.3, 7.8, 5.6, 7.1, 7.0, 7.4, 6.7, 8.0, 7.3, 8.7, 5.9, 6.6, 6.9, 6.5, 7.6, 7.9, 8.0, 7.9, 7.2, 5.9, 6.8, 8.7, 6.1, 8.1, 7.4, 8.4, 8.2, 8.2, 8.5, 7.6, 8.9, 8.4, 8.1, 8.8, 8.4, 7.9, 8.3, 7.2, 7.8, 9.1, 7.4, 8.9, 8.8, 8.7, 7.5, 8.9, 9.3, 9.0, 9.2, 10.1, 9.1, 10.4]
             
-            fig_cl, ax = plt.subplots(figsize=(8, 5.2))
-            ax.plot(years_temp, temp_series, color='#94a3b8', alpha=0.4)
+            # Расчет линии тренда
             z = np.polyfit(years_temp, temp_series, 1)
             p = np.poly1d(z)
-            ax.plot(years_temp, p(years_temp), color='#E63946', linewidth=2.5, label='Тренд')
-            ax.set_ylabel('°C')
-            ax.set_title('Температурная аномалия')
-            ax.legend()
-            st.pyplot(fig_cl)
+            trend_line = p(years_temp)
+
+            fig_cl = go.Figure()
+            # Основная линия данных
+            fig_cl.add_trace(go.Scatter(
+                x=years_temp, y=temp_series,
+                mode='lines',
+                name='Годовая темп.',
+                line=dict(color='#94a3b8', width=1.5),
+                opacity=0.6
+            ))
+            # Линия тренда
+            fig_cl.add_trace(go.Scatter(
+                x=years_temp, y=trend_line,
+                mode='lines',
+                name='Тренд',
+                line=dict(color='#E63946', width=3)
+            ))
+
+            fig_cl.update_layout(
+                title="Изменение среднегодовой температуры",
+                xaxis_title="Год",
+                yaxis_title="Температура, °C",
+                template="plotly_white",
+                height=CHART_HEIGHT,
+                margin=dict(l=10, r=10, t=40, b=10),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_cl, use_container_width=True)
+        
+        
 
         # --- ПРАВЫЙ БЛОК: КАСПИЙ ---
         with col_right:
@@ -871,8 +899,15 @@ with tabs[0]:
                 yaxis_title="Уровень, м",
                 template="plotly_white",
                 height=380,
-                margin=dict(l=10, r=10, t=40, b=10)
+                margin=dict(l=10, r=10, t=40, b=10),
+                # Настраиваем диапазон оси Y: от -30 до -24
+                yaxis=dict(
+                    range=[-30, -24], 
+                    autorange=False,
+                    dtick=1 # Шаг делений (опционально)
+                )
             )
+            
             st.plotly_chart(fig_casp, use_container_width=True)
 
     show_science_block()
