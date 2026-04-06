@@ -9513,8 +9513,6 @@ with tabs[7]:
     }          
     
 
-
-
     # --- В ИНТЕРФЕЙСЕ STREAMLIT ---
     # Выбор города
     city = st.selectbox("Выберите город:", list(kazakhstan_pollution_data.keys()))
