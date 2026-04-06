@@ -431,7 +431,7 @@ with tabs[0]:
                     st_folium(m, width="100%", height=650, returned_objects=[])
                 
 
-                with col_info:
+            with col_info:
                         st.markdown("#### 📊 Статистика сети")
                         
                         # Ваши эталонные данные (константы)
