@@ -745,6 +745,7 @@ with tabs[0]:
 
     # 3. ВАЖНО: Вызов функции БЕЗ отступа в самом конце
     show_monitoring_block()
+    
     import base64
     def show_ecology_block():
         # Названия файлов из твоей папки
@@ -787,19 +788,19 @@ with tabs[0]:
                 
             if os.path.exists(path_eco_gif):
                     # Код для чтения гифки в формате base64
-                    file_ = open(path_eco_gif, "rb")
-                    contents = file_.read()
-                    data_url = base64.b64encode(contents).decode("utf-8")
-                    file_.close()
+                file_ = open(path_eco_gif, "rb")
+                contents = file_.read()
+                data_url = base64.b64encode(contents).decode("utf-8")
+                file_.close()
 
                     # Отображаем через HTML (это гарантирует анимацию)
-                    st.markdown(
+                st.markdown(
                         f'<img src="data:image/gif;base64,{data_url}" width="100%" style="border-radius: 10px;" alt="Мониторинг SILAM">',
-                        unsafe_allow_html=True
-                    )
-                        st.caption("Интерактивный мониторинг природных сред (Модель SILAM)")
+                unsafe_allow_html=True
+                )
+                st.caption("Интерактивный мониторинг природных сред (Модель SILAM)")
             else:
-                    st.warning("Файл eco.gif не найден")
+                st.warning("Файл eco.gif не найден")
         
     # Вызов функции
     show_ecology_block()
