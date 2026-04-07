@@ -794,7 +794,7 @@ with tabs[0]:
         st.markdown("---")
         st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
         
-        col_text, col_visual = st.columns([1.5, 1], gap="large")
+        col_text, col_visual = st.columns([1.2, 1.3], gap="large")
 
         with col_text:
             st.subheader("Комплексный экологический мониторинг")
