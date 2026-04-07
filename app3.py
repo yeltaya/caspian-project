@@ -653,12 +653,17 @@ with tabs[0]:
     st.markdown("---")    
     
 
-    import os  # Добавьте это в самый верх файла
+    import os
     import streamlit as st
     import pandas as pd
 
     def show_monitoring_block():
-        # Создаем две основные колонки
+        # 1. Определяем пути ВНУТРИ функции
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        path_risk = os.path.join(BASE_DIR, "risk.jpeg")
+        path_hydro = os.path.join(BASE_DIR, "hydro.png")
+
+        # 2. Создаем основные колонки
         col_main_left, col_main_right = st.columns(2, gap="large")
 
         # --- ЛЕВАЯ КОЛОНКА: ГИДРОЛОГИЯ ---
@@ -676,31 +681,26 @@ with tabs[0]:
 
             st.write("---")
             
-            
-            # Создаем внутренние колонки для фото, чтобы они стояли рядом
-            # [1, 1.2] — это пропорция ширины (вторая чуть шире, так как у нее подпись длиннее)
+            # Внутренние колонки для фото (БЕЗ лишних отступов)
             img_row_col1, img_row_col2 = st.columns([1, 1.2])
 
             with img_row_col1:
                 if os.path.exists(path_risk):
-                        # Используем use_container_width=True, чтобы фото заполнило свою мини-колонку
-                    st.image(path_risk, caption="Карта рисков и прогнозирование", use_container_width=True)
+                    st.image(path_risk, caption="Карта рисков", use_container_width=True)
                 else:
                     st.error("Файл risk.jpeg не найден")
 
             with img_row_col2:
                 if os.path.exists(path_hydro):
-                    st.image(path_hydro, caption="Интерактивная карта состояния водных объектов", use_container_width=True)
+                    st.image(path_hydro, caption="Интерактивная карта", use_container_width=True)
                 else:
                     st.error("Файл hydro.png не найден")
                     
-            
         # --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
         with col_main_right:
             st.subheader("🌾 Агрометеорологические прогнозы")
-            st.info("Здесь будет описание и данные по агрометеорологическому мониторингу.")
+            st.info("Описание и данные по агрометеорологическому мониторингу.")
             
-            # Сюда можно добавить ваш текст или графики для правой стороны
             st.write("""
             * 📉 **Прогноз запасов влаги** в почве
             * 🌽 **Фенологический мониторинг** культур
@@ -708,10 +708,11 @@ with tabs[0]:
             * 🚜 **Рекомендации** для проведения посевных работ
             """)
             
-            # Можно добавить интерактивный график или еще одно фото
             st.image("https://via.placeholder.com/600x400", caption="Карта увлажнения почв")
 
-        # Вызов функции
+    # 3. ВАЖНО: Вызов функции БЕЗ отступа в самом конце
+    show_monitoring_block()
+
 
 
 
