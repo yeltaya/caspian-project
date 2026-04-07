@@ -563,10 +563,10 @@ with tabs[0]:
             </style>
         """, unsafe_allow_html=True)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
         # 1. ОСНОВНЫЕ ПУТИ
-IMG_DIR = os.path.join(BASE_DIR)
+    IMG_DIR = os.path.join(BASE_DIR)
 
         # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
     def draw_data_card(col, file_name, title, color, items):
