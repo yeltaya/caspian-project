@@ -781,11 +781,11 @@ with tabs[0]:
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
-            with col_visual:
-                st.write("##") # Небольшой отступ сверху для выравнивания
-                path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
+        with col_visual:
+            st.write("##") # Небольшой отступ сверху для выравнивания
+            path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
                 
-                if os.path.exists(path_eco_gif):
+            if os.path.exists(path_eco_gif):
                     # Код для чтения гифки в формате base64
                     file_ = open(path_eco_gif, "rb")
                     contents = file_.read()
@@ -797,8 +797,8 @@ with tabs[0]:
                         f'<img src="data:image/gif;base64,{data_url}" width="100%" style="border-radius: 10px;" alt="Мониторинг SILAM">',
                         unsafe_allow_html=True
                     )
-                    st.caption("Интерактивный мониторинг природных сред (Модель SILAM)")
-                else:
+                        st.caption("Интерактивный мониторинг природных сред (Модель SILAM)")
+            else:
                     st.warning("Файл eco.gif не найден")
         
     # Вызов функции
