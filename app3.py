@@ -712,7 +712,7 @@ with tabs[0]:
             st.image("https://via.placeholder.com/600x400", caption="Карта увлажнения почв")
 
         # Вызов функции
-    show_monitoring_block()
+
 
 
 
