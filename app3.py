@@ -305,12 +305,12 @@ with tabs[0]:
 
     def show_top_banner():
         # Создаем 3 колонки
-        col_logo, col_main = st.columns([1, 3])
+        col_logo, col_main = st.columns([1, 2])
 
         with col_logo:
             # Используем ваше локальное имя файла
             try:
-                st.image("КГМ.png", width=150)
+                st.image("КГМ.png", width=200)
             except:
                 st.error("Логотип 'КГМ.png' не найден")
 
@@ -449,7 +449,8 @@ with tabs[0]:
 
     show_dashboard()
 
-
+    st.markdown("---")
+    
     def show_economic_info():
         st.markdown("""
             <h2 style='text-align: center; color: #003366; margin-bottom: 40px;'>
@@ -457,59 +458,58 @@ with tabs[0]:
             </h2>
         """, unsafe_allow_html=True)
         
-        
-    # Создаем 5 колонок
-    col1, col2, col3, col4, col5 = st.columns(5)
+    st.markdown("---")
+    
+        # Создаем 5 колонок
+        col1, col2, col3, col4, col5 = st.columns(5)
 
-    with col1:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">⚡</div>
-                <div class="title">Наукастинг<br>(2-6 часов)</div>
-                <div class="description">Сверхкраткосрочные данные.</div>
-            </div>
-        """, unsafe_allow_html=True)
+        with col1:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">⚡</div>
+                    <div class="title">Наукастинг<br>(2-6 часов)</div>
+                    <div class="description">Сверхкраткосрочные данные.</div>
+                </div>
+            """, unsafe_allow_html=True)
 
-    with col2:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">📅</div>
-                <div class="title">Краткосрочные прогнозы</div>
-                <div class="description">Детальная сводка на 1-3 дня, неделю.</div>
-            </div>
-        """, unsafe_allow_html=True)
+        with col2:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">📅</div>
+                    <div class="title">Краткосрочные прогнозы</div>
+                    <div class="description">Детальная сводка на 1-3 дня, неделю.</div>
+                </div>
+            """, unsafe_allow_html=True)
 
-    with col3:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">🔭</div>
-                <div class="title">Долгосрочные прогнозы</div>
-                <div class="description">Прогнозы на декаду, месяц и сезон.</div>
-            </div>
-        """, unsafe_allow_html=True)
+        with col3:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">🔭</div>
+                    <div class="title">Долгосрочные прогнозы</div>
+                    <div class="description">Прогнозы на декаду, месяц и сезон.</div>
+                </div>
+            """, unsafe_allow_html=True)
 
-    with col4:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">⚠️</div>
-                <div class="title">Специализированные прогнозы</div>
-                <div class="description">Прогноз неблагоприятных метеорологических условии, по горной территории, пожарной опасности.</div>
-            </div>
-        """, unsafe_allow_html=True)
+        with col4:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">⚠️</div>
+                    <div class="title">Специализированные прогнозы</div>
+                    <div class="description">Прогноз неблагоприятных метеорологических условии, по горной территории, пожарной опасности.</div>
+                </div>
+            """, unsafe_allow_html=True)
 
-    with col5:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">🏔️</div>
-                <div class="title">Штормовые предупреждения</div>
-                <div class="description">Об опасных ОЯ и СГЯ.</div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        
-        
-        
-
+        with col5:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">🏔️</div>
+                    <div class="title">Штормовые предупреждения</div>
+                    <div class="description">Об опасных ОЯ и СГЯ.</div>
+                </div>
+            """, unsafe_allow_html=True)
+   
+    st.markdown("---")
+    
         # Создаем два основных столбца
         col_left, col_right = st.columns(2, gap="large")
 
