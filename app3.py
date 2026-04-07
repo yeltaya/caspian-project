@@ -319,10 +319,7 @@ with tabs[0]:
             st.markdown("""
                 <div style="border-left: 5px solid #004a99; padding-left: 20px; margin-top: 10px;">
                     <p style="font-size: 2.5rem; color: #1a202c; line-height: 1.3; margin: 0;">
-                        <b style="color: #003366;">Национальная гидрометеорологическая служба Казахстана («Казгидромет»)</b>
-                       Мы сочетаем фундаментальный опыт государственной сети наблюдений с инновационными технологиями, 
-            обеспечивая точность данных для <span class="quote-highlight">стратегического планирования</span> 
-            и <span class="quote-highlight">экологической безопасности</span> страны.           
+                        <b style="color: #003366;">С опорой на 100-летнюю историю государственной системы наблюдений и современные технологии мы обеспечиваем точные, верифицированные данные для стратегических решений и экологической безопасности.           
                     </p>
                 </div>
                 """, unsafe_allow_html=True) 
@@ -402,9 +399,7 @@ with tabs[0]:
 
                 st_folium(m, width="100%", height=650, returned_objects=[])
 
-                with col_info:
-                        st.markdown("#### 📊 Статистика сети")
-                        
+                with col_info:                      
                         # Ваши эталонные данные (константы)
                         stats_data = {
                             "Метеорология": 351,
@@ -412,13 +407,7 @@ with tabs[0]:
                             "Агрометеорология": 226,
                             "Экология": 175
                         }
-                        
-                        # Общая сумма
-                        total_points = sum(stats_data.values())
-                        st.metric("Всего пунктов наблюдения", total_points)
-                        
-                        st.markdown("---")
-                        
+                       
                         # Отрисовка карточек
                         for navr, count in stats_data.items():
                             # Логика подбора эмодзи и цвета акцента
@@ -445,13 +434,12 @@ with tabs[0]:
                                     <span style="font-size: 1.6rem; font-weight: 800; color: {color};">{count}</span>
                                 </div>
                                 <div style="text-align: right; font-size: 0.8rem; color: #666; margin-top: -5px;">
-                                    единиц
+                                    станции/постов
                                 </div>
                             </div>
                             """, unsafe_allow_html=True)
 
                         st.markdown("---")
-                        st.caption("Данные соответствуют регламенту национальной наблюдательной сети")
                 
 
         except Exception as e:
