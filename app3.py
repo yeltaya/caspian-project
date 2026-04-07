@@ -782,22 +782,23 @@ with tabs[0]:
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
-        with col_visual:
-            # Обновляем путь к файлу на eco.gif
-            path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
-            
-            if os.path.exists(path_eco_gif):
-                # Отображение вашей гифки eco.gif
-                st.image(path_eco_gif, caption="Интерактивный мониторинг природных сред", use_container_width=True)
-            else:
-                # Сообщение об ошибке, если файл eco.gif отсутствует
-                st.warning("Файл eco.gif не найден в директории")
-                st.image("https://via.placeholder.com/500x400.png?text=Голограмма+мониторинга", use_container_width=True)
+            with col_visual:
+                path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
+                
+                if os.path.exists(path_eco_gif):
+                    # 1. Убираем use_container_width=True
+                    # 2. Добавляем фиксированную ширину (например, 350 или 400)
+                    # Это автоматически уменьшит высоту, сохраняя пропорции
+                    st.image(path_eco_gif, 
+                             caption="Интерактивный мониторинг природных сред", 
+                             width=200) 
+                else:
+                    st.warning("Файл eco.gif не найден")
+                    st.image("https://via.placeholder.com/500x400.png?text=Голограмма+мониторинга", width=400)
+                    
 
     # Вызов функции
     show_ecology_block()
-
-
 
 
     import streamlit as st
