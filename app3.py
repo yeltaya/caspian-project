@@ -784,6 +784,40 @@ with tabs[0]:
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
+    def show_ecology_block():
+        # Названия файлов
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
+        # Убедитесь, что path_airkz определен здесь или выше
+        path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") 
+
+        st.markdown("---")
+        st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
+        
+        col_text, col_visual = st.columns([1.5, 1], gap="large")
+
+        with col_text:
+            st.subheader("Комплексный экологический мониторинг")
+            st.write("""
+            * 🌫️ **Атмосферный воздух** — контроль уровня загрязнения в городах и промышленных зонах.
+            * ❄️ **Осадки и снежный покров** — анализ химического состава и накоплений.
+            * ☢️ **Радиационный мониторинг** — замер гамма-фона и плотности выпадений.
+            * 🌱 **Состояние почв** — оценка содержания тяжелых металлов и пестицидов.
+            * 💧 **Поверхностные воды** — контроль качества воды в реках и озерах.
+            * 🌉 **Трансграничные водотоки** — мониторинг объектов на границах.
+            """)
+            
+            st.markdown("#### 📱 Мобильное приложение «AirKZ»")
+            st.write("""
+            «AirKZ» отслеживает качество атмосферного воздуха на всей территории Казахстана. 
+            Приложение автоматически определяет ближайший пост по данным геолокации.
+            """)
+            
+            if os.path.exists(path_airkz):
+                st.image(path_airkz, width=400)
+            else:
+                st.caption("📲 Доступно в App Store и Google Play")
+
         with col_visual:
             # УДАЛИТЕ здесь любые упоминания st.write("---") или st.markdown("---")
             
@@ -805,6 +839,8 @@ with tabs[0]:
                     unsafe_allow_html=True
                 )
                 st.caption("Интерактивный экологический прогноз (Модель SILAM)")
+            
+            
             
             
 
