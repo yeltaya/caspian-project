@@ -852,7 +852,7 @@ with tabs[0]:
 
             with clime_col2:
                 if os.path.exists(path_clime1):
-                    st.image(path_clime1, caption="Аномалии осадков", use_container_width=True)
+                    st.image(path_clime1, caption="Ранг температуры", use_container_width=True)
                 else:
                     st.warning("climate1.png не найден")
                     
@@ -888,7 +888,7 @@ with tabs[0]:
 
             with cs_col2:
                 if os.path.exists(path_cs1):
-                    st.image(path_cs1, caption="Текущий тренд (2006-2024)", use_container_width=True)
+                    st.image(path_cs1, caption="Оценка на будущее (2006-2050)", use_container_width=True)
                 else:
                     st.warning("CS1.png не найден")
                     
