@@ -753,7 +753,7 @@ with tabs[0]:
         path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") # Загруженное тобой фото (сохрани его под этим именем)
 
         st.markdown("---")
-        st.markdown("<h2 style='text-align: center; color: #003366;'>🌍 Экологическая оценка</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
         
         col_text, col_visual = st.columns([1, 1.2], gap="medium")
 
@@ -778,7 +778,7 @@ with tabs[0]:
             
             # Если хочешь вставить маленькое фото AirKZ прямо под текстом
             if os.path.exists(path_airkz):
-                st.image(path_airkz, width=200)
+                st.image(path_airkz, width=400)
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
@@ -812,7 +812,7 @@ with tabs[0]:
     def show_science_block():
         st.markdown("""
             <div style="text-align: center; margin-top: 50px;">
-                <h2 style='color: #003366;'>🔬 Научные исследования и мониторинг</h2>
+                <h2 style='color: #003366;'>🔬 Научные исследования</h2>
                 <p style='color: #666; font-size: 1.1rem; margin-bottom: 40px;'>
                     Анализ долгосрочных изменений природной среды Казахстана
                 </p>
@@ -824,9 +824,8 @@ with tabs[0]:
 
         col_left, col_right = st.columns(2, gap="large")
 
-        # --- ЛЕВЫЙ БЛОК: КЛИМАТ (Plotly Интерактивный) ---
         with col_left:
-            st.markdown("### 🌡️ Климат Казахстана")
+            st.markdown("### 🌍 Климат Казахстана")
             st.write("""
                 За последние годы темпы потепления в Казахстане опережают среднеглобальные значения. 
                 
@@ -836,42 +835,28 @@ with tabs[0]:
                 * Тренд потепления носит устойчивый характер.
             """)
             
-            years_temp = np.arange(1894, 2026)
-            temp_series = [5.3, 6.1, 5.5, 5.4, 4.7, 7.1, 5.6, 6.4, 6.6, 5.8, 6.4, 5.8, 6.4, 5.3, 5.1, 6.8, 6.3, 5.7, 6.0, 6.8, 7.0, 7.6, 6.0, 6.7, 5.6, 5.9, 5.5, 6.7, 7.2, 6.9, 6.3, 7.6, 6.5, 6.2, 5.2, 5.0, 6.1, 5.6, 6.9, 5.7, 5.3, 6.4, 6.6, 6.0, 6.8, 6.8, 7.0, 6.5, 6.1, 5.9, 7.3, 5.4, 6.4, 6.6, 7.3, 5.7, 5.3, 6.5, 5.9, 6.7, 5.0, 7.1, 5.8, 6.6, 6.5, 5.7, 5.6, 7.5, 7.8, 7.8, 6.0, 7.3, 6.9, 7.1, 6.4, 4.6, 6.6, 7.4, 5.5, 7.0, 6.3, 7.8, 5.6, 7.1, 7.0, 7.4, 6.7, 8.0, 7.3, 8.7, 5.9, 6.6, 6.9, 6.5, 7.6, 7.9, 8.0, 7.9, 7.2, 5.9, 6.8, 8.7, 6.1, 8.1, 7.4, 8.4, 8.2, 8.2, 8.5, 7.6, 8.9, 8.4, 8.1, 8.8, 8.4, 7.9, 8.3, 7.2, 7.8, 9.1, 7.4, 8.9, 8.8, 8.7, 7.5, 8.9, 9.3, 9.0, 9.2, 10.1, 9.1, 10.4]
-            
-            # Расчет линии тренда
-            z = np.polyfit(years_temp, temp_series, 1)
-            p = np.poly1d(z)
-            trend_line = p(years_temp)
+            st.write("---") # Разделительная линия для аккуратности
 
-            fig_cl = go.Figure()
-            # Основная линия данных
-            fig_cl.add_trace(go.Scatter(
-                x=years_temp, y=temp_series,
-                mode='lines',
-                name='Годовая темп.',
-                line=dict(color='#94a3b8', width=1.5),
-                opacity=0.6
-            ))
-            # Линия тренда
-            fig_cl.add_trace(go.Scatter(
-                x=years_temp, y=trend_line,
-                mode='lines',
-                name='Тренд',
-                line=dict(color='#E63946', width=3)
-            ))
+            # Определяем пути к файлам
+            path_clime = os.path.join(BASE_DIR, "climate.png")
+            path_clime1 = os.path.join(BASE_DIR, "climate1.png")
 
-            fig_cl.update_layout(
-                title="Изменение среднегодовой температуры",
-                xaxis_title="Год",
-                yaxis_title="Температура, °C",
-                template="plotly_white",
-                height=CHART_HEIGHT,
-                margin=dict(l=10, r=10, t=40, b=10),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-            )
-            st.plotly_chart(fig_cl, use_container_width=True)
-        
+            # Создаем внутренние мини-колонки для двух рисунков рядом
+            clime_col1, clime_col2 = st.columns(2)
+
+            with clime_col1:
+                if os.path.exists(path_clime):
+                    st.image(path_clime, caption="Тренды температуры", use_container_width=True)
+                else:
+                    st.warning("climate.png не найден")
+
+            with clime_col2:
+                if os.path.exists(path_clime1):
+                    st.image(path_clime1, caption="Аномалии осадков", use_container_width=True)
+                else:
+                    st.warning("climate1.png не найден")
+                    
+
         
 
         # --- ПРАВЫЙ БЛОК: КАСПИЙ ---
