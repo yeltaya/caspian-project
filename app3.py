@@ -305,7 +305,7 @@ with tabs[0]:
 
     def show_top_banner():
         # Создаем 3 колонки
-        col_logo, col_main = st.columns([1, 2])
+        col_logo, col_main = st.columns([0.5, 1])
 
         with col_logo:
             # Используем ваше локальное имя файла
@@ -683,12 +683,12 @@ with tabs[0]:
 
             # Проверка на наличие файлов (чтобы приложение не падало, если забыли закинуть фото)
             if os.path.exists(path_risk):
-                st.image(path_risk, caption="Карта рисков и прогнозирование", use_container_width=True)
+                st.image(path_risk, caption="Карта рисков и прогнозирование", width=300)
             else:
                 st.error(f"Файл не найден: {path_risk}")
 
             if os.path.exists(path_hydro):
-                st.image(path_hydro, caption="Гидрологический мониторинг стока", use_container_width=True)
+                st.image(path_hydro, caption="Визуализация текущего состояния водных объектов Казахстана в интерактивной карте", width=350)
             else:
                 st.error(f"Файл не найден: {path_hydro}")
             
