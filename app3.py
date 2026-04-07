@@ -512,7 +512,7 @@ with tabs[0]:
         st.markdown("---")
         
         # Вариант с использованием кастомного HTML для акцента
-        st.markdown(
+    st.markdown(
             """
             <div style="background-color: #f0f7ff; padding: 25px; border-left: 5px solid #003366; border-radius: 10px; margin: 20px 0;">
                 <h4 style="color: #003366; margin-bottom: 10px; font-weight: bold;">
@@ -529,10 +529,10 @@ with tabs[0]:
             unsafe_allow_html=True
         )
    
-        st.markdown("---")
+    st.markdown("---")
 
         # --- CSS ДЛЯ КАРТОЧЕК ---
-        st.markdown("""
+    st.markdown("""
             <style>
                 .data-box {
                     padding: 15px;
@@ -563,13 +563,13 @@ with tabs[0]:
             </style>
         """, unsafe_allow_html=True)
 
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
         # 1. ОСНОВНЫЕ ПУТИ
-        IMG_DIR = os.path.join(BASE_DIR)
+    IMG_DIR = os.path.join(BASE_DIR)
 
         # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
-        def draw_data_card(col, file_name, title, color, items):
+    def draw_data_card(col, file_name, title, color, items):
             path = os.path.join(IMG_DIR, file_name)
             with col:
                 # Пытаемся отобразить картинку/гифку
@@ -591,7 +591,7 @@ with tabs[0]:
                 """, unsafe_allow_html=True)
 
         # 3. ОБЩИЙ CSS
-        st.markdown("""
+    st.markdown("""
             <style>
                 .data-box {
                     padding: 15px;
@@ -649,7 +649,7 @@ with tabs[0]:
         )
     
 # Разделитель перед текстом о Казгидромете
-        st.markdown("---")    
+    st.markdown("---")    
     
 
 
