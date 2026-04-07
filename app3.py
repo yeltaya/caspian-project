@@ -287,6 +287,7 @@ st.markdown(f"""
 
 # --- 4. СОЗДАНИЕ ВКЛАДОК ---
 tabs = st.tabs([
+    "🔍 Обзор", 
     "📊 Мониторинг", 
     "🌤️ Прогноз погоды", 
     "🌾 Агрометео", 
@@ -298,8 +299,752 @@ tabs = st.tabs([
     "🌐 Сотрудничество"    
 ])
 
-#МОНИТОРИНГ
+
+#ОБЗОР
 with tabs[0]:
+
+    def show_top_banner():
+        # Создаем 3 колонки
+        col_logo, col_main = st.columns([1, 2])
+
+        with col_logo:
+            # Используем ваше локальное имя файла
+            try:
+                st.image("КГМ.png", width=200)
+            except:
+                st.error("Логотип 'КГМ.png' не найден")
+
+        with col_main:
+            # Используем встроенный стиль через style в div, это надежнее
+            st.markdown("""
+                <div style="border-left: 5px solid #004a99; padding-left: 20px; margin-top: 10px;">
+                    <p style="font-size: 2.5rem; color: #1a202c; line-height: 1.3; margin: 0;">
+                        <b style="color: #003366;">С опорой на 100-летнюю историю государственной системы наблюдений и современные технологии мы обеспечиваем точные, верифицированные данные для стратегических решений и экологической безопасности.           
+                    </p>
+                </div>
+                """, unsafe_allow_html=True) 
+               
+    # Не забудьте вызвать функцию
+    show_top_banner()
+    st.markdown("---")
+    
+
+        # --- СЕКЦИЯ 2: МАСШТАБ ИНФРАСТРУКТУРЫ ---
+    st.subheader("📊 Государственная наблюдательная сеть")    
+       
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Мониторинг", "1000+ станций и постов")
+    m2.metric("История", "100+ лет наблюдений", "24/7")
+    m3.metric("География", "17 филиалов", "весь Казахстан")
+    m4.metric("Глобальный обмен данными", "WMO", "с 1993 года")
+
+
+    import streamlit as st
+    import pandas as pd
+    import folium
+    from streamlit_folium import st_folium
+    import re
+
+    # Функция конвертации координат
+    def dms_to_decimal(dms_str):
+        try:
+            if pd.isna(dms_str) or str(dms_str).strip() == "": return None
+            numbers = re.findall(r"[-+]?\d*\.\d+|\d+", str(dms_str))
+            if len(numbers) >= 3:
+                deg, mn, sec = map(float, numbers[:3])
+                return deg + mn/60 + sec/3600
+            elif len(numbers) == 1:
+                return float(numbers[0])
+            return None
+        except:
+            return None
+
+    def show_dashboard():
+        try:
+            # Загрузка данных
+            df = pd.read_excel("station.xlsx")
+            df.columns = df.columns.str.strip()
+            df['lat'] = df['широта'].apply(dms_to_decimal)
+            df['long'] = df['долгота'].apply(dms_to_decimal)
+            df = df.dropna(subset=['lat', 'long'])
+
+            # Создаем две колонки: 70% для карты, 30% для инфо
+            col_map, col_info = st.columns([2.5, 1], gap="medium")
+
+            with col_map:
+                st.markdown("#### 🗺️ Интерактивная карта сети")
+                
+                # Цветовая схема
+                color_map = {
+                    "Гидрология": "#0066CC",
+                    "Метеорология": "#FF9900",
+                    "Экология": "#CC0000",
+                    "Агрометеорология": "#2E7D32"
+                }
+
+                m = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="cartodbpositron")
+
+                for _, row in df.iterrows():
+                    icon_color = color_map.get(row['Направление'], '#666666')
+                    folium.CircleMarker(
+                        location=[row['lat'], row['long']],
+                        radius=5,
+                        popup=f"<b>{row['Станция/пост']}</b><br>{row['Направление']}",
+                        color=icon_color,
+                        fill=True,
+                        fill_color=icon_color,
+                        fill_opacity=0.7,
+                        weight=1
+                    ).add_to(m)
+
+                st_folium(m, width="100%", height=650, returned_objects=[])
+
+                with col_info:
+                        st.markdown("####")
+                        
+                        # Ваши эталонные данные (константы)
+                        stats_data = {
+                            "Метеорология": 351,
+                            "Гидрология": 442,
+                            "Агрометеорология": 226,
+                            "Экология": 175
+                        }
+                       
+                        # Отрисовка карточек
+                        for navr, count in stats_data.items():
+                            # Логика подбора эмодзи и цвета акцента
+                            if "Гидр" in navr:
+                                emoji, color = "💧", "#0066CC"
+                            elif "Мет" in navr:
+                                emoji, color = "🌤️", "#FF9900"
+                            elif "Агр" in navr:
+                                emoji, color = "🌱", "#2E7D32"
+                            else: # Экология
+                                emoji, color = "🧪", "#CC0000"
+                            
+                            st.markdown(f"""
+                            <div style="
+                                background-color: #f8fafc; 
+                                padding: 12px; 
+                                border-radius: 10px; 
+                                border-left: 5px solid {color}; 
+                                margin-bottom: 12px; 
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                            ">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 1.1rem; font-weight: 600; color: #334e68;">{emoji} {navr}</span>
+                                    <span style="font-size: 1.6rem; font-weight: 800; color: {color};">{count}</span>
+                                </div>
+                                <div style="text-align: right; font-size: 0.8rem; color: #666; margin-top: -5px;">
+                                    станции/постов
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                        st.markdown("---")
+                
+
+        except Exception as e:
+            st.error(f"Ошибка: {e}. Убедитесь, что файл station.xlsx в порядке.")
+
+    show_dashboard()
+
+    st.markdown("---")
+    
+    def show_economic_info():
+        st.markdown("""
+            <h2 style='text-align: center; color: #003366; margin-bottom: 40px;'>
+                Обеспечение гидрометеорологической и экологической информацией отраслей экономики
+            </h2>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+    
+        # Создаем 5 колонок
+        col1, col2, col3, col4, col5 = st.columns(5)
+
+        with col1:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">⚡</div>
+                    <div class="title">Наукастинг<br>(2-6 часов)</div>
+                    <div class="description">Сверхкраткосрочный прогноз погоды.</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">📅</div>
+                    <div class="title">Краткосрочный прогноз</div>
+                    <div class="description">Прогноз погоды от 1 до 7 дней.</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+        with col3:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">🔭</div>
+                    <div class="title">Долгосрочный прогноз</div>
+                    <div class="description">Прогноз погоды от 10 дней до сезоны.</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+        with col4:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">🏔️</div>
+                    <div class="title">Специализированный прогноз</div>
+                    <div class="description">Прогноз неблагоприятных метеорологических условии, по туристическим маршритам, по горной территории, пожарной опасности.</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+        with col5:
+            st.markdown("""
+                <div class="forecast-card">
+                    <div class="icon">⚠️</div>
+                    <div class="title">Штормовые предупреждения</div>
+                    <div class="description">Об опасных явлениях.</div>
+                </div>
+            """, unsafe_allow_html=True)
+   
+# Разделитель перед текстом о Казгидромете
+        st.markdown("---")
+        
+        # Вариант с использованием кастомного HTML для акцента
+        st.markdown(
+            """
+            <div style="background-color: #f0f7ff; padding: 25px; border-left: 5px solid #003366; border-radius: 10px; margin: 20px 0;">
+                <h4 style="color: #003366; margin-bottom: 10px; font-weight: bold;">
+                    📡 Казгидромет внедряет прогноз погоды с высоким разрешением 2 км — 
+                    <span style="color: #0066cc;">технологический прорыв, уникальный для Центральной Азии.</span>
+                </h4>
+                <p style="color: #334155; font-size: 1.1rem; line-height: 1.6; margin: 0;">
+                    Обеспечивая беспрецедентную точность прогнозов, критически важную для раннего предупреждения 
+                    природных рисков, укрепления климатической и экологической безопасности на национальном 
+                    и региональном уровнях.
+                </p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+   
+        st.markdown("---")
+
+        # --- CSS ДЛЯ КАРТОЧЕК ---
+        st.markdown("""
+            <style>
+                .data-box {
+                    padding: 15px;
+                    border-radius: 0 0 12px 12px; /* Скругляем только низ, так как сверху картинка */
+                    border-left: 5px solid;
+                    background: #ffffff;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                    min-height: 280px;
+                    margin-bottom: 20px;
+                }
+                .data-title {
+                    font-weight: bold;
+                    font-size: 1.1em;
+                    margin-bottom: 10px;
+                    color: #1f2937;
+                }
+                .data-list {
+                    font-size: 0.9em;
+                    padding-left: 20px;
+                    color: #4b5563;
+                }
+                .card-img {
+                    width: 100%;
+                    height: 150px;
+                    object-fit: cover;
+                    border-radius: 12px 12px 0 0; /* Скругляем верх картинки */
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        # 1. ОСНОВНЫЕ ПУТИ
+        IMG_DIR = os.path.join(BASE_DIR)
+
+        # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
+        def draw_data_card(col, file_name, title, color, items):
+            path = os.path.join(IMG_DIR, file_name)
+            with col:
+                # Пытаемся отобразить картинку/гифку
+                if os.path.exists(path):
+                    st.image(path, use_container_width=True)
+                else:
+                    # Если файла нет, оставляем пустое место или заглушку, чтобы блоки не прыгали
+                    st.warning(f"Файл {file_name} не найден")
+                
+                # HTML-контент карточки
+                list_html = "".join([f"<li>{item}</li>" for item in items])
+                st.markdown(f"""
+                    <div class="data-box" style="border-left-color: {color};">
+                        <div class="data-title">{title}</div>
+                        <ul class="data-list">
+                            {list_html}
+                        </ul>
+                    </div>
+                """, unsafe_allow_html=True)
+
+        # 3. ОБЩИЙ CSS
+        st.markdown("""
+            <style>
+                .data-box {
+                    padding: 15px;
+                    border-radius: 0 0 12px 12px;
+                    border-left: 5px solid;
+                    background: #ffffff;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                    min-height: 280px; /* Немного увеличил, чтобы текст влезал */
+                    margin-bottom: 20px;
+                }
+                .data-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #1f2937; }
+                .data-list { font-size: 0.85em; padding-left: 20px; color: #4b5563; line-height: 1.4; }
+                .data-list b { color: #1f2937; }
+            </style>
+        """, unsafe_allow_html=True)
+
+        # 4. СОЗДАНИЕ КОЛОНОК И ВЫЗОВ ФУНКЦИЙ
+        col_d1, col_d2, col_d3, col_d4 = st.columns(4)
+
+        draw_data_card(
+            col_d1, "station1.gif", "📍 Наземная сеть", "#3b82f6", 
+            [
+                "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
+                "<b>Аэрология:</b> Зондирование атмосферы до 30 км.",
+                "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."
+            ]
+        )
+
+        draw_data_card(
+            col_d2, "station2.gif", "🗺️ Аналитика", "#10b981", 
+            [
+                "<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.",
+                "<b>ГСТ ВМО:</b> Обмен данными.",
+                "<b>Сетки:</b> Анализ полей метеопараметров."
+            ]
+        )
+
+        draw_data_card(
+            col_d3, "station3.gif", "📡 Спутники", "#8b5cf6", 
+            [
+                "<b>EUMETSAT:</b> Европейские геостационары.",
+                "<b>FengYun:</b> Оперативные данные из КНР.",
+                "<b>Метеор-М:</b> Российские орбитальные системы."
+            ]
+        )
+
+        draw_data_card(
+            col_d4, "station4.gif", "⚙️ Численные модели", "#f59e0b", 
+            [
+                "<b>ECMWF:</b> Глобальные прогнозы до 9 км.",
+                "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.",
+                "<b>WRF-Kaz:</b> Локальная модель Казгидромет.",
+                
+            ]
+        )
+    
+    
+    
+        # Создаем два основных столбца
+        col_left, col_right = st.columns(2, gap="large")
+
+
+                
+                
+
+        with col_right:
+            # БЛОК 2: АГРОМЕТЕО
+            st.markdown("""
+                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #2E7D32; margin-bottom: 20px;">
+                    <h3 style="color: #2E7D32; margin-top: 0;">🌱 Агрометеорологические прогнозы</h3>
+                    <p style="font-size: 1rem; color: #1a202c;">
+                        Охват всех ключевых <b>зерносеющих регионов</b> Казахстана.<br>
+                        Оценка урожайности и рисков возникновения засухи.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            st.write("") # Отступ
+            
+    # ГИФКА (Размещаем под первым блоком)
+            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
+            
+            try:
+                st.image("agro.gif", 
+                         caption="Агропрогнозы", 
+                         width=600)
+            except Exception:
+                st.warning("Файл agro.gif не найден в папке с проектом.")
+                
+            
+        # Создаем два основных столбца
+        col_1, col_2 = st.columns(2, gap="large")            
+            
+        with col_1:
+            # БЛОК 3: ГИДРОЛОГИЯ
+            st.markdown("""
+                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #004a99; margin-bottom: 20px;">
+                    <h3 style="color: #004a99; margin-top: 0;">💧 Гидрологические прогнозы</h3>
+                    <p style="font-size: 1rem; color: #1a202c;">
+                        Мониторинг <b>равнинных и горных рек</b>.<br>
+                        Оперативная оценка паводкоопасных регионов и притока к водохранилищам.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+    # ГИФКА (Размещаем под первым блоком)
+            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
+            
+            try:
+                st.image("hydro.gif", 
+                         caption="Гидрология", 
+                         width=550)
+            except Exception:
+                st.warning("Файл hydro.gif не найден в папке с проектом.")
+                
+        with col_2:
+            # БЛОК 4: ЭКОЛОГИЯ
+            st.markdown("""
+                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #CC0000;">
+                    <h3 style="color: #CC0000; margin-top: 0;">🧪 Экологическая оценка</h3>
+                    <p style="font-size: 1rem; color: #1a202c;">
+                        Прогноз <b>НМУ</b> (неблагоприятных метеоусловий) по крупным городам Казахстана.<br>
+                        Контроль качества атмосферного воздуха.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+    # ГИФКА (Размещаем под первым блоком)
+    
+            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
+            
+            try:
+                st.image("eco.gif", 
+                         caption="Гидрология", 
+                         width=550)
+            except Exception:
+                st.warning("Файл eco.gif не найден в папке с проектом.")
+                
+    show_economic_info()
+
+    def show_digital_solutions():
+        st.markdown("""
+            <h2 style='text-align: center; color: #003366; margin-top: 50px; margin-bottom: 10px;'>
+                Цифровая экосистема «Казгидромет»
+            </h2>
+            <p style='text-align: center; color: #666; margin-bottom: 40px;'>Интеграция прогнозных моделей и Big Data решений</p>
+        """, unsafe_allow_html=True)
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        # Вспомогательная функция для генерации HTML карточки
+        def create_card(icon, title, color, load, text):
+            return f"""
+            <div style="
+                background: linear-gradient(145deg, #ffffff, #f0f4f8);
+                padding: 25px 20px;
+                border-radius: 20px;
+                border: 1px solid #e1e8ed;
+                box-shadow: 5px 5px 15px #d1d9e6, -5px -5px 15px #ffffff;
+                height: 380px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            ">
+                <div>
+                    <div style="font-size: 3rem; margin-bottom: 15px; text-align: center;">{icon}</div>
+                    <h4 style="color: #003366; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-bottom: 2px solid {color}; padding-bottom: 5px;">{title}</h4>
+                    <p style="font-size: 0.9rem; color: #4a5568; line-height: 1.5; text-align: center;">
+                        {text}
+                    </p>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <div style="height: 6px; width: 100%; background-color: #e0e0e0; border-radius: 3px; margin-bottom: 10px; overflow: hidden;">
+                        <div style="height: 100%; width: {load}%; background-color: {color}; border-radius: 3px;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888;">
+                        <span>Статус: Активен</span>
+                        <span>{load}% точность</span>
+                    </div>
+                </div>
+            </div>
+            """
+
+        with col1:
+            st.markdown(create_card("🌀", "WRF", "#0066CC", "94", "Численное моделирование метеорологических процессов с сеткой до 2 км."), unsafe_allow_html=True)
+
+        with col2:
+            st.markdown(create_card("🌫️", "SILAM", "#6366f1", "88", "Глобальное и региональное моделирование состава атмосферы и качества воздуха."), unsafe_allow_html=True)
+
+        with col3:
+            st.markdown(create_card("🌾", "AGRODATA", "#10b981", "91", "Платформа принятия решений для АПК на основе спутниковых и наземных данных."), unsafe_allow_html=True)
+
+        with col4:
+            st.markdown(create_card("📱", "Air.kz", "#ef4444", "99", "Единое окно мониторинга качества воздуха для населения и госорганов."), unsafe_allow_html=True)
+
+        st.markdown("---", unsafe_allow_html=True)
+        st.info("🛰️ **Технологический стек:** Спутниковое зондирование + Сеть наземных станций + Суперкомпьютерные вычисления")
+        
+
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import plotly.graph_objects as go
+    import io
+    import matplotlib.pyplot as plt
+    import matplotlib.animation as animation
+
+    def show_science_block():
+        st.markdown("""
+            <div style="text-align: center; margin-top: 50px;">
+                <h2 style='color: #003366;'>🔬 Научные исследования и мониторинг</h2>
+                <p style='color: #666; font-size: 1.1rem; margin-bottom: 40px;'>
+                    Анализ долгосрочных изменений природной среды Казахстана
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
+        # Устанавливаем общую высоту для обоих графиков
+        CHART_HEIGHT = 400
+
+        col_left, col_right = st.columns(2, gap="large")
+
+        # --- ЛЕВЫЙ БЛОК: КЛИМАТ (Plotly Интерактивный) ---
+        with col_left:
+            st.markdown("### 🌡️ Климат Казахстана")
+            st.write("""
+                За последние годы темпы потепления в Казахстане опережают среднеглобальные значения. 
+                
+                **Ключевые факты:**
+                * Средний рост: **+0.3°C** за десятилетие.
+                * Участились периоды экстремальной жары.
+                * Тренд потепления носит устойчивый характер.
+            """)
+            
+            years_temp = np.arange(1894, 2026)
+            temp_series = [5.3, 6.1, 5.5, 5.4, 4.7, 7.1, 5.6, 6.4, 6.6, 5.8, 6.4, 5.8, 6.4, 5.3, 5.1, 6.8, 6.3, 5.7, 6.0, 6.8, 7.0, 7.6, 6.0, 6.7, 5.6, 5.9, 5.5, 6.7, 7.2, 6.9, 6.3, 7.6, 6.5, 6.2, 5.2, 5.0, 6.1, 5.6, 6.9, 5.7, 5.3, 6.4, 6.6, 6.0, 6.8, 6.8, 7.0, 6.5, 6.1, 5.9, 7.3, 5.4, 6.4, 6.6, 7.3, 5.7, 5.3, 6.5, 5.9, 6.7, 5.0, 7.1, 5.8, 6.6, 6.5, 5.7, 5.6, 7.5, 7.8, 7.8, 6.0, 7.3, 6.9, 7.1, 6.4, 4.6, 6.6, 7.4, 5.5, 7.0, 6.3, 7.8, 5.6, 7.1, 7.0, 7.4, 6.7, 8.0, 7.3, 8.7, 5.9, 6.6, 6.9, 6.5, 7.6, 7.9, 8.0, 7.9, 7.2, 5.9, 6.8, 8.7, 6.1, 8.1, 7.4, 8.4, 8.2, 8.2, 8.5, 7.6, 8.9, 8.4, 8.1, 8.8, 8.4, 7.9, 8.3, 7.2, 7.8, 9.1, 7.4, 8.9, 8.8, 8.7, 7.5, 8.9, 9.3, 9.0, 9.2, 10.1, 9.1, 10.4]
+            
+            # Расчет линии тренда
+            z = np.polyfit(years_temp, temp_series, 1)
+            p = np.poly1d(z)
+            trend_line = p(years_temp)
+
+            fig_cl = go.Figure()
+            # Основная линия данных
+            fig_cl.add_trace(go.Scatter(
+                x=years_temp, y=temp_series,
+                mode='lines',
+                name='Годовая темп.',
+                line=dict(color='#94a3b8', width=1.5),
+                opacity=0.6
+            ))
+            # Линия тренда
+            fig_cl.add_trace(go.Scatter(
+                x=years_temp, y=trend_line,
+                mode='lines',
+                name='Тренд',
+                line=dict(color='#E63946', width=3)
+            ))
+
+            fig_cl.update_layout(
+                title="Изменение среднегодовой температуры",
+                xaxis_title="Год",
+                yaxis_title="Температура, °C",
+                template="plotly_white",
+                height=CHART_HEIGHT,
+                margin=dict(l=10, r=10, t=40, b=10),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_cl, use_container_width=True)
+        
+        
+
+        # --- ПРАВЫЙ БЛОК: КАСПИЙ ---
+        with col_right:
+            st.markdown("### 🌊 Каспийское море")
+            st.write("""
+                Динамика уровня моря с 1900 года показывает циклы трансгрессий и регрессий, определяющие экологию региона.
+                
+                **Текущее состояние:**
+                * Исторический минимум 1977 года (**-29.01 м**) достигнут в 2024 году.
+                * С 2006 года море потеряло более **2-х метров** уровня.
+                * Критическая ситуация для мелководного Северного Каспия.
+            """)
+
+            # Используем твой полный data_str
+            data_str = """
+            1900 -25.74
+            1901 -25.76
+            1902 -25.86
+            1903 -25.74
+            1904 -25.78
+            1905 -25.85
+            1906 -25.80
+            1907 -25.87
+            1908 -25.88
+            1909 -25.83
+            1910 -26.02
+            1911 -26.24
+            1912 -26.24
+            1913 -26.33
+            1914 -26.23
+            1915 -26.03
+            1916 -25.94
+            1917 -25.89
+            1918 -25.95
+            1919 -25.96
+            1920 -26.10
+            1921 -26.29
+            1922 -26.39
+            1923 -26.45
+            1924 -26.47
+            1925 -26.56
+            1926 -26.47
+            1927 -26.28
+            1928 -26.11
+            1929 -25.94
+            1930 -26.07
+            1931 -26.19
+            1932 -26.11
+            1933 -26.13
+            1934 -26.33
+            1935 -26.55
+            1936 -26.78
+            1937 -27.00
+            1938 -27.32
+            1939 -27.62
+            1940 -27.79
+            1941 -27.85
+            1942 -27.77
+            1943 -27.75
+            1944 -27.78
+            1945 -27.96
+            1946 -27.91
+            1947 -27.78
+            1948 -27.76
+            1949 -27.83
+            1950 -28.02
+            1951 -28.17
+            1952 -28.16
+            1953 -28.27
+            1954 -28.28
+            1955 -28.36
+            1956 -28.41
+            1957 -28.33
+            1958 -28.20
+            1959 -28.17
+            1960 -28.23
+            1961 -28.41
+            1962 -28.51
+            1963 -28.44
+            1964 -28.37
+            1965 -28.44
+            1966 -28.27
+            1967 -28.34
+            1968 -28.46
+            1969 -28.47
+            1970 -28.36
+            1971 -28.42
+            1972 -28.51
+            1973 -28.57
+            1974 -28.59
+            1975 -28.69
+            1976 -28.93
+            1977 -29.01
+            1978 -28.94
+            1979 -28.60
+            1980 -28.49
+            1981 -28.33
+            1982 -28.25
+            1983 -28.08
+            1984 -28.04
+            1985 -27.95
+            1986 -27.87
+            1987 -27.76
+            1988 -27.57
+            1989 -27.58
+            1990 -27.52
+            1991 -27.16
+            1992 -26.99
+            1993 -26.95
+            1994 -26.75
+            1995 -26.62
+            1996 -26.79
+            1997 -26.98
+            1998 -27.01
+            1999 -27.03
+            2000 -27.08
+            2001 -27.17
+            2002 -27.15
+            2003 -27.09
+            2004 -27.01
+            2005 -26.91
+            2006 -27.04
+            2007 -27.07
+            2008 -27.13
+            2009 -27.15
+            2010 -27.25
+            2011 -27.50
+            2012 -27.57
+            2013 -27.61
+            2014 -27.74
+            2015 -27.98
+            2016 -27.99
+            2017 -27.99
+            2018 -27.98
+            2019 -28.21
+            2020 -28.24
+            2021 -28.43
+            2022 -28.66
+            2023 -28.87
+            2024 -29.05
+            """
+            df_casp = pd.read_csv(io.StringIO(data_str.strip()), sep=r'\s+', names=['Year', 'Level'])
+
+            fig_casp = go.Figure()
+            fig_casp.add_trace(go.Scatter(
+                x=df_casp['Year'], y=df_casp['Level'],
+                mode='lines',
+                line=dict(color='#1E3A8A', width=3),
+                fill='tozeroy',
+                fillcolor='rgba(30, 58, 138, 0.1)',
+                name='Уровень'
+            ))
+
+            fig_casp.update_layout(
+                title="Многолетние колебания уровня Каспия",
+                xaxis_title="Год",
+                yaxis_title="Уровень, м",
+                template="plotly_white",
+                height=380,
+                margin=dict(l=10, r=10, t=40, b=10),
+                # Настраиваем диапазон оси Y: от -30 до -24
+                yaxis=dict(
+                    range=[-30, -24], 
+                    autorange=False,
+                    dtick=1 # Шаг делений (опционально)
+                )
+            )
+            
+            st.plotly_chart(fig_casp, use_container_width=True)
+
+    show_science_block()
+
+
+
+
+
+
+
+
+    
+#МОНИТОРИНГ
+with tabs[1]:
     # 1. СТИЛИЗАЦИЯ
     st.markdown("""
         <style>
@@ -1742,7 +2487,7 @@ with tabs[0]:
             
             st.warning("""
             **🚨 Экстренные оповещения**
-            * Штормовые предупреждения (ОЯ/НЯ)
+            * Штормовые предупреждения (СГЯ)
             * Уведомления о резких подъемах уровней
             """)
             
@@ -1914,7 +2659,7 @@ with tabs[0]:
         with col_text:
             st.markdown("""
             ****
-            Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами, оказывающими влияние на жизнедеятельность растений и животных – температурой и влажностью воздуха, скоростью и направлением ветра, видом и количеством осадков, чнежным покровом, атмосферными явлениями и суммарной солнечной радиацией.
+            Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами, оказывающими влияние на жизнедеятельность растений и животных – температурой и влажностью воздуха, скоростью и направлением ветра, видом и количеством осадков, снежным покровом, атмосферными явлениями и суммарной солнечной радиацией.
             
             **Основные культуры:**
             * 🌾 Зерновые
@@ -2078,7 +2823,7 @@ with tabs[0]:
     def render_agro_climate_comparison():
         st.markdown("---")
         # Заголовок блока
-        st.markdown("### 🌡️ Сравнительный анализ климатических показателей")
+        st.markdown("### 🌡️ Анализ агроклиматических показателей")
 
         # Пути к файлам (используем ваши локальные пути)
         path_temp2 = "agro2.jpg"
@@ -2393,7 +3138,7 @@ st.markdown("""
 
     
 # ПРОГНОЗ ПОГОДЫ   
-with tabs[1]:
+with tabs[2]:
     # Заголовок с кастомным цветом
     st.markdown("""
         <h1 style='color: #1E3A8A; font-family: sans-serif;'>
@@ -2556,7 +3301,7 @@ with tabs[1]:
     st.markdown("<h3 style='text-align: center; color: #1E3A8A;'>📊 Средняя оправдываемость прогнозов</h3>", unsafe_allow_html=True)
 
     # Верхний ряд: Основные метрики (интерактивные "кнопки")
-    col_acc1, col_acc2, col_acc3, col_acc4, col_acc5  = st.columns(5)
+    col_acc1, col_acc2, col_acc3, col_acc4, col_acc5, col_acc6   = st.columns(6)
     with col_acc1:
         st.metric("Суточные прогнозы", "96%", help="Высочайшая точность подтверждена верификацией")
     with col_acc2:
@@ -2564,9 +3309,11 @@ with tabs[1]:
     with col_acc3:
         st.metric("Прогнозы на неделю", "91%")
     with col_acc4:
-        st.metric("Прогнозы на месяц", "75%")
+        st.metric("Прогнозы на декаду", "87%")
     with col_acc5:
-        st.metric("Прогнозы на сезон", "65%")
+        st.metric("Прогнозы на месяц", "70%")
+    with col_acc6:
+        st.metric("Прогнозы на сезон", "60%")
     st.divider()
 
 
@@ -3085,7 +3832,7 @@ with tabs[1]:
         col_climat_data, col_viz1 = st.columns([1.2, 1], gap="medium")
 
         with col_climat_data:
-            st.markdown("#### 📜 Климатическая характеристика: Март")
+            st.markdown("#### 📜 Климатическая характеристика: Апрель")
                 
                 # ВАЖНО: Обновляем стили для увеличения шрифта
             st.markdown("""
@@ -3122,25 +3869,25 @@ with tabs[1]:
                 <div style="display: flex; gap: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
                         <div class="section-title">🌡️ Температура</div>
-                        <div class="info-item">🔹 Север: <span class="val-bold">-9...-14°С</span></div>
-                        <div class="info-item">🔹 Юг: <span class="val-bold">+6...+8°С</span></div>
+                        <div class="info-item">🔹 Север: <span class="val-bold">-1...+5°С</span></div>
+                        <div class="info-item">🔹 Юг: <span class="val-bold">+9...+16°С</span></div>
                     </div>
                     <div class="big-climate-card" style="flex: 1;">
                         <div class="section-title">❄️ Экстремумы</div>
-                        <div class="info-item">🔴 Тепло: <span class="val-bold">до +35°С</span></div>
-                        <div class="info-item">🔵 Холод: <span class="val-bold">до -47°С</span></div>
+                        <div class="info-item">🔴 Тепло: <span class="val-bold">до +39°С</span></div>
+                        <div class="info-item">🔵 Холод: <span class="val-bold">до -20°С</span></div>
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
                         <div class="section-title">💧 Осадки</div>
-                        <div class="info-item">📅 В среднем: <span class="val-bold">14-25 мм</span></div>
+                        <div class="info-item">📅 В среднем: <span class="val-bold">15-35 мм</span></div>
                         <div class="info-item">📅 Вид: <span class="val-bold">смешанные</span></div>
                     </div>
                     <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
                         <div class="section-title">🌬️ Явления</div>
-                        <div class="info-item">🚩 Метели: <span class="val-bold">до 20 дн.</span></div>
-                        <div class="info-item">⚡ Гололед: <span class="val-bold">2-3 раза</span></div>
+                        <div class="info-item">🚩 Туман: <span class="val-bold">2-5 суток</span></div>
+                        <div class="info-item">⚡ Метель: <span class="val-bold">5-7 суток</span></div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -3154,27 +3901,25 @@ with tabs[1]:
     if __name__ == "__main__":
         show_forecast_process()
     
- 
     import streamlit as st
     import pandas as pd
     import plotly.graph_objects as go
     import os
 
-    # --- НАСТРОЙКИ ПУТЕЙ ---
-    # Создаем отдельную папку для областей, чтобы не перемешивать с другими CSV
-    DATA_DIR = "regions_data" 
+    # --- 1. КОНФИГУРАЦИЯ СТРАНИЦЫ (ОБЯЗАТЕЛЬНО ПЕРВОЙ) ---
+    st.set_page_config(layout="wide", page_title="Прогноз на апрель 2026")
 
-    # Создаем папку, если она еще не создана
+    # --- 2. НАСТРОЙКИ ПУТЕЙ ---
+    DATA_DIR = "regions_data" 
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
-    # --- ФУНКЦИЯ ЗАГРУЗКИ ДАННЫХ ---
+    # --- 3. ФУНКЦИИ ---
     def get_available_regions(directory):
-        # Берем только CSV файлы из конкретной папки
         files = [f for f in os.listdir(directory) if f.endswith('.csv')]
         return {f.replace('.csv', ''): os.path.join(directory, f) for f in files}
 
-    # --- СТИЛИ (CSS) ---
+    # --- 4. СТИЛИ (CSS) ---
     st.markdown("""
         <style>
         .big-climate-card {
@@ -3204,186 +3949,168 @@ with tabs[1]:
         </style>
     """, unsafe_allow_html=True)
 
-    # --- ОСНОВНОЙ ИНТЕРФЕЙС ---
-    st.title("Прогноз на Апрель")
-    
-    
-    # Словарь с расширенными характеристиками
+    # --- 5. ДАННЫЕ ОПИСАНИЙ ---
     region_descriptions = {
-        "Алматинская область": {
-            "temp_north": "-2...+3°С",
-            "temp_south": "+12...+17°С",
-            "heat_record": "до +32°С",
-            "cold_record": "до -10°С",
-            "precip_val": "35-55 мм",
-            "precip_type": "преимущ. дождь",
-            "wind_event": "Ветер 15-20 м/с",
-            "storm_event": "Гроза (2-4 дня)"
-        },
-        "Акмолинская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Актюбинская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Атырауская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Восточно-Казахстанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Жамбылская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Жетсісуская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Западно-Казахстанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Карагандинская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Костанайская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Кызылординская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Мангистауская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Область Абай": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Павлодарская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Северо-Казахстанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Туркестанская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        },
-        "Улытауская область": {
-            "temp_north": "-5...0°С",
-            "temp_south": "+5...+10°С",
-            "heat_record": "до +25°С",
-            "cold_record": "до -22°С",
-            "precip_val": "20-30 мм",
-            "precip_type": "снег с дождем",
-            "wind_event": "Метели (начало)",
-            "storm_event": "Гололед (1-2 дня)"
-        }
-        # Добавьте другие области по этому шаблону
+            "Алматинская область": {
+                "temp_north": "-2...+3°С",
+                "heat_record": "до +32°С",
+                "cold_record": "до -10°С",
+                "precip_val": "35-55 мм",
+                "precip_type": "преимущ. дождь",
+                "wind_event": "Ветер 15-20 м/с",
+                "storm_event": "Гроза (2-4 дня)"
+            },
+            "Акмолинская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Актюбинская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Атырауская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Восточно-Казахстанская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Жамбылская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Жетсісуская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Западно-Казахстанская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Карагандинская область": {
+                "temp_north": "+8,4+11,8°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Костанайская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Кызылординская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Мангистауская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Область Абай": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Павлодарская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Северо-Казахстанская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Туркестанская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            },
+            "Улытауская область": {
+                "temp_north": "-5...0°С",
+                "heat_record": "до +25°С",
+                "cold_record": "до -22°С",
+                "precip_val": "20-30 мм",
+                "precip_type": "снег с дождем",
+                "wind_event": "Метели (начало)",
+                "storm_event": "Гололед (1-2 дня)"
+            }
+            # Добавьте другие области по этому шаблону
     }
 
-    # Получаем список файлов из целевой директории
+
+    # --- 6. ОСНОВНОЙ ИНТЕРФЕЙС ---
+    st.title("Прогноз на Апрель 2026")
+
     regions_dict = get_available_regions(DATA_DIR)
 
     if not regions_dict:
@@ -3392,54 +4119,50 @@ with tabs[1]:
         selected_region_name = st.selectbox("Выберите область:", sorted(list(regions_dict.keys())))
         file_path = regions_dict[selected_region_name]
         
-        # --- ДОБАВЬТЕ ЭТОТ БЛОК ---
         info = region_descriptions.get(selected_region_name, {
             "temp_north": "нет данных", "temp_south": "нет данных",
             "heat_record": "нет данных", "cold_record": "нет данных",
             "precip_val": "нет данных", "precip_type": "нет данных",
             "wind_event": "нет данных", "storm_event": "нет данных"
         })
-        # --------------------------
         
-        # Чтение данных
+        # Чтение данных с обработкой ошибок
+        df = None
         try:
+            # Пробуем разные кодировки и разделители
             df = pd.read_csv(file_path, sep=';', encoding='cp1251')
-        except:
-            df = pd.read_csv(file_path, sep=';', encoding='utf-8-sig')
+        except Exception:
+            try:
+                df = pd.read_csv(file_path, sep=',', encoding='utf-8-sig')
+            except Exception as e:
+                st.error(f"Не удалось прочитать файл: {e}")
 
         if df is not None:
-            df.columns = df.columns.str.strip()
+            df.columns = df.columns.str.strip() # Очистка имен колонок
             
-            required_columns = ['норма', 'max', 'min', 'Ср.зн.']
+            # Проверка наличия колонок (с учетом вашего кода)
+            required_columns = ['норма', 'max', 'min', 'Ср.зн.', 'День']
             missing_cols = [c for c in required_columns if c not in df.columns]
             
             if missing_cols:
                 st.error(f"В файле не найдены колонки: {', '.join(missing_cols)}")
             else:
-                # Расчеты для динамического левого блока
-                avg_norm = df['норма'].mean()
-                peak_max = df['max'].max()
-                peak_min = df['min'].min()
-
                 col_left, col_right = st.columns([1.2, 1.3], gap="large")
 
                 with col_left:
                     st.markdown(f"#### 📜 Климатическая характеристика: {selected_region_name}")
-                    
                     st.markdown(f"""
                     <div style="display: flex; gap: 10px;">
                         <div class="big-climate-card" style="flex: 1;">
                             <div class="section-title">🌡️ Температура</div>
-                            <div class="info-item">🔹 Север: <span class="val-bold">{info['temp_north']}</span></div>
-                            <div class="info-item">🔹 Юг: <span class="val-bold">{info['temp_south']}</span></div>
-                        </div>
+                            <div class="info-item">🔹 Средняя: <span class="val-bold">{info['temp_north']}</span></div>
+                    </div>
                         <div class="big-climate-card" style="flex: 1;">
                             <div class="section-title">❄️ Экстремумы</div>
                             <div class="info-item">🔴 Тепло: <span class="val-bold">{info['heat_record']}</span></div>
                             <div class="info-item">🔵 Холод: <span class="val-bold">{info['cold_record']}</span></div>
                         </div>
                     </div>
-
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
                         <div class="big-climate-card" style="flex: 1;">
                             <div class="section-title">💧 Осадки</div>
@@ -3453,33 +4176,83 @@ with tabs[1]:
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
-    
 
-                # --- ПРАВЫЙ БЛОК (ГРАФИК) ---
                 with col_right:
                     st.markdown("#### 📊 График прогноза")
                     fig = go.Figure()
                     
-                    # Коридор min-max
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['max'], mode='lines', line=dict(width=0), showlegend=False))
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['min'], mode='lines', line=dict(width=0), 
-                                             fill='tonexty', fillcolor='rgba(0, 100, 255, 0.1)', name='Коридор (min-max)'))
-                    # Линия нормы
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['норма'], mode='lines', 
-                                             line=dict(color='green', dash='dash'), name='Климат. норма'))
-                    # Линия прогноза
-                    fig.add_trace(go.Scatter(x=df['День'], y=df['Ср.зн.'], mode='lines+markers', 
-                                             line=dict(color='#e74c3c', width=3), marker=dict(size=6), name='Прогноз Ср.зн.'))
+                    # 1. Линия нормы (Зеленая - как база)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['норма'], 
+                        mode='lines', 
+                        line=dict(color='#27ae60', width=3), 
+                        name='Климат. норма'
+                    ))
+                    
+                    # 2. Максимальная температура (Красная)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['max'], 
+                        mode='lines+markers', 
+                        line=dict(color='#ff0000', width=3), 
+                        marker=dict(size=4),
+                        name='Максимум'
+                    ))
+                    
+                    # 3. Среднее значение (Черная)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['Ср.зн.'], 
+                        mode='lines+markers', 
+                        line=dict(color='#000000', width=3), 
+                        marker=dict(size=4),
+                        name='Среднее значение'
+                    ))
+                    
+                    # 4. Минимальная температура (Синяя/Голубая)
+                    fig.add_trace(go.Scatter(
+                        x=df['День'], y=df['min'], 
+                        mode='lines+markers', 
+                        line=dict(color='#00bfff', width=3), 
+                        marker=dict(size=4),
+                        name='Минимум'
+                    ))
 
+                    # Настройка осей для сходства с оригиналом
                     fig.update_layout(
-                        height=450, 
-                        margin=dict(l=0, r=0, t=30, b=0), 
+                        height=500, 
+                        plot_bgcolor='white',
+                        margin=dict(l=40, r=40, t=30, b=40), 
                         hovermode="x unified",
-                        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                        xaxis=dict(
+                            title="Число месяца",
+                            tickmode='linear',
+                            dtick=2,
+                            gridcolor='#eeeeee', 
+                            linecolor='blue', # Синяя рамка как на фото
+                            linewidth=2,
+                            mirror=True
+                        ),
+                        yaxis=dict(
+                            title="Температура, °C",
+                            gridcolor='#eeeeee', 
+                            linecolor='blue', # Синяя рамка как на фото
+                            linewidth=2,
+                            mirror=True,
+                            zeroline=True,
+                            zerolinecolor='black',
+                            range=[-15, 35] # Диапазон как на вашем скриншоте
+                        ),
+                        legend=dict(
+                            orientation="h", 
+                            yanchor="bottom", 
+                            y=1.02, 
+                            xanchor="right", 
+                            x=1
+                        )
                     )
                     st.plotly_chart(fig, use_container_width=True)
-
+                
     st.divider()
+
 
  
    
@@ -3529,7 +4302,7 @@ with tabs[1]:
 
         # Данные (сокращенные для компактности)
         sectors = [
-            {"title": "Строительство", "desc": "информация о продолжительности строительного сезона.", "emoji": "🏗️"},
+            {"title": "Строительство", "desc": "информация о продолжительности строительного сезона", "emoji": "🏗️"},
             {"title": "Лесная отрасль", "desc": "информация об осадках и температуре в летний сезон для планирования мероприятий по охране лесов от пожаров.", "emoji": "🌲"},
             {"title": "Туризм", "desc": "информация о режиме температуры и осадков на предстоящую неделю, месяц, сезон для планирования отдыха .", "emoji": "🗺️"},
             {"title": "Сельское хозяйство", "desc": "для определения площади посевов, оптимальных сроков сева, сроков внесения удобрений и уборки урожая.", "emoji": "🌾"},
@@ -3547,15 +4320,11 @@ with tabs[1]:
                         <div class="no-img-header">{sector['title']}</div>
                         <div class="no-img-body">{sector['desc']}</div>
                     </div>
-                """, unsafe_allow_html=True)
-                
+                """, unsafe_allow_html=True)             
                 
 
-with tabs[2]:
-    st.title("Агрометеорологические прогнозы")
-    
-    # Настройка страницы
-    st.set_page_config(layout="wide")
+with tabs[3]:
+    st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
 
 
     # Добавляем стили для меток дат
@@ -3628,12 +4397,12 @@ with tabs[2]:
         forecast_data = [
             ("💧 Прогноз запасов продуктивной влаги (ЗПВ)", "25 марта, 25 апреля"),
             ("🌱 Оптимальные сроки сева яровых", "25 марта, 25 апреля"),
-            ("☀️ Прогноз засухи (на основе SPI)", "Апр, Май, Июнь"),
+            ("☀️ Прогноз засухи (на основе SPI)", "Май, Июнь, Июль, Август"),
             ("🌾 Сроки созревания яровых зерновых", "15 июня, 15 июля"),
             ("📈 Урожайность яровых зерновых", "15 июля, 15 августа"),
             ("🏔️ Урожайность озимых (Алм. и Жамб. обл.)", "15 мая, 15 июня"),
             ("🌽 Урожайность подсолнечника, свеклы и кукурузы", "15 июля, 15 августа"),
-            ("🚜 Условия уборки зерновых культур", "август-сентябрь")
+            ("🚜 Условия уборки зерновых культур", "июль-август")
         ]
         
         # Вывод в две колонки внутри основной колонки
@@ -3692,7 +4461,7 @@ with tabs[2]:
             return ""
 
         # Применяем стили ко всем столбцам, кроме первого ("культура")
-        styled_df = df.style.applymap(style_cells, subset=months)
+        styled_df = df.style.map(style_cells, subset=months)
 
         # 3. Отображение
         # Используем статичную таблицу или dataframe. 
@@ -3824,7 +4593,7 @@ with tabs[2]:
             else:
                 st.warning(f"Файл {os.path.basename(item['path'])} не найден")
                 
-with tabs[3]:
+with tabs[4]:
     st.title("Гидрологические прогнозы")
     
 
@@ -4049,129 +4818,51 @@ with tabs[3]:
         </div>
         """, unsafe_allow_html=True)
     
-
+    st.divider()
+    
     import streamlit as st
-    import geopandas as gpd
-    import plotly.express as px
-    import pandas as pd
+    from PIL import Image
     import os
 
-    # 1. Конфигурация рисков и цветов согласно вашему макету
-    FLOOD_CONFIG = {
-        "высокий риск": {
-            "color": "#f9a03f",  # Оранжевый
-            "regions_en": ["Akmola", "North Kazakhstan", "Karaganda", "East Kazakhstan", "Abay"],
-            "desc": "Высокий риск: Ожидается интенсивное снеготаяние и формирование значительного стока."
-        },
-        "средний риск": {
-            "color": "#f9f080",  # Желтый
-            "regions_en": ["Kostanay", "West Kazakhstan", "Aktobe", "Ulytau", "Pavlodar", "Turkestan", "Almaty", "Zhetysu"],
-            "desc": "Средний риск: Возможны подтопления при резком повышении температур."
-        },
-        "низкий риск": {
-            "color": "#90ee90",  # Зеленый
-            "regions_en": ["Atyrau", "Mangystau", "Kyzylorda", "Zhambyl"],
-            "desc": "Низкий риск: Обстановка стабильная."
-        }
-    }
+    # Настройка страницы (широкий формат)
+    st.set_page_config(layout="wide")
 
-    # Подготовка данных
-    data_rows = []
-    for risk_label, info in FLOOD_CONFIG.items():
-        for reg_en in info["regions_en"]:
-            data_rows.append({
-                "ADM1_EN": reg_en,
-                "Risk_Label": risk_label,
-                "Color": info["color"],
-                "Description": info["desc"]
-            })
-    df_stats = pd.DataFrame(data_rows)
+    def main():
+        # Создаем две колонки: левая для карты (относительная ширина 2), правая для текста (ширина 1)
+        col1, col2 = st.columns([2, 1])
 
-    @st.cache_data
-    def load_geo_data():
-        if os.path.exists("kaz 17 obl.shp"):
-            gdf = gpd.read_file("kaz 17 obl.shp")
-            # Важно: ADM1_EN должен совпадать с именами в колонках файла
-            merged = gdf.merge(df_stats, on='ADM1_EN', how='left')
-            return merged.to_crs(epsg=4326)
-        return None
-
-    st.title("🌊 Мониторинг паводковых рисков Казахстана")
-
-    map_data = load_geo_data()
-
-    if map_data is not None:
-        col_left, col_right = st.columns([1.6, 1], gap="large")
-
-        with col_left:
-            st.markdown("#### Карта предварительной оценки")
-            
-            # Используем mapbox для корректного отображения слоев
-            fig_map = px.choropleth_mapbox(
-                map_data,
-                geojson=map_data.__geo_interface__,
-                locations=map_data.index,
-                color="Risk_Label",
-                color_discrete_map={
-                    "высокий риск": "#f9a03f",
-                    "средний риск": "#f9f080",
-                    "низкий риск": "#90ee90"
-                },
-                mapbox_style="carto-positron", # Светлая подложка как на скриншотах
-                center={"lat": 48.0, "lon": 67.0},
-                zoom=3.5,
-                opacity=0.7,
-                hover_name="ADM1_EN"
-            )
-
-            fig_map.update_layout(
-                margin={"r":0,"t":0,"l":0,"b":0},
-                height=550,
-                showlegend=True,
-                legend=dict(orientation="h", yanchor="bottom", y=0.01, xanchor="right", x=0.99)
-            )
-
-            selected = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun")
-
-        with col_right:
-            if selected and "selection" in selected and len(selected["selection"]["point_indices"]) > 0:
-                idx = selected["selection"]["point_indices"][0]
-                row = map_data.iloc[idx]
-                st.subheader(f"📍 {row['ADM1_EN']}")
-                st.markdown(f"""
-                    <div style="padding:15px; border-radius:10px; background-color:{row['Color']}; color:black; text-align:center; font-weight:bold;">
-                        УРОВЕНЬ РИСКА: {row['Risk_Label'].upper()}
-                    </div>
-                """, unsafe_allow_html=True)
-                st.info(row['Description'])
+        with col1:
+            # Пытаемся загрузить изображение из текущей папки
+            image_path = "risk.jpeg"
+            if os.path.exists(image_path):
+                image = Image.open(image_path)
+                st.image(image, caption="Карта рисков", use_container_width=True)
             else:
-                st.info("Выберите область на карте для получения информации.")
+                st.error(f"Файл {image_path} не найден в основной папке.")
 
-    # Сводный блок информации
-    st.markdown("---")
-    st.markdown("""
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #0d47a1;">
-        <h4>📋 Оценка паводко-опасных регионов</h4>
-        <ul>
-            <li><b>С повышенными рисками:</b> Акмолинская, СКО, Карагандинская, ВКО и область Абай.</li>
-            <li><b>Со средними рисками:</b> Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.</li>
-            <li><b>С низкими рисками:</b> Атырауская, Мангыстауская, Кызылординская и Жамбылская области.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-
-
-        
+        with col2:
+            # Текстовый блок справа
+            st.subheader("📋 Оценка паводко-опасных регионов")
             
+            st.markdown("""
+            **С повышенными рисками:** Акмолинская, СКО, Карагандинская, ВКО и область Абай.
+            
+            **Со средними рисками:** Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.
+            
+            **С низкими рисками:** Атырауская, Мангыстауская, Кызылординская и Жамбылская области.
+            """)
+            
+            # Дополнительная заметка (согласно вашим предпочтениям о постоянном отображении блоков)
+            st.info("Этот информационный блок закреплен для постоянного отображения.")
 
-    
-    
-    
+    if __name__ == "__main__":
+        main()
+        
+
+   
 
   # ВОДНЫЕ РЕСУРСЫ
-with tabs[4]:
+with tabs[5]:
     import streamlit as st
     import geopandas as gpd
     import folium
@@ -6132,7 +6823,7 @@ with tabs[4]:
         
 
 # --- Твой основной контент по Каспию идет во вкладку №5 (индекс 5) ---
-with tabs[5]:
+with tabs[6]:
     st.markdown('<h1 class="main-title">🌊 Исследование Каспийского моря</h1>', unsafe_allow_html=True)
     # ВСЕ СТРОКИ НИЖЕ ДОЛЖНЫ ИМЕТЬ ОТСТУП (4 ПРОБЕЛА)
         
@@ -6994,9 +7685,9 @@ with tabs[5]:
             height=450, margin=dict(l=0,r=0,t=10,b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             hovermode="x unified",
-            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=10)),
-            yaxis=dict(title="м БС", gridcolor='#E2E8F0', range=[-35, -26]),
-            xaxis=dict(showgrid=False, dtick=5)
+            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=14)),
+            yaxis=dict(title="м БС", gridcolor='#E2E8F0', range=[-35, -26], tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, dtick=5, tickfont=dict(size=12))
         )
         
         # Линия раздела (начало прогноза)
@@ -7020,15 +7711,15 @@ with tabs[5]:
         fig = go.Figure()
 
         # Линия для Форт-Шевченко
-        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Fort-Shevchenko',
+        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Форт-Шевченко',
                                  line=dict(color='#4F7942', width=3)))
 
         # Линия для Актау
-        fig.add_trace(go.Scatter(x=years, y=aktau, name='Aktau',
+        fig.add_trace(go.Scatter(x=years, y=aktau, name='Актау',
                                  line=dict(color='#A0C4DE', width=3)))
 
         # Линия для Курык
-        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Kuryk',
+        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Курык',
                                  line=dict(color='#D35400', width=3)))
 
         # 3. Настройка оформления (максимально близко к вашему скрину)
@@ -7042,9 +7733,9 @@ with tabs[5]:
         )
 
         # Настройка осей
-        fig.update_xaxes(title="year", showline=True, linewidth=2, linecolor='black', mirror=True, 
-                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0')
-        fig.update_yaxes(title="wave height, m", showline=True, linewidth=2, linecolor='black', mirror=True, 
+        fig.update_xaxes(title="год", showline=True, linewidth=1, linecolor='black', mirror=True, 
+                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0', autorange='reversed')
+        fig.update_yaxes(title="высота волны, м", showline=True, linewidth=1, linecolor='black', mirror=True, 
                          range=[1.5, 2.5], gridcolor='#f0f0f0')
 
         # 4. Отображение в Streamlit
@@ -7056,91 +7747,76 @@ with tabs[5]:
     st.markdown("""
         <div style="margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
             <p style="font-size: 1.15rem; border-left: 4px solid #3B82F6; padding-left: 15px;">
-                Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления. Ниже представлены прогнозы до 2100 года:
+                Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления.
             </p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Горизонтальные плашки прогноза
-    f_col1, f_col2, f_col3 = st.columns(3)
 
-    # Общий стиль для карточек (задаем переменные для удобства)
-    card_style = """
-        display: flex; 
-        flex-direction: column; 
-        justify-content: space-between; 
-        padding: 25px; 
-        border-radius: 24px; 
-        height: 280px; 
-        color: white; 
-        font-family: 'Montserrat', sans-serif; 
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    """
-
-    with f_col1:
-        st.markdown(f"""
-            <div style="{card_style} background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
-                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Оптимистичный</div>
-                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP1-2.6</div>
-                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-9<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
-                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Стабилизация климата и сохранение текущего притока рек.</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    with f_col2:
-        st.markdown(f"""
-            <div style="{card_style} background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
-                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Умеренный</div>
-                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP2-4.5</div>
-                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-14<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
-                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Продолжение потепления и частичное обмеление северной части.</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    with f_col3:
-        st.markdown(f"""
-            <div style="{card_style} background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
-                <div style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; opacity: 0.9; letter-spacing: 0.5px;">Пессимистичный</div>
-                <div style="font-size: 1.1rem; font-weight: 400; margin-top: 5px;">SSP5-8.5</div>
-                <div style="font-size: 4.5rem; font-weight: 800; margin: 15px 0; line-height: 1;">-18<span style="font-size: 1.5rem; font-weight: 400; margin-left: 5px;">м</span></div>
-                <div style="font-size: 0.9rem; line-height: 1.4; opacity: 0.95;">Критическое испарение и полная трансформация экосистемы.</div>
-            </div>
-        """, unsafe_allow_html=True)
 
     st.divider()
-
-    st.markdown("<br><br>", unsafe_allow_html=True) # Отступ от предыдущего контента
-
+    
     st.markdown("""
-        <div style="background: #F8FAFC; border-radius: 30px; padding: 40px; border: 1px solid #E2E8F0; text-align: center; font-family: 'Montserrat', sans-serif;">
-            <span style="font-size: 3rem;">🇰🇿</span>
-            <h2 style="color: #1E293B; font-weight: 800; margin-top: 15px;">Будущее Каспийского моря</h2>
-            <p style="color: #64748B; font-size: 1.1rem; max-width: 700px; margin: 0 auto 25px auto; line-height: 1.6;">
-                Сохранение экосистемы Каспия требует скоординированных усилий всех прикаспийских государств. 
-                Постоянный мониторинг уровня моря и ледового режима является критически важным для безопасности инфраструктуры и экономики региона.
-            </p>
-            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <a href="https://www.kazhydromet.kz" target="_blank" style="text-decoration: none;">
-                    <div style="background: #3B82F6; color: white; padding: 12px 25px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; transition: 0.3s;">
-                        🌐 Официальные данные Казгидромет
-                    </div>
-                </a>
-                <a href="#" style="text-decoration: none;">
-                    <div style="background: white; color: #1E293B; border: 1px solid #CBD5E1; padding: 12px 25px; border-radius: 50px; font-weight: 600; font-size: 0.9rem;">
-                        📄 Скачать полный отчет (PDF)
-                    </div>
-                </a>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+            
+            .ecology-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 150px;
+                padding: 40px;
+                background-color: #ffffff;
+                font-family: 'Montserrat', sans-serif;
+            }
+
+            .ecology-content {
+                text-align: center;
+                max-width: 800px;
+            }
+
+            .ecology-title {
+                color: #1E293B;
+                font-size: 2.2rem;
+                font-weight: 700;
+                margin-bottom: 30px;
+                border: none !important; /* Убираем линию Streamlit */
+            }
+
+            .ecology-text {
+                color: #475569;
+                font-size: 1.25rem;
+                line-height: 1.8;
+                margin: 0 auto;
+            }
+
+            .highlight {
+                color: #3B82F6;
+                font-weight: 300;
+            }
+        </style>
+
+        <div class="ecology-container">
+            <div class="ecology-content">
+                <h2 class="ecology-title">Сохраним Каспий вместе</h2>
+                <p class="ecology-text">
+                    Каспийское море — это уникальное природное наследие, которое требует нашего общего внимания и заботы. 
+                    Сегодня, перед лицом глобальных климатических изменений, <span class="highlight">совместная работа</span> 
+                    всех прикаспийских государств и научных центров становится единственным путем к сохранению его экосистемы.
+                    <br><br>
+                    Бережное отношение к ресурсам и постоянный мониторинг — это наш общий вклад в будущее, 
+                    который позволит передать живое море следующим поколениям.
+                </p>
             </div>
-            <p style="margin-top: 30px; font-size: 0.8rem; color: #94A3B8;">
-                Данные обновлены по состоянию на 2026 год. <br>
-                Разработано в рамках мониторинга казахстанского сектора Каспийского моря.
-            </p>
         </div>
     """, unsafe_allow_html=True)
-    
+
+
+
+
    
 
-with tabs[6]:
+with tabs[7]:
     st.title("🌍 Климат Казахстана и регионов")
 
     # Основной слоган (Header)
@@ -7492,7 +8168,7 @@ with tabs[6]:
                 <h4 style="margin-top: 0; color: #d32f2f;">Беспрецедентный рост</h4>
                 <p style="font-size: 1rem; line-height: 1.5;">
                     <span style="font-weight: 800; font-size: 1.2rem;">2025 год</span> официально признан самым жарким в истории наблюдений Казахстана.
-                    Отклонение от нормы составило рекордные <b>+2,96°С</b>.
+                    Климат стал теплее обычного почти на <b>3 градуса</b> (+2,96°C).
                 </p>
                 <p style="font-size: 0.9rem; color: #666;">
                     Примечательно, что <b>9 из 10</b> самых теплых лет пришлись на XXI век, что подтверждает ускорение глобального потепления.
@@ -7501,7 +8177,7 @@ with tabs[6]:
         """, unsafe_allow_html=True)
 
     with col_chart:
-        st.caption("Ранг лет с наибольшими положительными аномалиями (1941–2025)")
+        st.caption("Самые теплые годы в Казахстане (1941–2025)")
         
         # Генерация HTML для инфографики
         rows_html = ""
@@ -7553,18 +8229,19 @@ with tabs[6]:
     
     col_info2, col_chart2, col_map2 = st.columns([1, 1, 1], gap="large")
     
-    # --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
+# --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
+    # Гамма синхронизирована с оранжевыми оттенками карты аномалий
     rank_data_precip = [
-        {"rank": 1, "year": 1944, "value": 73.5, "color": "#5D4037"},
-        {"rank": 2, "year": 1975, "value": 77.0, "color": "#795548"},
-        {"rank": 3, "year": 1974, "value": 78.3, "color": "#8D6E63"},
-        {"rank": 4, "year": 1995, "value": 78.8, "color": "#8D6E63"},
-        {"rank": 5, "year": 1991, "value": 78.9, "color": "#A1887F"},
-        {"rank": 6, "year": 2008, "value": 81.6, "color": "#A1887F"},
-        {"rank": 7, "year": 1955, "value": 82.4, "color": "#BCAAA4"},
-        {"rank": 8, "year": 1936, "value": 82.6, "color": "#BCAAA4"},
-        {"rank": 9, "year": 2020, "value": 85.2, "color": "#D7CCC8"},
-        {"rank": 10, "year": 2021, "value": 85.5, "color": "#D7CCC8"}
+        {"rank": 1, "year": 1944, "value": 73.5, "color": "#B85B28"}, # Насыщенный коричнево-оранжевый
+        {"rank": 2, "year": 1975, "value": 77.0, "color": "#D47A3B"},
+        {"rank": 3, "year": 1974, "value": 78.3, "color": "#E6914B"},
+        {"rank": 4, "year": 1995, "value": 78.8, "color": "#F2A762"},
+        {"rank": 5, "year": 1991, "value": 78.9, "color": "#F7B97D"},
+        {"rank": 6, "year": 2008, "value": 81.6, "color": "#FACB96"},
+        {"rank": 7, "year": 1955, "value": 82.4, "color": "#FBD9B0"},
+        {"rank": 8, "year": 1936, "value": 82.6, "color": "#FDE5C7"},
+        {"rank": 9, "year": 2020, "value": 85.2, "color": "#FEF0DE"},
+        {"rank": 10, "year": 2021, "value": 85.5, "color": "#FFF8F0"}  # Самый светлый, почти песочный
     ]
     
  
@@ -8786,8 +9463,6 @@ with tabs[6]:
         else:
             st.info("Данные по зонам уточняются.")
             
-            
- 
  
 # --- 5. ПОДГОТОВКА ДАННЫХ ДЛЯ ГРАФИКОВ ОБЛАСТИ ---
         # Извлекаем топ лет и рекорды осадков именно для выбранной области
@@ -8798,7 +9473,7 @@ with tabs[6]:
         # --- 5. ГРАФИКИ (ВЫЗОВ ТВОЕЙ ФУНКЦИИ) ---
     st.markdown("---")
             # --- ОТДЕЛЬНЫЙ БЛОК ТРЕНДОВ (ВНЕ КОЛОНОК) ---
-    st.markdown("### 📊 Климатические тренды")      
+    st.markdown("### 📊 Климатические тренды областей")      
      
     col_l, col_r = st.columns(2)
 
@@ -8869,7 +9544,8 @@ with tabs[6]:
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("---")    
+    st.markdown("---")  
+    
 # --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА ---
     st.markdown("### 📉 Статистический анализ")
 
@@ -8905,7 +9581,7 @@ with tabs[6]:
             st.caption(f"💡 Макс: {extreme['max']}, Мин: {extreme['min']}")
 
         with t_col2:
-            st.markdown("**🏆 Топ лет**")
+            st.markdown("**🏆 Самые теплые годы**")
             # Используем данные ТОП-5 из вашего словаря
             top_data = reg.get('top_years', [])
             if top_data:
@@ -8939,7 +9615,7 @@ with tabs[6]:
             st.caption(f"Процент от нормы: {current_precip_anom + 100:.1f}%")
 
         with p_col2:
-            st.markdown("**🏆 Рекорды осадков**")
+            st.markdown("**🏆 Самые сухие годы**")
             
             # 1. Получаем список из базы (тот, что вы прислали)
             records = reg.get("top_precip_years", [])
@@ -9187,115 +9863,998 @@ with tabs[6]:
             st.plotly_chart(fig, use_container_width=True)
             
 
+ 
+ 
+    
 
-with tabs[7]:
-    st.title("Экология")
-
-    import streamlit as st
-    import pandas as pd
-    import plotly.express as px
-
-    def show_water_quality_dashboard():
-        st.title("💧 Мониторинг качества поверхностных вод")
-        st.markdown("""
-        **Регион:** Восточно-Казахстанская и Абайская области. 
-        *Наблюдение ведется на 19 водных объектах (53 створа) по 48 показателям.*
-        """)
-
-        # --- СТАТИСТИКА В ЦИФРАХ ---
-        col_stat1, col_stat2, col_stat3 = st.columns(3)
-        col_stat1.metric("Объектов мониторинга", "19", "16 рек, 2 оз, 2 вдхр")
-        col_stat2.metric("Показателей качества", "48", "Физ-хим + Тяжелые металлы")
-        col_stat3.metric("Лидер чистоты (1 класс)", "р. Арасан", "Стабильно 2020-2025")
-
-        # --- ДАННЫЕ ДЛЯ СРАВНЕНИЯ (2025 vs 2024) ---
-        st.subheader("📊 Распределение водных объектов по классам качества")
-        
-        # Подготовка данных для графика
-        quality_data = {
-            "Класс": ["1 класс", "2 класс", "3 класс", "4 класс", "5 класс", ">5 класса"],
-            "2025 год (объектов)": [1, 0, 5, 3, 1, 8],
-            "2024 год (объектов)": [3, 4, 5, 1, 2, 3]
-        }
-        df_q = pd.DataFrame(quality_data)
-
-        fig_compare = px.bar(df_q, x="Класс", y=["2025 год (объектов)", "2024 год (объектов)"],
-                             barmode="group", color_discrete_sequence=["#004A99", "#A5D6A7"],
-                             title="Динамика изменения классов качества (Кол-во объектов)")
-        st.plotly_chart(fig_compare, use_container_width=True)
-
-        # --- СЛУЧАИ ВЫСОКОГО ЗАГРЯЗНЕНИЯ (ВЗ) ---
-        st.error("⚠️ Случаи высокого загрязнения (ВЗ) за 2025 год")
-        col_vz1, col_vz2 = st.columns(2)
-        
-        with col_vz1:
-            st.markdown("""
-            * **р. Ульби:** 25 случаев (Цинк, Железо)
-            * **р. Глубочанка:** 6 случаев (Цинк)
-            * **р. Тихая:** 8 случаев (Цинк)
-            """)
-        with col_vz2:
-            st.markdown("""
-            * **р. Красноярка:** 8 случаев (Цинк)
-            * **р. Ертис:** 6 случаев (Цинк)
-            * **р. Брекса:** 2 случая (Железо)
-            """)
-
-        # --- ИНТЕРАКТИВНАЯ ТАБЛИЦА ПО КЛАССАМ ---
-        st.subheader("🔍 Детальная классификация (2025 год)")
-        
-        tab_2025, tab_trends = st.tabs(["📋 Реестр объектов 2025", "📉 Тренды 2021-2024"])
-
-        with tab_2025:
-            data_2025 = {
-                "Класс": ["1 (Очень хорошее)", "3 (Умеренное)", "4 (Загрязненное)", "5 (Очень загрязн.)", "6 (Высоко загрязн.)"],
-                "Пригодность": [
-                    "Все виды водопользования",
-                    "Нежелательно для лососевых рыб",
-                    "Только орошение и пром. нужды",
-                    "Только пром. нужды после отстаивания",
-                    "Только гидроэнергетика и транспорт"
-                ],
-                "Объекты": [
-                    "р. Арасан",
-                    "р. Буктырма, р. Секисовка, р. Маховка, вдхр. Буктырма",
-                    "р. Кара Ертис, р. Ертис, р. Оба",
-                    "р. Брекса (Цинк)",
-                    "р. Тихая, р. Ульби, р. Глубочанка, р. Красноярка, р. Аягоз, р. Уржар, р. Емель"
-                ]
-            }
-            st.table(pd.DataFrame(data_2025))
-
-        with tab_trends:
-            st.write("**Изменения качества в сравнении с прошлыми периодами:**")
-            col_up, col_down = st.columns(2)
-            with col_up:
-                st.success("✅ Улучшение: р. Аягоз (с 5 до 3 класса)")
-            with col_down:
-                st.warning("❌ Ухудшение: р. Кара Ертис (со 2 до >5), р. Уржар (с 1 до >5), р. Емель, р. Маховка")
-
-        # --- СПРАВОЧНАЯ ИНФОРМАЦИЯ ---
-        with st.expander("ℹ️ Какие показатели определяются в пробах?"):
-            st.write("""
-            В каждой пробе анализируется **48 показателей**, включая:
-            * **Биогенные:** Азот, фосфор, растворенный кислород.
-            * **Тяжелые металлы:** Цинк, кадмий, медь, марганец, свинец.
-            * **Органика:** Нефтепродукты, фенолы, БПК5, ХПК.
-            * **Пестициды:** ГХЦГ, ДДТ.
-            """)
-
-    if __name__ == "__main__":
-        show_water_quality_dashboard()
-        
 
 
 with tabs[8]:
-    st.title("Сотрудничество")
+    st.title("🌱Мониторинг качества окружающей среды в Республике Казахстан")
+    
+    # Стилизация через CSS для красивых карточек
+    st.markdown("""
+        <style>
+        .main {
+            background-color: #f8f9fa;
+        }
+        .stCard {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #007bff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stMetric {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    # Вводная часть
+    st.info("Сбор, обработка, анализ данных экологического мониторинга для обеспечения экологической безопасности граждан Казахстана.")
+
+    st.markdown("### 📊 Статистика мониторинга РГП «Казгидромет»")
+
+    # Используем колонки, чтобы разделить список на две логические части для экономии места
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        st.markdown("""
+        #### 🌬️ Атмосферный воздух
+        * **Населенных пунктов:** 70 
+        * **Постов наблюдений:** 175 *(131 авто / 44 ручных)*
+        * **Загрязняющих веществ:** 36 видов
+        * **Охват:** 17 областей РК
+        
+        #### 💧 Поверхностные воды
+        * **Водных объектов:** 134 *(88 рек, 29 озер, 13 вдхр)*
+        * **Гидрохимических створов:** 373
+        * **Морской мониторинг:** 1 (Каспийское море)
+        """)
+
+    with col_right:
+        st.markdown("""
+        #### 🏜️ Почва и осадки
+        * **Мониторинг почв:** 101 населенный пункт
+        * **Атмосферные осадки:** 47 метеостанций
+        * **Снежный покров:** 40 метеостанций
+        
+        #### ☢️ Радиационный мониторинг
+        * **Гамма-фон:** 89 станций (ежедневно)
+        * **Радиоактивное загрязнение:** 43 станции
+        * **География:** все 17 областей Казахстана
+        """)
+
+    st.info("💡 Различные типы постов (ручные, автоматические, передвижные) измеряют широкий спектр тяжелых металлов и загрязнителей.")
+
+
+    st.divider()
+
+    # Основной контент через вкладки (Tabs)
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "💨 НМУ", 
+        "☀️ УФ-индекс", 
+        "🏜️ Прогноз качества воздуха", 
+        "📱 AirKZ"
+    ])
+
+    with tab1:
+            st.markdown("### 🌬️ Прогноз неблагоприятных метеорологических условий")
+            
+            col_a, col_b = st.columns([1, 2]) # Делаем колонку с картой (col_b) шире
+            
+            with col_a:
+                with st.container():
+                    st.markdown("""
+                    <div class="stCard">
+                        <h4>Прогноз НМУ</h4>
+                        <p>Предоставляем прогнозы неблагоприятных метеоусловий (НМУ), важные для предупреждения возможных проблем с качеством воздуха.</p>
+                        <p>Бюллетени для городов Казахстана публикуются на официальном сайте, предоставляя жителям информацию о предстоящих условиях.</p>
+                        <a href="https://www.kazhydromet.kz/ru/ecology/ezhednevnyy-byulleten-sostoyaniya-vozdushnogo-basseyna-nmu" target="_blank">Перейти к бюллетеням →</a>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                # Можно добавить краткую инструкцию под текстом
+                st.info("💡 На карте справа можно просмотреть визуализацию данных в режиме реального времени.")
+
+            with col_b:
+                # Вставляем интерактивную карту через iframe
+                st.components.v1.iframe("https://ecodata.kz:3838/app_dem_visual/", height=600, scrolling=True)
+                
+                          
+    with tab2:
+        col_text, col_img = st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
+            
+               
+        with col_text:
+                st.markdown("""
+                    <div class="stCard">
+                        <h4>☀️ Прогноз УФ индекса</h4>
+                        <p><b>Период:</b> май – сентябрь.</p>
+                        <p>В теплое полугодие выпускается бюллетень с прогнозом уровня ультрафиолета на ближайшие <b>7 дней</b>.</p>
+                        <p style="font-size: 0.9em; color: #555;">
+                        Также в бюллетене даны рекомендации для различных групп лиц. 
+                        Продукция доступна на казахском, русском и английском языках.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        with col_img:
+                # Отображение GIF из вашей папки
+                st.image("uf.gif", use_column_width=True)
+                
+                        
+    with tab3:
+        col_text, col_b= st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
+            
+               
+        with col_text:
+                st.markdown("""
+                    <div class="stCard">
+                        <h4>🏜️ SILAM</h4>
+                        <p>В 2020 году при поддержке Финского метеорологического института на базе модели SILAM был разработан и внедрен прогноз концентраций загрязняющих веществ в атмосферном воздухе городов Казахстана. </p>
+                        <p style="font-size: 0.9em; color: #555;">
+                       Визуальная модель совмещена с интерактивной картой и позволяет просматривать состояние атмосферного воздуха в динамике по часам с заблаговременностью до 48 часов.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        with col_b:
+                # Вставляем интерактивную карту через iframe
+                st.components.v1.iframe("https://www.kazhydromet.kz/vc/silam/", height=600, scrolling=True)
+                
+                
+    with tab4:
+        st.markdown("### 📱 Мобильное приложение AirKz")
+        st.write("Инструмент среди жителей Казахстана для контроля качества воздуха в реальном времени.")
+        
+        st.success("✅ **Что нового в обновлении:**")
+        st.markdown("""
+        * **Новый дизайн и интерфейс**
+        * **Знак тревоги** при превышении ПДК
+        * **Описания загрязнителей**, согласованные с Минздравом РК
+        """)
+        
+        st.info("💡 Более 10 000 активных пользователей")
+
+
 
     import streamlit as st
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import pandas as pd
+    import numpy as np
 
-    # --- НАСТРОЙКА ВКЛАДКИ МЕЖДУНАРОДНОГО СОТРУДНИЧЕСТВА ---
+    # 1. Списки названий для разных структур массивов
+    labels_standard = ["Пыль", "PM-2.5", "PM-10", "SO2", "CO", "NO2", "NO", "O3"]
+    labels_aktobe = ["SO2", "CO", "NO2", "NO", "H2S"]
+    labels_karaganda = ["Пыль", "PM-2.5", "PM-10", "SO2", "CO", "NO2", "NO", "O3", "H2S", "Фенол"]
+    labels_aktau = ["CO", "NO2", "NO", "H2S"]
+    labels_atyrau = ["Взвешенные", "PM-2.5", "PM-10", "SO2", "CO", "NO2", "NO", "O3", "H2S", "Фенол", "Аммиак"]
+    labels_kokshetau = ["SO2", "CO"]
+    labels_kostanay = ["PM-10", "SO2", "CO", "NO2", "NO"]
+    labels_kyzylorda = ["SO2", "CO", "NO"]
+    labels_pavlodar = ["PM-2.5", "PM-10", "SO2", "CO", "H2S", "O3", "Хлористый водород"]
+    labels_petropavl = ["Пыль", "SO2", "CO", "NO2", "NO", "H2S", "Фенол", "Формальдегид"]
+    labels_semey = ["SO2", "CO", "NO2", "NO", "H2S", "O3"]
+    labels_taraz = ["Взвешенные", "SO2", "CO", "NO2", "NO", "H2S"]
+    labels_turkestan = ["NO2", "SO2", "NO", "CO", "O3", "H2S"]
+    labels_uk = ["PM-2.5", "PM-10", "SO2", "CO", "NO2", "NO", "O3", "H2S", "Фенол", "Фтористый водород", "Хлор", "Хлористый водород", "Кислота серная", "Формальдегид", "Аммиак"]
+    labels_uralsk = ["Взвешенные", "SO2", "CO", "NO2", "NO", "H2S", "O3"]
+    labels_shymkent = ["Взвешенные", "SO2", "CO", "NO2", "NO", "H2S", "Аммиак", "Формальдегид"]
+
+    # 2. Словарь соответствия: Город -> (Массив, Список подписей)
+    kazakhstan_pollution_data = {
+        'Алматы': (np.array([[3, 1, 3, 5, 8, 4, 0, 0, 1, 2, 0, 1], [553, 417, 65, 25, 60, 28, 34, 61, 48, 57, 332, 451], [370, 168, 5, 4, 8, 1, 0, 3, 6, 11, 75, 121], [2, 0, 742, 489, 6, 126, 0, 1, 143, 6, 70, 119], [382, 266, 9, 4, 0, 3, 3, 0, 4, 16, 66, 145], [1993, 2355, 1922, 1489, 1508, 1519, 308, 105, 77, 278, 624, 131], [501, 180, 384, 122, 14, 6, 23, 19, 64, 291, 502, 643], [9, 1, 2, 0, 0, 0, 1, 50, 12, 1, 0, 1]]), labels_standard),
+        'Астана': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [410, 135, 613, 0, 0, 68, 0, 0, 0, 0, 619, 628], [332, 48, 382, 0, 0, 2, 0, 0, 0, 0, 382, 382], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 35], [7, 9, 36, 2, 2, 20, 7, 19, 34, 34, 199, 203], [0, 0, 0, 4, 14, 0, 6, 40, 102, 102, 341, 343], [11, 0, 18, 3, 2, 7, 3, 0, 0, 0, 62, 62], [105, 112, 1014, 1133, 0, 797, 48, 4, 0, 0, 1084, 1084], [32, 285, 787, 1395, 508, 470, 1210, 508, 332, 332, 6896, 7034]]), labels_standard + ["H2S"]), # Добавил H2S к стандарту
+        'Актобе': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 14], [0, 5, 1, 1, 1, 0, 0, 0, 2, 4, 8, 3], [0, 59, 0, 0, 0, 0, 1, 245, 9, 143, 106, 179], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0], [3, 16, 22, 119, 130, 45, 148, 126, 179, 3, 19, 3]]), labels_aktobe),
+        'Караганда': (np.array([[49, 59, 55, 85, 74, 77, 47, 35, 90, 61, 87, 34], [2532, 2404, 2575, 2509, 2923, 2494, 2752, 2711, 2600, 2603, 2672, 2685], [872, 1073, 618, 273, 107, 23, 12, 31, 220, 691, 561, 680], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [256, 154, 112, 19, 16, 23, 13, 8, 12, 291, 148, 72], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [173, 49, 0, 0, 0, 0, 2, 0, 20, 40, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [19, 2, 4, 2, 795, 3, 15, 6, 54, 393, 349, 67], [1, 1, 1, 0, 0, 0, 0, 11, 8, 7, 10, 24]]), labels_karaganda),
+        'Актау': (np.array([[6, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [157, 128, 98, 0, 274, 364, 367, 13, 29, 52, 143, 11]]), labels_aktau),
+        'Атырау': (np.array([[8, 0, 3, 1, 4, 3, 6, 0, 0, 4, 0, 3], [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 2, 15, 0, 3, 0, 0, 0, 0], [0, 0, 8, 12, 34, 49, 0, 18, 19, 9, 2, 3], [328, 6395, 4882, 2956, 1882, 1895, 16, 385, 521, 1137, 1464, 921], [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 366, 9, 13, 195], [1, 1773, 1961, 1851, 197, 259, 66, 7, 8, 1, 2, 1], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]]), labels_atyrau),
+        'Кокшетау': (np.array([[0, 2, 4, 0, 3, 3, 0, 0, 0, 0, 0, 0], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), labels_kokshetau),
+        'Костанай': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0], [13, 13, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0], [0, 0, 84, 17, 22, 4, 24, 51, 192, 169, 0, 0], [2, 116, 174, 0, 14, 0, 0, 14, 123, 171, 0, 0]]), labels_kostanay),
+        'Кызылорда': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0], [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]]), labels_kyzylorda),
+        'Павлодар': (np.array([[0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1], [0, 0, 5, 1, 0, 0, 0, 0, 0, 3, 9, 0], [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0], [10, 51, 204, 28, 22, 7, 26, 81, 89, 102, 669, 114], [25, 26, 111, 47, 0, 10, 37, 6, 0, 39, 302, 186], [0, 0, 7, 0, 0, 43, 0, 1, 0, 0, 51, 0], [4, 18, 2, 0, 0, 0, 0, 8, 0, 7, 41, 0]]), labels_pavlodar),
+        'Петропавловск': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 379, 89, 98, 108, 0, 0, 0, 143], [9, 0, 0, 6, 0, 0, 1, 0, 0, 0, 0, 0], [197, 245, 192, 612, 208, 129, 74, 130, 233, 256, 57, 90], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), labels_petropavl),
+        'Семей': (np.array([[0, 0, 0, 8, 5, 3, 38, 0, 17, 169, 0, 240], [10, 29, 37, 18, 0, 0, 0, 0, 23, 395, 116, 628], [23, 72, 51, 0, 0, 0, 3, 0, 0, 11, 0, 160], [0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 0, 84], [0, 0, 3, 0, 13, 2, 100, 2, 19, 20, 6, 165], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), labels_semey),
+        'Тараз': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [44, 3, 0, 0, 4, 1, 3, 8, 1, 9, 21, 9], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 19, 2, 4, 9, 15, 5]]), labels_taraz),
+        'Туркестан': (np.array([[882, 991, 1096, 1023, 1098, 1020, 1125, 1156, 1065, 1145, 618, 231], [980, 652, 436, 97, 52, 36, 167, 102, 378, 669, 1064, 1068], [0, 0, 0, 0, 2, 1, 17, 0, 0, 17, 3, 0], [18, 0, 1, 0, 0, 13, 0, 0, 2, 18, 56, 14], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0]]), labels_turkestan),
+        'Усть-Каменогорск': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [44, 165, 13, 27, 31, 48, 45, 57, 89, 183, 75, 56], [118, 507, 208, 15, 4, 7, 1, 0, 46, 144, 86, 80], [0, 0, 0, 0, 7, 0, 0, 0, 11, 0, 0, 0], [0, 0, 2, 0, 0, 0, 0, 0, 20, 4, 2, 3], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [226, 316, 282, 67, 128, 166, 204, 162, 217, 137, 315, 189], [24, 32, 2, 9, 50, 0, 5, 31, 6, 19, 25, 11], [0, 0, 4, 3, 0, 0, 1, 0, 0, 5, 5, 10], [0, 0, 4, 0, 0, 1, 0, 0, 0, 0, 0, 0], [24, 92, 49, 34, 36, 8, 1, 50, 11, 28, 36, 56], [5, 8, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), labels_uk),
+        'Уральск': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0], [0, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]]), labels_uralsk),
+        'Шымкент': (np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [13, 4, 0, 1, 0, 0, 0, 0, 0, 5, 12, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [905, 456, 402, 202, 238, 176, 362, 268, 82, 322, 641, 265], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), labels_shymkent)
+    }
+
+    all_historical_data = {
+        "Актау": {
+            "Взвешенные вещества": [20.4, 0.6, 1.0, 0.8, 0.8, 0.6, 0.4, 0.8, 0.6, 0.6, 0.5],
+            "PM-2.5": [3.5, 1.7, 3.9, 3.7, 7.2, 15.6, 6.2, 1.3, 6.3, 0.1, 0.0],
+            "PM-10": [11.4, 7.2, 8.3, 13.2, 22.3, 12.8, 3.3, 1.2, 3.3, 0.7, 0.7],
+            "Диоксид серы": [0.1, 0.2, 0.5, 0.7, 0.2, 0.1, 0.4, 0.1, 0.1, 0.1, 0.4],
+            "Оксид углерода": [0.8, 2.0, 2.4, 0.9, 1.0, 0.9, 1.9, 1.2, 3.5, 1.3, 1.5],
+            "Диоксид азота": [1.1, 1.2, 1.2, 0.6, 1.0, 1.7, 2.6, 2.7, 0.8, 0.4, 0.3],
+            "Сероводород": [6.8, 3.5, 0, 0, 0.6, 6.3, 9.2, 9.0, 0.5, 5.7, 4.6]
+        },
+        "Актобе": {
+            "Взвешенные вещества": [1.0, 0.6, 0.8, 0.8, 1.5, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
+            "PM-2.5": [3.68, 3.4, 3.1, 3.4, 2.1, 1.2, 6.2, 0.1, 0.1, 0.0, 0.0],
+            "PM-10": [9.06, 9.8, 6.3, 7.6, 7.6, 1.9, 3.3, 0.1, 0.2, 0.0, 0.0],
+            "Диоксид серы": [3.57, 7.9, 7.0, 10.0, 10.0, 1.7, 0.9, 1.2, 0.7, 0.1, 1.4],
+            "Оксид углерода": [2.14, 10.0, 4.8, 12.8, 9.9, 3.0, 1.7, 2.7, 2.4, 9.2, 2.0],
+            "Диоксид азота": [1.06, 2.8, 1.3, 1.8, 1.3, 7.4, 6.3, 3.2, 4.0, 3.2, 2.2],
+            "Оксид азота": [5.56, 6.4, 1.4, 1.4, 0.8, 3.3, 2.8, 4.4, 8.7, 1.0, 3.2],
+            "Сероводород": [29.94, 29.9, 29.9, 4.0, 20.8, 19.8, 13.1, 14.1, 13.5, 21.3, 16.1],
+            "Формальдегид": [1.44, 1.6, 3.3, 0.7, 0.3, 0.2, 0.14, 0.4, 0.1, 0.0, 0.0]
+        },
+        "Алматы": {
+                "Пыль": [2.4, 1.8, 1.4, 2.0, 1.8, 1.9, 1.4, 1.6, 1.1, 1.3, 2.0],
+                "PM-2.5": [0, 3.9, 4.4, 5.2, 6.3, 5.8, 6.3, 6.0, 4.9, 5.7, 4.7], # 0 там, где нет данных
+                "PM-10": [3.3, 3.2, 3.5, 3.4, 3.5, 4.1, 3.3, 3.2, 2.7, 3.1, 2.3],
+                "Диоксид серы": [4.0, 2.3, 3.5, 4.0, 4.0, 4.8, 9.8, 4.0, 7.8, 2.7, 2.0],
+                "Оксид углерода": [5.2, 3.0, 4.1, 2.5, 3.2, 5.1, 6.3, 3.4, 15.6, 5.7, 4.8],
+                "Диоксид азота": [8.7, 5.0, 2.5, 9.1, 9.5, 4.8, 5.3, 5.2, 9.6, 5.1, 5.3],
+                "Оксид азота": [5.4, 2.5, 1.8, 4.0, 1.8, 2.4, 2.5, 2.5, 2.5, 2.5, 9.6],
+                "Озон": [0, 0, 0, 0, 0, 3.9, 6.7, 9.5, 7.9, 6.4, 0] # Данные появились с 2020
+        },
+        "Астана": {
+                "Взвешенные частицы": [7.6, 8.0, 8.8, 12.6, 9.8, 6.6, 7.8, 1.2, 2.0, 4.2, 12.4],
+                "PM-2.5": [0, 2.1, 4.1, 5.5, 7.9, 9.6, 8.7, 9.5, 6.5, 6.7, 3.6],
+                "PM-10": [3.3, 3.1, 2.6, 3.3, 7.7, 6.4, 4.7, 5.1, 3.3, 4.3, 1.9],
+                "Диоксид серы": [1.4, 3.2, 1.9, 2.3, 4.0, 6.5, 4.0, 4.0, 0.7, 4.0, 1.1],
+                "Оксид углерода": [2.2, 2.0, 2.0, 2.6, 7.0, 7.2, 6.2, 3.4, 2.8, 3.2, 3.0],
+                "Диоксид азота": [10.2, 7.1, 8.7, 8.4, 6.5, 5.5, 5.0, 5.0, 4.9, 4.9, 4.0],
+                "Сероводород": [0, 0, 0, 0, 0, 10.7, 9.4, 12.9, 16.3, 11.3, 16.3],
+                "Фтористый водород": [6.35, 7.1, 5.1, 17.2, 19.7, 5.1, 0.5, 5.8, 1.0, 0.4, 0.3],
+                "Озон": [0, 0, 0, 0, 0, 0, 1.3, 5.0, 1.8, 7.0, 6.9],
+                "Цинк (Zn)": [0, 0, 0, 0, 0, 7.0, 0, 0, 0, 0, 0]
+        },
+        "Атырау": {
+            "Взвешенные вещества": [4.0, 2.4, 2.4, 2.7, 4.2, 2.2, 2.0, 1.8, 1.8, 1.4, 1.8],
+            "PM-2.5": [2.4, 0.8, 2.6, 3.8, 1.4, 3.3, 3.1, 4.6, 1.4, 1.1, 1.0],
+            "PM-10": [4.8, 1.7, 5.0, 3.1, 4.7, 9.9, 9.0, 3.3, 0.8, 0.6, 0.6],
+            "Диоксид серы": [0.57, 0.4, 1.1, 0.2, 0.1, 0.6, 0.8, 2.2, 0.5, 0.3, 14.1],
+            "Оксид углерода": [7.03, 1.0, 0.8, 1.2, 4.0, 1.6, 3.4, 1.7, 1.2, 1.6, 16.0],
+            "Диоксид азота": [0.88, 0.7, 1.1, 0.9, 0.8, 0.6, 1.8, 3.1, 3.5, 3.4, 11.1],
+            "Сероводород": [10.3, 8.9, 17.2, 51.9, 13.6, 16.1, 10.3, 7.7, 4.2, 2.6, 19.7],
+            "Аммиак": [0.74, 0.2, 0.2, 1.5, 0.9, 0.7, 1.9, 0.5, 0.5, 0.7, 3.4],
+            "Фенол": [0.4, 0, 0.7, 0.4, 0.5, 0.4, 0.4, 0.5, 0.4, 0.5, 1.7]
+        },
+        "Караганда": {
+            "Пыль": [25.6, 1.8, 1.4, 6.0, 0.0, 1.4, 2.0, 4.0, 4.8, 9.0, 8.8],
+            "PM-2.5": [9.6, 20.6, 15.9, 20.8, 19.8, 19.8, 20.5, 37.3, 22.6, 26.6, 27.4],
+            "PM-10": [8.0, 11.0, 8.5, 11.1, 10.6, 10.6, 11.0, 19.9, 12.1, 14.2, 14.7],
+            "Диоксид серы": [1.3, 1.0, 0.9, 0.6, 0.2, 0.5, 0.8, 2.5, 5.4, 0.2, 0.6],
+            "Оксид углерода": [3.1, 17.0, 14.5, 5.5, 3.8, 9.0, 2.7, 3.4, 4.2, 4.1, 5.0],
+            "Диоксид азота": [3.1, 2.6, 2.3, 1.5, 1.6, 1.0, 1.9, 7.5, 11.1, 1.4, 1.3],
+            "Сероводород": [6.3, 6.5, 6.0, 6.3, 8.6, 5.9, 6.4, 6.9, 6.6, 9.4, 8.4],
+            "Фенол": [2.2, 2.2, 1.8, 5.0, 1.1, 1.0, 0.8, 2.1, 1.3, 2.2, 4.0],
+            "Формальдегид": [0.44, 0.5, 0.54, 0.4, 0.5, 0.46, 0.39, 0.72, 0.52, 1.08, 0.8]
+        },        
+        "Кокшетау": {
+            "Пыль": [2.8, 2.2, 2.2, 2.78, 1.6, 3.3, 0.0, 0.0, 0.0, 0.0, 0.0],
+            "PM-2.5": [0.0, 0.3, 1.2, 0.83, 1.2, 0.46, 1.42, 2.0, 2.3, 1.1, 0.7],
+            "PM-10": [1.65, 0.2, 0.6, 0.77, 0.81, 0.19, 0.98, 1.1, 1.3, 0.9, 0.6],
+            "Диоксид серы": [0.59, 1.43, 0.95, 1.0, 0.02, 0.18, 0.93, 0.56, 0.5, 1.3, 1.2],
+            "Оксид углерода": [2.74, 1.0, 0.98, 0.71, 0.57, 0.86, 0.84, 0.96, 2.8, 0.96, 1.6],
+            "Диоксид азота": [1.57, 0.91, 1.4, 3.5, 0.95, 0.74, 1.46, 3.0, 3.4, 0.8, 0.7],
+            "Оксид азота": [2.12, 2.25, 1.6, 1.34, 2.0, 0.97, 0.89, 2.5, 1.9, 1.0, 0.99]
+        },
+        "Костанай": {
+            "PM-2.5": [0.0, 0.0, 0.0, 325.0, 22.0, 37.0, 119.0, 491.0, 674.0, 1055.0, 128.0],
+            "PM-10": [9.0, 899.0, 26.0, 122.0, 2.0, 6.0, 3.0, 0.0, 0.0, 1.0, 66.0],
+            "Диоксид серы": [116.0, 0.0, 3.0, 122.0, 3.0, 6.0, 700.0, 895.0, 0.0, 2840.0, 0.0],
+            "Оксид углерода": [34.0, 12.0, 39.0, 15.0, 3.0, 70.0, 250.0, 4.0, 56.0, 73.0, 13.0],
+            "Диоксид азота": [2754.0, 69.0, 82.0, 43.0, 39.0, 72.0, 0.0, 42.0, 53.0, 717.0, 709.0],
+            "Оксид азота": [6764.0, 2601.0, 93.0, 24.0, 9.0, 9.0, 219.0, 32.0, 7.0, 28.0, 618.0],
+            "Озон": [0.0, 0.0, 0.0, 0.0, 0.0, 1178.0, 2412.0, 0.0, 0.0, 0.0, 0.0]
+        },
+        "Кызылорда": {
+            "Взвешенные вещества": [1.0, 0.6, 2.0, 0.0, 1.0, 0.1, 0.3, 0.28, 0.32, 0.2, 0.8],
+            "PM-2.5": [0.0, 3.2, 2.1, 1.6, 2.1, 0.0, 0.91, 0.61, 1.33, 0.6, 0.3],
+            "PM-10": [1.2, 3.1, 3.4, 0.0, 0.3, 0.0, 0.97, 0.95, 1.0, 1.0, 0.7],
+            "Диоксид серы": [0.6, 0.7, 0.6, 0.8, 0.7, 0.3, 0.64, 0.33, 0.42, 0.9, 4.2],
+            "Оксид углерода": [0.9, 2.0, 1.9, 0.8, 4.9, 0.1, 0.97, 0.74, 0.99, 1.6, 1.8],
+            "Диоксид азота": [1.0, 1.7, 1.4, 1.1, 2.3, 0.3, 1.0, 0.72, 1.0, 1.9, 0.8],
+            "Оксид азота": [0.3, 1.0, 1.1, 0.9, 1.4, 0.0, 0.97, 0.41, 0.97, 1.8, 1.1],
+            "Озон": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.06, 1.0, 1.0, 4.0, 0.3],
+            "Сероводород": [0.3, 0.1, 0.1, 0.1, 0.3, 0.1, 0.78, 0.0, 0.0, 0.0, 0.0],
+            "Формальдегид": [10.0, 0.3, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        },
+        "Павлодар": {
+            "Пыль": [2.6, 1.2, 2.0, 1.4, 1.8, 4.2, 1.2, 1.8, 1.8, 0.6, 0.8],
+            "PM-2.5": [5.38, 2.9, 2.8, 1.4, 1.8, 1.9, 3.5, 2.7, 1.3, 0.0, 1.6],
+            "PM-10": [3.27, 2.6, 3.2, 1.1, 1.2, 3.2, 3.0, 3.4, 1.6, 0.0, 1.3],
+            "Аммиак": [6.68, 0.4, 1.0, 0.4, 0.9, 1.0, 0.3, 0.7, 1.0, 0.8, 0.8],
+            "Диоксид азота": [1.49, 3.4, 3.2, 1.7, 5.0, 2.2, 1.0, 2.2, 7.6, 2.8, 0.6],
+            "Диоксид серы": [0.6, 1.0, 0.7, 1.0, 0.9, 1.0, 1.0, 0.8, 2.5, 1.0, 1.4],
+            "Оксид углерода": [4.37, 6.0, 3.8, 2.3, 2.3, 1.84, 2.24, 3.9, 1.0, 9.3, 9.5],
+            "Сероводород": [6.83, 4.0, 3.8, 1.4, 2.0, 1.9, 1.55, 2.1, 3.7, 3.0, 6.4],
+            "Озон": [0.94, 4.9, 1.0, 2.4, 1.0, 1.0, 1.0, 0.9, 0.8, 4.1, 2.1],
+            "Хлор": [0.2, 0.1, 0.2, 0.3, 0.7, 0.7, 0.6, 0.5, 1.5, 0.7, 0.3],
+            "Хлористый водород": [2.0, 0.4, 0.4, 0.5, 1.5, 1.4, 1.45, 1.4, 0.5, 2.4, 1.4]
+        },
+        "Петропавловск": {
+            "Взвешенные частицы": [0.2, 0.8, 0.4, 0.8, 0.8, 0.6, 2.0, 0.6, 0.0, 0.4, 0.2],
+            "PM-2.5": [3.21, 1.8, 0.4, 1.6, 1.4, 1.2, 0.2, 0.6, 0.2, 0.0, 0.0],
+            "PM-10": [2.98, 3.3, 0.4, 1.0, 0.8, 2.3, 1.4, 1.1, 0.1, 0.0, 0.0],
+            "Диоксид серы": [0.7, 4.0, 0.5, 1.0, 0.7, 0.2, 0.4, 1.0, 0.5, 0.9, 3.3],
+            "Диоксид азота": [3.84, 0.9, 0.0, 2.1, 1.1, 2.8, 2.7, 2.7, 3.4, 2.4, 3.6],
+            "Оксид углерода": [1.4, 2.0, 3.7, 1.2, 0.9, 2.2, 2.8, 0.0, 1.4, 3.6, 1.1],
+            "Сероводород": [9.28, 24.4, 0.4, 5.6, 6.4, 6.6, 15.2, 10.5, 9.7, 9.8, 23.8],
+            "Формальдегид": [0.18, 0.4, 0.5, 0.9, 0.8, 0.8, 6.0, 2.1, 2.1, 0.6, 0.2],
+            "Аммиак": [2.58, 9.4, 0.3, 0.8, 1.2, 1.2, 4.1, 5.0, 0.0, 0.0, 0.0],
+            "Фенол": [0.3, 1.3, 0.4, 2.1, 1.7, 0.9, 2.0, 2.0, 1.0, 0.8, 0.4]
+        },
+        "Семей": {
+            # Заполняем 2015-2022 нулями, 2023-2025 — вашими данными
+            "Диоксид серы": [0, 0, 0, 0, 0, 0, 0, 0, 4.72, 4.50, 4.92],
+            "Оксид углерода": [0, 0, 0, 0, 0, 0, 0, 0, 2.60, 2.70, 4.94],
+            "Диоксид азота": [0, 0, 0, 0, 0, 0, 0, 0, 1.91, 1.74, 1.68],
+            "Оксид азота": [0, 0, 0, 0, 0, 0, 0, 0, 1.84, 3.20, 1.84],
+            "Озон": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.20, 0.62],
+            "Сероводород": [0, 0, 0, 0, 0, 0, 0, 0, 4.13, 4.75, 2.46]
+        },
+        "Тараз": {
+            "Взвешенные вещества": [3.4, 2.6, 4.2, 2.0, 3.4, 1.2, 2.0, 0.6, 0.8, 1.8, 1.0],
+            "PM-10": [3.3, 2.7, 1.5, 0.8, 1.7, 0.3, 2.6, 0.79, 0.0, 0.0, 0.0],
+            "Диоксид серы": [0.7, 0.4, 4.0, 0.1, 0.7, 0.8, 0.5, 0.65, 0.6, 0.9, 0.9],
+            "Оксид углерода": [7.6, 3.0, 3.0, 2.2, 3.2, 2.8, 3.5, 3.45, 4.0, 2.6, 2.4],
+            "Диоксид азота": [2.7, 1.3, 1.5, 3.2, 1.9, 1.9, 1.7, 1.05, 1.6, 0.9, 1.0],
+            "Сероводород": [1.6, 2.5, 3.0, 4.1, 4.3, 5.4, 0.0, 2.14, 6.7, 3.9, 3.6],
+            "Фтористый водород": [2.7, 2.95, 1.0, 1.15, 1.4, 0.35, 0.8, 0.8, 0.0, 1.5, 0.75],
+            "Формальдегид": [1.1, 0.6, 0.92, 0.86, 0.56, 0.99, 0.72, 1.04, 0.68, 0.82, 0.48]
+        },        
+        "Туркестан": {
+            "Взвешенные частицы": [0, 0, 0, 3.3, 1.98, 2.0, 1.97, 1.85, 2.21, 0, 0],
+            "PM-2.5": [0, 0, 0, 0, 0, 0, 0, 0, 2.29, 0, 0],
+            "PM-10": [0, 0, 3.31, 0, 0, 0, 0, 0, 3.33, 0, 0],
+            "Диоксид азота": [1.0, 0.3, 1.0, 1.1, 1.1, 1.8, 1.2, 3.71, 3.8, 3.8, 3.8],
+            "Диоксид серы": [0.0, 0.2, 0.5, 1.5, 0.7, 0.5, 0.5, 3.19, 5.9, 4.2, 4.9],
+            "Оксид азота": [0.6, 0.4, 0.8, 0.7, 0.6, 1.8, 1.9, 0.04, 1.9, 1.9, 1.8],
+            "Оксид углерода": [6.7, 3.0, 3.4, 2.9, 2.2, 1.9, 1.1, 2.32, 2.8, 2.2, 2.8],
+            "Сероводород": [0, 0.5, 0, 4.4, 6.9, 4.1, 0, 14.56, 3.7, 4.6, 3.7],
+            "Озон": [0, 0.9, 0, 0, 0, 0, 0.6, 0.9, 3.3, 1.6, 0.6]
+        },
+        "Усть-Каменогорск": {
+            "Пыль": [6.0, 2.6, 2.8, 4.4, 4.0, 2.0, 1.8, 0.6, 0.0, 0.0, 0.0],
+            "PM-2.5": [0, 0, 0, 0, 0, 4.5, 6.1, 0.77, 0.03, 0.09, 0.0],
+            "PM-10": [0, 0.0, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 0.36, 1.5, 0.05],
+            "Диоксид серы": [5.0, 8.8, 7.2, 11.4, 9.9, 10.9, 9.9, 8.7, 6.93, 1.15, 4.78],
+            "Диоксид азота": [3.3, 2.3, 3.8, 2.8, 3.9, 2.1, 1.4, 9.7, 2.22, 2.47, 2.66],
+            "Сероводород": [5.0, 6.1, 62.1, 131.7, 23.1, 20.4, 7.9, 8.2, 5.28, 1.0, 4.23],
+            "Фенол": [2.1, 1.8, 4.5, 2.1, 1.3, 1.5, 3.7, 0.9, 2.2, 5.44, 2.5],
+            "Фтористый водород": [0, 0, 3.0, 1.9, 1.2, 1.3, 1.5, 0.8, 1.35, 2.1, 1.75],
+            "Хлор": [0.4, 0.9, 1.4, 0.7, 0.9, 0.7, 0.9, 0.6, 0.9, 2.0, 1.2],
+            "Хлористый водород": [0, 0, 0.7, 0.8, 0.8, 1.1, 1.3, 0.9, 2.0, 6.0, 2.4],
+            "Серная кислота": [0.93, 1.17, 1.6, 1.67, 0.6, 1.2, 0.7, 0.2, 0.27, 2.65, 1.63],
+            "Оксид углерода": [2.4, 3.0, 3.4, 5.7, 2.9, 4.1, 2.3, 4.3, 2.59, 6.61, 5.38],
+            "Аммиак": [0.46, 0.36, 0, 0.27, 0, 0.3, 0.3, 0.4, 0, 2.13, 1.19]
+        },
+        "Уральск": {
+            "PM-2.5": [0.0, 0.0, 1.4, 0.9, 1.6, 1.7, 0.8, 0.0, 0.0, 0.0, 0.0],
+            "PM-10": [0.0, 0.0, 2.2, 0.9, 3.4, 1.0, 0.9, 0.0, 0.0, 0.0, 0.0],
+            "Диоксид серы": [0.0, 0.0, 3.2, 1.0, 0.2, 1.9, 0.2, 0.5, 0.5, 2.4, 1.75],
+            "Оксид углерода": [0.0, 0.0, 4.5, 1.9, 2.3, 2.3, 4.3, 2.7, 2.5, 2.4, 1.26],
+            "Диоксид азота": [0.0, 0.0, 1.0, 1.0, 1.1, 1.8, 2.1, 2.42, 1.7, 1.1, 0.96],
+            "Оксид азота": [0.0, 0.0, 1.3, 1.0, 2.3, 1.3, 0.9, 1.62, 1.0, 0.7, 0.75],
+            "Сероводород": [0.0, 0.0, 4.0, 1.7, 4.0, 4.1, 1.0, 1.81, 6.3, 7.3, 1.73],
+            "Озон": [0.0, 0.0, 1.0, 1.0, 0.9, 1.0, 0.8, 6.68, 0.5, 0.9, 2.27],
+            "Аммиак": [0.0, 0.0, 0.31, 0.6, 0.6, 2.7, 0.9, 0.28, 0.1, 0.6, 1.0]
+        },
+        "Шымкент": {
+            "Взвешенные вещества": [1.8, 1.4, 1.4, 1.8, 1.0, 1.0, 1.0, 0.8, 0.8, 0.8, 1.0],
+            "PM-2.5": [4.1, 2.4, 5.9, 3.8, 2.6, 3.1, 1.5, 1.52, 0.3, 0.0, 0.0],
+            "PM-10": [17.3, 4.3, 9.7, 3.2, 3.9, 2.8, 3.9, 1.08, 0.3, 0.0, 0.0],
+            "Диоксид серы": [8.9, 0.4, 0.8, 0.0, 0.2, 0.0, 0.9, 0.73, 3.2, 7.8, 0.5],
+            "Оксид углерода": [4.0, 3.0, 2.6, 3.6, 3.8, 2.8, 1.7, 3.35, 2.8, 2.0, 2.2],
+            "Диоксид азота": [3.0, 2.0, 1.0, 3.3, 4.2, 2.9, 0.6, 0.6, 1.8, 3.1, 0.5],
+            "Сероводород": [9.5, 4.4, 3.4, 0.4, 0.4, 0.8, 2.5, 3.23, 4.9, 185.8, 3.6],
+            "Аммиак": [7.4, 4.1, 2.0, 0.9, 1.3, 0.4, 0.2, 0.5, 0.4, 0.4, 0.2],
+            "Формальдегид": [1.7, 1.8, 1.5, 0.9, 0.8, 3.0, 0.8, 0.72, 0.6, 0.6, 0.6]
+        },           
+
+    }          
+    
+
+    # --- В ИНТЕРФЕЙСЕ STREAMLIT ---
+    # Выбор города
+    city = st.selectbox("Выберите город:", list(kazakhstan_pollution_data.keys()))
+
+    # Извлечение данных и подписей для выбранного города
+    heatmap_data, current_pollutants = kazakhstan_pollution_data[city]
+
+
+    # --- 2. ИНТЕРФЕЙС ---
+    st.set_page_config(page_title="Эко-Мониторинг Казахстана", layout="wide")
+    st.title("🍀 Экологический мониторинг городов Казахстана")
+
+    # Выбор города — он стоит НАД вкладками, поэтому влияет на всё сразу
+    city = st.selectbox(
+        "Выберите город для анализа:", 
+        list(kazakhstan_pollution_data.keys()), 
+        key="main_city_selector"
+    )
+
+    # Сразу извлекаем данные для выбранного города
+    heatmap_data, current_pollutants = kazakhstan_pollution_data[city]
+
+    st.divider() # Красивая линия под выбором города
+
+    # --- 4. СОЗДАНИЕ ВКЛАДОК ---
+    tab1, tab2 = st.tabs([
+        "📊 Тепловая карта (2025)", 
+        "📈 Годовая динамика"
+    ])
+
+    with tab1:
+        st.subheader(f"Карта превышений ПДК по месяцам: {city}")
+        months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
+        
+        fig_heat = px.imshow(
+            heatmap_data,
+            labels=dict(x="Месяц", y="Примесь", color="Случаев > ПДК"),
+            x=months,
+            y=current_pollutants,
+            color_continuous_scale="Reds",
+            aspect="auto",
+            text_auto=True
+        )
+        st.plotly_chart(fig_heat, use_container_width=True)
+        st.info("💡 Насыщенность цвета показывает частоту превышений нормы.")
+        
+    with tab2:
+        st.subheader(f"📈 Историческая динамика загрязнения: {city}")
+
+        city_history = all_historical_data.get(city, {})
+
+        if not city_history:
+            st.error(f"Данные по истории для города {city} отсутствуют.")
+        else:
+            # --- БЛОК УПРАВЛЕНИЯ ---
+            col1, col2, col3 = st.columns([3, 1.5, 1])
+            
+            with col2:
+                years = list(range(2015, 2026))
+                year_range = st.select_slider(
+                    "Период:", options=years, value=(2015, 2025), key="slider_tab2"
+                )
+
+            with col1:
+                selected_pollutants = st.multiselect(
+                    "Выберите примеси:",
+                    options=list(city_history.keys()),
+                    default=list(city_history.keys())[:3]
+                )
+                
+            with col3:
+                # Важнейшая функция для ваших данных
+                use_log = st.checkbox("Логарифм. шкала", help="Используйте при больших пиках (напр. Шымкент 185.8)")
+
+            # --- ПОДГОТОВКА ДАННЫХ ---
+            start_idx = years.index(year_range[0])
+            end_idx = years.index(year_range[1]) + 1
+            filtered_years = years[start_idx:end_idx]
+
+            fig_line = go.Figure()
+
+            # Цветовые зоны риска (фоновые полосы)
+            fig_line.add_hrect(y0=0, y1=1, fillcolor="rgba(0, 255, 0, 0.1)", line_width=0, annotation_text="Безопасно")
+            fig_line.add_hrect(y0=1, y1=5, fillcolor="rgba(255, 255, 0, 0.05)", line_width=0, annotation_text="Повышенный риск")
+
+            # Отрисовка линий
+            for p in selected_pollutants:
+                values = city_history[p][start_idx:end_idx]
+                fig_line.add_trace(go.Scatter(
+                    x=filtered_years, y=values, name=p,
+                    mode='lines+markers',
+                    line=dict(width=3 if city == "Шымкент" and p == "Сероводород" else 2),
+                    hovertemplate="<b>%{x} год</b><br>Кратность: %{y} ПДК<extra></extra>"
+                ))
+
+            fig_line.update_layout(
+                yaxis_type="log" if use_log else "linear",
+                yaxis_title="Кратность превышения ПДК",
+                hovermode="x unified",
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                margin=dict(l=0, r=0, t=30, b=0),
+                height=500
+            )
+            st.plotly_chart(fig_line, use_container_width=True)
+
+            # --- БЛОК АВТОМАТИЧЕСКОЙ АНАЛИТИКИ ---
+            st.markdown("### 🔍 Аналитический разбор")
+            
+            # Собираем статистику по выбранным веществам
+            stats = []
+            for p in selected_pollutants:
+                vals = [v for v in city_history[p][start_idx:end_idx] if v > 0]
+                if vals:
+                    max_val = max(vals)
+                    max_year = filtered_years[vals.index(max_val)]
+                    avg_val = sum(vals) / len(vals)
+                    stats.append({"Примесь": p, "Пик (ПДК)": max_val, "Год пика": max_year, "Среднее": round(avg_val, 2)})
+
+            if stats:
+                c1, c2 = st.columns([2, 1])
+                with c1:
+                    # Находим самый опасный показатель
+                    worst = max(stats, key=lambda x: x["Пик (ПДК)"])
+                    if worst["Пик (ПДК)"] > 10:
+                        st.warning(f"⚠️ **Критический уровень:** Вещество **{worst['Примесь']}** достигало **{worst['Пик (ПДК)']} ПДК** в {worst['Год пика']} году.")
+                    else:
+                        st.success(f"✅ В выбранный период {year_range[0]}-{year_range[1]} критических скачков (>10 ПДК) не обнаружено.")
+                    
+                    # Общая тенденция
+                    last_vals = [city_history[p][end_idx-1] for p in selected_pollutants]
+                    avg_now = sum(last_vals) / len(last_vals) if last_vals else 0
+                    trend = "снижается" if avg_now < stats[0]["Среднее"] else "растет или стабильно"
+                    st.write(f"📊 Общий экологический фон к 2025 году: **{trend}** (среднее по выборке: {round(avg_now, 2)} ПДК).")
+
+                with c2:
+                    # Компактная таблица рекордов
+                    st.dataframe(stats, hide_index=True)
+
+            st.caption("Данные основаны на ежегодных отчетах мониторинга качества атмосферного воздуха РК.")
+   
+
+    # --- ОБЩИЙ НАСТРОЙКИ СТРАНИЦЫ ---
+    st.set_page_config(page_title="Мониторинг вод РК", layout="wide")
+
+    # --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ОТРИСОВКИ ---
+    def render_charts(df, key_prefix):
+        st.divider()
+        col_chart, col_info = st.columns([2, 1])
+
+        with col_chart:
+            # Цветовая логика: зеленый (1), желтый (3), оранжевый (4-5), красный (6)
+            colors = []
+            for c in df['Класс']:
+                if c <= 1: colors.append('#2ecc71')
+                elif c <= 3: colors.append('#f1c40f')
+                elif c <= 5: colors.append('#e67e22')
+                else: colors.append('#e74c3c')
+                
+            fig = go.Figure(go.Bar(
+                x=df['Класс'], 
+                y=df['Объект'], 
+                orientation='h', 
+                marker_color=colors,
+                text=df['Класс'],
+                textposition='auto'
+            ))
+            fig.update_layout(
+                title="Классы качества воды (2025 год)", 
+                yaxis=dict(autorange="reversed"), 
+                height=400,
+                xaxis_title="Класс (чем меньше, тем чище)"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col_info:
+            selected_obj = st.selectbox("Подробная справка по объекту:", df['Объект'], key=f"select_{key_prefix}")
+            obj_info = df[df['Объект'] == selected_obj].iloc[0]
+            
+            st.info(f"### {selected_obj}")
+            st.write(f"**Характеристика:** {obj_info['Характеристика']}")
+            st.write(f"**Основные загрязнители:** {obj_info['Показатели']}")
+            st.caption(f"ℹ️ {obj_info['Пригодность']}")
+
+    # --- ФУНКЦИИ ОБЛАСТЕЙ ---
+    def show_almaty_dashboard():
+        st.subheader("📍 г. Алматы, Алматинская область и область Жетысу")  
+        st.markdown("*Наблюдение ведется на 5 водных объектах (17 створа) по 37 показателям.*")
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Створов", "42")
+        c2.metric("Показателей", "44")
+        c3.metric("Лидер", "р. Тургень")
+        c4.metric("Зона риска", "не обнаружены")
+
+        water_2025 = [
+            {"Объект": "р. Киши Алматы", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "медь"},
+            {"Объект": "р. Есентай", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "медь"},
+            {"Объект": "р. Улкен Алматы", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "железо общее"},
+            {"Объект": "р. Иле", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, медь"},
+            {"Объект": "р. Шилик", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, медь"},
+            {"Объект": "р. Шарын", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, медь"},
+            {"Объект": "р. Текес", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "аммоний ион, медь, магний"},
+            {"Объект": "р. Коргас", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "медь"},
+            {"Объект": "р. Баянкол", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "медь"},
+            {"Объект": "р. Есик", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "медь"},
+            {"Объект": "р. Каскелен", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, медь"},
+            {"Объект": "р. Каркара", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний"},
+            {"Объект": "р. Тургень", "Класс": 1, "Характеристика": "очень хорошее", "Пригодность": "Для всех видов использования", "Показатели": "В норме"},
+            {"Объект": "р. Талгар", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "медь"},
+            {"Объект": "р. Темерлик", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, медь"},            
+            {"Объект": "р. Лепси", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "медь, железо общее"},
+            {"Объект": "р. Аксу", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, железо общее, медь"},
+            {"Объект": "р. Каратал", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "железо общее, медь"},
+            {"Объект": "вдхр. Капшагай", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний"}  
+        ]
+        render_charts(pd.DataFrame(water_2025), "almaty")
+        
+        
+    def show_akmola_dashboard():
+        st.subheader("📍 г. Астана и Акмолинская область")  
+        st.markdown("*Наблюдение ведется на 25 водных объектах (60 створа) по 36 показателям.*")
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Створов", "60")
+        c2.metric("Показателей", "36")
+        c3.metric("Лидер", "Астанинское вдхр.")
+        c4.metric("Зона риска", "р. Сарыбулак")
+
+        water_2025 = [
+            {"Объект": "Астанинское вдхр.", "Класс": 1, "Характеристика": "очень хорошее", "Пригодность": "Для всех видов использования", "Показатели": "В норме"},
+            {"Объект": "р. Есиль", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, фосфор"},
+            {"Объект": "р. Акбулак", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "Только транспорт/гидроэнергетика", "Показатели": "хлориды"},
+            {"Объект": "р. Сарыбулак", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "Только транспорт/гидроэнергетика", "Показатели": "хлориды, аммоний-ион"},
+            {"Объект": "р. Нура", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "Только транспорт/гидроэнергетика", "Показатели": "железо общее, взвещенные вещества"},
+            {"Объект": "канал Нура-Есиль", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, сульфаты"},
+            {"Объект": "р. Беттыбулак", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "аммоний-ион, медь"},
+            {"Объект": "р. Жабай", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний"},
+            {"Объект": "р. Силеты", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, аммоний-ион"},
+            {"Объект": "р. Аксу", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "Только транспорт/гидроэнергетика", "Показатели": "хлориды"},
+            {"Объект": "р. Кылшыкты", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "Только транспорт/гидроэнергетика", "Показатели": "хлориды"},
+            {"Объект": "р. Шагалалы", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "Нужна очистка для питья", "Показатели": "магний, медь"},
+            {"Объект": "р. Ащылыайрык", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "Только транспорт/гидроэнергетика", "Показатели": "хлориды"}                        
+        ]
+        render_charts(pd.DataFrame(water_2025), "akmola")
+
+    def show_atyrau_dashboard(): 
+        st.subheader("📍 Атырауская область")  
+        st.markdown("*Включая мониторинг Северной части Каспийского моря.*")
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Створов", "21")
+        c2.metric("Показателей", "43")
+        c3.metric("Лидер", "нет")
+        c4.metric("ЭВЗ", "не обнаружены")
+
+        water_2025 = [
+            {"Объект": "р. Жайык", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "БПК5, ХПК, магний, нефтепродукты"},
+            {"Объект": "р. Кигаш", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "нужна очистка", "Показатели": "БПК5, ХПК, магний, кадмий, нефтепродукты"},
+            {"Объект": "р. Перетаска", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "БПК5, ХПК, магний, нефтепродукты"},
+            {"Объект": "р. Яик", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "нужна очистка", "Показатели": "БПК5, ХПК, магний, нефтепродукты"},
+            {"Объект": "протока Шаранова", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "БПК5, ХПК, магний, нефтепродукты"},
+            {"Объект": "р. Эмба", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "нужна очистка", "Показатели": "БПК5, магний, сульфаты, нефтепродукты"}
+            
+        ]
+        render_charts(pd.DataFrame(water_2025), "atyrau")
+        
+    def show_aktobe_dashboard(): 
+        st.subheader("📍 Актюбинская область")  
+        st.markdown("*Наблюдение ведется на 12 водных объектах (19 створа) по 42 показателям.*")
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Створов", "19")
+        c2.metric("Показателей", "42")
+        c3.metric("Лидер", "нет")
+        c4.metric("ЭВЗ", "не обнаружены")
+
+        water_2025 = [
+            {"Объект": "р. Елек", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},
+            {"Объект": "р. Каргалы", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},
+            {"Объект": "р. Эмба", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},
+            {"Объект": "р. Темир", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},                        
+            {"Объект": "р. Орь", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},
+            {"Объект": "р. Актасты", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "взвещенные вещества, фенолы"},
+            {"Объект": "р. Косестек", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},
+            {"Объект": "р. Ойыл", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},
+            {"Объект": "р. Улькен Кобда", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"},
+            {"Объект": "р. Кара Кобда", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "взвещенные вещества, фенолы"},
+            {"Объект": "р. Ыргыз", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "фенолы"}          
+        ]
+        render_charts(pd.DataFrame(water_2025), "aktobe")
+
+        
+    def show_karaganda_dashboard(): 
+        st.subheader("📍 Карагандинская и Улытауская области")  
+        st.markdown("*Наблюдение ведется на 13 водных объектах (42 створа) по 33 показателям.*")
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Створов", "42")
+        c2.metric("Показателей", "33")
+        c3.metric("Лидер", "нет")
+        c4.metric("ЭВЗ", "не обнаружены")
+
+        water_2025 = [
+            {"Объект": "р. Нура", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "технические нужды", "Показатели": "взвещенные вещества"},
+            {"Объект": "вдхр. Самаркан", "Класс": 5, "Характеристика": "очень загрязненное", "Пригодность": "не пригодна для всех видов водопользования", "Показатели": "взвещенные вещества"},
+            {"Объект": "р. Сокыр", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "технические нужды", "Показатели": "аммоний-ион, фосфор общий, фосфаты"},
+            {"Объект": "р. Шерубайнура", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "технические нужды", "Показатели": "аммоний-ион, фосфор общий, фосфаты"},                        
+            {"Объект": "канал им. К. Сатпаева", "Класс": 4, "Характеристика": "загрязненное", "Пригодность": "для орошения и промышленности,для хозяйственно питьевого водоснабжения требуется методы глубокой водоподготовки", "Показатели": "взвещенные вещества"},
+            {"Объект": "вдхр. Кенгир", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "сульфаты, магний, марганец, медь"},
+            {"Объект": "р. Кара-Кенгир", "Класс": 5, "Характеристика": "очень загрязненное", "Пригодность": "не пригодна для всех видов водопользования", "Показатели": "минерализация, аммоний-мон"}     
+        ]
+        render_charts(pd.DataFrame(water_2025), "karaganda")
+
+    def show_zko_dashboard(): 
+        st.subheader("📍 Западно-Казахстанская область")  
+        st.markdown("*Наблюдение ведется на 9 водных объектах (18 створа) по 43 показателям.*")
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Створов", "18")
+        c2.metric("Показателей", "43")
+        c3.metric("Лидер", "нет")
+        c4.metric("ЭВЗ", "не обнаружены")
+
+        water_2025 = [
+            {"Объект": "р. Жайык", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее"},
+            {"Объект": "р. Шанан", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее"},
+            {"Объект": "р. Дерколь", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее, фосфор общий"},
+            {"Объект": "р. Елек", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее"},                        
+            {"Объект": "р. Шынгырлау", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее"},
+            {"Объект": "р. Сарыозен", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее"},
+            {"Объект": "р. Караозен", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее"},     
+            {"Объект": "Кошимский канал", "Класс": 3, "Характеристика": "умеренно загрязненное", "Пригодность": "рекреация без ограничений", "Показатели": "фосфаты, БПК5, магний, железо общее"}     
+        ]
+        render_charts(pd.DataFrame(water_2025), "karaganda")
+
+        
+        
+    def show_turkestan_dashboard(): 
+        st.subheader("📍 Туркестанская область")  
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Створов", "12")
+        c2.metric("Показателей", "40")
+        c3.metric("Лидеры", "Аксу, Арыс")
+        c4.metric("Зона риска", "р. Келес")
+
+        water_2025 = [
+            {"Объект": "р. Аксу", "Класс": 1, "Характеристика": "очень хорошее", "Пригодность": "Все категории", "Показатели": "В норме"},
+            {"Объект": "р. Келес", "Класс": 6, "Характеристика": "высоко загрязненное", "Пригодность": "Технические нужды", "Показатели": "взвешенные вещества"}
+        ]
+        render_charts(pd.DataFrame(water_2025), "turkestan")
+
+    # --- ГЛАВНАЯ ЛОГИКА ПРИЛОЖЕНИЯ ---
+
+    st.title("💧 Мониторинг качества поверхностных вод Казахстана")
+
+    # Создаем выбор области вверху (или можно в st.sidebar.selectbox)
+    region = st.selectbox(
+        "Выберите регион для просмотра данных:",
+        ["Акмолинская область", "Атырауская область", "Туркестанская область", "Карагандинская область", "Алматы и Жетісу"]
+    )
+
+    # Переключатель отображения
+    if region == "Акмолинская область":
+        show_akmola_dashboard()
+    elif region == "Атырауская область":
+        show_atyrau_dashboard()
+    elif region == "Туркестанская область":
+        show_turkestan_dashboard()
+    elif region == "г. Алматы, Алматинская область и область Жетысу":
+        show_almaty_dashboard()
+    elif region == "Актюбинская область":
+        show_aktobe_dashboard()
+    elif region == "Карагандинская и Улытауская области":
+        show_karaganda_dashboard()
+
+    else:
+        st.info("Раздел находится в разработке или данные загружаются.")
+        
+    
+        
+  
+with tabs[9]:
     st.header("🌐 Международное сотрудничество")
+    
+    # CSS: Немного уменьшим min-height и padding, так как карточки в одну строку будут уже
+    st.markdown("""
+        <style>
+        [data-testid="column"] {
+            border: 1px solid #e6e9ef;
+            border-radius: 10px;
+            padding: 10px !important;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px; 
+        }
+        
+        [data-testid="column"]:hover {
+            transform: translateY(-3px);
+            border-color: #1f4e78;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Цитата (без изменений)
+    st.markdown("""
+        <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 30px; background-color: #f8f9fa; padding: 15px;">
+            <p style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4; margin: 0; font-size: 1.1rem;">
+                «Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    partners = [
+        {"name": "ВМО", "image": "wmo_logo.png"},
+        {"name": "МСГ-СНГ", "image": "cis_logo.png"},
+        {"name": "КАСПКОМ", "image": "caspcom_logo.png"},
+        {"name": "ПРООН", "image": "undp_logo.png"},
+        {"name": "Всемирный банк", "image": "worldbank_logo.png"},
+        {"name": "EUMETSAT", "image": "eumetsat_logo.png"}
+    ]
+
+    # Создаем ровно столько колонок, сколько партнеров в списке
+    cols = st.columns(len(partners))
+
+    for j, partner in enumerate(partners):
+        with cols[j]:
+            # Название организации
+            st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; font-size: 0.8rem; margin-bottom: 8px; height: 30px; display: flex; align-items: center; justify-content: center;">{partner["name"]}</div>', unsafe_allow_html=True)
+            
+            # Логотип
+            try:
+                # В одну строку лучше использовать use_container_width=True, 
+                # чтобы они автоматически подстраивались под узкие колонки
+                st.image(partner["image"], use_container_width=True)
+            except:
+                st.caption(f"Ошибка {partner['name']}")
+                
+# Добавляем разделитель или небольшой отступ
+    st.write("---")
+    
+    # Заголовок для блока достижений
+    st.markdown("<h4 style='text-align: center; color: #1f4e78; margin-bottom: 25px;'>Ключевые показатели за 2024-2025 гг.</h4>", unsafe_allow_html=True)
+
+    # Создаем 3 колонки для метрик
+    m_col1, m_col2, m_col3 = st.columns(3)
+
+    with m_col1:
+        st.markdown("""
+            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #1f4e78; margin: 0;">5</h2>
+                <p style="color: #555; font-weight: bold; margin: 0;">Международных меморандумов</p>
+                <p style="color: #888; font-size: 0.8rem; margin: 0;">заключено в 2025 году</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with m_col2:
+        st.markdown("""
+            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #1f4e78; margin: 0;">>50</h2>
+                <p style="color: #555; font-weight: bold; margin: 0;">Специалистов обучено</p>
+                <p style="color: #888; font-size: 0.8rem; margin: 0;">онлайн и офлайн форматах</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with m_col3:
+        st.markdown("""
+            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #1f4e78; margin: 0;">25+</h2>
+                <p style="color: #555; font-weight: bold; margin: 0;">Встреч с партнерами</p>
+                <p style="color: #888; font-size: 0.8rem; margin: 0;">для обмена опытом и данными</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        
+    st.write("---")
+    
+    st.subheader("📍 Ключевые направления работы с ВМО")
+
+    # Создаем первый ряд колонок
+    row1_col1, row1_col2 = st.columns(2)
+
+    with row1_col1:
+        with st.expander("📊 Региональный центр по паводкам (CARFFGS)", expanded=True):
+            st.markdown("""
+            **Выполнение функций Регионального центра по быстроразвивающимся паводкам в странах ЦА.**
+            * Обеспечение оперативного мониторинга и прогнозирования паводковых явлений.
+            * Координация усилий стран Центральноазиатского региона.
+            """)
+
+    with row1_col2:
+        with st.expander("💧 Гидрологический мониторинг (HydroSoS)", expanded=True):
+            st.markdown("""
+            **Реализация инициативы HydroSoS:**
+            * Мониторинг и прогнозирование состояния водных ресурсов.
+            * Оценка водных ресурсов по речному стоку для обеспечения устойчивого водопользования.
+            """)
+
+    # Создаем второй ряд колонок
+    row2_col1, row2_col2 = st.columns(2)
+
+    with row2_col1:
+        with st.expander("📡 Интегрированная система ВМО (WIGOS)", expanded=True):
+            st.markdown("""
+            **Совместный Региональный Центр WIGOS (Суб-регионы VI и II):**
+            * Пилотный проект: Казахстан, Россия и Беларусь (по ротации).
+            * Повышение качества наблюдений и обмена данными.
+            """)
+
+    with row2_col2:
+        with st.expander("📢 Глобальная инициатива (EW4All)", expanded=True):
+            st.info("""
+            **Ключевая роль НГМС РК:**
+            * **Председатель Целевой группы** для Региона II (Азия).
+            * Региональный участник в Восточной Европе и ЦА.
+            """)
+
+    # Стилизация для аккуратного вида
+    st.markdown("""
+        <style>
+        .stExpander {
+            border: 1px solid #e6e9ef !important;
+            border-radius: 8px !important;
+            margin-bottom: 10px !important;
+            height: 100%; /* Чтобы блоки в одном ряду были одинаковой высоты */
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    
+    
+    st.write("---")
+    st.subheader("📋 Детализация ключевых проектов по организациям")
+
+    # Используем колонки для компактного размещения карточек организаций
+    org_col1, org_col2 = st.columns(2)
+
+    with org_col1:
+        with st.expander("🏛️ ЮНЕСКО", expanded=False):
+            st.markdown("""
+            * **Проект по криосфере:** Активное участие в исследованиях ледников и снежного покрова.
+            * **Проект OUTLAST:** Разработка многосекторальной глобальной системы прогнозирования опасности засухи.
+            """)
+        
+        with st.expander("🌿 GIZ (Германия)", expanded=False):
+            st.markdown("""
+            * **Зеленая Центральная Азия:** Управление водными ресурсами с учетом климатических изменений.
+            * **German Water Partnership:** Технологическое сотрудничество в водном секторе.
+            """)
+
+    with org_col2:
+        with st.expander("🌍 Адаптационный Фонд", expanded=False):
+            st.markdown("""
+            * **Региональное управление засухами:** Интегрированные программы для стран Центральной Азии.
+            * **Межрегиональное взаимодействие:** Управление засухами для стран Южного Кавказа, Казахстана и Молдовы.
+            """)
+        
+        with st.expander("🤝 Двустороннее сотрудничество (2024-2027)", expanded=False):
+            st.info("""
+            Реализация **Производственных Программ** по обмену данными, опытом и методологиями с:
+            * 🇷🇺 Россия | 🇧🇾 Беларусь
+            * 🇺🇿 Узбекистан | 🇹🇯 Таджикистан
+            * 🇦🇿 Азербайджан
+            """)
+
+# Специальный блок: Казгидромет как площадка (Светлый вариант без синего фона)
+    st.write("")
+    st.markdown("""
+        <div style="border: 2px solid #1f4e78; padding: 25px; border-radius: 12px; background-color: #fcfdfe;">
+            <h4 style="margin-top: 0; color: #1f4e78; border-bottom: 1px solid #e6e9ef; padding-bottom: 10px;">
+                🚀 Казгидромет — международная образовательная платформа
+            </h4>
+            <p style="color: #333; margin-top: 15px;">В отчетном периоде на базе РГП «Казгидромет» проведены ключевые международные мероприятия:</p>
+            <ul style="list-style-type: none; padding-left: 0;">
+                <li style="margin-bottom: 10px;">
+                    <span style="color: #1f4e78;">📍</span> <b>Семинар ВМО:</b> Управление климатическими данными 
+                    <br><small style="color: #666; padding-left: 25px;">(Эксперты из 8 стран: Турция, Германия, Франция, Канада, Бразилия, Австралия, Индонезия)</small>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <span style="color: #1f4e78;">📍</span> <b>Семинар GIZ:</b> Внедрение гидрологической модели SWIM для трансграничных бассейнов ЦА
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <span style="color: #1f4e78;">📍</span> <b>Технологический воркшоп:</b> Практическое применение приложения Snowmapper
+                </li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    
+    st.write("---")   
 
     # Основной баннер нового статуса
     st.info("""
@@ -9341,16 +10900,3 @@ with tabs[8]:
             unsafe_allow_html=True
         )
 
-    # Дополнительный блок визуализации (Карта или схема потоков данных)
-    st.markdown("---")
-    st.write("### 🔗 Роль Казахстана в глобальной сети WIGOS")
-    st.caption("""
-    Субрегиональный центр РЦИ в Казахстане выступает связующим звеном между региональными ассоциациями RAVI (Европа) и RAII (Азия), 
-    обеспечивая интеграцию национальных систем наблюдений в единую глобальную сеть.
-    """)
-
-    # Интерактивная метрика (если нужно подчеркнуть масштаб)
-    st.button("📄 Запросить аналитический отчет РЦИ")
-
-    
-st.markdown('<div style="text-align: center; margin-top: 40px; color: #94A3B8;">РГП «Казгидромет» | 2026</div>', unsafe_allow_html=True)
