@@ -720,7 +720,7 @@ with tabs[0]:
             st.write("---")
             
             # Пути к агро-рисункам
-            path_agro = os.path.join(BASE_DIR, "AGRO.jpeg")
+            path_agro = os.path.join(BASE_DIR, "AGRO.jpg")
             path_agro1 = os.path.join(BASE_DIR, "agro1.jpg")
 
             # Внутренние колонки для агро-фото (2 в ряд)
@@ -730,7 +730,7 @@ with tabs[0]:
                 if os.path.exists(path_agro):
                     st.image(path_agro, caption="Прогноз влагозапасов", use_container_width=True)
                 else:
-                    st.warning("AGRO.jpeg не найден")
+                    st.warning("AGRO.jpg не найден")
 
             with agro_col2:
                 if os.path.exists(path_agro1):
@@ -774,7 +774,7 @@ with tabs[0]:
             
             # Если хочешь вставить маленькое фото AirKZ прямо под текстом
             if os.path.exists(path_airkz):
-                st.image(path_airkz, width=350)
+                st.image(path_airkz, width=300)
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
