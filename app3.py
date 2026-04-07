@@ -721,7 +721,7 @@ with tabs[0]:
                 if os.path.exists(path_agro):
                     st.image(path_agro, caption="Прогноз запасов влаги", use_container_width=True)
                 else:
-                    st.warning("AGRO.jpeg не найден")
+                    st.warning("AGRO.jpg не найден")
 
             with agro_col2:
                 if os.path.exists(path_agro1):
