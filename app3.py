@@ -458,7 +458,7 @@ with tabs[0]:
             </h2>
         """, unsafe_allow_html=True)
         
-    st.markdown("---")
+        st.markdown("---")
     
         # Создаем 5 колонок
         col1, col2, col3, col4, col5 = st.columns(5)
@@ -508,7 +508,7 @@ with tabs[0]:
                 </div>
             """, unsafe_allow_html=True)
    
-    st.markdown("---")
+        st.markdown("---")
     
         # Создаем два основных столбца
         col_left, col_right = st.columns(2, gap="large")
