@@ -819,26 +819,34 @@ with tabs[0]:
                 st.caption("📲 Доступно в App Store и Google Play")
 
         with col_visual:
-            # УДАЛИТЕ здесь любые упоминания st.write("---") или st.markdown("---")
+            # Убираем все старые гифки и линии
+            st.write("##") # Отступ для выравнивания с заголовком
             
-            st.write("##") # Оставляем только пустой отступ для выравнивания по высоте
+            # Ссылка на интерактивную карту SILAM
+            silam_url = "https://www.kazhydromet.kz/vc/silam/"
             
-            if os.path.exists(path_eco_gif):
-                with open(path_eco_gif, "rb") as f:
-                    contents = f.read()
-                    data_url = base64.b64encode(contents).decode("utf-8")
-
-                st.markdown(
-                    f"""
-                    <div style="display: flex; justify-content: center;">
-                        <img src="data:image/gif;base64,{data_url}" 
-                             style="width: auto; max-width: 100%; max-height: 400px; border-radius: 10px;" 
-                             alt="Мониторинг SILAM">
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                st.caption("Интерактивный экологический прогноз (Модель SILAM)")
+            # Вставляем сайт через HTML iframe
+            # height=500 можно менять, чтобы подстроить под высоту текста слева
+            st.markdown(
+                f"""
+                <iframe 
+                    src="{silam_url}" 
+                    width="100%" 
+                    height="550" 
+                    style="border: 1px solid #003366; border-radius: 10px;"
+                    frameborder="0">
+                </iframe>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            st.markdown(
+                f"<p style='text-align: center; color: gray; font-size: 14px;'>"
+                f"Интерактивная модель SILAM. <a href='{silam_url}' target='_blank'>Открыть в новом окне</a>"
+                f"</p>", 
+                unsafe_allow_html=True
+            )
+            
             
             
             
