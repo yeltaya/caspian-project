@@ -711,7 +711,7 @@ with tabs[0]:
             st.write("---")
             
             # Пути к агро-рисункам
-            path_agro = os.path.join(BASE_DIR, "AGRO.jpeg")
+            path_agro = os.path.join(BASE_DIR, "AGRO.jpg")
             path_agro1 = os.path.join(BASE_DIR, "agro1.jpg")
 
             # Внутренние колонки для агро-фото (делаем 1:1 для симметрии)
