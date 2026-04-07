@@ -696,10 +696,10 @@ with tabs[0]:
                 else:
                     st.error("Файл hydro.png не найден")
                     
-        # --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
+# --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
         with col_main_right:
             st.subheader("🌾 Агрометеорологические прогнозы")
-            st.info("Описание и данные по агрометеорологическому мониторингу.")
+            st.info("Мониторинг и прогнозирование для аграрного сектора.")
             
             st.write("""
             * 📉 **Прогноз запасов влаги** в почве
@@ -707,8 +707,28 @@ with tabs[0]:
             * 🌡️ **Оценка рисков заморозков** и засухи
             * 🚜 **Рекомендации** для проведения посевных работ
             """)
+
+            st.write("---")
             
-            st.image("https://via.placeholder.com/600x400", caption="Карта увлажнения почв")
+            # Пути к агро-рисункам
+            path_agro = os.path.join(BASE_DIR, "AGRO.jpeg")
+            path_agro1 = os.path.join(BASE_DIR, "agro1.jpg")
+
+            # Внутренние колонки для агро-фото (делаем 1:1 для симметрии)
+            agro_col1, agro_col2 = st.columns(2)
+
+            with agro_col1:
+                if os.path.exists(path_agro):
+                    st.image(path_agro, caption="Прогноз запасов влаги", use_container_width=True)
+                else:
+                    st.warning("AGRO.jpeg не найден")
+
+            with agro_col2:
+                if os.path.exists(path_agro1):
+                    st.image(path_agro1, caption="Фенологический мониторинг", use_container_width=True)
+                else:
+                    st.warning("agro1.jpg не найден")
+                    
 
     # 3. ВАЖНО: Вызов функции БЕЗ отступа в самом конце
     show_monitoring_block()
