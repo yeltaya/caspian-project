@@ -747,10 +747,15 @@ with tabs[0]:
     show_monitoring_block()
     
     import base64
+    import os
+    import streamlit as st
+
     def show_ecology_block():
-        # Названия файлов из твоей папки
+        # Названия файлов
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
+        # Убедитесь, что path_airkz определен здесь или выше
+        path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") 
 
         st.markdown("---")
         st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
@@ -768,42 +773,39 @@ with tabs[0]:
             * 🌉 **Трансграничные водотоки** — мониторинг объектов на границах.
             """)
             
-            # Новый блок про AirKZ
             st.markdown("#### 📱 Мобильное приложение «AirKZ»")
             st.write("""
             «AirKZ» отслеживает качество атмосферного воздуха на всей территории Казахстана. 
-            Пользователи могут вручную выбрать необходимые посты, либо по данным геолокации 
-            приложение автоматически определит ближайший.
+            Приложение автоматически определяет ближайший пост по данным геолокации.
             """)
             
-            # Если хочешь вставить маленькое фото AirKZ прямо под текстом
             if os.path.exists(path_airkz):
-                st.image(path_airkz, width=600)
+                st.image(path_airkz, width=400)
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
         with col_visual:
-            st.write("##") # Небольшой отступ сверху для выравнивания
-            path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
-                
+            st.write("##") # Отступ сверху
+            
             if os.path.exists(path_eco_gif):
-                    # Код для чтения гифки в формате base64
-                file_ = open(path_eco_gif, "rb")
-                contents = file_.read()
-                data_url = base64.b64encode(contents).decode("utf-8")
-                file_.close()
+                # Читаем гифку правильно
+                with open(path_eco_gif, "rb") as f:
+                    contents = f.read()
+                    data_url = base64.b64encode(contents).decode("utf-8")
 
-                    # Отображаем через HTML (это гарантирует анимацию)
+                # HTML вставка для работы анимации
                 st.markdown(
-                        f'<img src="data:image/gif;base64,{data_url}" width="100%" style="border-radius: 10px;" alt="Мониторинг SILAM">',
-                unsafe_allow_html=True
+                    f'<img src="data:image/gif;base64,{data_url}" width="100%" style="border-radius: 10px;" alt="Мониторинг SILAM">',
+                    unsafe_allow_html=True
                 )
+                # ТЕПЕРЬ ОТСТУП ЗДЕСЬ ПРАВИЛЬНЫЙ:
                 st.caption("Интерактивный мониторинг природных сред (Модель SILAM)")
             else:
                 st.warning("Файл eco.gif не найден")
-        
-    # Вызов функции
+
+    # ВЫЗОВ ФУНКЦИИ - СТОИТ ВПЛОТНУЮ К ЛЕВОМУ КРАЮ:
     show_ecology_block()
+
 
 
     import streamlit as st
