@@ -531,124 +531,125 @@ with tabs[0]:
    
         st.markdown("---")
 
-    # --- CSS ДЛЯ КАРТОЧЕК ---
-    st.markdown("""
-        <style>
-            .data-box {
-                padding: 15px;
-                border-radius: 0 0 12px 12px; /* Скругляем только низ, так как сверху картинка */
-                border-left: 5px solid;
-                background: #ffffff;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                min-height: 280px;
-                margin-bottom: 20px;
-            }
-            .data-title {
-                font-weight: bold;
-                font-size: 1.1em;
-                margin-bottom: 10px;
-                color: #1f2937;
-            }
-            .data-list {
-                font-size: 0.9em;
-                padding-left: 20px;
-                color: #4b5563;
-            }
-            .card-img {
-                width: 100%;
-                height: 150px;
-                object-fit: cover;
-                border-radius: 12px 12px 0 0; /* Скругляем верх картинки */
-            }
-        </style>
-    """, unsafe_allow_html=True)
+        # --- CSS ДЛЯ КАРТОЧЕК ---
+        st.markdown("""
+            <style>
+                .data-box {
+                    padding: 15px;
+                    border-radius: 0 0 12px 12px; /* Скругляем только низ, так как сверху картинка */
+                    border-left: 5px solid;
+                    background: #ffffff;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                    min-height: 280px;
+                    margin-bottom: 20px;
+                }
+                .data-title {
+                    font-weight: bold;
+                    font-size: 1.1em;
+                    margin-bottom: 10px;
+                    color: #1f2937;
+                }
+                .data-list {
+                    font-size: 0.9em;
+                    padding-left: 20px;
+                    color: #4b5563;
+                }
+                .card-img {
+                    width: 100%;
+                    height: 150px;
+                    object-fit: cover;
+                    border-radius: 12px 12px 0 0; /* Скругляем верх картинки */
+                }
+            </style>
+        """, unsafe_allow_html=True)
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    # 1. ОСНОВНЫЕ ПУТИ
-    IMG_DIR = os.path.join(BASE_DIR)
+        # 1. ОСНОВНЫЕ ПУТИ
+        IMG_DIR = os.path.join(BASE_DIR)
 
-    # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
-    def draw_data_card(col, file_name, title, color, items):
-        path = os.path.join(IMG_DIR, file_name)
-        with col:
-            # Пытаемся отобразить картинку/гифку
-            if os.path.exists(path):
-                st.image(path, use_container_width=True)
-            else:
-                # Если файла нет, оставляем пустое место или заглушку, чтобы блоки не прыгали
-                st.warning(f"Файл {file_name} не найден")
-            
-            # HTML-контент карточки
-            list_html = "".join([f"<li>{item}</li>" for item in items])
-            st.markdown(f"""
-                <div class="data-box" style="border-left-color: {color};">
-                    <div class="data-title">{title}</div>
-                    <ul class="data-list">
-                        {list_html}
-                    </ul>
-                </div>
-            """, unsafe_allow_html=True)
+        # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
+        def draw_data_card(col, file_name, title, color, items):
+            path = os.path.join(IMG_DIR, file_name)
+            with col:
+                # Пытаемся отобразить картинку/гифку
+                if os.path.exists(path):
+                    st.image(path, use_container_width=True)
+                else:
+                    # Если файла нет, оставляем пустое место или заглушку, чтобы блоки не прыгали
+                    st.warning(f"Файл {file_name} не найден")
+                
+                # HTML-контент карточки
+                list_html = "".join([f"<li>{item}</li>" for item in items])
+                st.markdown(f"""
+                    <div class="data-box" style="border-left-color: {color};">
+                        <div class="data-title">{title}</div>
+                        <ul class="data-list">
+                            {list_html}
+                        </ul>
+                    </div>
+                """, unsafe_allow_html=True)
 
-    # 3. ОБЩИЙ CSS
-    st.markdown("""
-        <style>
-            .data-box {
-                padding: 15px;
-                border-radius: 0 0 12px 12px;
-                border-left: 5px solid;
-                background: #ffffff;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                min-height: 280px; /* Немного увеличил, чтобы текст влезал */
-                margin-bottom: 20px;
-            }
-            .data-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #1f2937; }
-            .data-list { font-size: 0.85em; padding-left: 20px; color: #4b5563; line-height: 1.4; }
-            .data-list b { color: #1f2937; }
-        </style>
-    """, unsafe_allow_html=True)
+        # 3. ОБЩИЙ CSS
+        st.markdown("""
+            <style>
+                .data-box {
+                    padding: 15px;
+                    border-radius: 0 0 12px 12px;
+                    border-left: 5px solid;
+                    background: #ffffff;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                    min-height: 280px; /* Немного увеличил, чтобы текст влезал */
+                    margin-bottom: 20px;
+                }
+                .data-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #1f2937; }
+                .data-list { font-size: 0.85em; padding-left: 20px; color: #4b5563; line-height: 1.4; }
+                .data-list b { color: #1f2937; }
+            </style>
+        """, unsafe_allow_html=True)
 
-    # 4. СОЗДАНИЕ КОЛОНОК И ВЫЗОВ ФУНКЦИЙ
-    col_d1, col_d2, col_d3, col_d4 = st.columns(4)
+        # 4. СОЗДАНИЕ КОЛОНОК И ВЫЗОВ ФУНКЦИЙ
+        col_d1, col_d2, col_d3, col_d4 = st.columns(4)
 
-    draw_data_card(
-        col_d1, "station1.gif", "📍 Наземная сеть", "#3b82f6", 
-        [
-            "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
-            "<b>Аэрология:</b> Зондирование атмосферы до 30 км.",
-            "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."
-        ]
-    )
+        draw_data_card(
+            col_d1, "station1.gif", "📍 Наземная сеть", "#3b82f6", 
+            [
+                "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
+                "<b>Аэрология:</b> Зондирование атмосферы до 30 км.",
+                "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."
+            ]
+        )
 
-    draw_data_card(
-        col_d2, "station2.gif", "🗺️ Аналитика", "#10b981", 
-        [
-            "<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.",
-            "<b>ГСТ ВМО:</b> Обмен данными.",
-            "<b>Сетки:</b> Анализ полей метеопараметров."
-        ]
-    )
+        draw_data_card(
+            col_d2, "station2.gif", "🗺️ Аналитика", "#10b981", 
+            [
+                "<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.",
+                "<b>ГСТ ВМО:</b> Обмен данными.",
+                "<b>Сетки:</b> Анализ полей метеопараметров."
+            ]
+        )
 
-    draw_data_card(
-        col_d3, "station3.gif", "📡 Спутники", "#8b5cf6", 
-        [
-            "<b>EUMETSAT:</b> Европейские геостационары.",
-            "<b>FengYun:</b> Оперативные данные из КНР.",
-            "<b>Метеор-М:</b> Российские орбитальные системы."
-        ]
-    )
+        draw_data_card(
+            col_d3, "station3.gif", "📡 Спутники", "#8b5cf6", 
+            [
+                "<b>EUMETSAT:</b> Европейские геостационары.",
+                "<b>FengYun:</b> Оперативные данные из КНР.",
+                "<b>Метеор-М:</b> Российские орбитальные системы."
+            ]
+        )
 
-    draw_data_card(
-        col_d4, "station4.gif", "⚙️ Численные модели", "#f59e0b", 
-        [
-            "<b>ECMWF:</b> Глобальные прогнозы до 9 км.",
-            "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.",
-            "<b>WRF-Kaz:</b> Локальная модель Казгидромет.",
-            
-        ]
-    )
+        draw_data_card(
+            col_d4, "station4.gif", "⚙️ Численные модели", "#f59e0b", 
+            [
+                "<b>ECMWF:</b> Глобальные прогнозы до 9 км.",
+                "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.",
+                "<b>WRF-Kaz:</b> Локальная модель Казгидромет.",
+                
+            ]
+        )
     
-    
+# Разделитель перед текстом о Казгидромете
+        st.markdown("---")    
     
         # Создаем два основных столбца
         col_left, col_right = st.columns(2, gap="large")
