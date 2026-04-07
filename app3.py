@@ -785,23 +785,35 @@ with tabs[0]:
                 st.caption("📲 Доступно в App Store и Google Play")
 
         with col_visual:
-            st.write("##") # Отступ сверху
+            st.write("##") # Отступ сверху для выравнивания с заголовком
             
             if os.path.exists(path_eco_gif):
-                # Читаем гифку правильно
                 with open(path_eco_gif, "rb") as f:
                     contents = f.read()
                     data_url = base64.b64encode(contents).decode("utf-8")
 
-                # HTML вставка для работы анимации
+                # Добавляем стиль max-height и object-fit
+                # Измените 450px на меньшее число (например 350px), если нужно еще короче
                 st.markdown(
-                    f'<img src="data:image/gif;base64,{data_url}" width="100%" style="border-radius: 10px;" alt="Мониторинг SILAM">',
+                    f"""
+                    <div style="display: flex; justify-content: center;">
+                        <img src="data:image/gif;base64,{data_url}" 
+                             style="
+                                width: auto; 
+                                max-width: 100%; 
+                                max-height: 450px; 
+                                border-radius: 10px; 
+                                object-fit: contain;
+                             " 
+                             alt="Мониторинг SILAM">
+                    </div>
+                    """,
                     unsafe_allow_html=True
                 )
-                # ТЕПЕРЬ ОТСТУП ЗДЕСЬ ПРАВИЛЬНЫЙ:
-                st.caption("Интерактивный мониторинг природных сред (Модель SILAM)")
+                st.caption("Интерактивный экологический прогноз (Модель SILAM)")
             else:
                 st.warning("Файл eco.gif не найден")
+            
 
     # ВЫЗОВ ФУНКЦИИ - СТОИТ ВПЛОТНУЮ К ЛЕВОМУ КРАЮ:
     show_ecology_block()
