@@ -678,20 +678,20 @@ with tabs[0]:
             
             # Создаем внутренние колонки для фото, чтобы они стояли рядом
             # [1, 1.2] — это пропорция ширины (вторая чуть шире, так как у нее подпись длиннее)
-                img_row_col1, img_row_col2 = st.columns([1, 1.2])
+            img_row_col1, img_row_col2 = st.columns([1, 1.2])
 
-                with img_row_col1:
-                    if os.path.exists(path_risk):
+            with img_row_col1:
+                if os.path.exists(path_risk):
                         # Используем use_container_width=True, чтобы фото заполнило свою мини-колонку
-                        st.image(path_risk, caption="Карта рисков и прогнозирование", use_container_width=True)
-                    else:
-                        st.error("Файл risk.jpeg не найден")
+                    st.image(path_risk, caption="Карта рисков и прогнозирование", use_container_width=True)
+                else:
+                    st.error("Файл risk.jpeg не найден")
 
-                with img_row_col2:
-                    if os.path.exists(path_hydro):
-                        st.image(path_hydro, caption="Интерактивная карта состояния водных объектов", use_container_width=True)
-                    else:
-                        st.error("Файл hydro.png не найден")
+            with img_row_col2:
+                if os.path.exists(path_hydro):
+                    st.image(path_hydro, caption="Интерактивная карта состояния водных объектов", use_container_width=True)
+                else:
+                    st.error("Файл hydro.png не найден")
                     
             
         # --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
@@ -711,7 +711,7 @@ with tabs[0]:
             st.image("https://via.placeholder.com/600x400", caption="Карта увлажнения почв")
 
         # Вызов функции
-        show_monitoring_block()
+    show_monitoring_block()
 
 
 
