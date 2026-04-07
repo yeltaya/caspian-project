@@ -892,6 +892,9 @@ with tabs[0]:
                 else:
                     st.warning("CS1.png не найден")
                     
+
+    show_science_block()
+
     st.write("---")
     st.markdown(
         """
@@ -906,10 +909,6 @@ with tabs[0]:
         """, 
         unsafe_allow_html=True
     )
-
-
-    show_science_block()
-
 
 
 
