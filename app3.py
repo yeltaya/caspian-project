@@ -653,8 +653,9 @@ with tabs[0]:
     st.markdown("---")    
     
 
+    import os  # Добавьте это в самый верх файла
     import streamlit as st
-    import os
+    import pandas as pd
 
     def show_monitoring_block():
         # Создаем две основные колонки
