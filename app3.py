@@ -708,24 +708,33 @@ with tabs[0]:
             * 🚜 **Рекомендации** для проведения посевных работ
             """)
 
+            # Специфический блок про AGRODATA
+            st.markdown("#### 📱 Платформа «AGRODATA.kz»")
+            st.write("""
+            Интерактивный агрометеорологический портал, предоставляющий фермерам:
+            * Высокоточные прогнозы погоды для сельхозугодий.
+            * Карты фактических запасов продуктивной влаги в почве.
+            * Рекомендации по срокам посева и внесения удобрений.
+            """)
+            
             st.write("---")
             
             # Пути к агро-рисункам
-            path_agro = os.path.join(BASE_DIR, "AGRO.jpg")
+            path_agro = os.path.join(BASE_DIR, "AGRO.jpeg")
             path_agro1 = os.path.join(BASE_DIR, "agro1.jpg")
 
-            # Внутренние колонки для агро-фото (делаем 1:1 для симметрии)
+            # Внутренние колонки для агро-фото (2 в ряд)
             agro_col1, agro_col2 = st.columns(2)
 
             with agro_col1:
                 if os.path.exists(path_agro):
-                    st.image(path_agro, caption="Прогноз запасов влаги", use_container_width=True)
+                    st.image(path_agro, caption="Прогноз влагозапасов", use_container_width=True)
                 else:
-                    st.warning("AGRO.jpg не найден")
+                    st.warning("AGRO.jpeg не найден")
 
             with agro_col2:
                 if os.path.exists(path_agro1):
-                    st.image(path_agro1, caption="Фенологический мониторинг", use_container_width=True)
+                    st.image(path_agro1, caption="Интерфейс AGRODATA.kz", use_container_width=True)
                 else:
                     st.warning("agro1.jpg не найден")
                     
@@ -733,69 +742,59 @@ with tabs[0]:
     # 3. ВАЖНО: Вызов функции БЕЗ отступа в самом конце
     show_monitoring_block()
 
+    def show_ecology_block():
+        # Названия файлов из твоей папки
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        path_eco_gif = os.path.join(BASE_DIR, "hydro.gif")
+        path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") # Загруженное тобой фото (сохрани его под этим именем)
 
-
-
-
-    def show_digital_solutions():
-        st.markdown("""
-            <h2 style='text-align: center; color: #003366; margin-top: 50px; margin-bottom: 10px;'>
-                Цифровая экосистема «Казгидромет»
-            </h2>
-            <p style='text-align: center; color: #666; margin-bottom: 40px;'>Интеграция прогнозных моделей и Big Data решений</p>
-        """, unsafe_allow_html=True)
-
-        col1, col2, col3, col4 = st.columns(4)
-
-        # Вспомогательная функция для генерации HTML карточки
-        def create_card(icon, title, color, load, text):
-            return f"""
-            <div style="
-                background: linear-gradient(145deg, #ffffff, #f0f4f8);
-                padding: 25px 20px;
-                border-radius: 20px;
-                border: 1px solid #e1e8ed;
-                box-shadow: 5px 5px 15px #d1d9e6, -5px -5px 15px #ffffff;
-                height: 380px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            ">
-                <div>
-                    <div style="font-size: 3rem; margin-bottom: 15px; text-align: center;">{icon}</div>
-                    <h4 style="color: #003366; text-align: center; font-size: 1.2rem; margin-bottom: 15px; border-bottom: 2px solid {color}; padding-bottom: 5px;">{title}</h4>
-                    <p style="font-size: 0.9rem; color: #4a5568; line-height: 1.5; text-align: center;">
-                        {text}
-                    </p>
-                </div>
-                
-                <div style="margin-top: 15px;">
-                    <div style="height: 6px; width: 100%; background-color: #e0e0e0; border-radius: 3px; margin-bottom: 10px; overflow: hidden;">
-                        <div style="height: 100%; width: {load}%; background-color: {color}; border-radius: 3px;"></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888;">
-                        <span>Статус: Активен</span>
-                        <span>{load}% точность</span>
-                    </div>
-                </div>
-            </div>
-            """
-
-        with col1:
-            st.markdown(create_card("🌀", "WRF", "#0066CC", "94", "Численное моделирование метеорологических процессов с сеткой до 2 км."), unsafe_allow_html=True)
-
-        with col2:
-            st.markdown(create_card("🌫️", "SILAM", "#6366f1", "88", "Глобальное и региональное моделирование состава атмосферы и качества воздуха."), unsafe_allow_html=True)
-
-        with col3:
-            st.markdown(create_card("🌾", "AGRODATA", "#10b981", "91", "Платформа принятия решений для АПК на основе спутниковых и наземных данных."), unsafe_allow_html=True)
-
-        with col4:
-            st.markdown(create_card("📱", "Air.kz", "#ef4444", "99", "Единое окно мониторинга качества воздуха для населения и госорганов."), unsafe_allow_html=True)
-
-        st.markdown("---", unsafe_allow_html=True)
-        st.info("🛰️ **Технологический стек:** Спутниковое зондирование + Сеть наземных станций + Суперкомпьютерные вычисления")
+        st.markdown("---")
+        st.markdown("<h2 style='text-align: center; color: #003366;'>🌍 Экологическая оценка</h2>", unsafe_allow_html=True)
         
+        col_text, col_visual = st.columns([1.3, 1], gap="large")
+
+        with col_text:
+            st.subheader("Комплексный экологический мониторинг")
+            st.write("""
+            * 🌫️ **Атмосферный воздух** — контроль уровня загрязнения в городах и промышленных зонах.
+            * ❄️ **Осадки и снежный покров** — анализ химического состава и накоплений.
+            * ☢️ **Радиационный мониторинг** — замер гамма-фона и плотности выпадений.
+            * 🌱 **Состояние почв** — оценка содержания тяжелых металлов и пестицидов.
+            * 💧 **Поверхностные воды** — контроль качества воды в реках и озерах.
+            * 🌉 **Трансграничные водотоки** — мониторинг объектов на границах.
+            """)
+            
+            # Новый блок про AirKZ
+            st.markdown("#### 📱 Мобильное приложение «AirKZ»")
+            st.write("""
+            «AirKZ» отслеживает качество атмосферного воздуха на всей территории Казахстана. 
+            Пользователи могут вручную выбрать необходимые посты, либо по данным геолокации 
+            приложение автоматически определит ближайший.
+            """)
+            
+            # Если хочешь вставить маленькое фото AirKZ прямо под текстом
+            if os.path.exists(path_airkz):
+                st.image(path_airkz, width=350)
+            else:
+                st.caption("📲 Доступно в App Store и Google Play")
+
+        with col_visual:
+            # Обновляем путь к файлу на eco.gif
+            path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
+            
+            if os.path.exists(path_eco_gif):
+                # Отображение вашей гифки eco.gif
+                st.image(path_eco_gif, caption="Интерактивный мониторинг природных сред", use_container_width=True)
+            else:
+                # Сообщение об ошибке, если файл eco.gif отсутствует
+                st.warning("Файл eco.gif не найден в директории")
+                st.image("https://via.placeholder.com/500x400.png?text=Голограмма+мониторинга", use_container_width=True)
+
+    # Вызов функции
+    show_ecology_block()
+
+
+
 
     import streamlit as st
     import pandas as pd
