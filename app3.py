@@ -745,12 +745,11 @@ with tabs[0]:
 
     # 3. ВАЖНО: Вызов функции БЕЗ отступа в самом конце
     show_monitoring_block()
-
+    import base64
     def show_ecology_block():
         # Названия файлов из твоей папки
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
-        path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") # Загруженное тобой фото (сохрани его под этим именем)
 
         st.markdown("---")
         st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
@@ -778,25 +777,30 @@ with tabs[0]:
             
             # Если хочешь вставить маленькое фото AirKZ прямо под текстом
             if os.path.exists(path_airkz):
-                st.image(path_airkz, width=300)
+                st.image(path_airkz, width=600)
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
-        with col_visual:
-            path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
+            with col_visual:
+                st.write("##") # Небольшой отступ сверху для выравнивания
+                path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
                 
-            if os.path.exists(path_eco_gif):
-                    # 1. Убираем use_container_width=True
-                    # 2. Добавляем фиксированную ширину (например, 350 или 400)
-                    # Это автоматически уменьшит высоту, сохраняя пропорции
-                    st.image(path_eco_gif, 
-                             caption="Модель SILAM: Прогноз качества воздуха", 
-                             width=400) 
-            else:
-                    st.warning("Файл eco.gif не найден")
-                    st.image("https://via.placeholder.com/500x400.png?text=Голограмма+мониторинга", width=400)
-                    
+                if os.path.exists(path_eco_gif):
+                    # Код для чтения гифки в формате base64
+                    file_ = open(path_eco_gif, "rb")
+                    contents = file_.read()
+                    data_url = base64.b64encode(contents).decode("utf-8")
+                    file_.close()
 
+                    # Отображаем через HTML (это гарантирует анимацию)
+                    st.markdown(
+                        f'<img src="data:image/gif;base64,{data_url}" width="100%" style="border-radius: 10px;" alt="Мониторинг SILAM">',
+                        unsafe_allow_html=True
+                    )
+                    st.caption("Интерактивный мониторинг природных сред (Модель SILAM)")
+                else:
+                    st.warning("Файл eco.gif не найден")
+        
     # Вызов функции
     show_ecology_block()
 
