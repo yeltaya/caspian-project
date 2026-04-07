@@ -675,19 +675,24 @@ with tabs[0]:
 
             st.write("---")
             
-            # Сетка 2x2 для изображений
-            img_col1, img_col2 = st.columns(2)
+    # Загружаем изображения одно за другим
+            # Используем IMG_DIR, который мы определили ранее через os.path.join(BASE_DIR)
             
-            # Список ваших изображений (замените названия файлов на реальные)
-            # Предположим, они лежат в папке, указанной в вашем IMG_DIR
-            with img_col1:
-                st.image("https://via.placeholder.com/300x200", caption="Мониторинг паводков")
-                st.image("https://via.placeholder.com/300x200", caption="Горные реки")
-                
-            with img_col2:
-                st.image("https://via.placeholder.com/300x200", caption="Приток водохранилищ")
-                st.image("https://via.placeholder.com/300x200", caption="Ледовые явления")
+            path_risk = os.path.join(IMG_DIR, "risk.jpeg")
+            path_hydro = os.path.join(IMG_DIR, "hydro.png")
 
+            # Проверка на наличие файлов (чтобы приложение не падало, если забыли закинуть фото)
+            if os.path.exists(path_risk):
+                st.image(path_risk, caption="Карта рисков и прогнозирование", use_container_width=True)
+            else:
+                st.error(f"Файл не найден: {path_risk}")
+
+            if os.path.exists(path_hydro):
+                st.image(path_hydro, caption="Гидрологический мониторинг стока", use_container_width=True)
+            else:
+                st.error(f"Файл не найден: {path_hydro}")
+            
+            
         # --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
         with col_main_right:
             st.subheader("🌾 Агрометеорологические прогнозы")
