@@ -782,17 +782,17 @@ with tabs[0]:
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
-            with col_visual:
-                path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
+        with col_visual:
+            path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
                 
-                if os.path.exists(path_eco_gif):
+            if os.path.exists(path_eco_gif):
                     # 1. Убираем use_container_width=True
                     # 2. Добавляем фиксированную ширину (например, 350 или 400)
                     # Это автоматически уменьшит высоту, сохраняя пропорции
                     st.image(path_eco_gif, 
                              caption="Интерактивный мониторинг природных сред", 
                              width=400) 
-                else:
+            else:
                     st.warning("Файл eco.gif не найден")
                     st.image("https://via.placeholder.com/500x400.png?text=Голограмма+мониторинга", width=400)
                     
