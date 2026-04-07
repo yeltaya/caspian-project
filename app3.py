@@ -791,7 +791,7 @@ with tabs[0]:
                     # Это автоматически уменьшит высоту, сохраняя пропорции
                     st.image(path_eco_gif, 
                              caption="Интерактивный мониторинг природных сред", 
-                             width=200) 
+                             width=400) 
                 else:
                     st.warning("Файл eco.gif не найден")
                     st.image("https://via.placeholder.com/500x400.png?text=Голограмма+мониторинга", width=400)
