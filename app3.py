@@ -899,7 +899,7 @@ with tabs[0]:
     st.markdown(
         """
         <div style="text-align: center; padding: 40px; margin-top: 20px;">
-            <h1 style="color: #003366; font-size: 36px; margin-bottom: 5px; font-weight: 700;">
+            <h1 style="color: #003366; font-size: 36px; margin-bottom: 5px; font-weight: 400;">
                 «Наблюдая сегодня — защищаем завтра»
             </h1>
             <p style="color: #666; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">
