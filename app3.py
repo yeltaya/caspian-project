@@ -468,7 +468,7 @@ with tabs[0]:
                 <div class="forecast-card">
                     <div class="icon">⚡</div>
                     <div class="title">Наукастинг<br>(2-6 часов)</div>
-                    <div class="description">Сверхкраткосрочные данные.</div>
+                    <div class="description">Сверхкраткосрочный прогноз погоды.</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -476,8 +476,8 @@ with tabs[0]:
             st.markdown("""
                 <div class="forecast-card">
                     <div class="icon">📅</div>
-                    <div class="title">Краткосрочные прогнозы</div>
-                    <div class="description">Детальная сводка на 1-3 дня, неделю.</div>
+                    <div class="title">Краткосрочный прогноз</div>
+                    <div class="description">Прогноз погоды от 1 до 7 дней.</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -485,28 +485,49 @@ with tabs[0]:
             st.markdown("""
                 <div class="forecast-card">
                     <div class="icon">🔭</div>
-                    <div class="title">Долгосрочные прогнозы</div>
-                    <div class="description">Прогнозы на декаду, месяц и сезон.</div>
+                    <div class="title">Долгосрочный прогноз</div>
+                    <div class="description">Прогноз погоды от 10 дней до сезоны.</div>
                 </div>
             """, unsafe_allow_html=True)
 
         with col4:
             st.markdown("""
                 <div class="forecast-card">
-                    <div class="icon">⚠️</div>
-                    <div class="title">Специализированные прогнозы</div>
-                    <div class="description">Прогноз неблагоприятных метеорологических условии, по горной территории, пожарной опасности.</div>
+                    <div class="icon">🏔️</div>
+                    <div class="title">Специализированный прогноз</div>
+                    <div class="description">Прогноз неблагоприятных метеорологических условии, по туристическим маршритам, по горной территории, пожарной опасности.</div>
                 </div>
             """, unsafe_allow_html=True)
 
         with col5:
             st.markdown("""
                 <div class="forecast-card">
-                    <div class="icon">🏔️</div>
+                    <div class="icon">⚠️</div>
                     <div class="title">Штормовые предупреждения</div>
-                    <div class="description">Об опасных ОЯ и СГЯ.</div>
+                    <div class="description">Об опасных явлениях.</div>
                 </div>
             """, unsafe_allow_html=True)
+   
+# Разделитель перед текстом о Казгидромете
+        st.markdown("---")
+        
+        # Вариант с использованием кастомного HTML для акцента
+        st.markdown(
+            """
+            <div style="background-color: #f0f7ff; padding: 25px; border-left: 5px solid #003366; border-radius: 10px; margin: 20px 0;">
+                <h4 style="color: #003366; margin-bottom: 10px; font-weight: bold;">
+                    📡 Казгидромет внедряет прогноз погоды с высоким разрешением 2 км — 
+                    <span style="color: #0066cc;">технологический прорыв, уникальный для Центральной Азии.</span>
+                </h4>
+                <p style="color: #334155; font-size: 1.1rem; line-height: 1.6; margin: 0;">
+                    Обеспечивая беспрецедентную точность прогнозов, критически важную для раннего предупреждения 
+                    природных рисков, укрепления климатической и экологической безопасности на национальном 
+                    и региональном уровнях.
+                </p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
    
         st.markdown("---")
     
