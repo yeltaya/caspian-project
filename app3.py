@@ -530,33 +530,130 @@ with tabs[0]:
         )
    
         st.markdown("---")
+
+    # --- CSS ДЛЯ КАРТОЧЕК ---
+    st.markdown("""
+        <style>
+            .data-box {
+                padding: 15px;
+                border-radius: 0 0 12px 12px; /* Скругляем только низ, так как сверху картинка */
+                border-left: 5px solid;
+                background: #ffffff;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                min-height: 280px;
+                margin-bottom: 20px;
+            }
+            .data-title {
+                font-weight: bold;
+                font-size: 1.1em;
+                margin-bottom: 10px;
+                color: #1f2937;
+            }
+            .data-list {
+                font-size: 0.9em;
+                padding-left: 20px;
+                color: #4b5563;
+            }
+            .card-img {
+                width: 100%;
+                height: 150px;
+                object-fit: cover;
+                border-radius: 12px 12px 0 0; /* Скругляем верх картинки */
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # 1. ОСНОВНЫЕ ПУТИ
+    IMG_DIR = os.path.join(BASE_DIR)
+
+    # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
+    def draw_data_card(col, file_name, title, color, items):
+        path = os.path.join(IMG_DIR, file_name)
+        with col:
+            # Пытаемся отобразить картинку/гифку
+            if os.path.exists(path):
+                st.image(path, use_container_width=True)
+            else:
+                # Если файла нет, оставляем пустое место или заглушку, чтобы блоки не прыгали
+                st.warning(f"Файл {file_name} не найден")
+            
+            # HTML-контент карточки
+            list_html = "".join([f"<li>{item}</li>" for item in items])
+            st.markdown(f"""
+                <div class="data-box" style="border-left-color: {color};">
+                    <div class="data-title">{title}</div>
+                    <ul class="data-list">
+                        {list_html}
+                    </ul>
+                </div>
+            """, unsafe_allow_html=True)
+
+    # 3. ОБЩИЙ CSS
+    st.markdown("""
+        <style>
+            .data-box {
+                padding: 15px;
+                border-radius: 0 0 12px 12px;
+                border-left: 5px solid;
+                background: #ffffff;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                min-height: 280px; /* Немного увеличил, чтобы текст влезал */
+                margin-bottom: 20px;
+            }
+            .data-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #1f2937; }
+            .data-list { font-size: 0.85em; padding-left: 20px; color: #4b5563; line-height: 1.4; }
+            .data-list b { color: #1f2937; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # 4. СОЗДАНИЕ КОЛОНОК И ВЫЗОВ ФУНКЦИЙ
+    col_d1, col_d2, col_d3, col_d4 = st.columns(4)
+
+    draw_data_card(
+        col_d1, "station1.gif", "📍 Наземная сеть", "#3b82f6", 
+        [
+            "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
+            "<b>Аэрология:</b> Зондирование атмосферы до 30 км.",
+            "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."
+        ]
+    )
+
+    draw_data_card(
+        col_d2, "station2.gif", "🗺️ Аналитика", "#10b981", 
+        [
+            "<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.",
+            "<b>ГСТ ВМО:</b> Обмен данными.",
+            "<b>Сетки:</b> Анализ полей метеопараметров."
+        ]
+    )
+
+    draw_data_card(
+        col_d3, "station3.gif", "📡 Спутники", "#8b5cf6", 
+        [
+            "<b>EUMETSAT:</b> Европейские геостационары.",
+            "<b>FengYun:</b> Оперативные данные из КНР.",
+            "<b>Метеор-М:</b> Российские орбитальные системы."
+        ]
+    )
+
+    draw_data_card(
+        col_d4, "station4.gif", "⚙️ Численные модели", "#f59e0b", 
+        [
+            "<b>ECMWF:</b> Глобальные прогнозы до 9 км.",
+            "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.",
+            "<b>WRF-Kaz:</b> Локальная модель Казгидромет.",
+            
+        ]
+    )
+    
+    
     
         # Создаем два основных столбца
         col_left, col_right = st.columns(2, gap="large")
 
-        with col_left:
-            # БЛОК 1: ПРОГНОЗ ПОГОДЫ
-            st.markdown("""
-                <div style="background-color: #f0f4f8; padding: 20px; border-radius: 15px; border-left: 5px solid #0066CC; min-height: 250px;">
-                    <h3 style="color: #003366; margin-top: 0;">🌤️ Прогноз погоды</h3>
-                    <ul style="font-size: 1.1rem; color: #1a202c; line-height: 1.6;">
-                        <li><b>Временное разрешение:</b> от 2-х часов до сезона</li>
-                        <li><b>Режим:</b> непрерывно (24/7)</li>
-                    </ul>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            st.write("") # Отступ
-            
-    # ГИФКА (Размещаем под первым блоком)
-            st.write("") # Небольшой вертикальный отступ для чистоты дизайна
-            
-            try:
-                st.image("station1.gif", 
-                         caption="Прогноз количества осадков", 
-                         width=400)
-            except Exception:
-                st.warning("Файл station1.gif не найден в папке с проектом.")
+
                 
                 
 
@@ -3204,7 +3301,7 @@ with tabs[2]:
     st.markdown("<h3 style='text-align: center; color: #1E3A8A;'>📊 Средняя оправдываемость прогнозов</h3>", unsafe_allow_html=True)
 
     # Верхний ряд: Основные метрики (интерактивные "кнопки")
-    col_acc1, col_acc2, col_acc3, col_acc4, col_acc5  = st.columns(5)
+    col_acc1, col_acc2, col_acc3, col_acc4, col_acc5, col_acc6   = st.columns(6)
     with col_acc1:
         st.metric("Суточные прогнозы", "96%", help="Высочайшая точность подтверждена верификацией")
     with col_acc2:
@@ -3212,9 +3309,11 @@ with tabs[2]:
     with col_acc3:
         st.metric("Прогнозы на неделю", "91%")
     with col_acc4:
-        st.metric("Прогнозы на месяц", "75%")
+        st.metric("Прогнозы на декаду", "87%")
     with col_acc5:
-        st.metric("Прогнозы на сезон", "65%")
+        st.metric("Прогнозы на месяц", "70%")
+    with col_acc6:
+        st.metric("Прогнозы на сезон", "60%")
     st.divider()
 
 
