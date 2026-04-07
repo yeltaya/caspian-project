@@ -702,7 +702,7 @@ with tabs[0]:
             st.info("Мониторинг и прогнозирование для аграрного сектора.")
             
             # Создаем 3 внутренние колонки
-            a_col1, a_col2, a_col3 = st.columns(3, gap="medium")
+            a_col1, a_col2 = st.columns(2, gap="medium")
 
             with a_col1:
                 st.markdown("**🔍 Мониторинг**")
