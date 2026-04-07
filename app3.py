@@ -509,7 +509,7 @@ with tabs[0]:
             """, unsafe_allow_html=True)
    
 # Разделитель перед текстом о Казгидромете
-        st.markdown("---")
+    st.markdown("---")
         
         # Вариант с использованием кастомного HTML для акцента
     st.markdown(
@@ -609,9 +609,9 @@ with tabs[0]:
         """, unsafe_allow_html=True)
 
         # 4. СОЗДАНИЕ КОЛОНОК И ВЫЗОВ ФУНКЦИЙ
-        col_d1, col_d2, col_d3, col_d4 = st.columns(4)
+    col_d1, col_d2, col_d3, col_d4 = st.columns(4)
 
-        draw_data_card(
+    draw_data_card(
             col_d1, "station1.gif", "📍 Наземная сеть", "#3b82f6", 
             [
                 "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
@@ -620,7 +620,7 @@ with tabs[0]:
             ]
         )
 
-        draw_data_card(
+    draw_data_card(
             col_d2, "station2.gif", "🗺️ Аналитика", "#10b981", 
             [
                 "<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.",
@@ -629,7 +629,7 @@ with tabs[0]:
             ]
         )
 
-        draw_data_card(
+    draw_data_card(
             col_d3, "station3.gif", "📡 Спутники", "#8b5cf6", 
             [
                 "<b>EUMETSAT:</b> Европейские геостационары.",
@@ -638,7 +638,7 @@ with tabs[0]:
             ]
         )
 
-        draw_data_card(
+    draw_data_card(
             col_d4, "station4.gif", "⚙️ Численные модели", "#f59e0b", 
             [
                 "<b>ECMWF:</b> Глобальные прогнозы до 9 км.",
