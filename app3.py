@@ -678,20 +678,25 @@ with tabs[0]:
     # Загружаем изображения одно за другим
             # Используем IMG_DIR, который мы определили ранее через os.path.join(BASE_DIR)
             
-            path_risk = os.path.join(IMG_DIR, "risk.jpeg")
-            path_hydro = os.path.join(IMG_DIR, "hydro.png")
-
-            # Проверка на наличие файлов (чтобы приложение не падало, если забыли закинуть фото)
-            if os.path.exists(path_risk):
-                st.image(path_risk, caption="Карта рисков и прогнозирование", width=300)
-            else:
-                st.error(f"Файл не найден: {path_risk}")
-
-            if os.path.exists(path_hydro):
-                st.image(path_hydro, caption="Визуализация текущего состояния водных объектов Казахстана в интерактивной карте", width=350)
-            else:
-                st.error(f"Файл не найден: {path_hydro}")
+            st.write("---")
             
+            # Создаем внутренние колонки для фото, чтобы они стояли рядом
+            # [1, 1.2] — это пропорция ширины (вторая чуть шире, так как у нее подпись длиннее)
+            img_row_col1, img_row_col2 = st.columns([1, 1.2])
+
+            with img_row_col1:
+                if os.path.exists(path_risk):
+                    # Используем use_container_width=True, чтобы фото заполнило свою мини-колонку
+                    st.image(path_risk, caption="Карта рисков и прогнозирование", use_container_width=True)
+                else:
+                    st.error("Файл risk.jpeg не найден")
+
+            with img_row_col2:
+                if os.path.exists(path_hydro):
+                    st.image(path_hydro, caption="Интерактивная карта состояния водных объектов", use_container_width=True)
+                else:
+                    st.error("Файл hydro.png не найден")
+                    
             
         # --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
         with col_main_right:
