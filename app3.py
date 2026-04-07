@@ -699,7 +699,6 @@ with tabs[0]:
 # --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
         with col_main_right:
             st.subheader("🌾 Агрометеорологические прогнозы")
-            st.info("Мониторинг и прогнозирование для аграрного сектора.")
             
             # Создаем 3 внутренние колонки
             a_col1, a_col2 = st.columns(2, gap="medium")
@@ -720,8 +719,7 @@ with tabs[0]:
                 * Высокоточные прогнозы погоды для сельхозугодий.
                 * Карты фактических запасов продуктивной влаги в почве.
                 * Рекомендации по срокам посева и внесения удобрений.
-                """)
-               
+                """)             
            
             st.write("---")
             
@@ -757,7 +755,7 @@ with tabs[0]:
         st.markdown("---")
         st.markdown("<h2 style='text-align: center; color: #003366;'>🌍 Экологическая оценка</h2>", unsafe_allow_html=True)
         
-        col_text, col_visual = st.columns([1.3, 1], gap="large")
+        col_text, col_visual = st.columns([1, 1.2], gap="medium")
 
         with col_text:
             st.subheader("Комплексный экологический мониторинг")
@@ -780,7 +778,7 @@ with tabs[0]:
             
             # Если хочешь вставить маленькое фото AirKZ прямо под текстом
             if os.path.exists(path_airkz):
-                st.image(path_airkz, width=300)
+                st.image(path_airkz, width=200)
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
