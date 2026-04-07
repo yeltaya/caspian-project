@@ -310,7 +310,7 @@ with tabs[0]:
         with col_logo:
             # Используем ваше локальное имя файла
             try:
-                st.image("КГМ.png", width=250)
+                st.image("КГМ.png", width=150)
             except:
                 st.error("Логотип 'КГМ.png' не найден")
 
@@ -450,50 +450,65 @@ with tabs[0]:
     show_dashboard()
 
 
-
-
-    import plotly.graph_objects as go
-    import streamlit as st
-
-    # 1. Сначала определяем функцию
-    def show_strategic_funnel(column):
-        labels = ["Метеорология", "Гидрология", "Агрометео", "Экология"]
-        values = [351, 442, 226, 175]
-        colors = ["#003366", "#0066CC", "#2E7D32", "#C62828"]
-
-        fig = go.Figure(go.Funnel(
-            y = labels,
-            x = values,
-            textinfo = "label+value",
-            textposition = "inside",
-            insidetextfont = {"size": 16, "color": "white", "family": "Arial Black"},
-            marker = {
-                "color": colors,
-                "line": {"width": [2, 2, 2, 2], "color": "white"}
-            },
-            connector = {"line": {"color": "#e2e8f0", "width": 2}}
-        ))
-
-        fig.update_layout(
-            paper_bgcolor = 'rgba(0,0,0,0)',
-            plot_bgcolor = 'rgba(0,0,0,0)',
-            margin = dict(l=10, r=10, t=50, b=10),
-            showlegend = False,
-            height = 450
-        )
-
-        with column:
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-
-    import streamlit as st
-
     def show_economic_info():
         st.markdown("""
             <h2 style='text-align: center; color: #003366; margin-bottom: 40px;'>
                 Обеспечение гидрометеорологической и экологической информацией отраслей экономики
             </h2>
         """, unsafe_allow_html=True)
+        
+        
+    # Создаем 5 колонок
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        st.markdown("""
+            <div class="forecast-card">
+                <div class="icon">⚡</div>
+                <div class="title">Наукастинг<br>(2-6 часов)</div>
+                <div class="description">Сверхкраткосрочные данные.</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+            <div class="forecast-card">
+                <div class="icon">📅</div>
+                <div class="title">Краткосрочные прогнозы</div>
+                <div class="description">Детальная сводка на 1-3 дня, неделю.</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("""
+            <div class="forecast-card">
+                <div class="icon">🔭</div>
+                <div class="title">Долгосрочные прогнозы</div>
+                <div class="description">Прогнозы на декаду, месяц и сезон.</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col4:
+        st.markdown("""
+            <div class="forecast-card">
+                <div class="icon">⚠️</div>
+                <div class="title">Специализированные прогнозы</div>
+                <div class="description">Прогноз неблагоприятных метеорологических условии, по горной территории, пожарной опасности.</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col5:
+        st.markdown("""
+            <div class="forecast-card">
+                <div class="icon">🏔️</div>
+                <div class="title">Штормовые предупреждения</div>
+                <div class="description">Об опасных ОЯ и СГЯ.</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        
+        
+        
 
         # Создаем два основных столбца
         col_left, col_right = st.columns(2, gap="large")
