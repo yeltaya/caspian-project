@@ -749,13 +749,13 @@ with tabs[0]:
     def show_ecology_block():
         # Названия файлов из твоей папки
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        path_eco_gif = os.path.join(BASE_DIR, "hydro.gif")
+        path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
         path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") # Загруженное тобой фото (сохрани его под этим именем)
 
         st.markdown("---")
         st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
         
-        col_text, col_visual = st.columns([1, 1.2], gap="medium")
+        col_text, col_visual = st.columns([1.5, 1], gap="large")
 
         with col_text:
             st.subheader("Комплексный экологический мониторинг")
@@ -778,7 +778,7 @@ with tabs[0]:
             
             # Если хочешь вставить маленькое фото AirKZ прямо под текстом
             if os.path.exists(path_airkz):
-                st.image(path_airkz, width=400)
+                st.image(path_airkz, width=300)
             else:
                 st.caption("📲 Доступно в App Store и Google Play")
 
@@ -790,7 +790,7 @@ with tabs[0]:
                     # 2. Добавляем фиксированную ширину (например, 350 или 400)
                     # Это автоматически уменьшит высоту, сохраняя пропорции
                     st.image(path_eco_gif, 
-                             caption="Интерактивный мониторинг природных сред", 
+                             caption="Модель SILAM: Прогноз качества воздуха", 
                              width=400) 
             else:
                     st.warning("Файл eco.gif не найден")
