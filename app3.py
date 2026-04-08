@@ -422,6 +422,7 @@ with tabs[0]:
                             else: # Экология
                                 emoji, color = "🧪", "#CC0000"
                             
+                        # ВАЖНО: используем f-строку с ТРОЙНЫМИ кавычками """
                             st.markdown(f"""
                                 <div style="
                                     background-color: #f8fafc; 
@@ -432,15 +433,19 @@ with tabs[0]:
                                     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                                 ">
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-size: 1.4rem; font-weight: 700; color: #334e68;">{emoji} {navr}</span>
-                                        
-                                        <span style="font-size: 2.2rem; font-weight: 900; color: {color}; line-height: 1;">{count}</span>
+                                        <span style="font-size: 1.3rem; font-weight: 700; color: #334e68; white-space: nowrap;">
+                                            {emoji} {navr}
+                                        </span>
+                                        <span style="font-size: 2.2rem; font-weight: 900; color: {color}; line-height: 1;">
+                                            {count}
+                                        </span>
                                     </div>
                                     <div style="text-align: right; font-size: 0.9rem; color: #666; margin-top: 2px;">
                                         станции/постов
                                     </div>
                                 </div>
-                                """, unsafe_allow_html=True)
+                            """, unsafe_allow_html=True) # ПРОВЕРЬТЕ ЭТУ СТРОКУ
+                            
     
                         st.markdown("---")
                 
