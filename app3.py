@@ -2623,7 +2623,7 @@ with tabs[1]:
         img_path = os.path.join(BASE_DIR, img_filename)
         
         # Создаем две колонки: для карты и для пояснительного текста
-        col_map, col_text = st.columns([3, 1])
+        col_map, col_text = st.columns([5, 1])
         
         with col_map:
             # Проверка наличия файла, чтобы избежать MediaFileStorageError
