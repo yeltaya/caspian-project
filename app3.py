@@ -460,6 +460,7 @@ with tabs[0]:
         st.markdown("---")
         
         # Добавляем стили (если они еще не добавлены в коде выше)
+        show_economic_info()
         st.markdown("""
             <style>
             .forecast-card {
