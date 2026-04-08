@@ -457,10 +457,10 @@ with tabs[0]:
             </h2>
         """, unsafe_allow_html=True)
         
-    st.markdown("---")
+        st.markdown("---")
         
         # Добавляем стили (если они еще не добавлены в коде выше)
-    st.markdown("""
+        st.markdown("""
             <style>
             .forecast-card {
                 background: #f8fafc;
@@ -499,7 +499,7 @@ with tabs[0]:
         """, unsafe_allow_html=True)
     
         # Создаем 5 колонок
-    col1, col2, col3, col4, col5 = st.columns(5)
+        col1, col2, col3, col4, col5 = st.columns(5)
 
         with col1:
                 st.markdown("""
@@ -547,7 +547,7 @@ with tabs[0]:
                 """, unsafe_allow_html=True)
        
 # Разделитель перед текстом о Казгидромете
-    st.markdown("---")
+        st.markdown("---")
         
         # Вариант с использованием кастомного HTML для акцента
     st.markdown(
