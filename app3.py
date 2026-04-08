@@ -725,13 +725,13 @@ with tabs[0]:
 
             with img_row_col1:
                 if os.path.exists(path_risk):
-                    st.image(path_risk, caption="Карта рисков", use_container_width=True)
+                    st.image(path_risk, caption="Карта рисков", width=300)
                 else:
                     st.error("Файл risk.jpeg не найден")
 
             with img_row_col2:
                 if os.path.exists(path_hydro):
-                    st.image(path_hydro, caption="Интерактивная карта", use_container_width=True)
+                    st.image(path_hydro, caption="Интерактивная карта", width=300)
                 else:
                     st.error("Файл hydro.png не найден")
                     
