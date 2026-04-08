@@ -499,53 +499,53 @@ with tabs[0]:
         """, unsafe_allow_html=True)
     
         # Создаем 5 колонок
-    col1, col2, col3, col4, col5 = st.columns(5)
+        col1, col2, col3, col4, col5 = st.columns(5)
 
-        with col1:
-            st.markdown("""
-                <div class="forecast-card">
-                    <div class="icon">⚡</div>
-                    <div class="title">Наукастинг<br>(2-6 часов)</div>
-                    <div class="description">Сверхкраткосрочный прогноз погоды.</div>
-                </div>
-            """, unsafe_allow_html=True)
+            with col1:
+                st.markdown("""
+                    <div class="forecast-card">
+                        <div class="icon">⚡</div>
+                        <div class="title">Наукастинг<br>(2-6 часов)</div>
+                        <div class="description">Сверхкраткосрочный прогноз погоды.</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-        with col2:
-            st.markdown("""
-                <div class="forecast-card">
-                    <div class="icon">📅</div>
-                    <div class="title">Краткосрочный прогноз</div>
-                    <div class="description">Прогноз погоды от 1 до 7 дней.</div>
-                </div>
-            """, unsafe_allow_html=True)
+            with col2:
+                st.markdown("""
+                    <div class="forecast-card">
+                        <div class="icon">📅</div>
+                        <div class="title">Краткосрочный прогноз</div>
+                        <div class="description">Прогноз погоды от 1 до 7 дней.</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-        with col3:
-            st.markdown("""
-                <div class="forecast-card">
-                    <div class="icon">🔭</div>
-                    <div class="title">Долгосрочный прогноз</div>
-                    <div class="description">Прогноз погоды от 10 дней до сезоны.</div>
-                </div>
-            """, unsafe_allow_html=True)
+            with col3:
+                st.markdown("""
+                    <div class="forecast-card">
+                        <div class="icon">🔭</div>
+                        <div class="title">Долгосрочный прогноз</div>
+                        <div class="description">Прогноз погоды от 10 дней до сезоны.</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-        with col4:
-            st.markdown("""
-                <div class="forecast-card">
-                    <div class="icon">🏔️</div>
-                    <div class="title">Специализированный прогноз</div>
-                    <div class="description">Прогноз неблагоприятных метеорологических условии, по туристическим маршритам, по горной территории, пожарной опасности.</div>
-                </div>
-            """, unsafe_allow_html=True)
+            with col4:
+                st.markdown("""
+                    <div class="forecast-card">
+                        <div class="icon">🏔️</div>
+                        <div class="title">Специализированный прогноз</div>
+                        <div class="description">Прогноз неблагоприятных метеорологических условии, по туристическим маршритам, по горной территории, пожарной опасности.</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-        with col5:
-            st.markdown("""
-                <div class="forecast-card">
-                    <div class="icon">⚠️</div>
-                    <div class="title">Штормовые предупреждения</div>
-                    <div class="description">Об опасных явлениях.</div>
-                </div>
-            """, unsafe_allow_html=True)
-   
+            with col5:
+                st.markdown("""
+                    <div class="forecast-card">
+                        <div class="icon">⚠️</div>
+                        <div class="title">Штормовые предупреждения</div>
+                        <div class="description">Об опасных явлениях.</div>
+                    </div>
+                """, unsafe_allow_html=True)
+       
 # Разделитель перед текстом о Казгидромете
     st.markdown("---")
         
