@@ -501,7 +501,7 @@ with tabs[0]:
         # Создаем 5 колонок
     col1, col2, col3, col4, col5 = st.columns(5)
 
-            with col1:
+        with col1:
                 st.markdown("""
                     <div class="forecast-card">
                         <div class="icon">⚡</div>
@@ -510,7 +510,7 @@ with tabs[0]:
                     </div>
                 """, unsafe_allow_html=True)
 
-            with col2:
+        with col2:
                 st.markdown("""
                     <div class="forecast-card">
                         <div class="icon">📅</div>
@@ -519,7 +519,7 @@ with tabs[0]:
                     </div>
                 """, unsafe_allow_html=True)
 
-            with col3:
+        with col3:
                 st.markdown("""
                     <div class="forecast-card">
                         <div class="icon">🔭</div>
@@ -528,7 +528,7 @@ with tabs[0]:
                     </div>
                 """, unsafe_allow_html=True)
 
-            with col4:
+        with col4:
                 st.markdown("""
                     <div class="forecast-card">
                         <div class="icon">🏔️</div>
@@ -537,7 +537,7 @@ with tabs[0]:
                     </div>
                 """, unsafe_allow_html=True)
 
-            with col5:
+        with col5:
                 st.markdown("""
                     <div class="forecast-card">
                         <div class="icon">⚠️</div>
