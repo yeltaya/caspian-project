@@ -460,7 +460,6 @@ with tabs[0]:
         st.markdown("---")
         
         # Добавляем стили (если они еще не добавлены в коде выше)
-        show_economic_info()
         st.markdown("""
             <style>
             .forecast-card {
@@ -549,6 +548,7 @@ with tabs[0]:
        
 # Разделитель перед текстом о Казгидромете
         st.markdown("---")
+    show_economic_info()
         
         # Вариант с использованием кастомного HTML для акцента
     st.markdown(
