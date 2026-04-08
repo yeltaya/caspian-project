@@ -423,24 +423,25 @@ with tabs[0]:
                                 emoji, color = "🧪", "#CC0000"
                             
                             st.markdown(f"""
-                            <div style="
-                                background-color: #f8fafc; 
-                                padding: 12px; 
-                                border-radius: 10px; 
-                                border-left: 5px solid {color}; 
-                                margin-bottom: 12px; 
-                                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                            ">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 1.1rem; font-weight: 600; color: #334e68;">{emoji} {navr}</span>
-                                    <span style="font-size: 1.6rem; font-weight: 800; color: {color};">{count}</span>
+                                <div style="
+                                    background-color: #f8fafc; 
+                                    padding: 15px; 
+                                    border-radius: 10px; 
+                                    border-left: 6px solid {color}; 
+                                    margin-bottom: 12px; 
+                                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                                ">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 1.4rem; font-weight: 700; color: #334e68;">{emoji} {navr}</span>
+                                        
+                                        <span style="font-size: 2.2rem; font-weight: 900; color: {color}; line-height: 1;">{count}</span>
+                                    </div>
+                                    <div style="text-align: right; font-size: 0.9rem; color: #666; margin-top: 2px;">
+                                        станции/постов
+                                    </div>
                                 </div>
-                                <div style="text-align: right; font-size: 0.8rem; color: #666; margin-top: -5px;">
-                                    станции/постов
-                                </div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
+                                """, unsafe_allow_html=True)
+    
                         st.markdown("---")
                 
 
