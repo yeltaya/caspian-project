@@ -524,7 +524,7 @@ with tabs[0]:
                     <div class="forecast-card">
                         <div class="icon">🔭</div>
                         <div class="title">Долгосрочный прогноз</div>
-                        <div class="description">Прогноз погоды от 10 дней до сезоны.</div>
+                        <div class="description">Прогноз погоды от 10 дней до сезонов.</div>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -652,7 +652,7 @@ with tabs[0]:
     col_d1, col_d2, col_d3, col_d4 = st.columns(4)
 
     draw_data_card(
-            col_d1, "station1.gif", "📍 Наземная сеть", "#3b82f6", 
+            col_d1, "precipitation.gif", "📍 Наземная сеть", "#3b82f6", 
             [
                 "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
                 "<b>Аэрология:</b> Зондирование атмосферы до 30 км.",
