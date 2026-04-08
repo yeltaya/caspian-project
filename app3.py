@@ -736,13 +736,13 @@ with tabs[0]:
 
             with img_row_col1:
                 if os.path.exists(path_risk):
-                    st.image(path_risk, caption="Карта рисков", use_container_width=True)
+                    st.image(path_risk, caption="Карта рисков паводков в 2026 г.", use_container_width=True)
                 else:
                     st.error("Файл risk.jpeg не найден")
 
             with img_row_col2:
                 if os.path.exists(path_hydro):
-                    st.image(path_hydro, caption="Интерактивная карта", use_container_width=True)
+                    st.image(path_hydro, caption="Интерактивная карта гидрологического мониторинга", use_container_width=True)
                 else:
                     st.error("Файл hydro.png не найден")
                     
@@ -782,13 +782,13 @@ with tabs[0]:
 
             with agro_col1:
                 if os.path.exists(path_agro):
-                    st.image(path_agro, caption="Прогноз влагозапасов", use_container_width=True)
+                    st.image(path_agro, caption="Пункты агрометеорологического наблюдения", use_container_width=True)
                 else:
                     st.warning("AGRO.jpg не найден")
 
             with agro_col2:
                 if os.path.exists(path_agro1):
-                    st.image(path_agro1, caption="Интерфейс AGRODATA.kz", use_container_width=True)
+                    st.image(path_agro1, caption="Сроки сева зерновых культур", use_container_width=True)
                 else:
                     st.warning("agro1.jpg не найден")
                     
