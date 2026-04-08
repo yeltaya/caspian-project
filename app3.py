@@ -720,18 +720,29 @@ with tabs[0]:
 
             st.write("---")
             
+            st.markdown("""
+                <style>
+                /* Находим все изображения внутри колонок Streamlit */
+                [data-testid="stImage"] img {
+                    height: 300px; /* Установите нужную вам высоту */
+                    object-fit: contain; /* Картинка впишется полностью без обрезки */
+                    /* Или используйте 'cover', если хотите, чтобы заполнила всё поле (но края могут обрезаться) */
+                }
+                </style>
+                """, unsafe_allow_html=True)
+    
             # Внутренние колонки для фото (БЕЗ лишних отступов)
             img_row_col1, img_row_col2 = st.columns([1, 1.2])
 
             with img_row_col1:
                 if os.path.exists(path_risk):
-                    st.image(path_risk, caption="Карта рисков", width=300)
+                    st.image(path_risk, caption="Карта рисков", use_container_width=True)
                 else:
                     st.error("Файл risk.jpeg не найден")
 
             with img_row_col2:
                 if os.path.exists(path_hydro):
-                    st.image(path_hydro, caption="Интерактивная карта", width=300)
+                    st.image(path_hydro, caption="Интерактивная карта", use_container_width=True)
                 else:
                     st.error("Файл hydro.png не найден")
                     
