@@ -449,8 +449,7 @@ with tabs[0]:
 
     show_dashboard()
 
-    st.markdown("---")
-    
+   
     def show_economic_info():
         st.markdown("""
             <h2 style='text-align: center; color: #003366; margin-bottom: 40px;'>
@@ -459,6 +458,45 @@ with tabs[0]:
         """, unsafe_allow_html=True)
         
         st.markdown("---")
+        
+        # Добавляем стили (если они еще не добавлены в коде выше)
+        st.markdown("""
+            <style>
+            .forecast-card {
+                background: #f8fafc;
+                padding: 20px;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+                text-align: center;
+                transition: all 0.3s ease;
+                min-height: 220px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+            .forecast-card:hover {
+                border-color: #3b82f6;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                background: #ffffff;
+            }
+            .forecast-card .icon {
+                font-size: 3rem;
+                margin-bottom: 12px;
+            }
+            .forecast-card .title {
+                color: #1e293b;
+                font-weight: 700;
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+                line-height: 1.2;
+            }
+            .forecast-card .description {
+                color: #64748b;
+                font-size: 1.0rem;
+                line-height: 1.4;
+            }
+            </style>
+        """, unsafe_allow_html=True)
     
         # Создаем 5 колонок
         col1, col2, col3, col4, col5 = st.columns(5)
@@ -846,12 +884,8 @@ with tabs[0]:
                 f"</p>", 
                 unsafe_allow_html=True
             )
-            
-            
-            
-            
-            
-
+                                    
+                        
     # ВЫЗОВ ФУНКЦИИ - СТОИТ ВПЛОТНУЮ К ЛЕВОМУ КРАЮ:
     show_ecology_block()
 
