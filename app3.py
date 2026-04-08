@@ -499,7 +499,7 @@ with tabs[0]:
         """, unsafe_allow_html=True)
     
         # Создаем 5 колонок
-        col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
             with col1:
                 st.markdown("""
