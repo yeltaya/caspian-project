@@ -635,6 +635,8 @@ with tabs[0]:
                         </ul>
                     </div>
                 """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="tab-specific-container">', unsafe_allow_html=True)
 
         # 3. ОБЩИЙ CSS
     st.markdown("""
@@ -1019,7 +1021,7 @@ with tabs[0]:
     )
 
 
-
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
