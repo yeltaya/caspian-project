@@ -4778,7 +4778,7 @@ with tabs[4]:
             
             with col_hbv_img:
                 # Здесь укажите имя файла со схемой из презентации
-                display_big_image("hbv_scheme.jpg", "Схема оперативного прогноза стока по модели HBV-light")
+                display_big_image("hbv_scheme.gif", "Схема оперативного прогноза стока по модели HBV-light")
 
         with tab_swim:
             st.markdown("### SWIM (Soil and water integrated model)")
