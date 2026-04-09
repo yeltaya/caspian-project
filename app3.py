@@ -2663,7 +2663,7 @@ with tabs[1]:
                 st.markdown(
                     f"""
                     <div style="width: 100%; display: flex; justify-content: center;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 120%; min-width: 800px; border-radius: 10px;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; min-width: 800px; border-radius: 10px;">
                     </div>
                     """,
                     unsafe_allow_html=True
