@@ -5421,55 +5421,33 @@ with tabs[5]:
     for name in vxb_list:
         details = VXB_FULL_DATA.get(name, {})
         if not details:
-            st.warning(f"Данные для {name} еще не внесены в справочник.")
             continue
 
-        item_stats = VXB_STATS[name]
+        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        # Формируем путь к фото
-        photo_filename = details.get("photo", "")
-        photo_path = os.path.join(BASE_IMAGE_PATH, photo_filename)
-        
-        st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
+        st.markdown(f<div id='{anchor_name}'></div>, unsafe_allow_html=True)
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            # Увеличиваем пропорцию колонки для изображения
-            img_col, info_col = st.columns([2, 1])
+            # 1. МЕНЯЕМ ПРОПОРЦИИ: 2.5 отдаем под фото, 1 под текст.
+            # Это сделает фото ОЧЕНЬ большим без использования сложного HTML.
+            img_col, info_col = st.columns([2.5, 1])
             
             with img_col:
-                if photo_filename and os.path.exists(photo_path):
-                    try:
-                        # Определяем расширение и MIME-тип
-                        ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
-                        mime_type = f"image/{ext if ext != 'jpg' else 'jpeg'}"
-                        
-                        # Читаем и кодируем файл
-                        with open(photo_path, "rb") as f:
-                            data = base64.b64encode(f.read()).decode("utf-8")
-                        
-                        # Выводим КРУПНОЕ изображение через HTML
-                        st.markdown(
-                            f"""
-                            <div style="width: 100%; margin-bottom: 5px;">
-                                <img src="data:{mime_type};base64,{data}" 
-                                     style="width: 100%; 
-                                            max-width: none; 
-                                            margin-left: 1%; 
-                                            border-radius: 12px; 
-                                            box-shadow: 0 6px 15px rgba(0,0,0,0.2);">
-                            </div>
-                            <p style="color: gray; font-size: 0.9rem; text-align: center; width: 125%; margin-left: -12.5%;">
-                                Вид бассейна: {name}
-                            </p>
-                            """, 
-                            unsafe_allow_html=True
-                        )
-                    except Exception as e:
-                        st.error(f"Ошибка при обработке фото {name}: {e}")
+                if os.path.exists(photo_path):
+                    # Используем стандартный метод — он самый надежный для отображения
+                    st.image(
+                        photo_path, 
+                        use_container_width=True, 
+                        caption=f"Вид бассейна: {name}"
+                    )
+                else:
+                    st.warning(f"📸 Файл не найден: {details['photo']}")
+                    st.image("https://via.placeholder.com/800x500?text=Photo+Missing", use_container_width=True)
+                    
                 else:
                     # Если файл не найден — выводим отладочную инфомацию
                     st.info(f"📸 Фото для {name} не отображается")
