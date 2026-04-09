@@ -2259,7 +2259,7 @@ with tabs[1]:
             # 1. Словарь с путями к фото
     IMAGE_PATHS = {
                 "HP": "HP1.jpeg",
-                "Auto": "aUTO.png",
+                "Auto": "auto.png",
                 "TDS": "tds.png",
                 "Cadastre": "cad.png"
         }
