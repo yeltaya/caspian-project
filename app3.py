@@ -5427,28 +5427,38 @@ with tabs[5]:
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        # ИСПРАВЛЕНО: Добавлены кавычки f"..."
-        st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
+        st.markdown(f<div id='{anchor_name}'></div>, unsafe_allow_html=True)
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            # Увеличиваем левую колонку для рисунка (2.5 против 1)
+            # 1. МЕНЯЕМ ПРОПОРЦИИ: 2.5 отдаем под фото, 1 под текст.
+            # Это сделает фото ОЧЕНЬ большим без использования сложного HTML.
             img_col, info_col = st.columns([2.5, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    # Используем нативный st.image — это самый надежный способ
+                    # Используем стандартный метод — он самый надежный для отображения
                     st.image(
                         photo_path, 
                         use_container_width=True, 
                         caption=f"Вид бассейна: {name}"
                     )
                 else:
-                    st.info(f"📸 Фото для {name} ожидается")
+                    st.warning(f"📸 Файл не найден: {details['photo']}")
+                    st.image("https://via.placeholder.com/800x500?text=Photo+Missing", use_container_width=True)
+                    
+                else:
+                    # Если файл не найден — выводим отладочную инфомацию
+                    st.info(f"📸 Фото для {name} не отображается")
+                    if not photo_filename:
+                        st.error("В справочнике не указано имя файла (ключ 'photo')")
+                    else:
+                        st.warning(f"Файл не найден по пути: {os.path.abspath(photo_path)}")
+                    
+                    # Заглушка, чтобы место не пустовало
                     st.image("https://via.placeholder.com/800x500?text=Изображение+не+найдено", use_container_width=True)
-
-             
+                    
                         
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
@@ -5495,12 +5505,9 @@ with tabs[5]:
                     st.write(f"🌊 **Артерия:** {details['артерия']}")
 
                 with col_b:
-                    st.write(f"🏢 **Объекты:** {details.get('объекты', 'нет данных')}")
-                    
-                    # Используем .get(), чтобы если ключа 'норма' нет, приложение не выдавало ошибку
-                    norma_val = item_stats.get('норма', 'н/д')
-                    st.write(f"📊 **Норма (W):** {norma_val} км³/год")
-                    
+                    st.write(f"🏢 **Объекты:** {details['объекты']}")
+                    st.write(f"📊 **Норма (W):** {item_stats['норма']} км³/год")
+                # НОВЫЙ БЛОК: Текстовая справка по рекам
                         
             # Проверяем наличие нового ключа с данными для таблицы
             if "river_table_data" in details:
