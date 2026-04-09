@@ -2857,7 +2857,7 @@ with tabs[1]:
 
         with col_left:
             st.info("Суммы эффективных температур воздуха (норма)")
-            html_img_temp = img_to_html(path_temp2, width=115)
+            html_img_temp = img_to_html(path_temp2, width=100)
             if html_img_temp:
                 st.markdown(html_img_temp, unsafe_allow_html=True)
                 st.caption("Карта температур за август")
@@ -4541,15 +4541,38 @@ with tabs[4]:
 
     st.markdown("---") # Разделитель
 
+    import base64
+    import os
+
+    # Вспомогательная функция для обработки изображений (если еще не добавлена выше)
+    def get_img_as_base64(file_name):
+        path = os.path.join(BASE_DIR, file_name)
+        if os.path.exists(path):
+            with open(path, "rb") as f:
+                return base64.b64encode(f.read()).decode("utf-8")
+        return None
+
     # --- РАЗДЕЛ: ОСАДКИ ЗА ХОЛОДНЫЙ ПЕРИОД ---
     st.markdown('<div class="predictor-header">❄️ Количество осадков за холодный период</div>', unsafe_allow_html=True)
 
     col3, col4 = st.columns(2)
 
     with col3:
-        st.image("Без названия (3).jpeg", use_container_width=True)
+        data3 = get_img_as_base64("Без названия (3).jpeg")
+        if data3:
+            st.markdown(
+                f"""
+                <div style="width: 100%; margin-bottom: 10px;">
+                    <img src="data:image/jpeg;base64,{data3}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+        else:
+            st.error("Файл 'Без названия (3).jpeg' не найден")
+
         st.markdown('<div class="map-caption">1) Суммы осадков за холодный период, мм</div>', unsafe_allow_html=True)
-        # Текст СТРОГО под третьей картой
+        
         st.markdown("""
         <div class="report-text">
             Превышение нормы наблюдается преимущественно на востоке (горные и предгорные части ВКО и области Абай),
@@ -4560,9 +4583,21 @@ with tabs[4]:
         """, unsafe_allow_html=True)
 
     with col4:
-        st.image("Без названия (4).jpeg", use_container_width=True)
+        data4 = get_img_as_base64("Без названия (4).jpeg")
+        if data4:
+            st.markdown(
+                f"""
+                <div style="width: 100%; margin-bottom: 10px;">
+                    <img src="data:image/jpeg;base64,{data4}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+        else:
+            st.error("Файл 'Без названия (4).jpeg' не найден")
+
         st.markdown('<div class="map-caption">2) Отклонение от нормы за холодный период, %</div>', unsafe_allow_html=True)
-        # Текст СТРОГО под четвертой картой
+        
         st.markdown("""
         <div class="report-text">
             Накопленные осадки ниже нормы в западных (ЗКО, Актюбинская, Атырауская), южных (Туркестанская, Жамбылская), 
@@ -4570,7 +4605,7 @@ with tabs[4]:
             Местами (равнинные части области Абай и значительная часть Кызылординской области) накопление наблюдается около нормы.
         </div>
         """, unsafe_allow_html=True)
-    
+        
     st.divider()
     
     import streamlit as st
@@ -4584,14 +4619,32 @@ with tabs[4]:
         # Создаем две колонки: левая для карты (относительная ширина 2), правая для текста (ширина 1)
         col1, col2 = st.columns([2, 1])
 
+        import base64
+        import os
+
         with col1:
-            # Пытаемся загрузить изображение из текущей папки
+            # Путь к изображению
             image_path = "risk.jpeg"
+            
             if os.path.exists(image_path):
-                image = Image.open(image_path)
-                st.image(image, caption="Карта рисков", use_container_width=True)
+                # Кодируем изображение в Base64
+                with open(image_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                
+                # Выводим увеличенное изображение (120% ширины)
+                st.markdown(
+                    f"""
+                    <div style="width: 100%; margin-bottom: 5px;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 120%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
+                # Подпись под увеличенным рисунком
+                st.markdown('<div style="color: gray; font-size: 0.9rem; text-align: center; margin-bottom: 20px;">Карта рисков</div>', unsafe_allow_html=True)
             else:
                 st.error(f"Файл {image_path} не найден в основной папке.")
+                
 
         with col2:
             # Текстовый блок справа
@@ -4605,9 +4658,6 @@ with tabs[4]:
             **С низкими рисками:** Атырауская, Мангыстауская, Кызылординская и Жамбылская области.
             """)
             
-            # Дополнительная заметка (согласно вашим предпочтениям о постоянном отображении блоков)
-            st.info("Этот информационный блок закреплен для постоянного отображения.")
-
     if __name__ == "__main__":
         main()
         
