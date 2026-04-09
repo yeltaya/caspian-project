@@ -2659,7 +2659,7 @@ with tabs[1]:
                     st.image(
                         img_path, 
                         caption="Схема агрометеорологических наблюдений с/х культур", 
-                        use_container_width=True  # Растягивает фото по ширине колонки
+                        width=800  # Растягивает фото по ширине колонки
                     )
                 else:
                     st.error(f"⚠️ Файл '{img_filename}' не найден.")
