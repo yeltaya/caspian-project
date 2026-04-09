@@ -5416,58 +5416,54 @@ with tabs[5]:
     }
     
     import base64
+    import os
 
     for name in vxb_list:
         details = VXB_FULL_DATA.get(name, {})
-        
         if not details:
-            st.warning(f"Данные для {name} еще не внесены в справочник.")
             continue
 
-        item_stats = VXB_STATS[name]
+        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
-        
-        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         
         st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            # Увеличиваем пропорцию колонки для изображения (с 1.2 до 1.8)
             img_col, info_col = st.columns([1.8, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    # Читаем и кодируем фото
+                    # 1. Определяем расширение файла для корректного MIME-типа
+                    ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
+                    mime_type = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
+                    
+                    # 2. Читаем файл
                     with open(photo_path, "rb") as f:
                         data = base64.b64encode(f.read()).decode("utf-8")
                     
-                    # Выводим увеличенное изображение (125% ширины колонки)
+                    # 3. Выводим HTML с правильным mime_type
                     st.markdown(
                         f"""
                         <div style="width: 100%; margin-bottom: 5px;">
-                            <img src="data:image/jpeg;base64,{data}" 
-                                 style="width: 125%; 
+                            <img src="data:{mime_type};base64,{data}" 
+                                 style="width: 130%; 
                                         max-width: none; 
-                                        margin-left: -12.5%; 
+                                        margin-left: -15%; 
                                         border-radius: 10px; 
-                                        box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                                        box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                         </div>
-                        <p style="color: gray; font-size: 0.85rem; text-align: center; width: 125%; margin-left: -12.5%;">
+                        <p style="color: gray; font-size: 0.85rem; text-align: center; width: 130%; margin-left: -15%;">
                             Вид бассейна: {name}
                         </p>
                         """, 
                         unsafe_allow_html=True
                     )
                 else:
-                    st.info(f"📸 Фото для {name} ожидается")
-                    # Заглушка тоже через HTML для соблюдения размеров
-                    st.markdown(
-                        '<img src="https://via.placeholder.com/800x500?text=Photo+Coming+Soon" style="width:100%; border-radius:10px;">',
-                        unsafe_allow_html=True
-                    )
+                    st.warning(f"📸 Файл не найден: {photo_path}")
+                    
                     
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
