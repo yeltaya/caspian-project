@@ -3923,7 +3923,7 @@ with tabs[2]:
                 st.markdown(
                     f"""
                     <div style="width: 100%; display: flex; justify-content: center;">
-                        <img src="data:image/gif;base64,{data}" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <img src="data:image/gif;base64,{data}" style="width: 70%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     </div>
                     """,
                     unsafe_allow_html=True
