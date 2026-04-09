@@ -4707,7 +4707,7 @@ with tabs[4]:
                 # Выводим увеличенное изображение (120% ширины)
                 st.markdown(
                     f"""
-                    <div style="width: 80%; margin-bottom: 5px;">
+                    <div style="width: 100%; margin-bottom: 5px;">
                         <img src="data:image/jpeg;base64,{data}" style="width: 80%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                     </div>
                     """, 
@@ -4774,9 +4774,6 @@ with tabs[4]:
                 2. **Метеоданные:** получение суточных прогнозов.
                 3. **Моделирование:** запуск процесса и визуализация.
                 
-                **Объекты:**
-                * р. Оба – г. Шемонаиха
-                * р. Ульби – с. Перевалочная
                 """)
             
             with col_hbv_img:
@@ -4802,9 +4799,9 @@ with tabs[4]:
                         f"""
                         <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                             <img src="data:image/png;base64,{data}" 
-                                 style="width: 100%; 
+                                 style="width: 80%; 
                                         max-width: none; 
-                                        margin-left: -17.5%; 
+                                        margin-left: 0%; 
                                         border-radius: 8px; 
                                         box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                             <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px; width: 135%; margin-left: -17.5%;">
