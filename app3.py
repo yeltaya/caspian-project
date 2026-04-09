@@ -5456,9 +5456,9 @@ with tabs[5]:
                             f"""
                             <div style="width: 100%; margin-bottom: 5px;">
                                 <img src="data:{mime_type};base64,{data}" 
-                                     style="width: 125%; 
+                                     style="width: 100%; 
                                             max-width: none; 
-                                            margin-left: -12.5%; 
+                                            margin-left: 1%; 
                                             border-radius: 12px; 
                                             box-shadow: 0 6px 15px rgba(0,0,0,0.2);">
                             </div>
