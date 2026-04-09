@@ -423,7 +423,7 @@ with tabs[0]:
                         emoji, color = "🧪", "#CC0000"
                             
                     # ВАЖНО: используем f-строку с ТРОЙНЫМИ кавычками """
-                        st.markdown(f"""
+                    st.markdown(f"""
                             <div style="
                                 background-color: #f8fafc; 
                                 padding: 15px; 
@@ -447,7 +447,7 @@ with tabs[0]:
                         """, unsafe_allow_html=True) # ПРОВЕРЬТЕ ЭТУ СТРОКУ
                         
     
-                        st.markdown("---")
+                    st.markdown("---")
                 
 
         except Exception as e:
