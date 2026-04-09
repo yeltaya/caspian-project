@@ -2654,15 +2654,16 @@ with tabs[1]:
         col_map, col_text = st.columns([2, 1])
         
         with col_map:
-                # Проверка наличия файла
-                if os.path.exists(img_path):
-                    st.image(
-                        img_path, 
-                        caption="Схема агрометеорологических наблюдений с/х культур", 
-                        width=2000  # Растягивает фото по ширине колонки
-                    )
-                else:
-                    st.error(f"⚠️ Файл '{img_filename}' не найден.")
+            # Проверка наличия файла
+            if os.path.exists(img_path):
+                st.image(
+                    img_path, 
+                    caption="Схема агрометеорологических наблюдений с/х культур", 
+                    use_container_width=True  # Теперь изображение растянется на всю ширину колонки
+                )
+            else:
+                st.error(f"⚠️ Файл '{img_filename}' не найден.")
+                
                     
                 
         with col_text:
