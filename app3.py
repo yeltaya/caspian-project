@@ -5427,38 +5427,28 @@ with tabs[5]:
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        st.markdown(f<div id='{anchor_name}'></div>, unsafe_allow_html=True)
+        # ИСПРАВЛЕНО: Добавлены кавычки f"..."
+        st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            # 1. МЕНЯЕМ ПРОПОРЦИИ: 2.5 отдаем под фото, 1 под текст.
-            # Это сделает фото ОЧЕНЬ большим без использования сложного HTML.
+            # Увеличиваем левую колонку для рисунка (2.5 против 1)
             img_col, info_col = st.columns([2.5, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    # Используем стандартный метод — он самый надежный для отображения
+                    # Используем нативный st.image — это самый надежный способ
                     st.image(
                         photo_path, 
                         use_container_width=True, 
                         caption=f"Вид бассейна: {name}"
                     )
                 else:
-                    st.warning(f"📸 Файл не найден: {details['photo']}")
-                    st.image("https://via.placeholder.com/800x500?text=Photo+Missing", use_container_width=True)
-                    
-                else:
-                    # Если файл не найден — выводим отладочную инфомацию
-                    st.info(f"📸 Фото для {name} не отображается")
-                    if not photo_filename:
-                        st.error("В справочнике не указано имя файла (ключ 'photo')")
-                    else:
-                        st.warning(f"Файл не найден по пути: {os.path.abspath(photo_path)}")
-                    
-                    # Заглушка, чтобы место не пустовало
+                    st.info(f"📸 Фото для {name} ожидается")
                     st.image("https://via.placeholder.com/800x500?text=Изображение+не+найдено", use_container_width=True)
-                    
+
+             
                         
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
