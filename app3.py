@@ -3844,7 +3844,7 @@ with tabs[2]:
         
 
             # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
-        col_climat_data, col_viz1 = st.columns([1.2, 1], gap="medium")
+        col_climat_data, col_viz1 = st.columns([1, 1], gap="medium")
 
         with col_climat_data:
             st.markdown("#### 📜 Климатическая характеристика: Апрель")
@@ -4242,12 +4242,10 @@ with tabs[3]:
 
     # 3. Вывод в два ряда по две колонки
     # Первый ряд
-    row1_col1, row1_col2 = st.columns(2)
-    # Второй ряд
-    row2_col1, row2_col2 = st.columns(2)
+    row1_col1, row1_col2, row1_col3, row1_col4  = st.columns(4)
 
     # Собираем колонки в список для удобного обхода в цикле
-    cols = [row1_col1, row1_col2, row2_col1, row2_col2]
+    cols = [row1_col1, row1_col2, row1_col3, row1_col4]
 
     for i, item in enumerate(images_data):
         with cols[i]:
