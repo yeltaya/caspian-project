@@ -5416,10 +5416,10 @@ with tabs[5]:
     }
     
                 
+    import base64
+
     for name in vxb_list:
-        # Берем данные из нашего справочника. Если данных нет — берем пустой словарь
         details = VXB_FULL_DATA.get(name, {})
-        
         if not details:
             st.warning(f"Данные для {name} еще не внесены в справочник.")
             continue
@@ -5428,7 +5428,6 @@ with tabs[5]:
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        # Путь к фото теперь берется из справочника
         photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         
         st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
@@ -5436,15 +5435,39 @@ with tabs[5]:
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            img_col, info_col = st.columns([1.2, 1])
+            # Увеличиваем пропорцию левой колонки до 2
+            img_col, info_col = st.columns([2, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
+                    # Читаем файл для вставки через HTML (чтобы увеличить размер)
+                    with open(photo_path, "rb") as f:
+                        data = base64.b64encode(f.read()).decode("utf-8")
+                    
+                    # Определяем расширение
+                    ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
+                    mime = f"image/{ext if ext != 'jpg' else 'jpeg'}"
+
+                    st.markdown(
+                        f"""
+                        <div style="width: 100%; margin-bottom: 10px;">
+                            <img src="data:{mime};base64,{data}" 
+                                 style="width: 125%; 
+                                        max-width: none; 
+                                        margin-left: -12.5%; 
+                                        border-radius: 12px; 
+                                        box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        </div>
+                        <p style="color: gray; font-size: 0.9rem; text-align: center; width: 125%; margin-left: -12.5%;">
+                            Вид бассейна: {name}
+                        </p>
+                        """, 
+                        unsafe_allow_html=True
+                    )
                 else:
                     st.info(f"📸 Фото для {name} ожидается")
-                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
-            
+                    st.image("https://via.placeholder.com/800x500?text=Photo+Missing", use_container_width=True)
+                    
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
@@ -5474,7 +5497,7 @@ with tabs[5]:
                     name='Приток', marker_color='#a6cee3'
                 ))
                 mini_fig.update_layout(
-                    barmode='stack', height=500, 
+                    barmode='stack', height=180, 
                     margin=dict(l=0,r=0,t=10,b=0), 
                     template="plotly_white", showlegend=False,
                     xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
