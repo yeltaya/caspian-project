@@ -4858,8 +4858,8 @@ with tabs[4]:
                 st.markdown(
                     f"""
                     <div style="width: 100%;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 110%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                        <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px;">Рис. 1. Карта селевой опасности территории РК</p>
+                        <img src="data:image/jpeg;base64,{data}" style="width: 60%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px;">Карта селевой опасности территории РК</p>
                     </div>
                     """, unsafe_allow_html=True
                 )
@@ -4868,13 +4868,34 @@ with tabs[4]:
 
         with col_info_sele:
             st.markdown("### 📋 Выпускаемая продукция")
-            st.markdown("""
+            st.markdown(f"""
             * 📅 **Ежегодный бюллетень** (дождевой генезис)
             * 🕒 **Ежедневный бюллетень**
             * ⚡ **Прогнозы:** краткосрочные и сверхкраткосрочные
             * ⚠️ **Штормовые предупреждения**
             """)
+            
+            # Новый блок: перечисление районов в два столбца
+            st.markdown("---")
+            st.markdown("#### 📍 Селеопасные районы:")
+            st.markdown("""
+            <div style="column-count: 2; column-gap: 20px; font-size: 0.9rem; color: #333;">
+                • Иле Алатау<br>
+                • Кунгей Алатау<br>
+                • Терискей Алатау<br>
+                • Жетысу Алатау<br>
+                • Киргизский Алатау<br>
+                • Таласский Алатау<br>
+                • Угамский хребет<br>
+                • горы Мангистау<br>
+                • Тарбагатай<br>
+                • Саур<br>
+                • Каз. Алтай
+            </div>
+            """, unsafe_allow_html=True)
+            
             st.success("**Потребители:** Госорганы управления и население РК.")
+            
 
         st.divider()
 
