@@ -3922,8 +3922,8 @@ with tabs[2]:
                 # Отображаем GIF через HTML/CSS, делая его шире колонки
                 st.markdown(
                     f"""
-                    <div style="width: 80%; display: flex; justify-content: center;">
-                        <img src="data:image/gif;base64,{data}" style="width: 60%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div style="width: 100%; display: flex; justify-content: center;">
+                        <img src="data:image/gif;base64,{data}" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     </div>
                     """,
                     unsafe_allow_html=True
@@ -4233,7 +4233,7 @@ with tabs[3]:
             st.markdown(
                 f"""
                 <div style="width: 100%; margin-bottom: 20px;">
-                    <img src="data:image/jpeg;base64,{data1}" style="width: 80%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <img src="data:image/jpeg;base64,{data1}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Оптимальные сроки сева зерновых культур</p>
                 </div>
                 """,
@@ -4247,8 +4247,8 @@ with tabs[3]:
         if data2:
             st.markdown(
                 f"""
-                <div style="width: 10%; margin-bottom: 20px;">
-                    <img src="data:image/jpeg;base64,{data2}" style="width: 80%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="width: 100%; margin-bottom: 20px;">
+                    <img src="data:image/jpeg;base64,{data2}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Прогноз запасов продуктивной влаги</p>
                 </div>
                 """,
@@ -4489,9 +4489,9 @@ with tabs[4]:
                 return base64.b64encode(f.read()).decode("utf-8")
         return None
 
-        col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-        with col1:
+    with col1:
             data1 = get_img_as_base64("Без названия (1).jpeg")
             if data1:
                 st.markdown(
@@ -4514,7 +4514,7 @@ with tabs[4]:
             </div>
             """, unsafe_allow_html=True)
 
-        with col2:
+    with col2:
             data2 = get_img_as_base64("Без названия (2).jpeg")
             if data2:
                 st.markdown(
