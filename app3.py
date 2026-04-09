@@ -5423,7 +5423,10 @@ with tabs[5]:
         if not details:
             continue
 
-        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
+        # Формируем путь. Попробуйте сначала БЕЗ BASE_IMAGE_PATH, если файлы лежат в корне
+        photo_filename = details["photo"]
+        photo_path = os.path.join(BASE_IMAGE_PATH, photo_filename)
+        
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
@@ -5436,33 +5439,42 @@ with tabs[5]:
             
             with img_col:
                 if os.path.exists(photo_path):
-                    # 1. Определяем расширение файла для корректного MIME-типа
+                    # Автоматическое определение расширения
                     ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
-                    mime_type = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
+                    if ext not in ['png', 'jpg', 'jpeg', 'gif']:
+                        ext = 'png' # дефолт
                     
-                    # 2. Читаем файл
-                    with open(photo_path, "rb") as f:
-                        data = base64.b64encode(f.read()).decode("utf-8")
+                    mime_type = f"image/{ext if ext != 'jpg' else 'jpeg'}"
                     
-                    # 3. Выводим HTML с правильным mime_type
-                    st.markdown(
-                        f"""
-                        <div style="width: 100%; margin-bottom: 5px;">
-                            <img src="data:{mime_type};base64,{data}" 
-                                 style="width: 130%; 
-                                        max-width: none; 
-                                        margin-left: -15%; 
-                                        border-radius: 10px; 
-                                        box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-                        </div>
-                        <p style="color: gray; font-size: 0.85rem; text-align: center; width: 130%; margin-left: -15%;">
-                            Вид бассейна: {name}
-                        </p>
-                        """, 
-                        unsafe_allow_html=True
-                    )
+                    try:
+                        with open(photo_path, "rb") as f:
+                            data = base64.b64encode(f.read()).decode("utf-8")
+                        
+                        st.markdown(
+                            f"""
+                            <div style="width: 100%; margin-bottom: 5px;">
+                                <img src="data:{mime_type};base64,{data}" 
+                                     style="width: 130%; 
+                                            max-width: none; 
+                                            margin-left: -15%; 
+                                            border-radius: 10px; 
+                                            box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                            </div>
+                            <p style="color: gray; font-size: 0.85rem; text-align: center; width: 130%; margin-left: -15%;">
+                                Вид бассейна: {name}
+                            </p>
+                            """, 
+                            unsafe_allow_html=True
+                        )
+                    except Exception as e:
+                        st.error(f"Ошибка чтения файла: {e}")
                 else:
-                    st.warning(f"📸 Файл не найден: {photo_path}")
+                    # ЭТА СТРОЧКА ПОМОЖЕТ ПОНЯТЬ ОШИБКУ:
+                    st.error(f"⚠️ Файл не найден! Искал здесь: {os.path.abspath(photo_path)}")
+                    # Если файл не найден, выведем стандартный st.image для проверки
+                    st.info("Проверка через стандартный метод:")
+                    st.image("https://via.placeholder.com/400x200?text=Check+Path")
+                    
                     
                     
             with info_col:
