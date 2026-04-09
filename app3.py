@@ -2631,7 +2631,7 @@ with tabs[1]:
                 st.image(
                     img_path, 
                     caption="Схема агрометеорологических наблюдений с/х культур", 
-                    width=500
+                    use_container_width=True
                 )
             else:
                 st.error(f"⚠️ Файл '{img_filename}' не найден в репозитории.")
