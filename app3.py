@@ -2485,43 +2485,43 @@ with tabs[1]:
             # --- ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ ---
     HISTORICAL_DATA = {
                 "р. Есиль (г. Астана)": {
-                    "record_level": 912, "record_year": "2017", "current_level": 245, 
+                    "record_level": 732, "record_year": "18.04.2021", "current_level": 701, "danger_level": 732,
                     "fact": "В 2017 году уровень воды достиг рекордной отметки, что привело к заполнению защитной дамбы."
                 },
                 "р. Жайык (г. Уральск)": {
-                    "record_level": 945, "record_year": "9.05.1942 г.", "current_level": 320, 
+                    "record_level": 945, "record_year": "9.05.1942 г.", "current_level": 349, "danger_level": 945,
                     "fact": "Исторический максимум был зафиксирован в середине 90-х. Сейчас уровень в пределах нормы."
                 },
                 "р. Иле (пр. Добын (КНР))": {
-                    "record_level": 1980, "record_year": "08.05.2016 г.", "current_level": 180, 
+                    "record_level": 1980, "record_year": "08.05.2016 г.", "current_level": 248, "danger_level": 1980,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 },
                 "р. Илек (г. Актобе)": {
-                    "record_level": 741, "record_year": "13.04.1941 г.", "current_level": 180, 
+                    "record_level": 741, "record_year": "13.04.1941 г.", "current_level": 137, "danger_level": 741,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 },
                 "р. Есиль (г. Державинск)": {
-                    "record_level": 1709, "record_year": "18.04.2024 г.", "current_level": 180, 
+                    "record_level": 1709, "record_year": "18.04.2024 г.", "current_level": 433, "danger_level": 1709,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 },
                 "р. Талас (а.Жасоркен)": {
-                    "record_level": 378, "record_year": "06.11.2017 г.", "current_level": 180, 
+                    "record_level": 378, "record_year": "06.11.2017 г.", "current_level": 91, "danger_level": 378,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 },
                 "р. Нура (с. Шешенкара)": {
-                    "record_level": 715, "record_year": "11.04.2015 г.", "current_level": 180, 
+                    "record_level": 715, "record_year": "11.04.2015 г.", "current_level": 400, "danger_level": 715,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 },
                 "р. Тобыл (г. Костанай)": {
-                    "record_level": 730, "record_year": "12.04.2000 г.", "current_level": 180, 
+                    "record_level": 730, "record_year": "12.04.2000 г.", "current_level": 329, "danger_level": 730,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 },
                 "р. Сырдарья (с. Кокбулак)": {
-                    "record_level": 852, "record_year": "20.04.2003 г.", "current_level": 180, 
+                    "record_level": 852, "record_year": "20.04.2003 г.", "current_level": 591, "danger_level": 852,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 },
                 "р. Ертис (г. Семей)": {
-                    "record_level": 635, "record_year": "11.04.1941 г.", "current_level": 180, 
+                    "record_level": 635, "record_year": "11.04.1941 г.", "current_level": 161, "danger_level": 635,
                     "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
                 }                
         }
@@ -2552,7 +2552,7 @@ with tabs[1]:
                     <div style="background-color: #e3f2fd; padding: 20px; border-radius: 15px; border-left: 8px solid {status_color};">
                         <h5 style="margin:0; color: #1565c0;">🌊 ТЕКУЩИЙ УРОВЕНЬ</h5>
                         <h2 style="margin:0; color: #0d47a1;">{data['current_level']} см</h2>
-                        <p style="font-weight: bold; color: #1e88e5;">20 февраля 2026 г.</p>
+                        <p style="font-weight: bold; color: #1e88e5;">9 апреля 2026 г.</p>
                     </div>
                 """, unsafe_allow_html=True)
 
