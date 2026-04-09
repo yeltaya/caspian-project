@@ -3908,9 +3908,32 @@ with tabs[2]:
                 """, unsafe_allow_html=True)
         with col_viz1:
             st.subheader("🗺️ Визуализация")
-            st.image(os.path.join(BASE_DIR, "udpp1.gif"), use_container_width=True)
+            
+            # 1. Формируем полный путь к GIF-файлу
+            gif_path = os.path.join(BASE_DIR, "udpp1.gif")
+            
+            # 2. Проверяем наличие файла и применяем CSS-хак
+            if os.path.exists(gif_path):
+                # Кодируем GIF в Base64 для вставки в HTML
+                import base64 # Можно вынести в начало файла
+                with open(gif_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                
+                # Отображаем GIF через HTML/CSS, делая его шире колонки
+                st.markdown(
+                    f"""
+                    <div style="width: 100%; display: flex; justify-content: center;">
+                        <img src="data:image/gif;base64,{data}" style="width: 80%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                # На случай, если файл не найден
+                st.error(f"⚠️ Файл 'udpp1.gif' не найден по пути: {gif_path}")
             
             st.divider()
+            
         
                
     if __name__ == "__main__":
