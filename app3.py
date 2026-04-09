@@ -1024,9 +1024,7 @@ with tabs[0]:
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-
-
-    
+   
 #МОНИТОРИНГ
 with tabs[1]:
     # 1. СТИЛИЗАЦИЯ
@@ -2261,9 +2259,9 @@ with tabs[1]:
             # 1. Словарь с путями к фото
     IMAGE_PATHS = {
                 "HP": "HP1.jpeg",
-                "Auto": "Aerology.jpeg",
-                "TDS": "DMRL.jpeg",
-                "Cadastre": "Cadastre.jpeg"
+                "Auto": "aUTO.png",
+                "TDS": "tds.png",
+                "Cadastre": "cad.png"
         }
 
     # 1. Создаем контейнер для карточек
