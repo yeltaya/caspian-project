@@ -2844,34 +2844,35 @@ with tabs[1]:
         path_temp2 = "agro2.jpg"
         path_gtk = "agro 3.png"
 
-        # Создаем две колонки для визуального сопоставления
+# Функция для перевода картинки в HTML-строку (делаем крупнее через width)
+        def img_to_html(img_path, width=115):
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                return f'<img src="data:image/jpeg;base64,{data}" style="width: {width}%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">'
+            return None
+
+        # Создаем две колонки
         col_left, col_right = st.columns(2)
 
         with col_left:
             st.info("Суммы эффективных температур воздуха (норма)")
-            if os.path.exists(path_temp2):
-                img_temp = Image.open(path_temp2)
-                st.image(img_temp, use_container_width=True, caption="Карта температур за август")
+            html_img_temp = img_to_html(path_temp2, width=115)
+            if html_img_temp:
+                st.markdown(html_img_temp, unsafe_allow_html=True)
+                st.caption("Карта температур за август")
             else:
                 st.error(f"Файл не найден: {path_temp2}")
 
         with col_right:
             st.info("Гидротермический коэффициент (ГТК) Селянинова")
-            if os.path.exists(path_gtk):
-                img_gtk = Image.open(path_gtk)
-                st.image(img_gtk, use_container_width=True, caption="ГТК за период 1991-2020 гг.")
-                
-                # Добавляем расшифровку ГТК прямо под картинкой для удобства
-                with st.expander("🔍 Показать расшифровку ГТК"):
-                    st.markdown("""
-                    * 🟦 **ГТК > 0.8** — хорошо увлажнено
-                    * 🟩 **ГТК = 0.6 - 0.8** — слабо увлажнено
-                    * 🟧 **ГТК = 0.4 - 0.6** — средне засушливо
-                    * 🟨 **ГТК < 0.4** — сильно засушливо
-                    """)
+            html_img_gtk = img_to_html(path_gtk, width=115)
+            if html_img_gtk:
+                st.markdown(html_img_gtk, unsafe_allow_html=True)
+                st.caption("ГТК за период 1991-2020 гг.")
             else:
                 st.error(f"Файл не найден: {path_gtk}")
-
+                
     # Вызов функции в основном теле приложения
     render_agro_climate_comparison()
 
