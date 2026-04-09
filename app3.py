@@ -4472,7 +4472,7 @@ with tabs[4]:
                 🌊 Интеграция с системой «Таскын»
             </div>
             <div class="report-text" style="font-size: 1.1rem; line-height: 1.6;">
-                С <b>2025 года</b> внедрен выпуск долгосрочных прогнозов с указанием 
+                В <b>2025 году</b> усовершенствован долгосрочный прогноз с указанием 
                 <span class="highlight-blue">максимальных уровней и расходов воды</span>. 
                 Это обеспечило работу системы <b>«Таскын»</b> по моделированию возможных зон затопления.
             </div>
@@ -4707,8 +4707,8 @@ with tabs[4]:
                 # Выводим увеличенное изображение (120% ширины)
                 st.markdown(
                     f"""
-                    <div style="width: 100%; margin-bottom: 5px;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 120%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                    <div style="width: 80%; margin-bottom: 5px;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 80%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                     </div>
                     """, 
                     unsafe_allow_html=True
@@ -4789,8 +4789,34 @@ with tabs[4]:
             col_swim_img, col_swim_text = st.columns([2, 1])
             
             with col_swim_img:
-                # Здесь изображение с картами почв или землепользования
-                display_big_image("swim_inputs.png", "Входные ГИС-данные (почвы FAO, Land 30, гидротопы)")
+                # Путь к файлу с входными данными ГИС
+                img_swim = "swim_inputs.png"
+                img_path_swim = os.path.join(BASE_DIR, img_swim)
+                
+                if os.path.exists(img_path_swim):
+                    with open(img_path_swim, "rb") as f:
+                        data = base64.b64encode(f.read()).decode("utf-8")
+                    
+                    # Увеличиваем до 135% и сдвигаем влево на -17.5% для центровки
+                    st.markdown(
+                        f"""
+                        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                            <img src="data:image/png;base64,{data}" 
+                                 style="width: 100%; 
+                                        max-width: none; 
+                                        margin-left: -17.5%; 
+                                        border-radius: 8px; 
+                                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                            <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px; width: 135%; margin-left: -17.5%;">
+                                Входные ГИС-данные (почвы FAO, Land 30, гидротопы)
+                            </p>
+                        </div>
+                        """, 
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.error(f"Файл {img_swim} не найден. Проверьте путь в папке проекта.")
+                
 
             with col_swim_text:
                 st.info("""
