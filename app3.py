@@ -4661,6 +4661,82 @@ with tabs[4]:
     if __name__ == "__main__":
         main()
         
+    import streamlit as st
+    import os
+    import base64
+
+    def render_hydrology_models_section():
+        st.markdown('<div class="predictor-header">🌊 Гидрологическое моделирование: HBV и SWIM</div>', unsafe_allow_html=True)
+        
+        # Вспомогательная функция для отображения увеличенных картинок (115%)
+        def display_big_image(img_name, caption_text):
+            img_path = os.path.join(BASE_DIR, img_name)
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                st.markdown(
+                    f"""
+                    <div style="width: 100%; margin-top: 10px;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 115%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 5px;">{caption_text}</p>
+                    </div>
+                    """, unsafe_allow_html=True
+                )
+            else:
+                st.warning(f"Изображение {img_name} не найдено. Добавьте его в папку проекта.")
+
+        # Создаем вкладки для двух моделей
+        tab_hbv, tab_swim = st.tabs(["📊 Модель HBV-light", "🌍 Модель SWIM"])
+
+        with tab_hbv:
+            col_hbv_text, col_hbv_img = st.columns([1, 2])
+            
+            with col_hbv_text:
+                st.markdown("""
+                ### Концепция HBV
+                Шведская концептуальная модель для составления оперативных прогнозов стока.
+                
+                **Этапы работы:**
+                1. **Калибровка:** подбор параметров на основе архива данных.
+                2. **Метеоданные:** получение суточных прогнозов.
+                3. **Моделирование:** запуск процесса и визуализация.
+                
+                **Объекты:**
+                * р. Оба – г. Шемонаиха
+                * р. Ульби – с. Перевалочная
+                """)
+            
+            with col_hbv_img:
+                # Здесь укажите имя файла со схемой из презентации
+                display_big_image("hbv_scheme.jpg", "Схема оперативного прогноза стока по модели HBV-light")
+
+        with tab_swim:
+            st.markdown("### Эко-гидрологическая модель SWIM")
+            
+            col_swim_img, col_swim_text = st.columns([2, 1])
+            
+            with col_swim_img:
+                # Здесь изображение с картами почв или землепользования
+                display_big_image("swim_inputs.jpg", "Входные ГИС-данные (почвы FAO, Land 30, гидротопы)")
+
+            with col_swim_text:
+                st.info("""
+                **Особенности SWIM:**
+                * Интегрирует гидрологию, эрозию и динамику питательных веществ.
+                * Основана на моделях SWAT и MATSALU.
+                * Использует цифровые карты высот (DEM) и типы почв для выделения гидротопов.
+                """)
+                
+            st.divider()
+            
+            # Блок с результатами (нижняя часть)
+            st.markdown("#### Результаты валидации (р. Оба – г. Шемонаиха)")
+            # Еще одно крупное изображение с графиком калибровки
+            display_big_image("validation_results.jpg", "Сравнение фактического и смоделированного стока")
+
+    # Вызов раздела в основном приложении
+    render_hydrology_models_section()
+
 
    
 
