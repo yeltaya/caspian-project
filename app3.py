@@ -2628,15 +2628,16 @@ with tabs[1]:
         with col_map:
             # Проверка наличия файла, чтобы избежать MediaFileStorageError
             if os.path.exists(img_path):
-                st.image(
-                    img_path, 
-                    caption="Схема агрометеорологических наблюдений с/х культур", 
-                    use_container_width=True
-                )
-            else:
-                st.error(f"⚠️ Файл '{img_filename}' не найден в репозитории.")
-                # Подсказка для отладки
-                st.info(f"Искал по пути: {img_path}")
+                with st.container():
+                    st.image(
+                        img_path, 
+                        caption="Схема агрометеорологических наблюдений с/х культур", 
+                        use_container_width=True
+                    )
+                else:
+                    st.error(f"⚠️ Файл '{img_filename}' не найден в репозитории.")
+                    # Подсказка для отладки
+                    st.info(f"Искал по пути: {img_path}")
                 
         with col_text:
             st.markdown("""
