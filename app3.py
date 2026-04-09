@@ -2626,28 +2626,16 @@ with tabs[1]:
         col_map, col_text = st.columns([3, 1])
         
         with col_map:
-            if os.path.exists(img_path):
-                import base64
-                
-                # Читаем файл и кодируем в base64, чтобы вставить напрямую в HTML
-                with open(img_path, "rb") as f:
-                    data = f.read()
-                    encoded = base64.b64encode(data).decode()
-                
-                # Выводим картинку через HTML с принудительными стилями
-                st.markdown(
-                    f"""
-                    <div style="width: 100%; text-align: left;">
-                        <img src="data:image/jpeg;base64,{encoded}" 
-                             style="width: 100%; height: auto; border-radius: 5px; object-fit: contain;">
-                        <p style="text-align: center; color: gray; font-size: 0.8rem;">
-                            Схема агрометеорологических наблюдений с/х культур
-                        </p>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
-        
+                # Проверка наличия файла
+                if os.path.exists(img_path):
+                    st.image(
+                        img_path, 
+                        caption="Схема агрометеорологических наблюдений с/х культур", 
+                        use_container_width=True  # Растягивает фото по ширине колонки
+                    )
+                else:
+                    st.error(f"⚠️ Файл '{img_filename}' не найден.")
+                    
                 
         with col_text:
             st.markdown("""
