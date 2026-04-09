@@ -4858,7 +4858,7 @@ with tabs[4]:
                 st.markdown(
                     f"""
                     <div style="width: 100%;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 60%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 70%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px;">Карта селевой опасности территории РК</p>
                     </div>
                     """, unsafe_allow_html=True
@@ -4899,21 +4899,8 @@ with tabs[4]:
 
         st.divider()
 
-        # 3. Данные за 2023 год (Таблица 1)
-        st.subheader("📊 Статистика прогнозов «сильный дождь» (2023 г.)")
-        
-        # Создаем DataFrame для отображения
-        data_2023 = {
-            "Область": ["Алматинская", "Алматинская", "Алматинская", "Жетысу", "Жамбылская", "Восточно-Казахстанская"],
-            "Селеопасный район": ["Иле Алатау", "Кунгей Алатау", "Терискей Алатау", "Жетысу Алатау", "Киргизский/Таласский Алатау", "Казахстанский Алтай"],
-            "Всего прогнозов": [23, 22, 20, 20, 14, 14]
-        }
-        df = pd.DataFrame(data_2023)
-        
-        # Отображаем таблицу в Streamlit
-        st.table(df)
 
-        # 4. Факторы формирования и критерии
+       # 4. Факторы формирования и критерии
         col_fact1, col_fact2 = st.columns(2)
         
         with col_fact1:
@@ -5428,9 +5415,9 @@ with tabs[5]:
             # Добавьте сюда остальные ВХБ по аналогии
     }
     
-                
+    import base64
+
     for name in vxb_list:
-        # Берем данные из нашего справочника. Если данных нет — берем пустой словарь
         details = VXB_FULL_DATA.get(name, {})
         
         if not details:
@@ -5441,7 +5428,6 @@ with tabs[5]:
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        # Путь к фото теперь берется из справочника
         photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         
         st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
@@ -5449,15 +5435,40 @@ with tabs[5]:
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            img_col, info_col = st.columns([1.2, 1])
+            # Увеличиваем пропорцию колонки для изображения (с 1.2 до 1.8)
+            img_col, info_col = st.columns([1.8, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
+                    # Читаем и кодируем фото
+                    with open(photo_path, "rb") as f:
+                        data = base64.b64encode(f.read()).decode("utf-8")
+                    
+                    # Выводим увеличенное изображение (125% ширины колонки)
+                    st.markdown(
+                        f"""
+                        <div style="width: 100%; margin-bottom: 5px;">
+                            <img src="data:image/jpeg;base64,{data}" 
+                                 style="width: 125%; 
+                                        max-width: none; 
+                                        margin-left: -12.5%; 
+                                        border-radius: 10px; 
+                                        box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        </div>
+                        <p style="color: gray; font-size: 0.85rem; text-align: center; width: 125%; margin-left: -12.5%;">
+                            Вид бассейна: {name}
+                        </p>
+                        """, 
+                        unsafe_allow_html=True
+                    )
                 else:
                     st.info(f"📸 Фото для {name} ожидается")
-                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
-            
+                    # Заглушка тоже через HTML для соблюдения размеров
+                    st.markdown(
+                        '<img src="https://via.placeholder.com/800x500?text=Photo+Coming+Soon" style="width:100%; border-radius:10px;">',
+                        unsafe_allow_html=True
+                    )
+                    
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
