@@ -399,28 +399,28 @@ with tabs[0]:
 
                 st_folium(m, width="100%", height=650, returned_objects=[])
 
-                with col_info:
-                        st.markdown("####")
+            with col_info:
+                st.markdown("####")
                         
                         # Ваши эталонные данные (константы)
-                        stats_data = {
+                stats_data = {
                             "Метеорология": 365,
                             "Гидрология": 442,
                             "Агрометеорология": 226,
                             "Экология": 790
-                        }
+                }
                        
                         # Отрисовка карточек
-                        for navr, count in stats_data.items():
+                for navr, count in stats_data.items():
                             # Логика подбора эмодзи и цвета акцента
-                            if "Гидр" in navr:
-                                emoji, color = "💧", "#0066CC"
-                            elif "Мет" in navr:
-                                emoji, color = "🌤️", "#FF9900"
-                            elif "Агр" in navr:
-                                emoji, color = "🌱", "#2E7D32"
-                            else: # Экология
-                                emoji, color = "🧪", "#CC0000"
+                    if "Гидр" in navr:
+                        emoji, color = "💧", "#0066CC"
+                    elif "Мет" in navr:
+                        emoji, color = "🌤️", "#FF9900"
+                    elif "Агр" in navr:
+                        emoji, color = "🌱", "#2E7D32"
+                    else: # Экология
+                        emoji, color = "🧪", "#CC0000"
                             
                     # ВАЖНО: используем f-строку с ТРОЙНЫМИ кавычками """
                         st.markdown(f"""
