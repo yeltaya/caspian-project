@@ -5428,46 +5428,60 @@ with tabs[5]:
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
+        # Формируем путь к фото
+        photo_filename = details.get("photo", "")
+        photo_path = os.path.join(BASE_IMAGE_PATH, photo_filename)
         
         st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            # Увеличиваем пропорцию левой колонки до 2
+            # Увеличиваем пропорцию колонки для изображения
             img_col, info_col = st.columns([2, 1])
             
             with img_col:
-                if os.path.exists(photo_path):
-                    # Читаем файл для вставки через HTML (чтобы увеличить размер)
-                    with open(photo_path, "rb") as f:
-                        data = base64.b64encode(f.read()).decode("utf-8")
-                    
-                    # Определяем расширение
-                    ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
-                    mime = f"image/{ext if ext != 'jpg' else 'jpeg'}"
-
-                    st.markdown(
-                        f"""
-                        <div style="width: 100%; margin-bottom: 10px;">
-                            <img src="data:{mime};base64,{data}" 
-                                 style="width: 125%; 
-                                        max-width: none; 
-                                        margin-left: -12.5%; 
-                                        border-radius: 12px; 
-                                        box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                        </div>
-                        <p style="color: gray; font-size: 0.9rem; text-align: center; width: 125%; margin-left: -12.5%;">
-                            Вид бассейна: {name}
-                        </p>
-                        """, 
-                        unsafe_allow_html=True
-                    )
+                if photo_filename and os.path.exists(photo_path):
+                    try:
+                        # Определяем расширение и MIME-тип
+                        ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
+                        mime_type = f"image/{ext if ext != 'jpg' else 'jpeg'}"
+                        
+                        # Читаем и кодируем файл
+                        with open(photo_path, "rb") as f:
+                            data = base64.b64encode(f.read()).decode("utf-8")
+                        
+                        # Выводим КРУПНОЕ изображение через HTML
+                        st.markdown(
+                            f"""
+                            <div style="width: 100%; margin-bottom: 5px;">
+                                <img src="data:{mime_type};base64,{data}" 
+                                     style="width: 125%; 
+                                            max-width: none; 
+                                            margin-left: -12.5%; 
+                                            border-radius: 12px; 
+                                            box-shadow: 0 6px 15px rgba(0,0,0,0.2);">
+                            </div>
+                            <p style="color: gray; font-size: 0.9rem; text-align: center; width: 125%; margin-left: -12.5%;">
+                                Вид бассейна: {name}
+                            </p>
+                            """, 
+                            unsafe_allow_html=True
+                        )
+                    except Exception as e:
+                        st.error(f"Ошибка при обработке фото {name}: {e}")
                 else:
-                    st.info(f"📸 Фото для {name} ожидается")
-                    st.image("https://via.placeholder.com/800x500?text=Photo+Missing", use_container_width=True)
+                    # Если файл не найден — выводим отладочную инфомацию
+                    st.info(f"📸 Фото для {name} не отображается")
+                    if not photo_filename:
+                        st.error("В справочнике не указано имя файла (ключ 'photo')")
+                    else:
+                        st.warning(f"Файл не найден по пути: {os.path.abspath(photo_path)}")
                     
+                    # Заглушка, чтобы место не пустовало
+                    st.image("https://via.placeholder.com/800x500?text=Изображение+не+найдено", use_container_width=True)
+                    
+                        
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
