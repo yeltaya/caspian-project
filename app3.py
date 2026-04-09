@@ -4419,6 +4419,79 @@ with tabs[4]:
     # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ РЯДОМ) ---
     st.markdown('<div class="predictor-header">📊 Гидрологические прогнозы на 2026 г.</div>', unsafe_allow_html=True)
 
+    def render_taskyn_info():
+        st.markdown("""
+        <style>
+        .report-card {
+            background-color: #f0f7ff;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 8px solid #2e86c1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin: 20px 0;
+        }
+        .card-title {
+            color: #1a5276;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .stat-row {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid #d4e6f1;
+        }
+        .stat-number {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2e86c1;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #566e7a;
+        }
+        .highlight-blue {
+            color: #2e86c1;
+            font-weight: bold;
+        }
+        </style>
+        
+        <div class="report-card">
+            <div class="card-title">
+                🌊 Интеграция с системой «Таскын»
+            </div>
+            <div class="report-text" style="font-size: 1.1rem; line-height: 1.6;">
+                С <b>2025 года</b> внедрен выпуск долгосрочных прогнозов с указанием 
+                <span class="highlight-blue">максимальных уровней и расходов воды</span>. 
+                Это обеспечило работу системы <b>«Таскын»</b> по моделированию возможных зон затопления.
+            </div>
+            <div class="stat-row">
+                <div class="stat-item">
+                    <span class="stat-number">2025</span>
+                    <span class="stat-label">Год старта</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">251</span>
+                    <span class="stat-label">Гидрологический пост</span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Вызов функции
+    render_taskyn_info()
+
 
     # --- СТИЛИЗАЦИЯ ЗАГОЛОВКОВ ---
     st.markdown("""
@@ -4711,13 +4784,13 @@ with tabs[4]:
                 display_big_image("hbv_scheme.jpg", "Схема оперативного прогноза стока по модели HBV-light")
 
         with tab_swim:
-            st.markdown("### Эко-гидрологическая модель SWIM")
+            st.markdown("### SWIM (Soil and water integrated model)")
             
             col_swim_img, col_swim_text = st.columns([2, 1])
             
             with col_swim_img:
                 # Здесь изображение с картами почв или землепользования
-                display_big_image("swim_inputs.jpg", "Входные ГИС-данные (почвы FAO, Land 30, гидротопы)")
+                display_big_image("swim_inputs.png", "Входные ГИС-данные (почвы FAO, Land 30, гидротопы)")
 
             with col_swim_text:
                 st.info("""
@@ -4728,11 +4801,6 @@ with tabs[4]:
                 """)
                 
             st.divider()
-            
-            # Блок с результатами (нижняя часть)
-            st.markdown("#### Результаты валидации (р. Оба – г. Шемонаиха)")
-            # Еще одно крупное изображение с графиком калибровки
-            display_big_image("validation_results.jpg", "Сравнение фактического и смоделированного стока")
 
     # Вызов раздела в основном приложении
     render_hydrology_models_section()
