@@ -3912,7 +3912,12 @@ with tabs[2]:
             
             st.divider()
         
+               
+    if __name__ == "__main__":
+        show_forecast_process()
+    
 
+ 
    
     with st.container():
         st.markdown("<h3 style='color: #1d4d2b; text-align: center; margin-bottom: 20px;'>💼 Отраслевое применение прогнозов</h3>", unsafe_allow_html=True)
