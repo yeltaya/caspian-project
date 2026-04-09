@@ -4858,7 +4858,7 @@ with tabs[4]:
                 st.markdown(
                     f"""
                     <div style="width: 100%;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 70%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 0%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px;">Карта селевой опасности территории РК</p>
                     </div>
                     """, unsafe_allow_html=True
@@ -5415,68 +5415,36 @@ with tabs[5]:
             # Добавьте сюда остальные ВХБ по аналогии
     }
     
-    import base64
-    import os
-
+                
     for name in vxb_list:
+        # Берем данные из нашего справочника. Если данных нет — берем пустой словарь
         details = VXB_FULL_DATA.get(name, {})
+        
         if not details:
+            st.warning(f"Данные для {name} еще не внесены в справочник.")
             continue
 
-        # Формируем путь. Попробуйте сначала БЕЗ BASE_IMAGE_PATH, если файлы лежат в корне
-        photo_filename = details["photo"]
-        photo_path = os.path.join(BASE_IMAGE_PATH, photo_filename)
-        
+        item_stats = VXB_STATS[name]
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
+        
+        # Путь к фото теперь берется из справочника
+        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         
         st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            img_col, info_col = st.columns([1.8, 1])
+            img_col, info_col = st.columns([1.2, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    # Автоматическое определение расширения
-                    ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
-                    if ext not in ['png', 'jpg', 'jpeg', 'gif']:
-                        ext = 'png' # дефолт
-                    
-                    mime_type = f"image/{ext if ext != 'jpg' else 'jpeg'}"
-                    
-                    try:
-                        with open(photo_path, "rb") as f:
-                            data = base64.b64encode(f.read()).decode("utf-8")
-                        
-                        st.markdown(
-                            f"""
-                            <div style="width: 100%; margin-bottom: 5px;">
-                                <img src="data:{mime_type};base64,{data}" 
-                                     style="width: 130%; 
-                                            max-width: none; 
-                                            margin-left: -15%; 
-                                            border-radius: 10px; 
-                                            box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-                            </div>
-                            <p style="color: gray; font-size: 0.85rem; text-align: center; width: 130%; margin-left: -15%;">
-                                Вид бассейна: {name}
-                            </p>
-                            """, 
-                            unsafe_allow_html=True
-                        )
-                    except Exception as e:
-                        st.error(f"Ошибка чтения файла: {e}")
+                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
                 else:
-                    # ЭТА СТРОЧКА ПОМОЖЕТ ПОНЯТЬ ОШИБКУ:
-                    st.error(f"⚠️ Файл не найден! Искал здесь: {os.path.abspath(photo_path)}")
-                    # Если файл не найден, выведем стандартный st.image для проверки
-                    st.info("Проверка через стандартный метод:")
-                    st.image("https://via.placeholder.com/400x200?text=Check+Path")
-                    
-                    
-                    
+                    st.info(f"📸 Фото для {name} ожидается")
+                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
+            
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
