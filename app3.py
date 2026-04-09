@@ -4232,8 +4232,8 @@ with tabs[3]:
         if data1:
             st.markdown(
                 f"""
-                <div style="width: 80%; margin-bottom: 20px;">
-                    <img src="data:image/jpeg;base64,{data1}" style="width: 60%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="width: 100%; margin-bottom: 20px;">
+                    <img src="data:image/jpeg;base64,{data1}" style="width: 80%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Оптимальные сроки сева зерновых культур</p>
                 </div>
                 """,
@@ -4247,8 +4247,8 @@ with tabs[3]:
         if data2:
             st.markdown(
                 f"""
-                <div style="width: 80%; margin-bottom: 20px;">
-                    <img src="data:image/jpeg;base64,{data2}" style="width: 60%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="width: 10%; margin-bottom: 20px;">
+                    <img src="data:image/jpeg;base64,{data2}" style="width: 80%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Прогноз запасов продуктивной влаги</p>
                 </div>
                 """,
@@ -4354,9 +4354,6 @@ with tabs[4]:
         }
     </style>
     """, unsafe_allow_html=True)
-
-    # 1. ЗАГОЛОВОК И ВВОДНАЯ ИНФОРМАЦИЯ
-    st.markdown('<div class="section-header-hydro">🌊 Гидрологические прогнозы</div>', unsafe_allow_html=True)
 
     st.markdown("""
     <div class="methodology-box">
@@ -4480,33 +4477,66 @@ with tabs[4]:
     # --- РАЗДЕЛ: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
     st.markdown('<div class="predictor-header">🍂 Осеннее увлажнение (сентябрь–октябрь)</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    import base64
+    import os
 
-    with col1:
-        st.image("Без названия (1).jpeg", use_container_width=True)
-        st.markdown('<div class="map-caption">1) Суммы осадков за осенний период, мм</div>', unsafe_allow_html=True)
-        # Текст СТРОГО под первой картой
-        st.markdown("""
-        <div class="report-text">
-            В ряде западных и восточных областей (преимущественно в <b>Западно-Казахстанской, Мангыстауской, Павлодарской, 
-            Восточно-Казахстанской областях, области Абай, на востоке Карагандинской и севере области Жетісу</b>) наблюдаются 
-            показатели осеннего увлажнения выше нормы. В отдельных точках (особенно в высокогорных зонах) зафиксированы 
-            значения <span class="highlight-blue">более 150 мм</span>, указывающие на существенное переувлажнение.
-        </div>
-        """, unsafe_allow_html=True)
+    # Вспомогательная функция для обработки изображений
+    def get_img_as_base64(file_name):
+        # Используем BASE_DIR, который у вас определен глобально
+        path = os.path.join(BASE_DIR, file_name)
+        if os.path.exists(path):
+            with open(path, "rb") as f:
+                return base64.b64encode(f.read()).decode("utf-8")
+        return None
 
-    with col2:
-        st.image("Без названия (2).jpeg", use_container_width=True)
-        st.markdown('<div class="map-caption">2) Отклонение от нормы, %</div>', unsafe_allow_html=True)
-        # Текст СТРОГО под второй картой
-        st.markdown("""
-        <div class="report-text">
-            В то же время на севере, центре, юге (<b>Актюбинская, Улытауская, Жамбылская, Туркестанская, Кызылординская 
-            области</b>, а также большая часть <b>Атырауской, Костанайской, Акмолинской, Северо-Казахстанской, Алматинской</b> и 
-            восточной части Карагандинской областей) преобладают ниже норм или умеренные уровни влаги – с минимальными 
-            значениям <span class="highlight-blue"><25 мм</span>.
-        </div>
-        """, unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+
+        with col1:
+            data1 = get_img_as_base64("Без названия (1).jpeg")
+            if data1:
+                st.markdown(
+                    f"""
+                    <div style="width: 100%; margin-bottom: 10px;">
+                        <img src="data:image/jpeg;base64,{data1}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
+            
+            st.markdown('<div class="map-caption">1) Суммы осадков за осенний период, мм</div>', unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div class="report-text">
+                В ряде западных и восточных областей (преимущественно в <b>Западно-Казахстанской, Мангыстауской, Павлодарской, 
+                Восточно-Казахстанской областях, области Абай, на востоке Карагандинской и севере области Жетісу</b>) наблюдаются 
+                показатели осеннего увлажнения выше нормы. В отдельных точках (особенно в высокогорных зонах) зафиксированы 
+                значения <span class="highlight-blue">более 150 мм</span>, указывающие на существенное переувлажнение.
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            data2 = get_img_as_base64("Без названия (2).jpeg")
+            if data2:
+                st.markdown(
+                    f"""
+                    <div style="width: 100%; margin-bottom: 10px;">
+                        <img src="data:image/jpeg;base64,{data2}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
+
+            st.markdown('<div class="map-caption">2) Отклонение от нормы, %</div>', unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div class="report-text">
+                В то же время на севере, центре, юге (<b>Актюбинская, Улытауская, Жамбылская, Туркестанская, Кызылординская 
+                области</b>, а также большая часть <b>Атырауской, Костанайской, Акмолинской, Северо-Казахстанской, Алматинской</b> и 
+                восточной части Карагандинской областей) преобладают ниже норм или умеренные уровни влаги – с минимальными 
+                значениям <span class="highlight-blue"><25 мм</span>.
+            </div>
+            """, unsafe_allow_html=True)
+        
 
     st.markdown("---") # Разделитель
 
