@@ -4749,7 +4749,7 @@ with tabs[4]:
                     data = base64.b64encode(f.read()).decode("utf-8")
                 st.markdown(
                     f"""
-                    <div style="width: 100%; margin-top: 10px;">
+                    <div style="width: 7%; margin-top: 10px;">
                         <img src="data:image/jpeg;base64,{data}" style="width: 70%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                         <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 5px;">{caption_text}</p>
                     </div>
@@ -4799,7 +4799,7 @@ with tabs[4]:
                         f"""
                         <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                             <img src="data:image/png;base64,{data}" 
-                                 style="width: 100%; 
+                                 style="width: 70%; 
                                         max-width: none; 
                                         margin-left: 0%; 
                                         border-radius: 8px; 
@@ -4829,7 +4829,99 @@ with tabs[4]:
     render_hydrology_models_section()
 
 
-   
+    import streamlit as st
+    import pandas as pd
+    import os
+    import base64
+
+    def render_selevidenie_section():
+        st.markdown('<div class="predictor-header">🏔️ Мониторинг селевой опасности</div>', unsafe_allow_html=True)
+
+        # 1. Аналитический блок (Краткая информация)
+        st.markdown(f"""
+        <div style="background-color: #fff4e6; border-left: 5px solid #e67e22; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <strong>География риска:</strong> Селеопасные районы занимают около <b>13%</b> территории Казахстана (горы и предгория). 
+            Мониторинг дождевого генезиса ведется по <b>11 основным районам</b>.
+        </div>
+        """, unsafe_allow_html=True)
+
+        # 2. Визуализация: Карта селевой опасности (Увеличенная)
+        col_map_sele, col_info_sele = st.columns([2, 1])
+
+        with col_map_sele:
+            img_name = "sele_map.jpg" # Укажите ваше имя файла Рис. 1
+            img_path = os.path.join(BASE_DIR, img_name)
+            
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                st.markdown(
+                    f"""
+                    <div style="width: 100%;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 110%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px;">Рис. 1. Карта селевой опасности территории РК</p>
+                    </div>
+                    """, unsafe_allow_html=True
+                )
+            else:
+                st.info("🖼️ [Место для карты селевой опасности]")
+
+        with col_info_sele:
+            st.markdown("### 📋 Выпускаемая продукция")
+            st.markdown("""
+            * 📅 **Ежегодный бюллетень** (дождевой генезис)
+            * 🕒 **Ежедневный бюллетень**
+            * ⚡ **Прогнозы:** краткосрочные и сверхкраткосрочные
+            * ⚠️ **Штормовые предупреждения**
+            """)
+            st.success("**Потребители:** Госорганы управления и население РК.")
+
+        st.divider()
+
+        # 3. Данные за 2023 год (Таблица 1)
+        st.subheader("📊 Статистика прогнозов «сильный дождь» (2023 г.)")
+        
+        # Создаем DataFrame для отображения
+        data_2023 = {
+            "Область": ["Алматинская", "Алматинская", "Алматинская", "Жетысу", "Жамбылская", "Восточно-Казахстанская"],
+            "Селеопасный район": ["Иле Алатау", "Кунгей Алатау", "Терискей Алатау", "Жетысу Алатау", "Киргизский/Таласский Алатау", "Казахстанский Алтай"],
+            "Всего прогнозов": [23, 22, 20, 20, 14, 14]
+        }
+        df = pd.DataFrame(data_2023)
+        
+        # Отображаем таблицу в Streamlit
+        st.table(df)
+
+        # 4. Факторы формирования и критерии
+        col_fact1, col_fact2 = st.columns(2)
+        
+        with col_fact1:
+            st.warning("⚠️ **Генезис селей в РК:**")
+            st.markdown("""
+            1. Интенсивные дожди 🌧️
+            2. Прорыв моренных озер 🌊
+            3. Землетрясения и оползни 🌋
+            4. Антропогенный фактор 🚜
+            """)
+            
+        with col_fact2:
+            st.info("⚖️ **Критерии осадков:**")
+            st.markdown("""
+            * **Сильные:** 15−29 мм
+            * **Очень сильные:** ≥30 мм
+            *(согласно Наставлению 2005 г.)*
+            """)
+
+        # Итоговый вывод
+        st.markdown("""
+        <div style="text-align: center; color: #555; font-style: italic; margin-top: 20px;">
+            Наибольшая активность в 2023 году зафиксирована в августе, преимущественно в Иле Алатау.
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Вызов функции
+    render_selevidenie_section()
+      
 
   # ВОДНЫЕ РЕСУРСЫ
 with tabs[5]:
