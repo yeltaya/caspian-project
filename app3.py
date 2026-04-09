@@ -3922,8 +3922,8 @@ with tabs[2]:
                 # Отображаем GIF через HTML/CSS, делая его шире колонки
                 st.markdown(
                     f"""
-                    <div style="width: 100%; display: flex; justify-content: center;">
-                        <img src="data:image/gif;base64,{data}" style="width: 80%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div style="width: 80%; display: flex; justify-content: center;">
+                        <img src="data:image/gif;base64,{data}" style="width: 60%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     </div>
                     """,
                     unsafe_allow_html=True
@@ -4214,11 +4214,49 @@ with tabs[3]:
     # --- 1. ЗАГОЛОВОК И КАРТЫ ---
     st.markdown('<div class="main-title">Агрометеорологические прогнозы перед началом весенне-полевых работ 2026 года</div>', unsafe_allow_html=True)
 
+    import base64
+    import os
+
     col_map1, col_map2 = st.columns(2)
+
+    # Функция для отрисовки "большого" изображения через HTML
+    def get_base64_img(img_name):
+        img_path = os.path.join(BASE_DIR, img_name)
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
+                return base64.b64encode(f.read()).decode("utf-8")
+        return None
+
     with col_map1:
-        st.image("Рисунок1.jpg", caption="Оптимальные сроки сева зерновых культур", use_container_width=True)
+        data1 = get_base64_img("Рисунок1.jpg")
+        if data1:
+            st.markdown(
+                f"""
+                <div style="width: 80%; margin-bottom: 20px;">
+                    <img src="data:image/jpeg;base64,{data1}" style="width: 60%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Оптимальные сроки сева зерновых культур</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.error("Рисунок1.jpg не найден")
+
     with col_map2:
-        st.image("Рисунок2.jpg", caption="Прогноз запасов продуктивной влаги", use_container_width=True)
+        data2 = get_base64_img("Рисунок2.jpg")
+        if data2:
+            st.markdown(
+                f"""
+                <div style="width: 80%; margin-bottom: 20px;">
+                    <img src="data:image/jpeg;base64,{data2}" style="width: 60%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Прогноз запасов продуктивной влаги</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.error("Рисунок2.jpg не найден")
+            
 
     # --- 2. МЕТОДОЛОГИЯ ---
     st.markdown('<div class="section-header-new">📑 Методология и содержание прогнозов</div>', unsafe_allow_html=True)
