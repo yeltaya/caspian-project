@@ -4750,7 +4750,7 @@ with tabs[4]:
                 st.markdown(
                     f"""
                     <div style="width: 100%; margin-top: 10px;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 115%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 70%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                         <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 5px;">{caption_text}</p>
                     </div>
                     """, unsafe_allow_html=True
@@ -4799,12 +4799,12 @@ with tabs[4]:
                         f"""
                         <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                             <img src="data:image/png;base64,{data}" 
-                                 style="width: 80%; 
+                                 style="width: 100%; 
                                         max-width: none; 
                                         margin-left: 0%; 
                                         border-radius: 8px; 
                                         box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                            <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px; width: 135%; margin-left: -17.5%;">
+                            <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px; width: 70%; margin-left: -17.5%;">
                                 Входные ГИС-данные (почвы FAO, Land 30, гидротопы)
                             </p>
                         </div>
