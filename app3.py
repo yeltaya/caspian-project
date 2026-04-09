@@ -2634,10 +2634,10 @@ with tabs[1]:
                         caption="Схема агрометеорологических наблюдений с/х культур", 
                         use_container_width=True
                     )
-                else:
-                    st.error(f"⚠️ Файл '{img_filename}' не найден в репозитории.")
+            else:
+                st.error(f"⚠️ Файл '{img_filename}' не найден в репозитории.")
                     # Подсказка для отладки
-                    st.info(f"Искал по пути: {img_path}")
+                st.info(f"Искал по пути: {img_path}")
                 
         with col_text:
             st.markdown("""
