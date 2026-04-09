@@ -2651,18 +2651,23 @@ with tabs[1]:
         img_path = os.path.join(BASE_DIR, img_filename)
         
         # Создаем две колонки: для карты и для пояснительного текста
-        col_map, col_text = st.columns([5, 1])
+        col_map, col_text = st.columns([2, 1])
         
         with col_map:
-            # Проверка наличия файла
             if os.path.exists(img_path):
-                st.image(
-                    img_path, 
-                    caption="Схема агрометеорологических наблюдений с/х культур", 
-                    use_container_width=True  # Теперь изображение растянется на всю ширину колонки
+                # Вместо st.image используем HTML для полного контроля
+                import base64
+                with open(img_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                
+                st.markdown(
+                    f"""
+                    <div style="width: 100%; display: flex; justify-content: center;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 120%; min-width: 800px; border-radius: 10px;">
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
-            else:
-                st.error(f"⚠️ Файл '{img_filename}' не найден.")
                 
                     
                 
