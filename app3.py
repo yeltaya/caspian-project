@@ -10163,8 +10163,7 @@ with tabs[7]:
  
     import streamlit as st
     import pandas as pd
-    import matplotlib.pyplot as plt
-    import numpy as np
+    import plotly.graph_objects as go
 
     # Настройка страницы
     st.set_page_config(page_title="Мониторинг снега в РК", layout="wide")
@@ -10175,81 +10174,114 @@ with tabs[7]:
     @st.cache_data
     def load_data():
         # Загрузка с учетом разделителя ';'
-        df = pd.read_csv('Максимальная высота снега.csv', sep=';')
-        df.columns = [c.strip() for c in df.columns]
-        return df
+        try:
+            df = pd.read_csv('Максимальная высота снега.csv', sep=';')
+            df.columns = [c.strip() for c in df.columns]
+            df['Год'] = df['Год'].astype(int)
+            return df
+        except Exception as e:
+            st.error(f"Ошибка при чтении файла: {e}")
+            return None
 
-    try:
-        df = load_data()
-        df['Год'] = df['Год'].astype(int)
-        years = df['Год']
+    df = load_data()
 
-        # --- САЙДБАР ---
-        st.sidebar.header("Параметры")
+    if df is not None:
+        # --- ПОДГОТОВКА СПИСКА ОБЛАСТЕЙ ---
         excluded = ['Год', 'высота макс', 'сред высота снега']
         region_options = [col for col in df.columns if col not in excluded]
-        
-        selected_region = st.sidebar.selectbox("Выберите область:", region_options)
+
+        # --- САЙДБАР ---
+        st.sidebar.header("Настройки отображения")
         show_total_max = st.sidebar.toggle("Показать максимум по РК", value=True)
+        show_avg = st.sidebar.toggle("Показать среднее по РК", value=True)
 
         # --- ОСНОВНОЙ МАКЕТ (2 Колонки) ---
         col_chart, col_analysis = st.columns([2, 1])
 
         with col_chart:
-            st.subheader(f"График динамики: {selected_region}")
-            
-            fig, ax = plt.subplots(figsize=(10, 6))
-            
-            # Область средней высоты (фоновая)
-            ax.fill_between(years, df['сред высота снега'], color='lightgray', alpha=0.3, label='Среднее по РК')
-            
-            # Динамика выбранной области
-            ax.plot(years, df[selected_region], color='#1f77b4', marker='o', linewidth=2, markersize=4, label=f'Высота в обл. {selected_region}')
-            
-            if show_total_max:
-                ax.plot(years, df['высота макс'], color='red', linestyle=':', alpha=0.5, label='Абс. максимум РК')
+            # Выбор областей прямо над графиком для удобства
+            selected_regions = st.multiselect(
+                "Выберите области для сравнения:", 
+                options=region_options, 
+                default=[region_options[0]] if region_options else None
+            )
 
-            # Сетка и оформление
-            ax.set_xlabel("Год")
-            ax.set_ylabel("Высота снега (см)")
-            ax.legend(loc='upper left')
-            ax.grid(True, linestyle='--', alpha=0.5)
-            
-            st.pyplot(fig)
+            # Создание динамического графика Plotly
+            fig = go.Figure()
+
+            # 1. Линия среднего (если включено)
+            if show_avg:
+                fig.add_trace(go.Scatter(
+                    x=df['Год'], y=df['сред высота снега'],
+                    name='Среднее по РК',
+                    line=dict(color='rgba(150, 150, 150, 0.5)', dash='dash'),
+                    fill='tozeroy', fillcolor='rgba(200, 200, 200, 0.2)'
+                ))
+
+            # 2. Линии выбранных областей
+            for region in selected_regions:
+                fig.add_trace(go.Scatter(
+                    x=df['Год'], y=df[region],
+                    mode='lines+markers',
+                    name=region,
+                    hovertemplate='Год: %{x}<br>Высота: %{y} см'
+                ))
+
+            # 3. Линия максимума (если включено)
+            if show_total_max:
+                fig.add_trace(go.Scatter(
+                    x=df['Год'], y=df['высота макс'],
+                    name='Абс. максимум РК',
+                    line=dict(color='red', width=1, dash='dot')
+                ))
+
+            fig.update_layout(
+                hovermode="x unified",
+                margin=dict(l=0, r=0, t=30, b=0),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                xaxis_title="Год",
+                yaxis_title="Высота снега (см)",
+                height=500
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
 
         with col_analysis:
-            st.subheader("📊 Аналитика данных")
+            st.subheader("📊 Аналитика")
             
-            # Расчет локальных показателей для области
-            local_max = df[selected_region].max()
-            local_max_year = df.loc[df[selected_region] == local_max, 'Год'].values[0]
-            current_val = df[selected_region].iloc[-1]
-            
-            # Вывод аналитики в карточках и тексте
-            st.metric(f"Текущая высота ({years.max()} г.)", f"{current_val} см")
-            st.metric(f"Пик области ({local_max_year} г.)", f"{local_max} см")
-            
-            st.markdown(f"""
-            **Ключевые выводы по региону:**
-            
-            * **Динамика:** В области **{selected_region}** наблюдаются значительные колебания. Самый снежный период зафиксирован в **{local_max_year}** году.
-            * **Общий тренд:** Согласно общереспубликанским данным, максимальная высота снега в Казахстане растет на **0.62 см** ежегодно. За период 1971-2025 гг. суммарный прирост составил **34 см**.
-            * **Экстремумы:** Абсолютный рекорд РК (**188 см**) был отмечен в 2005 году на станции Шуылдак.
-            * **Прогноз:** Увеличение максимальной высоты снега ведет к росту влагозапасов, что повышает риски весенних паводков в регионе.
-            """)
-            
-            if current_val > df['сред высота снега'].iloc[-1]:
-                st.warning(f"В {selected_region} высота снега выше среднего показателя по стране.")
+            if selected_regions:
+                # Берем первую из выбранных областей для детальной аналитики
+                main_region = selected_regions[0]
+                
+                local_max = df[main_region].max()
+                local_max_year = df.loc[df[main_region] == local_max, 'Год'].values[0]
+                current_val = df[main_region].iloc[-1]
+                
+                st.info(f"Анализ по области: **{main_region}**")
+                
+                m1, m2 = st.columns(2)
+                m1.metric(f"Тек. высота ({df['Год'].max()})", f"{current_val} см")
+                m2.metric(f"Пик ({local_max_year})", f"{local_max} см")
+                
+                st.markdown(f"""
+                **Ключевые выводы:**
+                * В **{main_region}** самый снежный период зафиксирован в **{local_max_year}** году.
+                * **Общий тренд:** По РК высота снега растет на **0.62 см** в год.
+                * **Прогноз:** Увеличение высоты ведет к росту влагозапасов и рискам паводков.
+                """)
+                
+                if current_val > df['сред высота снега'].iloc[-1]:
+                    st.warning("Выше среднего по стране")
+                else:
+                    st.success("Ниже среднего по стране")
             else:
-                st.success(f"В {selected_region} высота снега ниже или на уровне среднего по стране.")
+                st.write("Выберите область слева, чтобы увидеть аналитику.")
 
-        # Нижняя панель с данными
+        # Нижняя панель
         st.divider()
         with st.expander("Посмотреть исходную таблицу данных"):
             st.dataframe(df, use_container_width=True)
-
-    except Exception as e:
-        st.error(f"Ошибка загрузки данных: {e}")
+        
     
 
 with tabs[8]:
