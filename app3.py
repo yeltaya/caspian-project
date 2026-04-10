@@ -8436,7 +8436,7 @@ with tabs[7]:
         pik_url = "http://10.0.2.121:8080/forecast"
         
         # Отображение карты через iframe
-        st.components.v1.iframe(pik_url, height=600, scrolling=True)
+        st.components.v1.iframe(pik_url, height=800, scrolling=True)
         
         st.caption("Данные предоставлены Потсдамским институтом изучения климатических изменений (PIK).")
 
@@ -9521,13 +9521,14 @@ with tabs[7]:
 
     # Используем пропорцию [2, 1], чтобы текст справа имел достаточно места
     col_left, col_right = st.columns([2, 1])
-
     with col_left:
         try:
-            # Основная карта Казахстана
+            # Это максимум, что можно сделать внутри текущей колонки
             st.image("Natural Zones.jpeg", use_container_width=True)
+            st.caption("💡 Кликните дважды по карте, чтобы раскрыть её на весь экран.")
         except Exception as e:
             st.error(f"Ошибка карты: {e}")
+            
 
     with col_right:
         try:
