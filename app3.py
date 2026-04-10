@@ -10016,14 +10016,14 @@ with tabs[7]:
         st.divider()
 
         # Пропорции колонок: 3 к 2
-        col_map, col_charts = st.columns([3, 2])
+        col_map, col_charts = st.columns([1, 1])
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
             
             if os.path.exists(image_path):
                 # Расчет ширины на основе процентов
-                base_width = 800 
+                base_width = 1000 
                 final_width = int(base_width * (map_percent / 100))
                 
                 st.image(
