@@ -580,23 +580,23 @@ with tabs[0]: # ОБЗОР
     # Выбираем данные в зависимости от языка
     current_forecasts = forecast_translations.get(lang, forecast_translations["Русский"])
 
-# Создаем 5 колонок
-    cols = st.columns(5)
-    
-    # Цикл for должен быть на том же уровне, что и создание колонок
-    for i, col in enumerate(cols):
-        with col:
-            item = current_forecasts[i]
-            st.markdown(f"""
-                <div class="forecast-card">
-                    <div class="icon">{item['icon']}</div>
-                    <div class="title">{item['title']}</div>
-                    <div class="description">{item['desc']}</div>
-                </div>
-            """, unsafe_allow_html=True)
+    # Создаем 5 колонок
+        cols = st.columns(5)
+        
+        # Цикл for должен быть на том же уровне, что и создание колонок
+        for i, col in enumerate(cols):
+            with col:
+                item = current_forecasts[i]
+                st.markdown(f"""
+                    <div class="forecast-card">
+                        <div class="icon">{item['icon']}</div>
+                        <div class="title">{item['title']}</div>
+                        <div class="description">{item['desc']}</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-# Этот вызов должен быть в самом конце файла без отступов (или на уровне основного кода)
-show_economic_info(lang)
+    # Этот вызов должен быть в самом конце файла без отступов (или на уровне основного кода)
+    show_economic_info(lang)
 
 
         
