@@ -10014,6 +10014,25 @@ with tabs[7]:
 
         st.title("💨 Мониторинг ветровой активности Казахстана")
         st.divider()
+        
+          # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
+        st.subheader("Интересные факты")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric(label="Экстремальный рекорд", value="60 м/с", delta="Жаланашколь")
+            st.caption("Зафиксировано в 1979, 1982, 1983 гг.")
+            
+        with col2:
+            st.metric(label="Общая тенденция", value="-3.3 м/с", delta_color="normal")
+            st.caption("Снижение макс. скорости за 45 лет")
+            
+        with col3:
+            st.metric(label="Пиковая аномалия", value="+0.5 м/с", delta="в 1980-х")
+            st.caption("Отклонение от нормы")
+
+        st.divider()
+        
 
         # Пропорции колонок: 3 к 2
         col_map, col_charts = st.columns([1, 1])
@@ -10120,23 +10139,7 @@ with tabs[7]:
     
     
 
-          # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
-        st.subheader("Интересные факты")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric(label="Экстремальный рекорд", value="60 м/с", delta="Жаланашколь")
-            st.caption("Зафиксировано в 1979, 1982, 1983 гг.")
-            
-        with col2:
-            st.metric(label="Общая тенденция", value="-3.3 м/с", delta_color="normal")
-            st.caption("Снижение макс. скорости за 45 лет")
-            
-        with col3:
-            st.metric(label="Пиковая аномалия", value="+0.5 м/с", delta="в 1980-х")
-            st.caption("Отклонение от нормы")
 
-        st.divider()
 
         # --- СЕКЦИЯ 2: ПРИЧИНЫ И ОРОГРАФИЯ ---
         st.subheader("Причины экстремальных ветров")
@@ -10156,27 +10159,73 @@ with tabs[7]:
 
         st.divider()
 
-        # --- СЕКЦИЯ 3: АНАЛИЗ АНОМАЛИЙ ПО ДЕСЯТИЛЕТИЯМ ---
-        st.subheader("📊 Хронология изменения скорости ветра")
-        
-        # Создаем небольшую таблицу для наглядности трендов
-        anomaly_data = {
-            "Период": ["1970-е – 1980-е", "Конец 1990-х – 2000-е", "2010-е – н.в."],
-            "Тип аномалии": ["Положительная (📈)", "Отрицательная (📉)", "Положительная (📈)"],
-            "Значение": ["+0.5 м/с", "-0.2 м/с (минимум)", "Тенденция к росту"],
-            "Статус": ["Усиление", "Ослабление", "Новое усиление"]
-        }
-        df_anomaly = pd.DataFrame(anomaly_data)
-        
-        st.table(df_anomaly)
-        
-        st.warning("""
-            **Резюме:** Несмотря на общее историческое снижение максимальных скоростей на 3,3 м/с, 
-            статистика последних лет (с 2010-х) указывает на возвращение к положительным аномалиям.
-        """)
 
  
- 
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    # --- ОПИСАТЕЛЬНАЯ ЧАСТЬ (МЕТАДАННЫЕ) ---
+    ANALYSIS_TEXT = """
+    АНАЛИЗ СНЕЖНОГО ПОКРОВА КАЗАХСТАНА (1971-2025)
+    ---------------------------------------------
+    1. Экстремумы: Пик зафиксирован в 2005 г. на ст. Шуылдак (188 см).
+    2. Динамика: Максимальная высота растет в 6 раз быстрее средней (+0.62 см/год против +0.10 см/год).
+    3. Риски: Увеличение влагозапаса при росте высоты снега повышает вероятность паводков.
+    """
+
+    # 1. Загрузка и очистка
+    try:
+        df = pd.read_csv('Максимальная высота снега.xlsx - Лист1.csv')
+        df.columns = [c.strip() for c in df.columns]
+        
+        years = df.iloc[:, 0] # Берем первый столбец как годы
+        max_snow = df['высота макс']
+        avg_snow = df['сред высота снега']
+
+        # 2. Математический анализ тренда
+        z = np.polyfit(years, max_snow, 1)
+        trend_line = np.poly1d(z)
+
+        # 3. Визуализация
+        plt.figure(figsize=(14, 7))
+        
+        # Сетка и фон
+        plt.grid(True, linestyle='--', alpha=0.5)
+        
+        # Данные
+        plt.fill_between(years, avg_snow, color="seagreen", alpha=0.2, label="Область средней высоты")
+        plt.plot(years, max_snow, color='royalblue', linewidth=2, label='Максимальная высота (факт)', marker='o', markersize=3)
+        plt.plot(years, trend_line(years), "r--", linewidth=2, label=f'Линия тренда (+{z[0]:.2f} см/год)')
+
+        # Оформление
+        plt.title('Изменение параметров снежного покрова в РК', fontsize=16, fontweight='bold')
+        plt.xlabel('Годы наблюдений', fontsize=12)
+        plt.ylabel('Высота снега (см)', fontsize=12)
+        
+        # Аннотация для Шуылдака
+        plt.annotate('Экстремум: 188 см\n(Шуылдак, 2005)', 
+                     xy=(2005, 188), xytext=(1980, 170),
+                     arrowprops=dict(arrowstyle='->', lw=1.5),
+                     fontsize=10, bbox=dict(boxstyle="round,pad=0.3", fc="yellow", alpha=0.3))
+
+        plt.legend(loc='upper left')
+        
+        # Добавляем краткое описание прямо на график в углу
+        plt.text(1972, 10, ANALYSIS_TEXT, fontsize=9, family='monospace', 
+                 bbox=dict(facecolor='white', alpha=0.8))
+
+        plt.tight_layout()
+        plt.savefig('snow_analysis_kazakhstan.png', dpi=300)
+        plt.show()
+
+        # 4. Итоговый вывод в консоль
+        print(ANALYSIS_TEXT)
+        print(f"Итого за период: суммарный прирост макс. высоты составил ~{z[0]*len(years):.1f} см.")
+
+    except FileNotFoundError:
+        print("Ошибка: Файл с данными не найден. Проверьте путь к CSV.")
+    
     
 
 
