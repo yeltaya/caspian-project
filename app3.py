@@ -10001,20 +10001,27 @@ with tabs[7]:
     import streamlit as st
     import pandas as pd
     import plotly.express as px
+    import os
 
     def render_wind_dashboard():
-        st.set_page_config(layout="wide")  # Расширяем интерфейс на весь экран
+        # Важно: set_page_config должен быть самым первым вызовом Streamlit в скрипте
+        # Если вы вызываете эту функцию внутри другого кода, уберите эту строку отсюда
+        # st.set_page_config(layout="wide") 
         
         st.title("💨 Интерактивный мониторинг ветровой активности")
         st.divider()
 
-        # Создаем две колонки: левая для карты (40%), правая для графиков (60%)
+        # Проверяем наличие изображения перед отрисовкой
+        image_path = "wind_RES5.jpg"
+        
         col_map, col_charts = st.columns([2, 3])
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
-            # Отображение вашего изображения (убедитесь, что путь к файлу верный)
-            st.image("wind_RES5.jpg", caption="Карта максимальной скорости ветра", use_container_width=True)
+            if os.path.exists(image_path):
+                st.image(image_path, caption="Карта максимальной скорости ветра", use_container_width=True)
+            else:
+                st.error(f"Файл изображения {image_path} не найден в директории.")
             
             st.info("""
             **Справка:** Наиболее активная зона — Жетісуские ворота (Жаланашколь). 
@@ -10024,7 +10031,7 @@ with tabs[7]:
         with col_charts:
             st.subheader("📈 Динамика по областям")
             
-            # Список доступных областей (соответствует именам ваших файлов)
+            # Словарь регионов (проверьте, что файлы лежат рядом со скриптом)
             regions = {
                 "Абайская": "графики.xlsx - Абайская.csv",
                 "Акмолинская": "графики.xlsx - Акмолинская.csv",
@@ -10037,48 +10044,70 @@ with tabs[7]:
             }
             
             selected_region = st.selectbox("Выберите область для анализа:", list(regions.keys()))
+            file_path = regions[selected_region]
             
-            try:
-                # Загрузка данных выбранной области
-                file_path = regions[selected_region]
-                df = pd.read_csv(file_path)
-                
-                # Предполагаем, что первая колонка — это год, а последняя — "абсолютный максимум"
-                df.columns.values[0] = "Год"
-                
-                # Очистка данных (убираем #Н/Д и приводим к числам)
-                df_plot = df.replace('#Н/Д', None).dropna(subset=['абсолютный максимум, м/с'])
-                df_plot['абсолютный максимум, м/с'] = pd.to_numeric(df_plot['абсолютный максимум, м/с'])
+            if os.path.exists(file_path):
+                try:
+                    # Читаем CSV
+                    df = pd.read_csv(file_path)
+                    
+                    # Переименовываем первую колонку в Год (она часто без названия в CSV)
+                    df.rename(columns={df.columns[0]: "Год"}, inplace=True)
+                    
+                    # Имя целевой колонки
+                    target_col = "абсолютный максимум, м/с"
+                    
+                    if target_col in df.columns:
+                        # Очистка данных: убираем текстовые ошибки и пустые строки
+                        df[target_col] = pd.to_numeric(df[target_col].replace('#Н/Д', None), errors='coerce')
+                        df_plot = df.dropna(subset=[target_col, "Год"])
 
-                # Построение графика
-                fig = px.line(
-                    df_plot, 
-                    x="Год", 
-                    y="абсолютный максимум, м/с",
-                    title=f"Максимальная скорость ветра: {selected_region}",
-                    markers=True,
-                    line_shape="spline"
-                )
-                
-                fig.update_layout(
-                    hovermode="x unified",
-                    yaxis_title="Скорость (м/с)",
-                    xaxis_title="Год"
-                )
-                
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Дополнительная метрика под графиком
-                max_val = df_plot['абсолютный максимум, м/с'].max()
-                year_max = df_plot.loc[df_plot['абсолютный максимум, м/с'].idxmax(), 'Год']
-                st.write(f"📌 Пиковое значение для региона: **{max_val} м/с** (фиксировалось в {year_max} г.)")
+                        # Построение графика
+                        fig = px.line(
+                            df_plot, 
+                            x="Год", 
+                            y=target_col,
+                            title=f"Максимальная скорость ветра: {selected_region}",
+                            markers=True,
+                            line_shape="linear" # или "spline" для сглаживания
+                        )
+                        
+                        fig.update_layout(
+                            hovermode="x unified",
+                            yaxis_title="Скорость (м/с)",
+                            xaxis_title="Год"
+                        )
+                        
+                        st.plotly_chart(fig, use_container_width=True)
+                        
+                        # Метрики
+                        max_val = df_plot[target_col].max()
+                        year_max = df_plot.loc[df_plot[target_col].idxmax(), 'Год']
+                        st.success(f"📌 Пиковое значение: **{max_val} м/с** (год: {year_max})")
+                    else:
+                        st.warning(f"Колонка '{target_col}' не найдена в файле.")
+                except Exception as e:
+                    st.error(f"Ошибка при обработке данных: {e}")
+            else:
+                st.error(f"Файл данных {file_path} не найден.")
 
-            except Exception as e:
-                st.error(f"Не удалось загрузить данные для этой области. Проверьте наличие файла. Ошибка: {e}")
-                
-     # Нижний блок с фактами (из вашего текста)
-        st.divider()           
-        
+        # Нижний блок фактов (вне колонок)
+        st.divider()
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.write("**Эффект Жаланашколя**")
+            st.caption("Расположение в узком проходе Жетісуских ворот создает аэродинамическое усиление.")
+        with c2:
+            st.write("**Ветры Ибэ и Сайкан**")
+            st.caption("Основные ветровые потоки (ЮВ и СЗ), определяющие экстремальность региона.")
+        with c3:
+            st.write("**Тренды**")
+            st.caption("Снижение макс. скорости на 3.3 м/с за период 1979-2024 гг.")
+
+    # Запуск
+    if __name__ == "__main__":
+        render_wind_dashboard()
+    
 
     
  
