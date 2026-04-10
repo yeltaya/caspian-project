@@ -9520,12 +9520,11 @@ with tabs[7]:
     zones = reg.get("zones", []) 
 
     # Используем пропорцию [2, 1], чтобы текст справа имел достаточно места
-    col_left, col_right = st.columns([2, 1])
+    col_left, col_right = st.columns([3, 1])
     with col_left:
         try:
             # Это максимум, что можно сделать внутри текущей колонки
             st.image("Natural Zones.jpeg", use_container_width=True)
-            st.caption("💡 Кликните дважды по карте, чтобы раскрыть её на весь экран.")
         except Exception as e:
             st.error(f"Ошибка карты: {e}")
             
