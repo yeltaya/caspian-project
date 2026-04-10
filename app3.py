@@ -10113,16 +10113,17 @@ with tabs[8]:
             st.info("💡 На карте справа можно просмотреть визуализацию данных в режиме реального времени.")
 
         with col_b:
-            # Формируем HTML для изображения nmu.png
-            img_html = (
-                f'<img src="data:image/png;base64,{img_data}" style="width:100%; border-radius:8px; border: 1px solid #ddd; margin-bottom: 15px;">'
-                if img_data else "Изображение nmu.png не найдено"
-            )
+            # 1. Отображаем изображение nmu.png (без ссылки)
+            if img_data:
+                st.markdown(
+                    f'<img src="data:image/png;base64,{img_data}" style="width:100%; border-radius:8px; border: 1px solid #ddd; margin-bottom: 15px;">', 
+                    unsafe_allow_html=True
+                )
+            else:
+                st.info("Изображение nmu.png не найдено")
             
-           
-            # Интерактивный рисунок (iframe) ниже под картинкой
+            # 2. Интерактивный рисунок (iframe) ниже
             st.components.v1.iframe("https://ecodata.kz:3838/app_dem_visual/", height=500, scrolling=True)
-            
             
                               
     with tab2:
