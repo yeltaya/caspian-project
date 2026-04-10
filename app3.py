@@ -10016,11 +10016,21 @@ with tabs[7]:
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
+            
             if os.path.exists(image_path):
-                # Увеличенная карта (850 пикселей)
-                st.image(image_path, caption="Максимальные порывы ветра по регионам", width=850)
+                # 2. Вычисляем итоговую ширину в пикселях на основе ваших процентов
+                # База 800px * (120 / 100) = 960px
+                base_width = 800 
+                final_width = int(base_width * (map_percent / 100))
+                
+                st.image(
+                    image_path, 
+                    caption=f"Масштаб карты: {map_percent}%", 
+                    width=final_width
+                )
             else:
-                st.warning(f"Файл {image_path} не найден в папке.")
+                st.error(f"Файл {image_path} не найден.")
+                
             
             st.info("**Справка:** Жетісуские ворота — самая ветреная точка, где скорость достигает 60 м/с.")
 
