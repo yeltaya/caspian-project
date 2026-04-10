@@ -4,20 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
-# 1. Размещаем переключатель в верхней части страницы
-col1, col2 = st.columns([4, 1]) # Соотношение 4 к 1, чтобы сдвинуть выбор вправо
-
-with col2:
-    lang = st.selectbox(
-        "Язык / Тіл", 
-        ["Русский", "Қазақша", "English"],
-        label_visibility="collapsed" # Скрываем надпись, чтобы было компактнее
-    )
-
-# Разделительная линия для красоты
-st.divider()
-
-
 
 # --- 1. КОНФИГУРАЦИЯ ЦВЕТОВ ---
 DARK_BLUE = "#001F3F"
@@ -10204,11 +10190,6 @@ with tabs[7]:
         # --- ПОДГОТОВКА СПИСКА ОБЛАСТЕЙ ---
         excluded = ['Год', 'высота макс', 'сред высота снега']
         region_options = [col for col in df.columns if col not in excluded]
-
-        # --- САЙДБАР ---
-        st.sidebar.header("Настройки отображения")
-        show_total_max = st.sidebar.toggle("Показать максимум по РК", value=True)
-        show_avg = st.sidebar.toggle("Показать среднее по РК", value=True)
 
         # --- ОСНОВНОЙ МАКЕТ (2 Колонки) ---
         col_chart, col_analysis = st.columns([2, 1])
