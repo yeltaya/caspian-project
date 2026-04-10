@@ -10004,22 +10004,25 @@ with tabs[7]:
     import os
 
     def render_wind_dashboard():
-        # Имя файла из вашей папки
+        # --- НАСТРОЙКИ ---
         data_file = "Max_wind.csv"
         image_path = "wind_RES5.jpg"
+        
+        # ОБЯЗАТЕЛЬНО ОБЪЯВЛЯЕМ ПРОЦЕНТ (иначе будет ошибка NameError)
+        map_percent = 125  # Меняйте это число для управления размером карты
+        # -----------------
 
         st.title("💨 Мониторинг ветровой активности Казахстана")
         st.divider()
 
-        # Пропорции колонок: 60% карта, 40% графики
+        # Пропорции колонок: 3 к 2
         col_map, col_charts = st.columns([3, 2])
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
             
             if os.path.exists(image_path):
-                # 2. Вычисляем итоговую ширину в пикселях на основе ваших процентов
-                # База 800px * (120 / 100) = 960px
+                # Расчет ширины на основе процентов
                 base_width = 800 
                 final_width = int(base_width * (map_percent / 100))
                 
@@ -10031,7 +10034,6 @@ with tabs[7]:
             else:
                 st.error(f"Файл {image_path} не найден.")
                 
-            
             st.info("**Справка:** Жетісуские ворота — самая ветреная точка, где скорость достигает 60 м/с.")
 
         with col_charts:
@@ -10039,28 +10041,26 @@ with tabs[7]:
             
             if os.path.exists(data_file):
                 try:
-                    # ВАЖНО: sep=';' так как в вашем CSV точки с запятой
-                    # encoding='utf-8' или 'utf-8-sig' для корректного отображения кириллицы
+                    # Читаем CSV с учетом вашего разделителя и кириллицы
                     df = pd.read_csv(data_file, sep=';', encoding='utf-8-sig')
                     
-                    # Убираем колонку 'Год' из списка выбора, оставляем только области
+                    # Фильтруем колонки, чтобы оставить только регионы
                     regions = [col for col in df.columns if col != 'Год']
                     
                     selected_region = st.selectbox("Выберите область для анализа:", regions)
                     
                     if selected_region:
-                        # Очистка: заменяем текстовые ошибки на NaN и преобразуем в числа
+                        # Чистим данные от #Н/Д и конвертируем в числа
                         df[selected_region] = pd.to_numeric(df[selected_region].replace('#Н/Д', None), errors='coerce')
                         df_plot = df.dropna(subset=[selected_region, 'Год'])
 
-                        # Строим график
+                        # Создаем график
                         fig = px.line(
                             df_plot, 
                             x='Год', 
                             y=selected_region,
                             title=f"Абсолютный максимум: {selected_region}",
-                            markers=True,
-                            line_shape="linear"
+                            markers=True
                         )
                         
                         fig.update_layout(
@@ -10071,8 +10071,9 @@ with tabs[7]:
                         
                         st.plotly_chart(fig, use_container_width=True)
                         
-                        # Статистическая сводка
+                        # Статистика
                         max_val = df_plot[selected_region].max()
+                        # Ищем год, соответствующий максимальному значению
                         year_max = df_plot.loc[df_plot[selected_region].idxmax(), 'Год']
                         st.success(f"🚩 Рекорд: **{max_val} м/с** ({year_max} г.)")
 
@@ -10081,6 +10082,12 @@ with tabs[7]:
             else:
                 st.error(f"Файл {data_file} не найден.")
 
+    # Запуск приложения
+    if __name__ == "__main__":
+        # Рекомендуется добавить wide mode для больших карт
+        st.set_page_config(page_title="Wind Monitor", layout="wide")
+        render_wind_dashboard()
+    
     
 
           # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
