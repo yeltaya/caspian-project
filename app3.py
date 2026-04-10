@@ -4762,7 +4762,7 @@ with tabs[4]:
         tab_hbv, tab_swim = st.tabs(["📊 Модель HBV-light", "🌍 Модель SWIM"])
 
         with tab_hbv:
-            col_hbv_text, col_hbv_img = st.columns([1, 2])
+            col_hbv_text, col_hbv_img = st.columns([1, 1])
             
             with col_hbv_text:
                 st.markdown("""
@@ -4778,7 +4778,7 @@ with tabs[4]:
             
             with col_hbv_img:
                 # Здесь укажите имя файла со схемой из презентации
-                display_big_image("hbv_scheme.gif", "Схема оперативного прогноза стока по модели HBV-light")
+                display_big_image("hbv_scheme.png", "Схема оперативного прогноза стока по модели HBV-light")
 
         with tab_swim:
             st.markdown("### SWIM (Soil and water integrated model)")
