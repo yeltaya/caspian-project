@@ -10081,9 +10081,6 @@ with tabs[7]:
             else:
                 st.error(f"Файл {data_file} не найден.")
 
-   # Запуск
-    if __name__ == "__main__":
-        render_wind_dashboard()
     
 
           # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
