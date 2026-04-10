@@ -495,7 +495,7 @@ with tabs[0]: # ОБЗОР
     show_dashboard()
 
     def show_economic_info(lang):
-        # Словарь переводов заголовка
+        # 1. Словарь переводов заголовка
         titles = {
             "Русский": "Обеспечение гидрометеорологической и экологической информацией отраслей экономики",
             "Қазақша": "Экономика салаларын гидрометеорологиялық және экологиялық ақпаратпен қамтамасыз ету",
@@ -504,6 +504,7 @@ with tabs[0]: # ОБЗОР
         
         current_title = titles.get(lang, titles["Русский"])
 
+        # Вывод заголовка
         st.markdown(f"""
             <h2 style='text-align: center; color: #003366; margin-bottom: 40px;'>
                 {current_title}
@@ -511,9 +512,8 @@ with tabs[0]: # ОБЗОР
         """, unsafe_allow_html=True)
         
         st.markdown("---")
-    
         
-        # Добавляем стили (если они еще не добавлены в коде выше)
+        # 2. Стили CSS
         st.markdown("""
             <style>
             .forecast-card {
@@ -523,7 +523,7 @@ with tabs[0]: # ОБЗОР
                 border: 1px solid #e2e8f0;
                 text-align: center;
                 transition: all 0.3s ease;
-                min-height: 220px;
+                min-height: 250px;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-start;
@@ -533,57 +533,41 @@ with tabs[0]: # ОБЗОР
                 box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
                 background: #ffffff;
             }
-            .forecast-card .icon {
-                font-size: 3rem;
-                margin-bottom: 12px;
-            }
-            .forecast-card .title {
-                color: #1e293b;
-                font-weight: 700;
-                font-size: 1.2rem;
-                margin-bottom: 8px;
-                line-height: 1.2;
-            }
-            .forecast-card .description {
-                color: #64748b;
-                font-size: 1.0rem;
-                line-height: 1.4;
-            }
+            .forecast-card .icon { font-size: 3rem; margin-bottom: 12px; }
+            .forecast-card .title { color: #1e293b; font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; line-height: 1.2; }
+            .forecast-card .description { color: #64748b; font-size: 0.95rem; line-height: 1.4; }
             </style>
         """, unsafe_allow_html=True)
-    
-    # --- СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ КАРТОЧЕК ПРОГНОЗОВ ---
-    forecast_translations = {
-        "Русский": [
-            {"icon": "⚡", "title": "Наукастинг<br>(2-6 часов)", "desc": "Сверхкраткосрочный прогноз погоды."},
-            {"icon": "📅", "title": "Краткосрочный прогноз", "desc": "Прогноз погоды от 1 до 7 дней."},
-            {"icon": "🔭", "title": "Долгосрочный прогноз", "desc": "Прогноз погоды от 10 дней до сезонов."},
-            {"icon": "🏔️", "title": "Специализированный прогноз", "desc": "Прогноз неблагоприятных условий, туристических маршрутов, горной местности и пожарной опасности."},
-            {"icon": "⚠️", "title": "Штормовые предупреждения", "desc": "Об опасных явлениях."}
-        ],
-        "Қазақша": [
-            {"icon": "⚡", "title": "Наукастинг<br>(2-6 сағат)", "desc": "Аса қысқа мерзімді ауа райы болжамы."},
-            {"icon": "📅", "title": "Қысқа мерзімді болжам", "desc": "1-ден 7 күнге дейінгі ауа райы болжамы."},
-            {"icon": "🔭", "title": "Ұзақ мерзімді болжам", "desc": "10 күннен маусымдарға дейінгі ауа райы болжамы."},
-            {"icon": "🏔️", "title": "Мамандандырылған болжам", "desc": "Қолайсыз метеорологиялық жағдайлар, туристік маршруттар, таулы аймақтар мен өрт қаупі бойынша болжам."},
-            {"icon": "⚠️", "title": "Дауылды ескертулер", "desc": "Қауіпті құбылыстар туралы."}
-        ],
-        "English": [
-            {"icon": "⚡", "title": "Nowcasting<br>(2-6 hours)", "desc": "Very short-range weather forecast."},
-            {"icon": "📅", "title": "Short-range forecast", "desc": "Weather forecast from 1 to 7 days."},
-            {"icon": "🔭", "title": "Long-range forecast", "desc": "Weather forecast from 10 days up to seasons."},
-            {"icon": "🏔️", "title": "Specialized forecast", "desc": "Forecast of adverse conditions, tourist routes, mountain areas, and fire hazards."},
-            {"icon": "⚠️", "title": "Storm warnings", "desc": "On hazardous phenomena."}
-        ]
-    }
 
-    # Выбираем данные в зависимости от языка
-    current_forecasts = forecast_translations.get(lang, forecast_translations["Русский"])
+        # 3. Данные для карточек
+        forecast_translations = {
+            "Русский": [
+                {"icon": "⚡", "title": "Наукастинг<br>(2-6 часов)", "desc": "Сверхкраткосрочный прогноз погоды."},
+                {"icon": "📅", "title": "Краткосрочный прогноз", "desc": "Прогноз погоды от 1 до 7 дней."},
+                {"icon": "🔭", "title": "Долгосрочный прогноз", "desc": "Прогноз погоды от 10 дней до сезонов."},
+                {"icon": "🏔️", "title": "Специализированный прогноз", "desc": "Прогноз условий для туризма, гор и пожарной опасности."},
+                {"icon": "⚠️", "title": "Штормовые предупреждения", "desc": "Об опасных явлениях."}
+            ],
+            "Қазақша": [
+                {"icon": "⚡", "title": "Наукастинг<br>(2-6 сағат)", "desc": "Аса қысқа мерзімді ауа райы болжамы."},
+                {"icon": "📅", "title": "Қысқа мерзімді болжам", "desc": "1-ден 7 күнге дейінгі ауа райы болжамы."},
+                {"icon": "🔭", "title": "Ұзақ мерзімді болжам", "desc": "10 күннен маусымдарға дейінгі ауа райы болжамы."},
+                {"icon": "🏔️", "title": "Мамандандырылған болжам", "desc": "Туристік маршруттар, таулы аймақтар мен өрт қаупі бойынша болжам."},
+                {"icon": "⚠️", "title": "Дауылды ескертулер", "desc": "Қауіпті құбылыстар туралы."}
+            ],
+            "English": [
+                {"icon": "⚡", "title": "Nowcasting<br>(2-6 hours)", "desc": "Very short-range weather forecast."},
+                {"icon": "📅", "title": "Short-range forecast", "desc": "Weather forecast from 1 to 7 days."},
+                {"icon": "🔭", "title": "Long-range forecast", "desc": "Weather forecast from 10 days up to seasons."},
+                {"icon": "🏔️", "title": "Specialized forecast", "desc": "Forecast for tourist routes, mountain areas, and fire hazards."},
+                {"icon": "⚠️", "title": "Storm warnings", "desc": "On hazardous phenomena."}
+            ]
+        }
 
-    # Создаем 5 колонок
+        current_forecasts = forecast_translations.get(lang, forecast_translations["Русский"])
+
+        # 4. Отрисовка колонок (ВНИМАНИЕ НА ОТСТУПЫ ЗДЕСЬ)
         cols = st.columns(5)
-        
-        # Цикл for должен быть на том же уровне, что и создание колонок
         for i, col in enumerate(cols):
             with col:
                 item = current_forecasts[i]
@@ -595,7 +579,7 @@ with tabs[0]: # ОБЗОР
                     </div>
                 """, unsafe_allow_html=True)
 
-    # Этот вызов должен быть в самом конце файла без отступов (или на уровне основного кода)
+    # 5. Вызов функции (вне самой функции, без отступа)
     show_economic_info(lang)
 
 
