@@ -9520,7 +9520,7 @@ with tabs[7]:
     zones = reg.get("zones", []) 
 
     # Используем пропорцию [2, 1], чтобы текст справа имел достаточно места
-    col_left, col_right = st.columns([1.5, 0.5])
+    col_left, col_right = st.columns([1, 1])
     with col_left:
         try:
             # Картинка растянется на все 85% ширины контейнера
@@ -9998,6 +9998,7 @@ with tabs[7]:
             st.plotly_chart(fig, use_container_width=True)
             
 
+
  
  
     
@@ -10083,20 +10084,31 @@ with tabs[8]:
             
             col_a, col_b = st.columns([1, 2]) # Делаем колонку с картой (col_b) шире
             
+            import streamlit as st
+            import base64
+
+            # Функция для конвертации изображения в base64
+            def get_base64_image(image_path):
+                with open(image_path, "rb") as img_file:
+                    return base64.b64encode(img_file.read()).decode()
+
+            # Кодируем ваше изображение
+            img_base64 = get_base64_image("nmu.png")
+
             with col_a:
                 with st.container():
-                    st.markdown("""
+                    st.markdown(f"""
                     <div class="stCard">
                         <h4>Прогноз НМУ</h4>
-                        <p>Предоставляем прогнозы неблагоприятных метеоусловий (НМУ), важные для предупреждения возможных проблем с качеством воздуха.</p>
-                        <p>Бюллетени для городов Казахстана публикуются на официальном сайте, предоставляя жителям информацию о предстоящих условиях.</p>
+                        <p>Предоставляем прогнозы неблагоприятных метеоусловий...</p>
+                        <div style="text-align: center;">
+                            <img src="data:image/png;base64,{img_base64}" style="width: 100%; border-radius: 5px;">
+                        </div>
+                        <br>
                         <a href="https://www.kazhydromet.kz/ru/ecology/ezhednevnyy-byulleten-sostoyaniya-vozdushnogo-basseyna-nmu" target="_blank">Перейти к бюллетеням →</a>
                     </div>
                     """, unsafe_allow_html=True)
                     
-                # Можно добавить краткую инструкцию под текстом
-                st.info("💡 На карте справа можно просмотреть визуализацию данных в режиме реального времени.")
-
             with col_b:
                 # Вставляем интерактивную карту через iframe
                 st.components.v1.iframe("https://ecodata.kz:3838/app_dem_visual/", height=600, scrolling=True)
