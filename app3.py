@@ -10000,7 +10000,83 @@ with tabs[7]:
 
     import streamlit as st
     import pandas as pd
+    import plotly.express as px
 
+    def render_wind_dashboard():
+        st.set_page_config(layout="wide")  # Расширяем интерфейс на весь экран
+        
+        st.title("💨 Интерактивный мониторинг ветровой активности")
+        st.divider()
+
+        # Создаем две колонки: левая для карты (40%), правая для графиков (60%)
+        col_map, col_charts = st.columns([2, 3])
+
+        with col_map:
+            st.subheader("🗺️ Карта ветровых режимов")
+            # Отображение вашего изображения (убедитесь, что путь к файлу верный)
+            st.image("wind_RES5.jpg", caption="Карта максимальной скорости ветра", use_container_width=True)
+            
+            st.info("""
+            **Справка:** Наиболее активная зона — Жетісуские ворота (Жаланашколь). 
+            Здесь фиксируются порывы до 60 м/с.
+            """)
+
+        with col_charts:
+            st.subheader("📈 Динамика по областям")
+            
+            # Список доступных областей (соответствует именам ваших файлов)
+            regions = {
+                "Абайская": "графики.xlsx - Абайская.csv",
+                "Акмолинская": "графики.xlsx - Акмолинская.csv",
+                "Алматинская": "графики.xlsx - Алматинская.csv",
+                "Жетысу": "графики.xlsx - Жетысу.csv",
+                "Карагандинская": "графики.xlsx - Карагандинская.csv",
+                "Мангистауская": "графики.xlsx - Мангистауская.csv",
+                "Павлодарская": "графики.xlsx - Павлодар.csv",
+                "СКО": "графики.xlsx - СКО.csv"
+            }
+            
+            selected_region = st.selectbox("Выберите область для анализа:", list(regions.keys()))
+            
+            try:
+                # Загрузка данных выбранной области
+                file_path = regions[selected_region]
+                df = pd.read_csv(file_path)
+                
+                # Предполагаем, что первая колонка — это год, а последняя — "абсолютный максимум"
+                df.columns.values[0] = "Год"
+                
+                # Очистка данных (убираем #Н/Д и приводим к числам)
+                df_plot = df.replace('#Н/Д', None).dropna(subset=['абсолютный максимум, м/с'])
+                df_plot['абсолютный максимум, м/с'] = pd.to_numeric(df_plot['абсолютный максимум, м/с'])
+
+                # Построение графика
+                fig = px.line(
+                    df_plot, 
+                    x="Год", 
+                    y="абсолютный максимум, м/с",
+                    title=f"Максимальная скорость ветра: {selected_region}",
+                    markers=True,
+                    line_shape="spline"
+                )
+                
+                fig.update_layout(
+                    hovermode="x unified",
+                    yaxis_title="Скорость (м/с)",
+                    xaxis_title="Год"
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Дополнительная метрика под графиком
+                max_val = df_plot['абсолютный максимум, м/с'].max()
+                year_max = df_plot.loc[df_plot['абсолютный максимум, м/с'].idxmax(), 'Год']
+                st.write(f"📌 Пиковое значение для региона: **{max_val} м/с** (фиксировалось в {year_max} г.)")
+
+            except Exception as e:
+                st.error(f"Не удалось загрузить данные для этой области. Проверьте наличие файла. Ошибка: {e}")
+                
+            
     def render_wind_analysis_block():
         st.title("💨 Анализ ветровой активности Казахстана (1979–2024)")
         
