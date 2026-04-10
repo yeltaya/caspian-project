@@ -10127,9 +10127,6 @@ with tabs[8]:
             else:
                 st.info("Изображение nmu.png не найдено")
             
-            # 2. Интерактивный рисунок (iframe) ниже
-            st.components.v1.iframe("https://ecodata.kz:3838/app_dem_visual/", height=500, scrolling=True)
-            
                               
     with tab2:
         col_text, col_img = st.columns([1, 2])  # Соотношение 1:2 для картинки и текста
