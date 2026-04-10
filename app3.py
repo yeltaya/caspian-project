@@ -10048,18 +10048,13 @@ with tabs[7]:
             
             if os.path.exists(data_file):
                 try:
-                    # Читаем CSV с учетом вашего разделителя и кириллицы
                     df = pd.read_csv(data_file, sep=';', encoding='utf-8-sig')
-                    
-                    # Фильтруем колонки, чтобы оставить только регионы
                     regions = [col for col in df.columns if col != 'Год']
-                    
                     selected_region = st.selectbox("Выберите область для анализа:", regions)
                     
                     if selected_region:
-                        # Чистим данные от #Н/Д и конвертируем в числа
                         df[selected_region] = pd.to_numeric(df[selected_region].replace('#Н/Д', None), errors='coerce')
-                        df_plot = df.dropna(subset=[selected_region, 'Год'])
+                        df_plot = df.dropna(subset=[selected_region, 'Год']).sort_values('Год')
 
                         # Создаем график
                         fig = px.line(
@@ -10067,27 +10062,55 @@ with tabs[7]:
                             x='Год', 
                             y=selected_region,
                             title=f"Абсолютный максимум: {selected_region}",
-                            markers=True
+                            markers=True,
+                            color_discrete_sequence=['#00CC96']
                         )
                         
-                        fig.update_layout(
-                            yaxis_title="м/с",
-                            xaxis_title="Год",
-                            hovermode="x unified"
-                        )
-                        
+                        fig.update_layout(yaxis_title="м/с", xaxis_title="Год", hovermode="x unified")
                         st.plotly_chart(fig, use_container_width=True)
                         
-                        # Статистика
+                        # --- БЛОК АВТОМАТИЧЕСКОГО АНАЛИЗА ---
+                        st.markdown("### 📝 Анализ данных")
+                        
+                        # 1. Основные показатели
                         max_val = df_plot[selected_region].max()
-                        # Ищем год, соответствующий максимальному значению
                         year_max = df_plot.loc[df_plot[selected_region].idxmax(), 'Год']
-                        st.success(f"🚩 Рекорд: **{max_val} м/с** ({year_max} г.)")
+                        avg_val = df_plot[selected_region].mean()
+                        
+                        # 2. Определение тренда (сравнение начала и конца периода)
+                        first_val = df_plot[selected_region].iloc[0]
+                        last_val = df_plot[selected_region].iloc[-1]
+                        trend_diff = last_val - first_val
+                        
+                        if trend_diff > 1:
+                            trend_desc = "наблюдается тенденция к **увеличению** силы ветра"
+                        elif trend_diff < -1:
+                            trend_desc = "наблюдается тенденция к **снижению** ветровой нагрузки"
+                        else:
+                            trend_desc = "показатели остаются относительно **стабильными**"
+
+                        # 3. Вывод анализа в интерфейс
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.metric("Максимум", f"{max_val} м/с", f"год: {year_max}", delta_color="inverse")
+                        with col2:
+                            st.metric("Среднее значение", f"{avg_val:.1f} м/с")
+
+                        analysis_text = f"""
+                        Для региона **{selected_region}** за анализируемый период {df_plot['Год'].min()}-{df_plot['Год'].max()} гг. 
+                        {trend_desc}. Средняя скорость экстремальных порывов составляет **{avg_val:.1f} м/с**. 
+                        
+                        Наиболее критическая ситуация зафиксирована в **{year_max} году**, когда скорость ветра 
+                        достигла рекордных **{max_val} м/с**, что требует особого внимания при проектировании 
+                        инфраструктуры в данной области.
+                        """
+                        st.info(analysis_text)
 
                 except Exception as e:
                     st.error(f"Ошибка при обработке файла: {e}")
             else:
                 st.error(f"Файл {data_file} не найден.")
+                
 
     # Запуск приложения
     if __name__ == "__main__":
