@@ -10161,70 +10161,84 @@ with tabs[7]:
 
 
  
+    import streamlit as st
     import pandas as pd
     import matplotlib.pyplot as plt
     import numpy as np
 
-    # --- ОПИСАТЕЛЬНАЯ ЧАСТЬ (МЕТАДАННЫЕ) ---
-    ANALYSIS_TEXT = """
-    АНАЛИЗ СНЕЖНОГО ПОКРОВА КАЗАХСТАНА (1971-2025)
-    ---------------------------------------------
-    1. Экстремумы: Пик зафиксирован в 2005 г. на ст. Шуылдак (188 см).
-    2. Динамика: Максимальная высота растет в 6 раз быстрее средней (+0.62 см/год против +0.10 см/год).
-    3. Риски: Увеличение влагозапаса при росте высоты снега повышает вероятность паводков.
-    """
+    # Настройка страницы
+    st.set_page_config(page_title="Анализ снега в РК", layout="wide")
 
-    # 1. Загрузка и очистка
-    try:
+    st.title("❄️ Мониторинг снежного покрова Казахстана")
+    st.markdown("""
+    Данное приложение визуализирует тренды изменения высоты снежного покрова на основе данных за 1971–2025 гг.
+    """)
+
+    # 1. Загрузка данных
+    @st.cache_data
+    def load_data():
         df = pd.read_csv('Максимальная высота снега.xlsx - Лист1.csv')
         df.columns = [c.strip() for c in df.columns]
+        return df
+
+    try:
+        df = load_data()
+        years = df.iloc[:, 0]
         
-        years = df.iloc[:, 0] # Берем первый столбец как годы
-        max_snow = df['высота макс']
-        avg_snow = df['сред высота снега']
+        # --- Боковая панель ---
+        st.sidebar.header("Настройки анализа")
+        show_trend = st.sidebar.checkbox("Показать линию тренда", value=True)
+        region_to_highlight = st.sidebar.selectbox("Выбрать область для сравнения", df.columns[1:-2])
 
-        # 2. Математический анализ тренда
-        z = np.polyfit(years, max_snow, 1)
-        trend_line = np.poly1d(z)
+        # --- Основной блок метрик ---
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Макс. высота (рекорд)", "188 см", "Шуылдак, 2005")
+        col2.metric("Темп роста макс. высоты", "0.62 см/год", "↑")
+        col3.metric("Темп роста сред. высоты", "0.10 см/год", "стабильно")
 
-        # 3. Визуализация
-        plt.figure(figsize=(14, 7))
+        # --- Визуализация ---
+        st.subheader("График изменения высоты снежного покрова")
         
-        # Сетка и фон
-        plt.grid(True, linestyle='--', alpha=0.5)
+        fig, ax = plt.subplots(figsize=(12, 6))
         
-        # Данные
-        plt.fill_between(years, avg_snow, color="seagreen", alpha=0.2, label="Область средней высоты")
-        plt.plot(years, max_snow, color='royalblue', linewidth=2, label='Максимальная высота (факт)', marker='o', markersize=3)
-        plt.plot(years, trend_line(years), "r--", linewidth=2, label=f'Линия тренда (+{z[0]:.2f} см/год)')
-
-        # Оформление
-        plt.title('Изменение параметров снежного покрова в РК', fontsize=16, fontweight='bold')
-        plt.xlabel('Годы наблюдений', fontsize=12)
-        plt.ylabel('Высота снега (см)', fontsize=12)
+        # Отрисовка основных линий
+        ax.plot(years, df['высота макс'], color='royalblue', lw=2, label='Максимальная высота (РК)')
+        ax.fill_between(years, df['сред высота снега'], color='seagreen', alpha=0.3, label='Средняя высота (РК)')
         
-        # Аннотация для Шуылдака
-        plt.annotate('Экстремум: 188 см\n(Шуылдак, 2005)', 
-                     xy=(2005, 188), xytext=(1980, 170),
-                     arrowprops=dict(arrowstyle='->', lw=1.5),
-                     fontsize=10, bbox=dict(boxstyle="round,pad=0.3", fc="yellow", alpha=0.3))
+        # Линия выбранного региона
+        ax.plot(years, df[region_to_highlight], color='orange', linestyle=':', alpha=0.7, label=f'Данные по: {region_to_highlight}')
 
-        plt.legend(loc='upper left')
+        # Расчет и отрисовка тренда
+        if show_trend:
+            z = np.polyfit(years, df['высота макс'], 1)
+            p = np.poly1d(z)
+            ax.plot(years, p(years), "r--", label=f"Тренд макс. высоты (+{z[0]:.2f} см/год)")
+
+        ax.set_xlabel("Год")
+        ax.set_ylabel("Высота (см)")
+        ax.legend()
+        ax.grid(True, alpha=0.3)
         
-        # Добавляем краткое описание прямо на график в углу
-        plt.text(1972, 10, ANALYSIS_TEXT, fontsize=9, family='monospace', 
-                 bbox=dict(facecolor='white', alpha=0.8))
+        st.pyplot(fig)
 
-        plt.tight_layout()
-        plt.savefig('snow_analysis_kazakhstan.png', dpi=300)
-        plt.show()
+        # --- Описательная часть ---
+        st.divider()
+        st.subheader("📋 Аналитическая записка")
+        
+        st.info(f"""
+        **Ключевые выводы:**
+        * **Экстремальные значения:** За период 1971-2025 гг. отмечена тенденция к увеличению максимальной высоты снежного покрова. Суммарный прирост составил около **34 см**.
+        * **Запасы воды:** Рост высоты сопровождается повышением запасов воды, что было особенно заметно на станции Шуылдак в 2005 и 2010 гг.
+        * **Диспропорция:** Максимальные значения растут значительно быстрее средних показателей (в 6 раз), что указывает на участившиеся климатические аномалии.
+        """)
 
-        # 4. Итоговый вывод в консоль
-        print(ANALYSIS_TEXT)
-        print(f"Итого за период: суммарный прирост макс. высоты составил ~{z[0]*len(years):.1f} см.")
+        # --- Просмотр таблицы данных ---
+        with st.expander("Посмотреть исходные данные"):
+            st.write(df)
 
     except FileNotFoundError:
-        print("Ошибка: Файл с данными не найден. Проверьте путь к CSV.")
+        st.error("Файл 'Максимальная высота снега.xlsx - Лист1.csv' не найден. Убедитесь, что он лежит в одной папке с кодом.")
+        
     
     
 
