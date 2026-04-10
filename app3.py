@@ -10005,7 +10005,7 @@ with tabs[7]:
 
     def render_wind_dashboard():
         # Название вашего нового общего файла
-        data_file = "Max_wind.xlsx - Sheet1.csv"
+        data_file = "Max_wind.xlsx"
         image_path = "wind_RES5.jpg"
 
         st.title("💨 Мониторинг ветровой активности")
