@@ -494,7 +494,6 @@ with tabs[0]: # ОБЗОР
 
     show_dashboard()
 
-   
     def show_economic_info(lang):
         # Словарь переводов заголовка
         titles = {
@@ -513,6 +512,7 @@ with tabs[0]: # ОБЗОР
         
         st.markdown("---")
     
+        
         # Добавляем стили (если они еще не добавлены в коде выше)
         st.markdown("""
             <style>
