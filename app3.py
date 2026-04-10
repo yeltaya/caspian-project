@@ -286,50 +286,57 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Размещаем по центру сверху
-st.write('<style>div.row-widget.stRadio > div{flex-direction:row;justify-content: center;} </style>', unsafe_allow_html=True)
+# 1. Сначала выбор языка (сверху)
+col_l, col_r = st.columns([4, 1])
+with col_r:
+    lang = st.selectbox("Язык", ["Русский", "Қазақша", "English"], label_visibility="collapsed")
 
-lang = st.radio(
-    "", 
-    ["Русский", "Қазақша", "English"], 
-    horizontal=True
-)
-
-st.divider()
-
-
-# Словари заголовков
+# 2. Определяем словари названий
 tabs_ru = ["🔍 Обзор", "📊 Мониторинг", "🌤️ Прогноз погоды", "🌾 Агрометео", "📈 Гидропрогнозы", "💧 Водные ресурсы", "🌊 Каспийское море", "🇰🇿 Климат", "🏭 Экология", "🌐 Сотрудничество"]
 tabs_kk = ["🔍 Шолу", "📊 Мониторинг", "🌤️ Ауа райы болжамы", "🌾 Агрометео", "📈 Гидроболжамдар", "💧 Су ресурстары", "🌊 Каспий теңізі", "🇰🇿 Климат", "🏭 Экология", "🌐 Ынтымақтастық"]
 tabs_en = ["🔍 Overview", "📊 Monitoring", "🌤️ Weather Forecast", "🌾 Agrometeo", "📈 Hydro-forecasts", "💧 Water Resources", "🌊 Caspian Sea", "🇰🇿 Climate", "🏭 Ecology", "🌐 Cooperation"]
 
-#ОБЗОР
-with tabs[0]:
+# 3. ВЫБИРАЕМ активный список в зависимости от языка
+if lang == "Русский":
+    current_tabs = tabs_ru
+elif lang == "Қазақша":
+    current_tabs = tabs_kk
+else:
+    current_tabs = tabs_en
 
+# 4. СОЗДАЕМ вкладки (теперь переменная tabs существует!)
+tabs = st.tabs(current_tabs)
+
+# 5. НАПОЛНЯЕМ вкладки
+with tabs[0]: # ОБЗОР
     def show_top_banner():
-        # Создаем 3 колонки
         col_logo, col_main = st.columns([0.5, 1])
-
         with col_logo:
-            # Используем ваше локальное имя файла
             try:
                 st.image("КГМ.png", width=200)
             except:
                 st.error("Логотип 'КГМ.png' не найден")
 
         with col_main:
-            # Используем встроенный стиль через style в div, это надежнее
-            st.markdown("""
+            # Здесь текст тоже нужно перевести
+            if lang == "Русский":
+                text = "С опорой на 100-летнюю историю государственной системы наблюдений и современные технологии..."
+            elif lang == "Қазақша":
+                text = "Мемлекеттік бақылау жүйесінің 100 жылдық тарихына және заманауи технологияларға сүйене отырып..."
+            else:
+                text = "Building on a 100-year history of the state observation system and modern technologies..."
+
+            st.markdown(f"""
                 <div style="border-left: 5px solid #004a99; padding-left: 20px; margin-top: 10px;">
-                    <p style="font-size: 2.5rem; color: #1a202c; line-height: 1.3; margin: 0;">
-                        <b style="color: #003366;">С опорой на 100-летнюю историю государственной системы наблюдений и современные технологии мы обеспечиваем точные, верифицированные данные для стратегических решений и экологической безопасности.           
+                    <p style="font-size: 1.5rem; color: #1a202c; line-height: 1.3; margin: 0;">
+                        <b style="color: #003366;">{text}</b>         
                     </p>
                 </div>
                 """, unsafe_allow_html=True) 
-               
-    # Не забудьте вызвать функцию
+    
     show_top_banner()
     st.markdown("---")
+    
     
 
         # --- СЕКЦИЯ 2: МАСШТАБ ИНФРАСТРУКТУРЫ ---
