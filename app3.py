@@ -10004,92 +10004,73 @@ with tabs[7]:
     import os
 
     def render_wind_dashboard():
-        # Важно: set_page_config должен быть самым первым вызовом Streamlit в скрипте
-        # Если вы вызываете эту функцию внутри другого кода, уберите эту строку отсюда
-        # st.set_page_config(layout="wide") 
-        
-        st.title("💨 Интерактивный мониторинг ветровой активности")
+        # Название вашего нового общего файла
+        data_file = "Max_wind.xlsx - Sheet1.csv"
+        image_path = "wind_RES5.jpg"
+
+        st.title("💨 Мониторинг ветровой активности")
         st.divider()
 
-        # Проверяем наличие изображения перед отрисовкой
-        image_path = "wind_RES5.jpg"
-        
-        col_map, col_charts = st.columns([2, 3])
+        # Увеличиваем левую колонку для карты (пропорция 3 к 2)
+        col_map, col_charts = st.columns([3, 2])
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
             if os.path.exists(image_path):
-                st.image(image_path, caption="Карта максимальной скорости ветра", use_container_width=True)
+                # Используем ширину в пикселях для контроля размера
+                st.image(image_path, caption="Карта максимальной скорости ветра", width=850)
             else:
-                st.error(f"Файл изображения {image_path} не найден в директории.")
+                st.error(f"Файл {image_path} не найден.")
             
-            st.info("""
-            **Справка:** Наиболее активная зона — Жетісуские ворота (Жаланашколь). 
-            Здесь фиксируются порывы до 60 м/с.
-            """)
+            st.info("💡 **Жетісуские ворота:** экстремальные значения до 60 м/с.")
 
         with col_charts:
             st.subheader("📈 Динамика по областям")
             
-            # Словарь регионов (проверьте, что файлы лежат рядом со скриптом)
-            regions = {
-                "Абайская": "графики.xlsx - Абайская.csv",
-                "Акмолинская": "графики.xlsx - Акмолинская.csv",
-                "Алматинская": "графики.xlsx - Алматинская.csv",
-                "Жетысу": "графики.xlsx - Жетысу.csv",
-                "Карагандинская": "графики.xlsx - Карагандинская.csv",
-                "Мангистауская": "графики.xlsx - Мангистауская.csv",
-                "Павлодарская": "графики.xlsx - Павлодар.csv",
-                "СКО": "графики.xlsx - СКО.csv"
-            }
-            
-            selected_region = st.selectbox("Выберите область для анализа:", list(regions.keys()))
-            file_path = regions[selected_region]
-            
-            if os.path.exists(file_path):
+            if os.path.exists(data_file):
                 try:
-                    # Читаем CSV
-                    df = pd.read_csv(file_path)
+                    # Загружаем общий файл
+                    df_all = pd.read_csv(data_file)
                     
-                    # Переименовываем первую колонку в Год (она часто без названия в CSV)
-                    df.rename(columns={df.columns[0]: "Год"}, inplace=True)
+                    # Список областей — это все колонки, кроме 'Год'
+                    region_list = [col for col in df_all.columns if col != 'Год']
                     
-                    # Имя целевой колонки
-                    target_col = "абсолютный максимум, м/с"
+                    selected_region = st.selectbox("Выберите область:", region_list)
                     
-                    if target_col in df.columns:
-                        # Очистка данных: убираем текстовые ошибки и пустые строки
-                        df[target_col] = pd.to_numeric(df[target_col].replace('#Н/Д', None), errors='coerce')
-                        df_plot = df.dropna(subset=[target_col, "Год"])
+                    if selected_region:
+                        # Очистка данных для графика
+                        # Превращаем #Н/Д в пустые значения и конвертируем в числа
+                        df_all[selected_region] = pd.to_numeric(df_all[selected_region].replace('#Н/Д', None), errors='coerce')
+                        df_plot = df_all.dropna(subset=[selected_region, 'Год'])
 
                         # Построение графика
                         fig = px.line(
                             df_plot, 
-                            x="Год", 
-                            y=target_col,
-                            title=f"Максимальная скорость ветра: {selected_region}",
+                            x='Год', 
+                            y=selected_region,
+                            title=f"Абсолютный максимум: {selected_region}",
                             markers=True,
-                            line_shape="linear" # или "spline" для сглаживания
+                            line_shape="linear",
+                            color_discrete_sequence=['#3498db']
                         )
                         
                         fig.update_layout(
-                            hovermode="x unified",
+                            margin=dict(l=20, r=20, t=40, b=20),
                             yaxis_title="Скорость (м/с)",
-                            xaxis_title="Год"
+                            hovermode="x unified"
                         )
                         
                         st.plotly_chart(fig, use_container_width=True)
                         
-                        # Метрики
-                        max_val = df_plot[target_col].max()
-                        year_max = df_plot.loc[df_plot[target_col].idxmax(), 'Год']
-                        st.success(f"📌 Пиковое значение: **{max_val} м/с** (год: {year_max})")
-                    else:
-                        st.warning(f"Колонка '{target_col}' не найдена в файле.")
+                        # Статистика под графиком
+                        max_val = df_plot[selected_region].max()
+                        st.success(f"⭐ Пик для этой области: **{max_val} м/с**")
+
                 except Exception as e:
-                    st.error(f"Ошибка при обработке данных: {e}")
+                    st.error(f"Ошибка при чтении данных: {e}")
             else:
-                st.error(f"Файл данных {file_path} не найден.")
+                st.error(f"Файл данных {data_file} не найден.")
+    
 
         # Нижний блок фактов (вне колонок)
         st.divider()
