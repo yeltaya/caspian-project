@@ -604,24 +604,41 @@ with tabs[0]: # ОБЗОР
         st.markdown("---")
     show_economic_info(lang)
         
-        # Вариант с использованием кастомного HTML для акцента
+# --- ИНФОРМАЦИОННЫЙ БЛОК О ПРОГНОЗЕ 2 КМ ---
+
+    if lang == "Русский":
+        promo_title = "📡 Казгидромет внедряет прогноз погоды с высоким разрешением 2 км —"
+        promo_accent = "технологический прорыв, уникальный для Центральной Азии."
+        promo_text = """Обеспечивая беспрецедентную точность прогнозов, критически важную для раннего предупреждения 
+                        природных рисков, укрепления климатической и экологической безопасности на национальном 
+                        и региональном уровнях."""
+    elif lang == "Қазақша":
+        promo_title = "📡 Қазгидромет 2 км жоғары ажыратымдылықтағы ауа райы болжамын енгізуде —"
+        promo_accent = "Орталық Азиядағы бірегей технологиялық серпіліс."
+        promo_text = """Болжамдардың теңдессіз дәлдігін қамтамасыз ете отырып, бұл табиғи қауіп-қатерлерді ерте ескерту, 
+                        ұлттық және аймақтық деңгейде климаттық және экологиялық қауіпсіздікті нығайту үшін өте маңызды."""
+    else: # English
+        promo_title = "📡 Kazhydromet implements high-resolution 2 km weather forecasting —"
+        promo_accent = "a technological breakthrough unique to Central Asia."
+        promo_text = """Providing unprecedented forecasting accuracy, which is critical for early warning 
+                        of natural hazards and strengthening climate and environmental security at both 
+                        national and regional levels."""
+
     st.markdown(
-            """
-            <div style="background-color: #f0f7ff; padding: 25px; border-left: 5px solid #003366; border-radius: 10px; margin: 20px 0;">
-                <h4 style="color: #003366; margin-bottom: 10px; font-weight: bold;">
-                    📡 Казгидромет внедряет прогноз погоды с высоким разрешением 2 км — 
-                    <span style="color: #0066cc;">технологический прорыв, уникальный для Центральной Азии.</span>
-                </h4>
-                <p style="color: #334155; font-size: 1.1rem; line-height: 1.6; margin: 0;">
-                    Обеспечивая беспрецедентную точность прогнозов, критически важную для раннего предупреждения 
-                    природных рисков, укрепления климатической и экологической безопасности на национальном 
-                    и региональном уровнях.
-                </p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-   
+        f"""
+        <div style="background-color: #f0f7ff; padding: 25px; border-left: 5px solid #003366; border-radius: 10px; margin: 20px 0;">
+            <h4 style="color: #003366; margin-bottom: 10px; font-weight: bold;">
+                {promo_title} 
+                <span style="color: #0066cc;">{promo_accent}</span>
+            </h4>
+            <p style="color: #334155; font-size: 1.1rem; line-height: 1.6; margin: 0;">
+                {promo_text}
+            </p>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
     st.markdown("---")
 
         # --- CSS ДЛЯ КАРТОЧЕК ---
