@@ -10277,11 +10277,6 @@ with tabs[7]:
             else:
                 st.write("Выберите область слева, чтобы увидеть аналитику.")
 
-        # Нижняя панель
-        st.divider()
-        with st.expander("Посмотреть исходную таблицу данных"):
-            st.dataframe(df, use_container_width=True)
-        
     
 
 with tabs[8]:
