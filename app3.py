@@ -495,15 +495,24 @@ with tabs[0]: # ОБЗОР
     show_dashboard()
 
    
-    def show_economic_info():
-        st.markdown("""
+    def show_economic_info(lang):
+        # Словарь переводов заголовка
+        titles = {
+            "Русский": "Обеспечение гидрометеорологической и экологической информацией отраслей экономики",
+            "Қазақша": "Экономика салаларын гидрометеорологиялық және экологиялық ақпаратпен қамтамасыз ету",
+            "English": "Providing Hydrometeorological and Environmental Information to Economic Sectors"
+        }
+        
+        current_title = titles.get(lang, titles["Русский"])
+
+        st.markdown(f"""
             <h2 style='text-align: center; color: #003366; margin-bottom: 40px;'>
-                Обеспечение гидрометеорологической и экологической информацией отраслей экономики
+                {current_title}
             </h2>
         """, unsafe_allow_html=True)
         
         st.markdown("---")
-        
+    
         # Добавляем стили (если они еще не добавлены в коде выше)
         st.markdown("""
             <style>
