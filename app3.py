@@ -11020,7 +11020,7 @@ with tabs[8]:
         render_charts(pd.DataFrame(water_2025), "turkestan")
         
         
-    def show_Severo-Kazakhstanskaya_dashboard(): 
+    def show_Severo_Kazakhstanskaya_dashboard(): 
             st.subheader("📍 Северо-Казахстанская область")  
             st.markdown("*Наблюдение ведется на 2 водных объектах (6 створа) по 47 показателям.*")
             
