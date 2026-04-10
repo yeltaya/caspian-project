@@ -11195,7 +11195,7 @@ with tabs[8]:
     elif region == "Западно-Казахстанская область":
         show_zko_dashboard()
     elif region == "Северо-Казахстанская область":
-        show_Severo-Kazakhstanskaya_dashboard()
+        show_Severo_Kazakhstanskaya_dashboard()
     elif region == "Костанайская область":
         show_kostanay_dashboard()
     elif region == "Восточно-Казахстанкая область":
