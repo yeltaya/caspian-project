@@ -513,77 +513,75 @@ with tabs[0]: # ОБЗОР
         st.markdown("---")
     
         
-            # Добавляем стили (если они еще не добавлены в коде выше)
-            st.markdown("""
-                <style>
-                .forecast-card {
-                    background: #f8fafc;
-                    padding: 20px;
-                    border-radius: 12px;
-                    border: 1px solid #e2e8f0;
-                    text-align: center;
-                    transition: all 0.3s ease;
-                    min-height: 220px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: flex-start;
-                }
-                .forecast-card:hover {
-                    border-color: #3b82f6;
-                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                    background: #ffffff;
-                }
-                .forecast-card .icon {
-                    font-size: 3rem;
-                    margin-bottom: 12px;
-                }
-                .forecast-card .title {
-                    color: #1e293b;
-                    font-weight: 700;
-                    font-size: 1.2rem;
-                    margin-bottom: 8px;
-                    line-height: 1.2;
-                }
-                .forecast-card .description {
-                    color: #64748b;
-                    font-size: 1.0rem;
-                    line-height: 1.4;
-                }
-                </style>
-            """, unsafe_allow_html=True)
-        
-        # --- СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ КАРТОЧЕК ПРОГНОЗОВ ---
-        forecast_translations = {
-            "Русский": [
-                {"icon": "⚡", "title": "Наукастинг<br>(2-6 часов)", "desc": "Сверхкраткосрочный прогноз погоды."},
-                {"icon": "📅", "title": "Краткосрочный прогноз", "desc": "Прогноз погоды от 1 до 7 дней."},
-                {"icon": "🔭", "title": "Долгосрочный прогноз", "desc": "Прогноз погоды от 10 дней до сезонов."},
-                {"icon": "🏔️", "title": "Специализированный прогноз", "desc": "Прогноз неблагоприятных условий, туристических маршрутов, горной местности и пожарной опасности."},
-                {"icon": "⚠️", "title": "Штормовые предупреждения", "desc": "Об опасных явлениях."}
-            ],
-            "Қазақша": [
-                {"icon": "⚡", "title": "Наукастинг<br>(2-6 сағат)", "desc": "Аса қысқа мерзімді ауа райы болжамы."},
-                {"icon": "📅", "title": "Қысқа мерзімді болжам", "desc": "1-ден 7 күнге дейінгі ауа райы болжамы."},
-                {"icon": "🔭", "title": "Ұзақ мерзімді болжам", "desc": "10 күннен маусымдарға дейінгі ауа райы болжамы."},
-                {"icon": "🏔️", "title": "Мамандандырылған болжам", "desc": "Қолайсыз метеорологиялық жағдайлар, туристік маршруттар, таулы аймақтар мен өрт қаупі бойынша болжам."},
-                {"icon": "⚠️", "title": "Дауылды ескертулер", "desc": "Қауіпті құбылыстар туралы."}
-            ],
-            "English": [
-                {"icon": "⚡", "title": "Nowcasting<br>(2-6 hours)", "desc": "Very short-range weather forecast."},
-                {"icon": "📅", "title": "Short-range forecast", "desc": "Weather forecast from 1 to 7 days."},
-                {"icon": "🔭", "title": "Long-range forecast", "desc": "Weather forecast from 10 days up to seasons."},
-                {"icon": "🏔️", "title": "Specialized forecast", "desc": "Forecast of adverse conditions, tourist routes, mountain areas, and fire hazards."},
-                {"icon": "⚠️", "title": "Storm warnings", "desc": "On hazardous phenomena."}
-            ]
-        }
+        # Добавляем стили (если они еще не добавлены в коде выше)
+        st.markdown("""
+            <style>
+            .forecast-card {
+                background: #f8fafc;
+                padding: 20px;
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+                text-align: center;
+                transition: all 0.3s ease;
+                min-height: 220px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+            .forecast-card:hover {
+                border-color: #3b82f6;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                background: #ffffff;
+            }
+            .forecast-card .icon {
+                font-size: 3rem;
+                margin-bottom: 12px;
+            }
+            .forecast-card .title {
+                color: #1e293b;
+                font-weight: 700;
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+                line-height: 1.2;
+            }
+            .forecast-card .description {
+                color: #64748b;
+                font-size: 1.0rem;
+                line-height: 1.4;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+    
+    # --- СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ КАРТОЧЕК ПРОГНОЗОВ ---
+    forecast_translations = {
+        "Русский": [
+            {"icon": "⚡", "title": "Наукастинг<br>(2-6 часов)", "desc": "Сверхкраткосрочный прогноз погоды."},
+            {"icon": "📅", "title": "Краткосрочный прогноз", "desc": "Прогноз погоды от 1 до 7 дней."},
+            {"icon": "🔭", "title": "Долгосрочный прогноз", "desc": "Прогноз погоды от 10 дней до сезонов."},
+            {"icon": "🏔️", "title": "Специализированный прогноз", "desc": "Прогноз неблагоприятных условий, туристических маршрутов, горной местности и пожарной опасности."},
+            {"icon": "⚠️", "title": "Штормовые предупреждения", "desc": "Об опасных явлениях."}
+        ],
+        "Қазақша": [
+            {"icon": "⚡", "title": "Наукастинг<br>(2-6 сағат)", "desc": "Аса қысқа мерзімді ауа райы болжамы."},
+            {"icon": "📅", "title": "Қысқа мерзімді болжам", "desc": "1-ден 7 күнге дейінгі ауа райы болжамы."},
+            {"icon": "🔭", "title": "Ұзақ мерзімді болжам", "desc": "10 күннен маусымдарға дейінгі ауа райы болжамы."},
+            {"icon": "🏔️", "title": "Мамандандырылған болжам", "desc": "Қолайсыз метеорологиялық жағдайлар, туристік маршруттар, таулы аймақтар мен өрт қаупі бойынша болжам."},
+            {"icon": "⚠️", "title": "Дауылды ескертулер", "desc": "Қауіпті құбылыстар туралы."}
+        ],
+        "English": [
+            {"icon": "⚡", "title": "Nowcasting<br>(2-6 hours)", "desc": "Very short-range weather forecast."},
+            {"icon": "📅", "title": "Short-range forecast", "desc": "Weather forecast from 1 to 7 days."},
+            {"icon": "🔭", "title": "Long-range forecast", "desc": "Weather forecast from 10 days up to seasons."},
+            {"icon": "🏔️", "title": "Specialized forecast", "desc": "Forecast of adverse conditions, tourist routes, mountain areas, and fire hazards."},
+            {"icon": "⚠️", "title": "Storm warnings", "desc": "On hazardous phenomena."}
+        ]
+    }
 
-        # Выбираем данные в зависимости от языка
-        current_forecasts = forecast_translations.get(lang, forecast_translations["Русский"])
+    # Выбираем данные в зависимости от языка
+    current_forecasts = forecast_translations.get(lang, forecast_translations["Русский"])
 
-        # Создаем 5 колонок
-        cols = st.columns(5)
-
-        # Отрисовываем карточки в цикле
+    # Создаем 5 колонок
+    cols = st.columns(5)
         for i, col in enumerate(cols):
             with col:
                 item = current_forecasts[i]
@@ -594,8 +592,10 @@ with tabs[0]: # ОБЗОР
                         <div class="description">{item['desc']}</div>
                     </div>
                 """, unsafe_allow_html=True)
-                
-        show_economic_info(lang)
+
+    # ВЫЗОВ (в основном коде)
+    show_economic_info(lang)
+
         
 # --- ИНФОРМАЦИОННЫЙ БЛОК О ПРОГНОЗЕ 2 КМ ---
 
