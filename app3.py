@@ -10004,72 +10004,67 @@ with tabs[7]:
     import os
 
     def render_wind_dashboard():
-        # Название вашего нового общего файла
+        # Название вашего файла
         data_file = "Max_wind.xlsx"
         image_path = "wind_RES5.jpg"
 
         st.title("💨 Мониторинг ветровой активности")
         st.divider()
 
-        # Увеличиваем левую колонку для карты (пропорция 3 к 2)
         col_map, col_charts = st.columns([3, 2])
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
             if os.path.exists(image_path):
-                # Используем ширину в пикселях для контроля размера
+                # Увеличенный размер карты
                 st.image(image_path, caption="Карта максимальной скорости ветра", width=850)
             else:
                 st.error(f"Файл {image_path} не найден.")
-            
-            st.info("💡 **Жетісуские ворота:** экстремальные значения до 60 м/с.")
 
         with col_charts:
             st.subheader("📈 Динамика по областям")
             
             if os.path.exists(data_file):
                 try:
-                    # Загружаем общий файл
-                    df_all = pd.read_csv(data_file)
+                    # ИСПРАВЛЕНИЕ: Добавляем encoding='cp1251' для корректного чтения кириллицы
+                    df_all = pd.read_csv(data_file, encoding='cp1251', sep=',')
                     
-                    # Список областей — это все колонки, кроме 'Год'
+                    # Если первая колонка не названа "Год", исправляем это
+                    if df_all.columns[0] != 'Год':
+                        df_all.rename(columns={df_all.columns[0]: 'Год'}, inplace=True)
+                    
                     region_list = [col for col in df_all.columns if col != 'Год']
-                    
                     selected_region = st.selectbox("Выберите область:", region_list)
                     
                     if selected_region:
-                        # Очистка данных для графика
-                        # Превращаем #Н/Д в пустые значения и конвертируем в числа
+                        # Очистка данных
                         df_all[selected_region] = pd.to_numeric(df_all[selected_region].replace('#Н/Д', None), errors='coerce')
                         df_plot = df_all.dropna(subset=[selected_region, 'Год'])
 
-                        # Построение графика
                         fig = px.line(
                             df_plot, 
                             x='Год', 
                             y=selected_region,
                             title=f"Абсолютный максимум: {selected_region}",
                             markers=True,
-                            line_shape="linear",
-                            color_discrete_sequence=['#3498db']
-                        )
-                        
-                        fig.update_layout(
-                            margin=dict(l=20, r=20, t=40, b=20),
-                            yaxis_title="Скорость (м/с)",
-                            hovermode="x unified"
+                            line_shape="linear"
                         )
                         
                         st.plotly_chart(fig, use_container_width=True)
                         
-                        # Статистика под графиком
                         max_val = df_plot[selected_region].max()
-                        st.success(f"⭐ Пик для этой области: **{max_val} м/с**")
+                        st.success(f"⭐ Пиковое значение: **{max_val} м/с**")
 
                 except Exception as e:
-                    st.error(f"Ошибка при чтении данных: {e}")
+                    # Если cp1251 не помог, пробуем utf-8-sig (иногда Excel сохраняет так)
+                    try:
+                        df_all = pd.read_csv(data_file, encoding='utf-8-sig', sep=',')
+                        st.rerun() 
+                    except:
+                        st.error(f"Ошибка при чтении данных: {e}")
             else:
                 st.error(f"Файл данных {data_file} не найден.")
+
     
 
         # Нижний блок фактов (вне колонок)
