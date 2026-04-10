@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import numpy as np
 
 
+
 # --- 1. КОНФИГУРАЦИЯ ЦВЕТОВ ---
 DARK_BLUE = "#001F3F"
 ACCENT_BLUE = "#0072FF"
@@ -284,6 +285,17 @@ st.markdown(f"""
         </div>
     </div>
 """, unsafe_allow_html=True)
+
+# Размещаем по центру сверху
+st.write('<style>div.row-widget.stRadio > div{flex-direction:row;justify-content: center;} </style>', unsafe_allow_html=True)
+
+lang = st.radio(
+    "", 
+    ["Русский", "Қазақша", "English"], 
+    horizontal=True
+)
+
+st.divider()
 
 
 # --- 4. СОЗДАНИЕ ВКЛАДОК ---
