@@ -5446,48 +5446,39 @@ with tabs[5]:
             # Увеличиваем пропорцию колонки для изображения
             img_col, info_col = st.columns([2, 1])
             
-            with img_col:
-                if photo_filename and os.path.exists(photo_path):
-                    try:
-                        # Определяем расширение и MIME-тип
-                        ext = os.path.splitext(photo_path)[1].lower().replace('.', '')
-                        mime_type = f"image/{ext if ext != 'jpg' else 'jpeg'}"
-                        
-                        # Читаем и кодируем файл
-                        with open(photo_path, "rb") as f:
-                            data = base64.b64encode(f.read()).decode("utf-8")
-                        
-                        # Выводим КРУПНОЕ изображение через HTML
-                        st.markdown(
-                            f"""
-                            <div style="width: 100%; margin-bottom: 5px;">
-                                <img src="data:{mime_type};base64,{data}" 
-                                     style="width: 100%; 
-                                            max-width: none; 
-                                            margin-left: 0.5%; 
-                                            border-radius: 12px; 
-                                            box-shadow: 0 6px 15px rgba(0,0,0,0.2);">
-                            </div>
-                            <p style="color: gray; font-size: 0.9rem; text-align: center; width: 125%; margin-left: -12.5%;">
-                                Вид бассейна: {name}
-                            </p>
-                            """, 
-                            unsafe_allow_html=True
-                        )
-                    except Exception as e:
-                        st.error(f"Ошибка при обработке фото {name}: {e}")
+        with img_col:
+            if photo_filename and os.path.exists(photo_path):
+                try:
+                    # Используем родной метод Streamlit — это надежнее и быстрее
+                    st.image(
+                        photo_path, 
+                        use_container_width=True, # Растягивает на всю ширину колонки
+                        output_format="auto"
+                    )
+                    
+                    # Подпись делаем через markdown, если нужен особый стиль
+                    st.markdown(
+                        f"""
+                        <p style="color: gray; font-size: 0.9rem; text-align: center; margin-top: -10px;">
+                            Вид бассейна: {name}
+                        </p>
+                        """, 
+                        unsafe_allow_html=True
+                    )
+                    
+                except Exception as e:
+                    st.error(f"Ошибка при загрузке фото {name}: {e}")
+            else:
+                # Логика заглушки остается прежней
+                st.info(f"📸 Фото для {name} не найдено")
+                if not photo_filename:
+                    st.error("В справочнике не указано имя файла")
                 else:
-                    # Если файл не найден — выводим отладочную инфомацию
-                    st.info(f"📸 Фото для {name} не отображается")
-                    if not photo_filename:
-                        st.error("В справочнике не указано имя файла (ключ 'photo')")
-                    else:
-                        st.warning(f"Файл не найден по пути: {os.path.abspath(photo_path)}")
-                    
-                    # Заглушка, чтобы место не пустовало
-                    st.image("https://via.placeholder.com/800x500?text=Изображение+не+найдено", use_container_width=True)
-                    
-                        
+                    st.warning(f"Путь не найден: {photo_path}")
+                
+                st.image("https://via.placeholder.com/800x500?text=No+Image", use_container_width=True)
+                
+                                
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
