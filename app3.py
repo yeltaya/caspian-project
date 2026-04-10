@@ -602,7 +602,7 @@ with tabs[0]: # ОБЗОР
        
 # Разделитель перед текстом о Казгидромете
         st.markdown("---")
-    show_economic_info()
+    show_economic_info(lang)
         
         # Вариант с использованием кастомного HTML для акцента
     st.markdown(
