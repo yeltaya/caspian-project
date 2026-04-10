@@ -552,54 +552,50 @@ with tabs[0]: # ОБЗОР
             </style>
         """, unsafe_allow_html=True)
     
-        # Создаем 5 колонок
-        col1, col2, col3, col4, col5 = st.columns(5)
+    # --- СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ КАРТОЧЕК ПРОГНОЗОВ ---
+    forecast_translations = {
+        "Русский": [
+            {"icon": "⚡", "title": "Наукастинг<br>(2-6 часов)", "desc": "Сверхкраткосрочный прогноз погоды."},
+            {"icon": "📅", "title": "Краткосрочный прогноз", "desc": "Прогноз погоды от 1 до 7 дней."},
+            {"icon": "🔭", "title": "Долгосрочный прогноз", "desc": "Прогноз погоды от 10 дней до сезонов."},
+            {"icon": "🏔️", "title": "Специализированный прогноз", "desc": "Прогноз неблагоприятных условий, туристических маршрутов, горной местности и пожарной опасности."},
+            {"icon": "⚠️", "title": "Штормовые предупреждения", "desc": "Об опасных явлениях."}
+        ],
+        "Қазақша": [
+            {"icon": "⚡", "title": "Наукастинг<br>(2-6 сағат)", "desc": "Аса қысқа мерзімді ауа райы болжамы."},
+            {"icon": "📅", "title": "Қысқа мерзімді болжам", "desc": "1-ден 7 күнге дейінгі ауа райы болжамы."},
+            {"icon": "🔭", "title": "Ұзақ мерзімді болжам", "desc": "10 күннен маусымдарға дейінгі ауа райы болжамы."},
+            {"icon": "🏔️", "title": "Мамандандырылған болжам", "desc": "Қолайсыз метеорологиялық жағдайлар, туристік маршруттар, таулы аймақтар мен өрт қаупі бойынша болжам."},
+            {"icon": "⚠️", "title": "Дауылды ескертулер", "desc": "Қауіпті құбылыстар туралы."}
+        ],
+        "English": [
+            {"icon": "⚡", "title": "Nowcasting<br>(2-6 hours)", "desc": "Very short-range weather forecast."},
+            {"icon": "📅", "title": "Short-range forecast", "desc": "Weather forecast from 1 to 7 days."},
+            {"icon": "🔭", "title": "Long-range forecast", "desc": "Weather forecast from 10 days up to seasons."},
+            {"icon": "🏔️", "title": "Specialized forecast", "desc": "Forecast of adverse conditions, tourist routes, mountain areas, and fire hazards."},
+            {"icon": "⚠️", "title": "Storm warnings", "desc": "On hazardous phenomena."}
+        ]
+    }
 
-        with col1:
-                st.markdown("""
-                    <div class="forecast-card">
-                        <div class="icon">⚡</div>
-                        <div class="title">Наукастинг<br>(2-6 часов)</div>
-                        <div class="description">Сверхкраткосрочный прогноз погоды.</div>
-                    </div>
-                """, unsafe_allow_html=True)
+    # Выбираем данные в зависимости от языка
+    current_forecasts = forecast_translations.get(lang, forecast_translations["Русский"])
 
-        with col2:
-                st.markdown("""
-                    <div class="forecast-card">
-                        <div class="icon">📅</div>
-                        <div class="title">Краткосрочный прогноз</div>
-                        <div class="description">Прогноз погоды от 1 до 7 дней.</div>
-                    </div>
-                """, unsafe_allow_html=True)
+    # Создаем 5 колонок
+    cols = st.columns(5)
 
-        with col3:
-                st.markdown("""
-                    <div class="forecast-card">
-                        <div class="icon">🔭</div>
-                        <div class="title">Долгосрочный прогноз</div>
-                        <div class="description">Прогноз погоды от 10 дней до сезонов.</div>
-                    </div>
-                """, unsafe_allow_html=True)
-
-        with col4:
-                st.markdown("""
-                    <div class="forecast-card">
-                        <div class="icon">🏔️</div>
-                        <div class="title">Специализированный прогноз</div>
-                        <div class="description">Прогноз неблагоприятных метеорологических условии, по туристическим маршритам, по горной территории, пожарной опасности.</div>
-                    </div>
-                """, unsafe_allow_html=True)
-
-        with col5:
-                st.markdown("""
-                    <div class="forecast-card">
-                        <div class="icon">⚠️</div>
-                        <div class="title">Штормовые предупреждения</div>
-                        <div class="description">Об опасных явлениях.</div>
-                    </div>
-                """, unsafe_allow_html=True)
-       
+    # Отрисовываем карточки в цикле
+    for i, col in enumerate(cols):
+        with col:
+            item = current_forecasts[i]
+            st.markdown(f"""
+                <div class="forecast-card">
+                    <div class="icon">{item['icon']}</div>
+                    <div class="title">{item['title']}</div>
+                    <div class="description">{item['desc']}</div>
+                </div>
+            """, unsafe_allow_html=True)
+            
+        
 # Разделитель перед текстом о Казгидромете
         st.markdown("---")
     show_economic_info(lang)
