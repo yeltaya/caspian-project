@@ -370,7 +370,12 @@ with tabs[0]: # ОБЗОР
     m4.metric(m4_l, m4_v, m4_d)
 
 
-
+    import streamlit as st
+    import pandas as pd
+    import folium
+    from streamlit_folium import st_folium
+    import re
+    
     def show_dashboard(lang): # Добавляем lang как аргумент
         try:
             # 1. Загрузка данных
