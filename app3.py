@@ -10005,7 +10005,7 @@ with tabs[7]:
 
     def render_wind_dashboard():
         # Настройки путей (убедитесь, что файлы лежат в папке со скриптом)
-        data_file = "Max_wind.xlsx - Sheet1.csv"
+        data_file = "Max_wind.csv"
         image_path = "wind_RES5.jpg"
 
         # Заголовок приложения
