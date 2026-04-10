@@ -320,11 +320,11 @@ with tabs[0]: # ОБЗОР
         with col_main:
             # Здесь текст тоже нужно перевести
             if lang == "Русский":
-                text = "С опорой на 100-летнюю историю государственной системы наблюдений и современные технологии..."
+                text = "С опорой на 100-летнюю историю государственной системы наблюдений и современные технологии мы обеспечиваем точные, верифицированные данные для стратегических решений и экологической безопасности.  "
             elif lang == "Қазақша":
-                text = "Мемлекеттік бақылау жүйесінің 100 жылдық тарихына және заманауи технологияларға сүйене отырып..."
+                text = "Мемлекеттік бақылау жүйесінің 100 жылдық тарихына және заманауи технологияларға сүйене отырып, біз стратегиялық шешімдер мен экологиялық қауіпсіздік үшін нақты, тексерілген деректерді қамтамасыз етеміз."
             else:
-                text = "Building on a 100-year history of the state observation system and modern technologies..."
+                text = "Building on a 100-year history of the state observation system and leveraging modern technologies, we provide accurate, verified data for strategic decision-making and environmental security."
 
             st.markdown(f"""
                 <div style="border-left: 5px solid #004a99; padding-left: 20px; margin-top: 10px;">
