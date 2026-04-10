@@ -10020,19 +10020,26 @@ with tabs[7]:
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
-            
+
             if os.path.exists(image_path):
-                # Расчет ширины на основе процентов
-                base_width = 1000 
-                final_width = int(base_width * (map_percent / 100))
+                # Читаем файл и кодируем в base64 для вставки в HTML
+                with open(image_path, "rb") as f:
+                    data = f.read()
+                    encoded = base64.b64encode(data).decode()
                 
-                st.image(
-                    image_path, 
-                    caption=f"Масштаб карты: {map_percent}%", 
-                    width=final_width
-                )
+                # HTML вставка: ставим ширину в зависимости от процентов от ширины экрана (vw)
+                # Или просто используем style="width: 100%;"
+                html_code = f"""
+                    <div style="text-align: center;">
+                        <img src="data:image/png;base64,{encoded}" 
+                             style="width: {map_percent}%; min-width: 400px; border-radius: 10px;">
+                        <p style="color: gray; font-size: 0.8rem;">Масштаб: {map_percent}%</p>
+                    </div>
+                """
+                st.markdown(html_code, unsafe_allow_html=True)
             else:
                 st.error(f"Файл {image_path} не найден.")
+        
                 
             st.info("**Справка:** Жетісуские ворота — самая ветреная точка, где скорость достигает 60 м/с.")
 
