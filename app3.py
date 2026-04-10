@@ -5447,20 +5447,31 @@ with tabs[5]:
             img_col, info_col = st.columns([2, 1])
             
 
+        import base64
+        import os
+        from PIL import Image
+        import io
+
         with img_col:
+            # Используем photo_path (проверьте, что переменная определена выше)
             if photo_filename and os.path.exists(photo_path):
                 try:
-                    with open(photo_path, "rb") as f:
-                        file_bytes = f.read()
-                        # Очищаем base64 от возможных переносов строк .replace("\n", "")
-                        encoded_base64 = base64.b64encode(file_bytes).decode("utf-8").replace("\n", "")
+                    # Открываем TIFF изображение через Pillow
+                    with Image.open(photo_path) as img:
+                        # Конвертируем в RGB (важно для TIFF, если там CMYK или слои)
+                        img = img.convert("RGB")
+                        
+                        # Сохраняем в буфер памяти как PNG или JPEG
+                        buffer = io.BytesIO()
+                        img.save(buffer, format="PNG")
+                        file_bytes = buffer.getvalue()
+                        
+                        # Кодируем в Base64
+                        encoded_base64 = base64.b64encode(file_bytes).decode("utf-8")
                     
-                    # Определяем расширение аккуратнее
-                    ext = os.path.splitext(photo_path)[1].lower().strip('.')
-                    if not ext: ext = "jpeg"
-                    mime_type = f"image/{ext if ext != 'jpg' else 'jpeg'}"
+                    # Теперь MIME-тип всегда image/png, так как мы сконвертировали
+                    mime_type = "image/png"
 
-                    # Собираем HTML отдельно, чтобы избежать ошибок форматирования
                     html_code = f"""
                         <div style="width: 100%; text-align: center;">
                             <img src="data:{mime_type};base64,{encoded_base64}" 
@@ -5471,11 +5482,11 @@ with tabs[5]:
                     st.markdown(html_code, unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"Ошибка чтения файла: {e}")
+                    st.error(f"Ошибка при обработке TIFF: {e}")
             else:
-                st.warning("Файл не найден")
-        
-                                
+                st.warning(f"Файл не найден по пути: {photo_path}")
+                
+                                        
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
