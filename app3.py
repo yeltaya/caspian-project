@@ -370,48 +370,43 @@ with tabs[0]: # ОБЗОР
     m4.metric(m4_l, m4_v, m4_d)
 
 
+
     import streamlit as st
     import pandas as pd
     import folium
     from streamlit_folium import st_folium
     import re
-    
-    def show_dashboard(lang): # Добавляем lang как аргумент
+
+    # Функция конвертации координат
+    def dms_to_decimal(dms_str):
         try:
-            # 1. Загрузка данных
+            if pd.isna(dms_str) or str(dms_str).strip() == "": return None
+            numbers = re.findall(r"[-+]?\d*\.\d+|\d+", str(dms_str))
+            if len(numbers) >= 3:
+                deg, mn, sec = map(float, numbers[:3])
+                return deg + mn/60 + sec/3600
+            elif len(numbers) == 1:
+                return float(numbers[0])
+            return None
+        except:
+            return None
+
+    def show_dashboard():
+        try:
+            # Загрузка данных
             df = pd.read_excel("station.xlsx")
             df.columns = df.columns.str.strip()
             df['lat'] = df['широта'].apply(dms_to_decimal)
             df['long'] = df['долгота'].apply(dms_to_decimal)
             df = df.dropna(subset=['lat', 'long'])
 
-            # --- СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ДЕШБОРДА ---
-            translations = {
-                "Русский": {
-                    "map_title": "#### 🗺️ Интерактивная карта сети",
-                    "unit": "станции/постов",
-                    "cats": {"Гидрология": "Гидрология", "Метеорология": "Метеорология", "Экология": "Экология", "Агрометеорология": "Агрометеорология"}
-                },
-                "Қазақша": {
-                    "map_title": "#### 🗺️ Желінің интерактивті картасы",
-                    "unit": "станция/бекет",
-                    "cats": {"Гидрология": "Гидрология", "Метеорология": "Метеорология", "Экология": "Экология", "Агрометеорология": "Агрометеорология"}
-                },
-                "English": {
-                    "map_title": "#### 🗺️ Interactive Network Map",
-                    "unit": "stations/posts",
-                    "cats": {"Гидрология": "Hydrology", "Метеорология": "Meteorology", "Экология": "Ecology", "Агрометеорология": "Agrometeorology"}
-                }
-            }
-            
-            t = translations[lang]
-
-            # Создаем две колонки
+            # Создаем две колонки: 70% для карты, 30% для инфо
             col_map, col_info = st.columns([2.5, 1], gap="medium")
 
             with col_map:
-                st.markdown(t["map_title"])
+                st.markdown("#### 🗺️ Интерактивная карта сети")
                 
+                # Цветовая схема
                 color_map = {
                     "Гидрология": "#0066CC",
                     "Метеорология": "#FF9900",
@@ -423,13 +418,10 @@ with tabs[0]: # ОБЗОР
 
                 for _, row in df.iterrows():
                     icon_color = color_map.get(row['Направление'], '#666666')
-                    # Переводим категорию в поп-апе
-                    translated_cat = t["cats"].get(row['Направление'], row['Направление'])
-                    
                     folium.CircleMarker(
                         location=[row['lat'], row['long']],
                         radius=5,
-                        popup=f"<b>{row['Станция/пост']}</b><br>{translated_cat}",
+                        popup=f"<b>{row['Станция/пост']}</b><br>{row['Направление']}",
                         color=icon_color,
                         fill=True,
                         fill_color=icon_color,
@@ -441,54 +433,70 @@ with tabs[0]: # ОБЗОР
 
             with col_info:
                 st.markdown("####")
-                
-                # Данные статистики
+                        
+                        # Ваши эталонные данные (константы)
                 stats_data = {
-                    "Метеорология": 365,
-                    "Гидрология": 442,
-                    "Агрометеорология": 226,
-                    "Экология": 790
+                            "Метеорология": 365,
+                            "Гидрология": 442,
+                            "Агрометеорология": 226,
+                            "Экология": 790
                 }
-                
+
+            # 2. Локальный словарь названий и подписей
+                if lang == "Қазақша":
+                    names = {"Метеорология": "Метеорология", "Гидрология": "Гидрология", "Агрометеорология": "Агрометеорология", "Экология": "Экология"}
+                    unit_text = "станция/бекет"
+                elif lang == "English":
+                    names = {"Метеорология": "Meteorology", "Гидрология": "Hydrology", "Агрометеорология": "Agrometeorology", "Экология": "Ecology"}
+                    unit_text = "stations/posts"
+                else: # Русский
+                    names = {k: k for k in stats_data.keys()} # Оставляем как есть
+                    unit_text = "станции/постов"
+                    
+                        # Отрисовка карточек
                 for navr, count in stats_data.items():
-                    # Логика иконок
-                    if "Гидр" in navr: emoji, color = "💧", "#0066CC"
-                    elif "Мет" in navr: emoji, color = "🌤️", "#FF9900"
-                    elif "Агр" in navr: emoji, color = "🌱", "#2E7D32"
-                    else: emoji, color = "🧪", "#CC0000"
-                    
-                    # Получаем переведенное название категории
-                    display_name = t["cats"].get(navr, navr)
-                    
+                            # Логика подбора эмодзи и цвета акцента
+                    if "Гидр" in navr:
+                        emoji, color = "💧", "#0066CC"
+                    elif "Мет" in navr:
+                        emoji, color = "🌤️", "#FF9900"
+                    elif "Агр" in navr:
+                        emoji, color = "🌱", "#2E7D32"
+                    else: # Экология
+                        emoji, color = "🧪", "#CC0000"
+                            
+                    # ВАЖНО: используем f-строку с ТРОЙНЫМИ кавычками """
                     st.markdown(f"""
-                        <div style="
-                            background-color: #f8fafc; 
-                            padding: 15px; 
-                            border-radius: 10px; 
-                            border-left: 6px solid {color}; 
-                            margin-bottom: 12px; 
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                        ">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 1.1rem; font-weight: 700; color: #334e68;">
-                                    {emoji} {display_name}
-                                </span>
-                                <span style="font-size: 2.2rem; font-weight: 900; color: {color}; line-height: 1;">
-                                    {count}
-                                </span>
+                            <div style="
+                                background-color: #f8fafc; 
+                                padding: 15px; 
+                                border-radius: 10px; 
+                                border-left: 6px solid {color}; 
+                                margin-bottom: 12px; 
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                            ">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 1.3rem; font-weight: 700; color: #334e68; white-space: nowrap;">
+                                        {emoji} {navr}
+                                    </span>
+                                    <span style="font-size: 2.2rem; font-weight: 900; color: {color}; line-height: 1;">
+                                        {count}
+                                    </span>
+                                </div>
+                                <div style="text-align: right; font-size: 0.9rem; color: #666; margin-top: 2px;">
+                                    станции/постов
+                                </div>
                             </div>
-                            <div style="text-align: right; font-size: 0.9rem; color: #666; margin-top: 2px;">
-                                {t['unit']}
-                            </div>
-                        </div>
-                    """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True) # ПРОВЕРЬТЕ ЭТУ СТРОКУ
+                        
+    
+                    st.markdown("---")
+                
 
         except Exception as e:
-            st.error(f"Ошибка: {e}")
+            st.error(f"Ошибка: {e}. Убедитесь, что файл station.xlsx в порядке.")
 
-    # Вызов функции в коде:
-    # show_dashboard(lang)
-
+    show_dashboard()
 
    
     def show_economic_info():
