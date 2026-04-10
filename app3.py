@@ -10004,67 +10004,77 @@ with tabs[7]:
     import os
 
     def render_wind_dashboard():
-        # Название вашего файла
-        data_file = "Max_wind.xlsx"
+        # Настройки путей (убедитесь, что файлы лежат в папке со скриптом)
+        data_file = "Max_wind.xlsx - Sheet1.csv"
         image_path = "wind_RES5.jpg"
 
+        # Заголовок приложения
         st.title("💨 Мониторинг ветровой активности")
         st.divider()
 
-        col_map, col_charts = st.columns([3, 2])
+        # Две колонки: Карта (слева) и Графики (справа)
+        col_map, col_charts = st.columns([3.5, 2])
 
         with col_map:
             st.subheader("🗺️ Карта ветровых режимов")
             if os.path.exists(image_path):
-                # Увеличенный размер карты
-                st.image(image_path, caption="Карта максимальной скорости ветра", width=850)
+                # Отображение вашей карты. Параметр width=850 делает её крупнее.
+                st.image(image_path, caption="Распределение максимальных скоростей ветра", width=850)
             else:
-                st.error(f"Файл {image_path} не найден.")
+                st.error(f"Файл изображения '{image_path}' не найден.")
+            
+            st.info("💡 **Факт:** Самая высокая скорость (60 м/с) зафиксирована на станции Жаланашколь (Жетысу).")
 
         with col_charts:
-            st.subheader("📈 Динамика по областям")
+            st.subheader("📈 Статистика по областям")
             
             if os.path.exists(data_file):
                 try:
-                    # ИСПРАВЛЕНИЕ: Добавляем encoding='cp1251' для корректного чтения кириллицы
-                    df_all = pd.read_csv(data_file, encoding='cp1251', sep=',')
+                    # Читаем CSV с кодировкой utf-8-sig (она лучше всего понимает кириллицу из Excel)
+                    df = pd.read_csv(data_file, encoding='utf-8-sig')
                     
-                    # Если первая колонка не названа "Год", исправляем это
-                    if df_all.columns[0] != 'Год':
-                        df_all.rename(columns={df_all.columns[0]: 'Год'}, inplace=True)
+                    # Список областей — это все названия колонок, кроме 'Год'
+                    regions = [col for col in df.columns if col != 'Год']
                     
-                    region_list = [col for col in df_all.columns if col != 'Год']
-                    selected_region = st.selectbox("Выберите область:", region_list)
+                    # Выпадающий список для выбора области
+                    selected_region = st.selectbox("Выберите область:", regions)
                     
                     if selected_region:
-                        # Очистка данных
-                        df_all[selected_region] = pd.to_numeric(df_all[selected_region].replace('#Н/Д', None), errors='coerce')
-                        df_plot = df_all.dropna(subset=[selected_region, 'Год'])
+                        # Подготовка данных: убираем ошибки #Н/Д и конвертируем в числа
+                        df[selected_region] = pd.to_numeric(df[selected_region].replace('#Н/Д', None), errors='coerce')
+                        df_plot = df.dropna(subset=[selected_region, 'Год'])
 
+                        # Создание интерактивного графика
                         fig = px.line(
                             df_plot, 
                             x='Год', 
                             y=selected_region,
                             title=f"Абсолютный максимум: {selected_region}",
                             markers=True,
-                            line_shape="linear"
+                            line_shape="linear",
+                            color_discrete_sequence=['#3498db']
                         )
                         
+                        fig.update_layout(
+                            xaxis_title="Год",
+                            yaxis_title="Скорость ветра (м/с)",
+                            hovermode="x unified"
+                        )
+                        
+                        # Вывод графика в Streamlit
                         st.plotly_chart(fig, use_container_width=True)
                         
+                        # Дополнительная информация о рекорде
                         max_val = df_plot[selected_region].max()
-                        st.success(f"⭐ Пиковое значение: **{max_val} м/с**")
+                        year_max = df_plot.loc[df_plot[selected_region].idxmax(), 'Год']
+                        st.success(f"🚩 Рекорд для региона: **{max_val} м/с** (фиксировался в {year_max} г.)")
 
                 except Exception as e:
-                    # Если cp1251 не помог, пробуем utf-8-sig (иногда Excel сохраняет так)
-                    try:
-                        df_all = pd.read_csv(data_file, encoding='utf-8-sig', sep=',')
-                        st.rerun() 
-                    except:
-                        st.error(f"Ошибка при чтении данных: {e}")
+                    st.error(f"Ошибка при обработке CSV: {e}")
             else:
-                st.error(f"Файл данных {data_file} не найден.")
+                st.error(f"Файл данных '{data_file}' не найден.")
 
+    
     
 
         # Нижний блок фактов (вне колонок)
