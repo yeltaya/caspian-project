@@ -433,16 +433,16 @@ with tabs[0]: # ОБЗОР
 
             with col_info:
                 st.markdown("####")
-                        
-                        # Ваши эталонные данные (константы)
+                
+                # 1. Ваши эталонные данные
                 stats_data = {
-                            "Метеорология": 365,
-                            "Гидрология": 442,
-                            "Агрометеорология": 226,
-                            "Экология": 790
+                    "Метеорология": 365,
+                    "Гидрология": 442,
+                    "Агрометеорология": 226,
+                    "Экология": 790
                 }
-
-            # 2. Локальный словарь названий и подписей
+                
+                # 2. Локальный словарь названий и подписей
                 if lang == "Қазақша":
                     names = {"Метеорология": "Метеорология", "Гидрология": "Гидрология", "Агрометеорология": "Агрометеорология", "Экология": "Экология"}
                     unit_text = "станция/бекет"
@@ -452,45 +452,41 @@ with tabs[0]: # ОБЗОР
                 else: # Русский
                     names = {k: k for k in stats_data.keys()} # Оставляем как есть
                     unit_text = "станции/постов"
-                    
-                        # Отрисовка карточек
+
+                # 3. Отрисовка карточек
                 for navr, count in stats_data.items():
-                            # Логика подбора эмодзи и цвета акцента
-                    if "Гидр" in navr:
-                        emoji, color = "💧", "#0066CC"
-                    elif "Мет" in navr:
-                        emoji, color = "🌤️", "#FF9900"
-                    elif "Агр" in navr:
-                        emoji, color = "🌱", "#2E7D32"
-                    else: # Экология
-                        emoji, color = "🧪", "#CC0000"
-                            
-                    # ВАЖНО: используем f-строку с ТРОЙНЫМИ кавычками """
+                    # Подбор эмодзи
+                    if "Гидр" in navr: emoji, color = "💧", "#0066CC"
+                    elif "Мет" in navr: emoji, color = "🌤️", "#FF9900"
+                    elif "Агр" in navr: emoji, color = "🌱", "#2E7D32"
+                    else: emoji, color = "🧪", "#CC0000"
+                    
+                    # Берем переведенное имя из словаря names
+                    display_name = names.get(navr, navr)
+
                     st.markdown(f"""
-                            <div style="
-                                background-color: #f8fafc; 
-                                padding: 15px; 
-                                border-radius: 10px; 
-                                border-left: 6px solid {color}; 
-                                margin-bottom: 12px; 
-                                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                            ">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 1.3rem; font-weight: 700; color: #334e68; white-space: nowrap;">
-                                        {emoji} {navr}
-                                    </span>
-                                    <span style="font-size: 2.2rem; font-weight: 900; color: {color}; line-height: 1;">
-                                        {count}
-                                    </span>
-                                </div>
-                                <div style="text-align: right; font-size: 0.9rem; color: #666; margin-top: 2px;">
-                                    станции/постов
-                                </div>
+                        <div style="
+                            background-color: #f8fafc; 
+                            padding: 15px; 
+                            border-radius: 10px; 
+                            border-left: 6px solid {color}; 
+                            margin-bottom: 12px; 
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                        ">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 1.1rem; font-weight: 700; color: #334e68; white-space: nowrap;">
+                                    {emoji} {display_name}
+                                </span>
+                                <span style="font-size: 2.2rem; font-weight: 900; color: {color}; line-height: 1;">
+                                    {count}
+                                </span>
                             </div>
-                        """, unsafe_allow_html=True) # ПРОВЕРЬТЕ ЭТУ СТРОКУ
-                        
-    
-                    st.markdown("---")
+                            <div style="text-align: right; font-size: 0.9rem; color: #666; margin-top: 2px;">
+                                {unit_text}
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
+        
                 
 
         except Exception as e:
