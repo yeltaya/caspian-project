@@ -5446,38 +5446,35 @@ with tabs[5]:
             # Увеличиваем пропорцию колонки для изображения
             img_col, info_col = st.columns([2, 1])
             
+
         with img_col:
             if photo_filename and os.path.exists(photo_path):
                 try:
-                    # Используем родной метод Streamlit — это надежнее и быстрее
-                    st.image(
-                        photo_path, 
-                        use_container_width=True, # Растягивает на всю ширину колонки
-                        output_format="auto"
-                    )
+                    with open(photo_path, "rb") as f:
+                        file_bytes = f.read()
+                        # Очищаем base64 от возможных переносов строк .replace("\n", "")
+                        encoded_base64 = base64.b64encode(file_bytes).decode("utf-8").replace("\n", "")
                     
-                    # Подпись делаем через markdown, если нужен особый стиль
-                    st.markdown(
-                        f"""
-                        <p style="color: gray; font-size: 0.9rem; text-align: center; margin-top: -10px;">
-                            Вид бассейна: {name}
-                        </p>
-                        """, 
-                        unsafe_allow_html=True
-                    )
-                    
+                    # Определяем расширение аккуратнее
+                    ext = os.path.splitext(photo_path)[1].lower().strip('.')
+                    if not ext: ext = "jpeg"
+                    mime_type = f"image/{ext if ext != 'jpg' else 'jpeg'}"
+
+                    # Собираем HTML отдельно, чтобы избежать ошибок форматирования
+                    html_code = f"""
+                        <div style="width: 100%; text-align: center;">
+                            <img src="data:{mime_type};base64,{encoded_base64}" 
+                                 style="width: 100%; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                            <p style="color: gray; margin-top: 8px;">Вид бассейна: {name}</p>
+                        </div>
+                    """
+                    st.markdown(html_code, unsafe_allow_html=True)
+
                 except Exception as e:
-                    st.error(f"Ошибка при загрузке фото {name}: {e}")
+                    st.error(f"Ошибка чтения файла: {e}")
             else:
-                # Логика заглушки остается прежней
-                st.info(f"📸 Фото для {name} не найдено")
-                if not photo_filename:
-                    st.error("В справочнике не указано имя файла")
-                else:
-                    st.warning(f"Путь не найден: {photo_path}")
-                
-                st.image("https://via.placeholder.com/800x500?text=No+Image", use_container_width=True)
-                
+                st.warning("Файл не найден")
+        
                                 
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
