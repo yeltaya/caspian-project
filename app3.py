@@ -10093,31 +10093,42 @@ with tabs[8]:
     # 2. Получаем строку изображения
     img_data = get_base64_image("nmu.png")
 
+        
     with tab1:
         st.markdown("### 🌬️ Прогноз неблагоприятных метеорологических условий")
         
+        # col_a — текст, col_b — изображение nmu.png и iframe под ним
         col_a, col_b = st.columns([1, 2])
         
         with col_a:
-            with st.container():
-                # Формируем HTML. Если картинка найдена — вставляем её, если нет — выводим текст заглушку
-                img_html = f'<img src="data:image/png;base64,{img_data}" style="width:100%; border-radius:8px; margin-top:10px; border: 1px solid #ddd;">' if img_data else "Изображение nmu.png не найдено"
-                
-                st.markdown(f"""
-                <div class="stCard">
-                    <h4>Прогноз НМУ</h4>
-                    <p>Предоставляем прогнозы неблагоприятных метеоусловий (НМУ), важные для предупреждения возможных проблем с качеством воздуха.</p>
-                    <p>Бюллетени для городов Казахстана публикуются на официальном сайте, предоставляя жителям информацию о предстоящих условиях.</p>
-                    <a href="https://www.kazhydromet.kz/ru/ecology/ezhednevnyy-byulleten-sostoyaniya-vozdushnogo-basseyna-nmu" target="_blank">
-                        {img_html}
-                    </a>
-                </div>
-                """, unsafe_allow_html=True)
-                
+            # Текстовое описание в левой колонке
+            st.markdown(f"""
+            <div class="stCard">
+                <h4>Прогноз НМУ</h4>
+                <p>Предоставляем прогнозы неблагоприятных метеоусловий (НМУ), важные для предупреждения возможных проблем с качеством воздуха.</p>
+                <p>Бюллетени для городов Казахстана публикуются на официальном сайте, предоставляя жителям информацию о предстоящих условиях.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
             st.info("💡 На карте справа можно просмотреть визуализацию данных в режиме реального времени.")
 
         with col_b:
-            st.components.v1.iframe("https://ecodata.kz:3838/app_dem_visual/", height=600, scrolling=True)
+            # Формируем HTML для изображения nmu.png
+            img_html = (
+                f'<img src="data:image/png;base64,{img_data}" style="width:100%; border-radius:8px; border: 1px solid #ddd; margin-bottom: 15px;">'
+                if img_data else "Изображение nmu.png не найдено"
+            )
+            
+            # Размещаем кликабельный рисунок сверху в правой колонке
+            st.markdown(f"""
+                <a href="https://www.kazhydromet.kz/ru/ecology/ezhednevnyy-byulleten-sostoyaniya-vozdushnogo-basseyna-nmu" target="_blank">
+                    {img_html}
+                </a>
+            """, unsafe_allow_html=True)
+            
+            # Интерактивный рисунок (iframe) ниже под картинкой
+            st.components.v1.iframe("https://ecodata.kz:3838/app_dem_visual/", height=500, scrolling=True)
+            
             
                               
     with tab2:
