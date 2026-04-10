@@ -4,6 +4,21 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
+# 1. Размещаем переключатель в верхней части страницы
+col1, col2 = st.columns([4, 1]) # Соотношение 4 к 1, чтобы сдвинуть выбор вправо
+
+with col2:
+    lang = st.selectbox(
+        "Язык / Тіл", 
+        ["Русский", "Қазақша", "English"],
+        label_visibility="collapsed" # Скрываем надпись, чтобы было компактнее
+    )
+
+# Разделительная линия для красоты
+st.divider()
+
+
+
 # --- 1. КОНФИГУРАЦИЯ ЦВЕТОВ ---
 DARK_BLUE = "#001F3F"
 ACCENT_BLUE = "#0072FF"
