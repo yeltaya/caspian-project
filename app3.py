@@ -1015,87 +1015,94 @@ with tabs[0]: # ОБЗОР
     # Вызов функции с передачей текущего языка
     show_monitoring_block(lang)
 
-    import base64
     import os
     import streamlit as st
 
-    def show_ecology_block():
-        # Названия файлов
+    def show_ecology_block(lang):
+        # 1. Названия файлов
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
-        # Убедитесь, что path_airkz определен здесь или выше
         path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") 
 
+        # 2. Словарь переводов
+        translations = {
+            "Русский": {
+                "header": "🧪 Экологическая оценка",
+                "sub": "Комплексный экологический мониторинг",
+                "list": """
+                * 🌫️ **Атмосферный воздух** — контроль уровня загрязнения в городах и промышленных зонах.
+                * ❄️ **Осадки и снежный покров** — анализ химического состава и накоплений.
+                * ☢️ **Радиационный мониторинг** — замер гамма-фона и плотности выпадений.
+                * 🌱 **Состояние почв** — оценка содержания тяжелых металлов и пестицидов.
+                * 💧 **Поверхностные воды** — контроль качества воды в реках и озерах.
+                * 🌉 **Трансграничные водотоки** — мониторинг объектов на границах.
+                """,
+                "app_title": "#### 📱 Мобильное приложение «AirKZ»",
+                "app_desc": "«AirKZ» отслеживает качество атмосферного воздуха на всей территории Казахстана. Приложение автоматически определяет ближайший пост по данным геолокации.",
+                "app_caption": "📲 Доступно в App Store и Google Play",
+                "silam_desc": "Интерактивная модель SILAM.",
+                "silam_link": "Открыть в новом окне"
+            },
+            "Қазақша": {
+                "header": "🧪 Экологиялық бағалау",
+                "sub": "Кешенді экологиялық мониторинг",
+                "list": """
+                * 🌫️ **Атмосфералық ауа** — қалалар мен өнеркәсіптік аймақтардағы ластану деңгейін бақылау.
+                * ❄️ **Жауын-шашын және қар жамылғысы** — химиялық құрамы мен жиналуын талдау.
+                * ☢️ **Радиациялық мониторинг** — гамма-фонды және шөгу тығыздығын өлшеу.
+                * 🌱 **Топырақ күйі** — ауыр металдар мен пестицидтердің мөлшерін бағалау.
+                * 💧 **Беткі сулар** — өзендер мен көлдердегі су сапасын бақылау.
+                * 🌉 **Трансшекаралық су ағындары** — шекарадағы нысандарды мониторингілеу.
+                """,
+                "app_title": "#### 📱 «AirKZ» мобильді қосымшасы",
+                "app_desc": "«AirKZ» бүкіл Қазақстан аумағындағы атмосфералық ауаның сапасын бақылайды. Қосымша геолокация деректері бойынша ең жақын бекетті автоматты түрде анықтайды.",
+                "app_caption": "📲 App Store және Google Play дүкендерінде қолжетімді",
+                "silam_desc": "SILAM интерактивті моделі.",
+                "silam_link": "Жаңа терезеде ашу"
+            },
+            "English": {
+                "header": "🧪 Environmental Assessment",
+                "sub": "Comprehensive Environmental Monitoring",
+                "list": """
+                * 🌫️ **Ambient Air** — monitoring pollution levels in cities and industrial zones.
+                * ❄️ **Precipitation and Snow Cover** — analysis of chemical composition and accumulation.
+                * ☢️ **Radiation Monitoring** — measurement of gamma background and deposition density.
+                * 🌱 **Soil Condition** — assessment of heavy metals and pesticides content.
+                * 💧 **Surface Waters** — water quality control in rivers and lakes.
+                * 🌉 **Transboundary Watercourses** — monitoring of objects at borders.
+                """,
+                "app_title": "#### 📱 'AirKZ' Mobile Application",
+                "app_desc": "'AirKZ' monitors atmospheric air quality throughout Kazakhstan. The app automatically determines the nearest station using geolocation data.",
+                "app_caption": "📲 Available on App Store and Google Play",
+                "silam_desc": "Interactive SILAM model.",
+                "silam_link": "Open in new window"
+            }
+        }
+
+        t = translations.get(lang, translations["Русский"])
+
+        # 3. Отрисовка
         st.markdown("---")
-        st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
-        
-        col_text, col_visual = st.columns([1.5, 1], gap="large")
-
-        with col_text:
-            st.subheader("Комплексный экологический мониторинг")
-            st.write("""
-            * 🌫️ **Атмосферный воздух** — контроль уровня загрязнения в городах и промышленных зонах.
-            * ❄️ **Осадки и снежный покров** — анализ химического состава и накоплений.
-            * ☢️ **Радиационный мониторинг** — замер гамма-фона и плотности выпадений.
-            * 🌱 **Состояние почв** — оценка содержания тяжелых металлов и пестицидов.
-            * 💧 **Поверхностные воды** — контроль качества воды в реках и озерах.
-            * 🌉 **Трансграничные водотоки** — мониторинг объектов на границах.
-            """)
-            
-            st.markdown("#### 📱 Мобильное приложение «AirKZ»")
-            st.write("""
-            «AirKZ» отслеживает качество атмосферного воздуха на всей территории Казахстана. 
-            Приложение автоматически определяет ближайший пост по данным геолокации.
-            """)
-            
-            if os.path.exists(path_airkz):
-                st.image(path_airkz, width=400)
-            else:
-                st.caption("📲 Доступно в App Store и Google Play")
-
-    def show_ecology_block():
-        # Названия файлов
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        path_eco_gif = os.path.join(BASE_DIR, "eco.gif")
-        # Убедитесь, что path_airkz определен здесь или выше
-        path_airkz = os.path.join(BASE_DIR, "airkz_promo.png") 
-
-        st.markdown("---")
-        st.markdown("<h2 style='text-align: center; color: #003366;'>🧪 Экологическая оценка</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 style='text-align: center; color: #003366;'>{t['header']}</h2>", unsafe_allow_html=True)
         
         col_text, col_visual = st.columns([1.2, 1.3], gap="large")
 
         with col_text:
-            st.subheader("Комплексный экологический мониторинг")
-            st.write("""
-            * 🌫️ **Атмосферный воздух** — контроль уровня загрязнения в городах и промышленных зонах.
-            * ❄️ **Осадки и снежный покров** — анализ химического состава и накоплений.
-            * ☢️ **Радиационный мониторинг** — замер гамма-фона и плотности выпадений.
-            * 🌱 **Состояние почв** — оценка содержания тяжелых металлов и пестицидов.
-            * 💧 **Поверхностные воды** — контроль качества воды в реках и озерах.
-            * 🌉 **Трансграничные водотоки** — мониторинг объектов на границах.
-            """)
+            st.subheader(t['sub'])
+            st.write(t['list'])
             
-            st.markdown("#### 📱 Мобильное приложение «AirKZ»")
-            st.write("""
-            «AirKZ» отслеживает качество атмосферного воздуха на всей территории Казахстана. 
-            Приложение автоматически определяет ближайший пост по данным геолокации.
-            """)
+            st.markdown(t['app_title'])
+            st.write(t['app_desc'])
             
             if os.path.exists(path_airkz):
                 st.image(path_airkz, width=400)
             else:
-                st.caption("📲 Доступно в App Store и Google Play")
+                st.caption(t['app_caption'])
 
         with col_visual:
-            # Убираем все старые гифки и линии
-            st.write("##") # Отступ для выравнивания с заголовком
+            st.write("##") # Отступ
             
-            # Ссылка на интерактивную карту SILAM
             silam_url = "https://www.kazhydromet.kz/vc/silam/"
             
-            # Вставляем сайт через HTML iframe
-            # height=500 можно менять, чтобы подстроить под высоту текста слева
             st.markdown(
                 f"""
                 <iframe 
@@ -1111,14 +1118,14 @@ with tabs[0]: # ОБЗОР
             
             st.markdown(
                 f"<p style='text-align: center; color: gray; font-size: 14px;'>"
-                f"Интерактивная модель SILAM. <a href='{silam_url}' target='_blank'>Открыть в новом окне</a>"
+                f"{t['silam_desc']} <a href='{silam_url}' target='_blank'>{t['silam_link']}</a>"
                 f"</p>", 
                 unsafe_allow_html=True
             )
-                                    
-                        
-    # ВЫЗОВ ФУНКЦИИ - СТОИТ ВПЛОТНУЮ К ЛЕВОМУ КРАЮ:
-    show_ecology_block()
+
+    # Вызов функции
+    show_ecology_block(lang)
+
 
 
 
