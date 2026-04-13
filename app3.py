@@ -2877,34 +2877,7 @@ with tabs[1]:
     st.markdown("<br>", unsafe_allow_html=True)
  
  
-    import streamlit as st
-    import pandas as pd
-    import numpy as np
-    import plotly.express as px
-    from datetime import datetime, timedelta
-
-            # --- ГЕНЕРАЦИЯ ДАННЫХ (для демонстрации) ---
-            # В реальном проекте здесь будет загрузка вашего лога предупреждений
-    def get_heatmap_data():
-                end_date = datetime(2026, 2, 20) # Текущая дата по инструкции
-                start_date = end_date - timedelta(days=364)
-                date_range = pd.date_range(start=start_date, end=end_date)
-                
-                # Имитируем активность: осенью и весной (сезоны штормов) данных больше
-                data = []
-                for date in date_range:
-                    month = date.month
-                    if month in [3, 4, 10, 11]: # Пиковые месяцы
-                        count = np.random.randint(40, 100)
-                    else:
-                        count = np.random.randint(10, 50)
-                    data.append({"Дата": date, "Предупреждения": count, "День": date.strftime('%a'), "Неделя": date.isocalendar()[1]})
-                
-                return pd.DataFrame(data)
-
-    df_heat = get_heatmap_data()
-
-      
+  
         
         
             # 7. ГИДРОЛОГИЧЕСКИЙ МОНИТОРИНГ
