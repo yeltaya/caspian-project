@@ -3469,23 +3469,17 @@ with tabs[1]:
     }
 
     # --- 1. ПРИНУДИТЕЛЬНО ОБНОВЛЯЕМ ПЕРЕМЕННУЮ ЯЗЫКА ИЗ СЕССИИ ---
-    # Это гарантирует, что блок увидит смену языка в меню
-    lang = st.session_state.get('lang', 'Русский')
+# Проверяем оба возможных ключа в сессии
+raw_selection = st.session_state.get('lang') or st.session_state.get('language') or 'Русский'
 
-    # --- 2. ВЫБИРАЕМ АКТИВНЫЙ СПИСОК (И словарь текстов) ---
-    if lang == "Русский":
-        current_tabs = tabs_ru
-        L = "ru"
-    elif lang == "Қазақша":
-        current_tabs = tabs_kk
-        L = "kz"
-    else:
-        current_tabs = tabs_en
-        L = "en"
+lang_map = {
+    "Русский": "ru",
+    "Қазақша": "kz",
+    "English": "en"
+}
+L = lang_map.get(raw_selection, "ru")
+txt = AGRO_CONTENT[L]
 
-    # --- 3. ПОЛУЧАЕМ ТЕКСТЫ ИЗ ВАШЕГО СЛОВАРЯ AGRO_CONTENT ---
-    # Убедитесь, что словарь AGRO_CONTENT определен выше этого места
-    txt = AGRO_CONTENT[L]
 
     # --- 4. ВЫВОД ЗАГОЛОВКА (ОБЯЗАТЕЛЬНО ЧЕРЕЗ f-строку и txt) ---
     st.markdown(f"""
