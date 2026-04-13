@@ -3436,27 +3436,23 @@ with tabs[1]:
 
 
  #ЭКОЛОГИЧЕНСКИЙ МОНИТОРИНГ
-    # 1. Определяем переводы
-    translations = {
-        'RU': {
-            'title': 'Экологический мониторинг Казахстана',
-            'subtitle': 'Государственная сеть наблюдения за качеством природной среды'
+    # Словарь переводов (разместите его перед выводом блока)
+    content = {
+        "ru": {
+            "header": "Экологический мониторинг Казахстана",
+            "subheader": "Государственная сеть наблюдения за качеством природной среды"
         },
-        'KZ': {
-            'title': 'Қазақстанның экологиялық мониторингі',
-            'subtitle': 'Табиғи ортаның сапасын бақылаудың мемлекеттік желісі'
+        "kz": {
+            "header": "Қазақстанның экологиялық мониторингі",
+            "subheader": "Табиғи ортаның сапасын бақылаудың мемлекеттік желісі"
         },
-        'EN': {
-            'title': 'Environmental Monitoring of Kazakhstan',
-            'subtitle': 'State network for environmental quality observation'
+        "en": {
+            "header": "Environmental Monitoring of Kazakhstan",
+            "subheader": "State network for environmental quality observation"
         }
     }
 
-    # 2. Выбор языка (обычно через sidebar или радио-кнопку)
-    # Если у вас уже есть выбор языка, просто используйте вашу переменную вместо lang
-    lang = st.sidebar.selectbox("Language / Тіл / Язык", ["RU", "KZ", "EN"])
-
-    # 3. Вывод блока
+    # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
     st.markdown(f"""
         <style>
         .monitor-card {{
@@ -3495,13 +3491,14 @@ with tabs[1]:
         
         <div style="text-align:center; margin: 40px 0 30px 0;">
             <h2 style="color: #003366; font-family: 'Exo 2'; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">
-                {translations[lang]['title']}
+                {content[lang_code]['header']}
             </h2>
             <p style="color: #546e7a; font-size: 1.2em;">
-                {translations[lang]['subtitle']}
+                {content[lang_code]['subheader']}
             </p>
         </div>
     """, unsafe_allow_html=True)
+
 
     # --- ПЕРВЫЙ РЯД КАРТОЧЕК ---
     col1, col2, col3 = st.columns(3)
