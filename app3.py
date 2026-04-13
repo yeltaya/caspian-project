@@ -1450,132 +1450,196 @@ with tabs[1]:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-# 5. КАРТОЧКИ НАПРАВЛЕНИЙ
-    col1, col2, col3, col4 = st.columns(4)
-    
-    sections = [
-        {"title": "🌡️ Метеорология", "total": "351 Станция", "items": ["225 Традиционных", "126 Автоматических", "9 Аэрологических", "5 ДМРЛ"]},
-        {"title": "💧 Гидрология", "total": "442 Поста", "items": ["394 Речных поста", "38 Озерных", "10 Морских станций"]},
-        {"title": "🌾 Агрометеорология", "total": "226 Пунктов", "items": ["129 На станциях", "97 Постов:", "50 Автоматических", "47 Традиционных (ручных)"]},
-        {"title": "🌱 Экология", "total": "175 Постов", "items": ["131 Автоматических", "44 Ручных", "15 Передвижных лабораторий"]}
-    ]
+    # 1. СЛОВАРЬ ДАННЫХ ДЛЯ КАРТОЧЕК
+    sections_lang = {
+        "Русский": [
+            {"title": "🌡️ Метеорология", "total": "351 Станция", "items": ["225 Традиционных", "126 Автоматических", "9 Аэрологических", "5 ДМРЛ"]},
+            {"title": "💧 Гидрология", "total": "442 Поста", "items": ["394 Речных", "38 Озерных", "10 Морских"]},
+            {"title": "🌾 Агрометеорология", "total": "226 Пунктов", "items": ["129 Станций", "97 Постов", "50 Автоматических", "47 Традиционных"]},
+            {"title": "🌱 Экология", "total": "175 Постов", "items": ["131 Автоматических", "44 Ручных", "15 Лабораторий"]}
+        ],
+        "Қазақша": [
+            {"title": "🌡️ Метеорология", "total": "351 Станция", "items": ["225 Дәстүрлі", "126 Автоматты", "9 Аэрологиялық", "5 ДМРЛ"]},
+            {"title": "💧 Гидрология", "total": "442 Бекет", "items": ["394 Өзен", "38 Көл", "10 Теңіз"]},
+            {"title": "🌾 Агрометеорология", "total": "226 Пункт", "items": ["129 Станция", "97 Бекет", "50 Автоматты", "47 Дәстүрлі"]},
+            {"title": "🌱 Экология", "total": "175 Бекет", "items": ["131 Автоматты", "44 Қолмен", "15 Зертхана"]}
+        ],
+        "English": [
+            {"title": "🌡️ Meteorology", "total": "351 Stations", "items": ["225 Traditional", "126 Automatic", "9 Aerological", "5 DWR"]},
+            {"title": "💧 Hydrology", "total": "442 Posts", "items": ["394 River", "38 Lake", "10 Marine"]},
+            {"title": "🌾 Agrometeorology", "total": "226 Points", "items": ["129 At stations", "97 Posts", "50 Automatic", "47 Traditional"]},
+            {"title": "🌱 Ecology", "total": "175 Posts", "items": ["131 Automatic", "44 Manual", "15 Laboratories"]}
+        ]
+    }
 
+    # Выбираем текущие секции (lang должен быть определен в коде ранее)
+    current_sections = sections_lang.get(lang, sections_lang["Русский"])
+
+    # 2. ОТРИСОВКА КАРТОЧЕК
+    col1, col2, col3, col4 = st.columns(4)
     cols = [col1, col2, col3, col4]
-    for i, sec in enumerate(sections):
+
+    for i, sec in enumerate(current_sections):
         with cols[i]:
-            # Разделяем общее количество для увеличения шрифта
+            # Логика разделения числа и текста (например, "351 Станция")
             total_parts = sec['total'].split()
             v_total = total_parts[0]
             l_total = " ".join(total_parts[1:])
             
-            # Собираем список подпунктов
-            items_html = "".join([
-                f'<li style="margin-bottom:5px;list-style:none;">'
-                f'<span style="font-weight:700;color:#004A99;">{it.split()[0]}</span> '
-                f'{" ".join(it.split()[1:])}</li>' 
-                for it in sec["items"]
-            ])
+            # Сборка списка подпунктов
+            items_html = ""
+            for it in sec["items"]:
+                parts = it.split()
+                # Первый элемент (число) делаем жирным, остальное — обычным текстом
+                num = parts[0]
+                desc = " ".join(parts[1:])
+                items_html += (
+                    f'<li style="margin-bottom:5px; list-style:none;">'
+                    f'<span style="font-weight:700; color:#004A99;">{num}</span> {desc}'
+                    f'</li>'
+                )
 
-            # Возвращаем белый стиль карточки (monitor-card)
+            # HTML-контент карточки
             card_content = (
-                f'<div class="monitor-card" style="background: white; border: 1px solid #eee; padding: 15px; border-radius: 8px;">'
-                f'<div class="card-header-text" style="font-weight:bold; margin-bottom:10px;">{sec["title"]}</div>'
+                f'<div class="monitor-card" style="background: white; border: 1px solid #eee; padding: 15px; border-radius: 8px; min-height: 320px;">'
+                f'<div class="card-header-text" style="font-weight:bold; margin-bottom:10px; color:#1f2937;">{sec["title"]}</div>'
                 f'<div style="margin-bottom:15px;">'
                 f'<span style="font-size:32px; font-weight:800; color:#004A99; line-height:1;">{v_total}</span> '
                 f'<span style="font-size:16px; font-weight:600; color:#455a64;">{l_total}</span>'
                 f'</div>'
-                f'<ul style="padding-left:0; margin:0; font-size:0.95em;">{items_html}</ul>'
+                f'<ul style="padding-left:0; margin:0; font-size:0.95em; color:#4b5563;">{items_html}</ul>'
                 f'</div>'
             )
             
             st.markdown(card_content, unsafe_allow_html=True)
 
-    # Линия-разделитель после блока карточек
     st.divider()
+
      
 
-# 7. МЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
-    st.markdown("""
-            <div style="text-align:center; margin: 40px 0 20px 0;">
-                <h2 style="color: #004A99; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
-                    Метеорологический мониторинг
-                </h2>
-                <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">Единая национальная сеть комплексного мониторинга приземных и высоких слоев атмосферы, интегрированная в глобальную систему обмена данными ВМО</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
+    # 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ МЕТЕО-МОНИТОРИНГА
+    translations = {
+        "Русский": {
+            "title": "Метеорологический мониторинг",
+            "subtitle": "Единая национальная сеть комплексного мониторинга приземных и высоких слоев атмосферы, интегрированная в глобальную систему обмена данными ВМО",
+            "label1": "Метеостанций в сети",
+            "label2": "автоматизированная передача данных",
+            "label3": "Срок наблюдений",
+            "label4": "Глобальный обмен",
+            "label5": "Вековых станций",
+            "label6": "Телеграмм/год (МС)",
+            "label7": "Телеграмм/год (АМС)",
+            "val3": "3 часа"
+        },
+        "Қазақша": {
+            "title": "Метеорологиялық мониторинг",
+            "subtitle": "ДМҰ жаһандық деректер алмасу жүйесіне интеграцияланған атмосфераның жер беті және жоғары қабаттарының кешенді мониторингінің бірыңғай ұлттық желісі",
+            "label1": "Желідегі метеостанциялар",
+            "label2": "деректерді автоматты түрде беру",
+            "label3": "Бақылау мерзімі",
+            "label4": "Жаһандық алмасу",
+            "label5": "Ғасырлық станциялар",
+            "label6": "Жеделхат/жыл (МС)",
+            "label7": "Жеделхат/жыл (АМС)",
+            "val3": "3 сағат"
+        },
+        "English": {
+            "title": "Meteorological Monitoring",
+            "subtitle": "A unified national network for comprehensive monitoring of surface and upper layers of the atmosphere, integrated into the WMO global data exchange system",
+            "label1": "Weather stations in network",
+            "label2": "automated data transmission",
+            "label3": "Observation interval",
+            "label4": "Global exchange",
+            "label5": "Centennial stations",
+            "label6": "Telegrams/year (MS)",
+            "label7": "Telegrams/year (AMS)",
+            "val3": "3 hours"
+        }
+    }
 
-    # 7.1 HIGHLIGHTS (Ключевые показатели метеосети)
+    t = translations.get(lang, translations["Русский"])
+
+    # 2. HEADER
     st.markdown(f"""
-            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 30px;">
-                <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #003366; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 0.8em;">🏢</span>
-                        <div>
-                            <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">351</div>
-                            <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">Метеостанций в сети</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #004A99; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 1.8em;">📲</span>
-                        <div>
-                            <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">100%</div>
-                            <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">автоматизированная передача данных</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #0288d1; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 1.8em;">⏱️</span>
-                        <div>
-                            <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">3 часа</div>
-                            <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">Срок наблюдений</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #03a9f4; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 1.8em;">🌐</span>
-                        <div>
-                            <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">WMO</div>
-                            <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">Глобальный обмен</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #26c6da; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 1.8em;">🏛️</span>
-                        <div>
-                            <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">19</div>
-                            <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">Вековых станций</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #4fc3f7; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 1.8em;">📧</span>
-                        <div>
-                            <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">658 800</div>
-                            <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">Телеграмм/год (МС)</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #81d4fa; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 1.8em;">📡</span>
-                        <div>
-                            <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">1 106 784</div>
-                            <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">Телеграмм/год (АМС)</div>
-                        </div>
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #004A99; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
+                {t['title']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">{t['subtitle']}</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # 3. HIGHLIGHTS (Ключевые показатели)
+    st.markdown(f"""
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 30px;">
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #003366; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">🏢</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">351</div>
+                        <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">{t['label1']}</div>
                     </div>
                 </div>
             </div>
-        """, unsafe_allow_html=True)
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #004A99; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">📲</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">100%</div>
+                        <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">{t['label2']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #0288d1; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">⏱️</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">{t['val3']}</div>
+                        <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">{t['label3']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #03a9f4; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">🌐</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">WMO</div>
+                        <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">{t['label4']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #26c6da; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">🏛️</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">19</div>
+                        <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">{t['label5']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #4fc3f7; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">📧</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">658 800</div>
+                        <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">{t['label6']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #81d4fa; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">📡</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">1 106 784</div>
+                        <div style="font-size: 0.7em; color: #546e7a; text-transform: uppercase; font-weight: 700; letter-spacing: 1.0px;">{t['label7']}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
-        
-    st.markdown("<br>", unsafe_allow_html=True) 
+    st.markdown("<br>", unsafe_allow_html=True)
+
 
     import streamlit as st
     from PIL import Image
