@@ -3438,12 +3438,9 @@ with tabs[1]:
 
     import streamlit as st
     import os
-    import base64  # ОБЯЗАТЕЛЬНО ДОБАВЬТЕ ЭТУ СТРОКУ
-                   
-            
-# 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
+    import base64
 
-    # --- 1. ОПРЕДЕЛЕНИЕ СЛОВАРЕЙ (В самом начале блока) ---
+    # --- 1. ОПРЕДЕЛЕНИЕ СЛОВАРЕЙ (Вынесите их в начало скрипта, если возможно) ---
     AGRO_CONTENT = {
         "ru": {
             "header_title": "Агрометеорологический мониторинг",
@@ -3471,16 +3468,25 @@ with tabs[1]:
         }
     }
 
-    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
-    # Сопоставляем то, что выбрал пользователь, с ключами словаря
-    raw_lang = st.session_state.get('lang', 'Русский')
-    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
-    L = lang_map.get(raw_lang, "ru") # Короткая переменная для удобства
+    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА (ПРОВЕРЕННАЯ) ---
+    # Получаем значение. Если в сессии пусто, ставим Русский
+    current_selection = st.session_state.get('lang', 'Русский')
 
-    # Получаем пакет текстов для текущего языка
+    # Создаем мапу (важно: ключи должны точно совпадать с текстом в вашем selectbox)
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+
+    # Получаем код языка (ru, kz или en)
+    L = lang_map.get(current_selection, "ru")
+
+    # Выбираем контент
     txt = AGRO_CONTENT[L]
 
-    # --- 3. ВЫВОД ЗАГОЛОВКА (ИСПОЛЬЗУЯ ПЕРЕМЕННЫЕ) ---
+    # --- 3. ВЫВОД ---
+    # Заголовок
     st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
             <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
@@ -3492,29 +3498,28 @@ with tabs[1]:
         </div>
     """, unsafe_allow_html=True)
 
-    # --- 4. ВЫВОД КАРТЫ И ОПИСАНИЯ ---
     st.markdown(txt["map_title"])
 
     col_map, col_text = st.columns([1.5, 0.5])
 
     with col_map:
-        # Логика загрузки фото AGRO.jpg
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         if os.path.exists(img_path):
             with open(img_path, "rb") as f:
-                data = base64.b64encode(f.read()).decode("utf-8")
-            st.markdown(f'<img src="data:image/jpeg;base64,{data}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
+                encoded = base64.b64encode(f.read()).decode("utf-8")
+            st.markdown(f'<img src="data:image/jpeg;base64,{encoded}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
         else:
-            st.error("Файл AGRO.jpg не найден!")
+            st.error("Файл AGRO.jpg не найден")
 
     with col_text:
         st.markdown("---")
-        st.write(txt["main_text"]) # ТЕПЕРЬ ТУТ ПЕРЕМЕННАЯ
+        st.write(txt["main_text"])
         st.markdown(txt["crops_title"])
         for crop in txt["crops"]:
             st.markdown(f"* {crop}")
             
+                
 
 
             
