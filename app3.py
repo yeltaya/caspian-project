@@ -1958,6 +1958,34 @@ with tabs[1]:
 
     SHP_PATH = "kaz 17 obl.shp"
 
+    import streamlit as st
+    import pandas as pd
+    import os
+
+    # Инициализация - ЭТО ВАЖНО для предотвращения NameError
+    df_stations = None 
+
+    # Определение путей
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    XLSX_PATH = os.path.join(base_path, "MS tizimi.xlsx")
+
+    @st.cache_data
+    def load_stations_from_excel(path):
+        if not os.path.exists(path):
+            return None
+        try:
+            df = pd.read_excel(path, skiprows=1)
+            df.columns = [str(c).strip() for c in df.columns]
+            if 'ФИЛИАЛ' in df.columns:
+                df['ФИЛИАЛ'] = df['ФИЛИАЛ'].ffill()
+            return df
+        except Exception as e:
+            st.error(f"Ошибка загрузки Excel: {e}")
+            return None
+
+    # Вызываем загрузку здесь, в глобальной области
+    df_stations = load_stations_from_excel(XLSX_PATH)
+
 
     # 1. СЛОВАРЬ ПЕРЕВОДОВ ИНТЕРФЕЙСА
     ui_translations = {
