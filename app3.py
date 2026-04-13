@@ -4050,9 +4050,9 @@ with tabs[2]:
             color: #1E3A8A; 
             margin-bottom: 10px; 
             line-height: 1.2;
-            font-size: 3rem;
+            font-size: 2rem;
         }
-        .forecast-card .description { color: #546e7a; font-size: 0.85rem; }
+        .forecast-card .description { color: #546e7a; font-size: 1.0rem; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -4112,23 +4112,23 @@ with tabs[2]:
     st.markdown(f"""
     <div class="kazakh-font" style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 25px 40px; border-radius: 60px; border: 1.2px solid #dee2e6; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
         <div style="text-align: center; flex: 1;">
-            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h1']}</strong><br>
-            <span style="color: #546e7a; font-size: 0.85rem;">{p['s1']}</span>
+            <strong style="color: #1E3A8A; font-size: 1.5rem;">{p['h1']}</strong><br>
+            <span style="color: #546e7a; font-size: 1.0rem;">{p['s1']}</span>
         </div>
         <div style="color: #2563EB; font-weight: bold; padding: 0 10px;">➡</div>
         <div style="text-align: center; flex: 1;">
-            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h2']}</strong><br>
-            <span style="color: #546e7a; font-size: 0.85rem;">{p['s2']}</span>
+            <strong style="color: #1E3A8A; font-size: 1.5rem;">{p['h2']}</strong><br>
+            <span style="color: #546e7a; font-size: 1.0rem;">{p['s2']}</span>
         </div>
         <div style="color: #2563EB; font-weight: bold; padding: 0 10px;">➡</div>
         <div style="text-align: center; flex: 1;">
-            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h3']}</strong><br>
-            <span style="color: #546e7a; font-size: 0.85rem;">{p['s3']}</span>
+            <strong style="color: #1E3A8A; font-size: 1.5rem;">{p['h3']}</strong><br>
+            <span style="color: #546e7a; font-size: 1.0rem;">{p['s3']}</span>
         </div>
         <div style="color: #2563EB; font-weight: bold; padding: 0 10px;">➡</div>
         <div style="text-align: center; flex: 1;">
-            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h4']}</strong><br>
-            <span style="color: #546e7a; font-size: 0.85rem;">{p['s4']}</span>
+            <strong style="color: #1E3A8A; font-size: 1.5rem;">{p['h4']}</strong><br>
+            <span style="color: #546e7a; font-size: 1.0rem;">{p['s4']}</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
