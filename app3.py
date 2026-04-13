@@ -3436,53 +3436,50 @@ with tabs[1]:
 
 
 
-                
+                    
     import streamlit as st
+    import os
+    import base64
 
-    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
+    # --- ШАГ 1: ОБЪЯВЛЯЕМ ВСЕ ПЕРЕВОДЫ ---
     HEADER_TRANSLATIONS = {
         "ru": {
             "title": "Агрометеорологический мониторинг",
-            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности..."
         },
         "kz": {
             "title": "Агрометеорологиялық мониторинг",
-            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін..."
         },
         "en": {
             "title": "Agrometeorological Monitoring",
-            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
+            "subtitle": "Hydrometeorological support for food security..."
         }
     }
 
-    # --- 2. ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ЯЗЫКА ---
-    # Проверяем, какой ключ используется в вашем приложении ('lang' или 'lang_code')
-    raw_lang = st.session_state.get('lang', 'Русский')
+    # --- ШАГ 2: ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
+    # Важно! Используйте тот же ключ, что и в остальной части сайта
+    raw_selection = st.session_state.get('lang', 'Русский') 
 
-    # Маппинг полных названий на ключи словаря
     lang_map = {
         "Русский": "ru",
         "Қазақша": "kz",
         "English": "en"
     }
-    current_lang = lang_map.get(raw_lang, "ru")
 
-    # Получаем нужный перевод
-    header = HEADER_TRANSLATIONS.get(current_lang, HEADER_TRANSLATIONS["ru"])
+    # Определяем короткий код (ru, kz или en)
+    current_lang = lang_map.get(raw_selection, "ru")
 
-    # --- 3. ОТОБРАЖЕНИЕ КРАСИВОГО ЗАГОЛОВКА ---
+    # Теперь, когда словари созданы и язык определен, берем данные
+    header = HEADER_TRANSLATIONS[current_lang]
+
+    # --- ШАГ 3: ВЫВОД НА ЭКРАН ---
     st.markdown(f"""
-        <div style="text-align:center; margin-bottom: 30px;">
-            <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 2.2em;">
-                {header['title']}
-            </h1>
-            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500; max-width: 800px; margin: 0 auto;">
-                {header['subtitle']}
-            </p>
+        <div style="text-align:center;">
+            <h1 style="color: #1b5e20;">{header['title']}</h1>
+            <p>{header['subtitle']}</p>
         </div>
     """, unsafe_allow_html=True)
-
-    st.markdown("---")
 
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
