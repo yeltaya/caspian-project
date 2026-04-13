@@ -2760,9 +2760,7 @@ with tabs[1]:
         )
         st.plotly_chart(fig_sgy_reg, use_container_width=True)
 
-            # --- 4. АВТОМАТИЧЕСКОЕ РЕЗЮМЕ ПО СГЯ ---
-            top_region_sgy = df_sgy.loc[df_sgy['Total'].idxmax()]
-            
+
 # --- 4. АВТОМАТИЧЕСКОЕ РЕЗЮМЕ ПО СГЯ ---
     top_region_sgy = df_sgy.loc[df_sgy['Total'].idxmax()]
     
