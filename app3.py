@@ -3626,57 +3626,50 @@ with tabs[1]:
                AGRO_DETAILS["agro_3"]["desc"][lang],
                AGRO_DETAILS["agro_3"]["stats"][lang], 
                AGRO_DETAILS["agro_3"]["img_key"])
-               
+
     import os
     import streamlit as st
+    import base64
+
+    # 1. Лучше вынести словарь за пределы функции, чтобы не создавать его при каждом рендере
+    AGRO_MAP_TRANSLATIONS = {
+        "ru": {
+            "title": "### 🗺️ Агрометеорологические наблюдения",
+            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами, оказывающими влияние на жизнедеятельность растений и животных – температурой и влажностью воздуха, скоростью и направлением ветра, видом и количеством осадков, снежным покровом, атмосферными явлениями и суммарной солнечной радиацией.",
+            "crops_title": "**Основные культуры:**",
+            "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
+        },
+        "kz": {
+            "title": "### 🗺️ Агрометеорологиялық бақылаулар",
+            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын, сондай-ақ өсімдіктер мен жануарлардың тіршілік әрекетіне әсер ететін негізгі метеорологиялық параметрлерді – ауа температурасы мен ылғалдылығын, желдің жылдамдығы мен бағытын, жауын-шашынның түрі мен мөлшерін, қар жамылғысын, атмосфералық құбылыстарды және жиынтық күн радиациясын бақылау кіреді.",
+            "crops_title": "**Негізгі дақылдар:**",
+            "crops": ["🌾 Дәнді дақылдар", "🌽 Жартылай шикізат", "🌻 Майлы дақылдар", "🍎 Жеміс-жидектер"]
+        },
+        "en": {
+            "title": "### 🗺️ Agrometeorological Observations",
+            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops (including plant parameter measurements), soil condition and moisture, as well as key meteorological parameters affecting plants and animals — air temperature and humidity, wind speed and direction, type and amount of precipitation, snow cover, atmospheric phenomena, and total solar radiation.",
+            "crops_title": "**Main Crops:**",
+            "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
+        }
+    }
 
     def render_final_agro_map():
-        # 1. Словарь переводов
-        agro_map_translations = {
-            "ru": {
-                "title": "### 🗺️ Агрометеорологические наблюдения",
-                "main_text": """
-                    Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами, оказывающими влияние на жизнедеятельность растений и животных – температурой и влажностью воздуха, скоростью и направлением ветра, видом и количеством осадков, снежным покровом, атмосферными явлениями и суммарной солнечной радиацией.
-                    """,
-                "crops_title": "**Основные культуры:**",
-                "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
-            },
-            "kz": {
-                "title": "### 🗺️ Агрометеорологиялық бақылаулар",
-                "main_text": """
-                    Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын, сондай-ақ өсімдіктер мен жануарлардың тіршілік әрекетіне әсер ететін негізгі метеорологиялық параметрлерді – ауа температурасы мен ылғалдылығын, желдің жылдамдығы мен бағытын, жауын-шашынның түрі мен мөлшерін, қар жамылғысын, атмосфералық құбылыстарды және жиынтық күн радиациясын бақылау кіреді.
-                    """,
-                "crops_title": "**Негізгі дақылдар:**",
-                "crops": ["🌾 Дәнді дақылдар", "🌽 Жартылай шикізат", "🌻 Майлы дақылдар", "🍎 Жеміс-жидектер"]
-            },
-            "en": {
-                "title": "### 🗺️ Agrometeorological Observations",
-                "main_text": """
-                    Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops (including plant parameter measurements), soil condition and moisture, as well as key meteorological parameters affecting plants and animals — air temperature and humidity, wind speed and direction, type and amount of precipitation, snow cover, atmospheric phenomena, and total solar radiation.
-                    """,
-                "crops_title": "**Main Crops:**",
-                "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
-            }
-        }
-
-        # Определяем текущий язык (по умолчанию RU)
+        # Проверяем язык, если его нет — ставим ru по умолчанию
         lang = st.session_state.get('lang_code', 'ru')
-        content = agro_map_translations[lang]
+        
+        # Защита на случай, если lang_code есть, но его нет в нашем словаре
+        content = AGRO_MAP_TRANSLATIONS.get(lang, AGRO_MAP_TRANSLATIONS['ru'])
 
-        # Заголовок
         st.markdown(content["title"])
         
-        # Формируем путь к изображению
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        img_filename = "AGRO.jpg"
-        img_path = os.path.join(BASE_DIR, img_filename)
+        # Формируем путь (используем текущую папку скрипта)
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(base_dir, "AGRO.jpg")
         
-        # Создаем две колонки: для карты и для пояснительного текста
         col_map, col_text = st.columns([1.5, 0.5])
         
         with col_map:
             if os.path.exists(img_path):
-                import base64
                 with open(img_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
                 
@@ -3689,11 +3682,11 @@ with tabs[1]:
                     unsafe_allow_html=True
                 )
             else:
-                st.error(f"Image {img_filename} not found.")
+                st.warning(f"Файл AGRO.jpg не найден по пути: {img_path}")
                 
         with col_text:
-            st.markdown("****")
-            st.write(content["main_text"])
+            st.markdown("---") # Заменил на стандартный разделитель
+            st.write(content["main_text"].strip())
             
             st.markdown(content["crops_title"])
             for crop in content["crops"]:
@@ -3701,6 +3694,7 @@ with tabs[1]:
 
     # Вызов функции
     render_final_agro_map()
+
 
 
     
