@@ -654,97 +654,197 @@ with tabs[0]: # ОБЗОР
         """, unsafe_allow_html=True)
 
     import os
+    import streamlit as st
 
+    # 1. ПУТИ К ФАЙЛАМ
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    IMG_DIR = BASE_DIR # Указывает на папку со скриптом
 
-    IMG_DIR = os.path.join(BASE_DIR)
-
-        # 2. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ КАРТОЧКИ С ЛОКАЛЬНЫМ ФАЙЛОМ
-    def draw_data_card(col, file_name, title, color, items):
-            path = os.path.join(IMG_DIR, file_name)
-            with col:
-                # Пытаемся отобразить картинку/гифку
-                if os.path.exists(path):
-                    st.image(path, use_container_width=True)
-                else:
-                    # Если файла нет, оставляем пустое место или заглушку, чтобы блоки не прыгали
-                    st.warning(f"Файл {file_name} не найден")
-                
-                # HTML-контент карточки
-                list_html = "".join([f"<li>{item}</li>" for item in items])
-                st.markdown(f"""
-                    <div class="data-box" style="border-left-color: {color};">
-                        <div class="data-title">{title}</div>
-                        <ul class="data-list">
-                            {list_html}
-                        </ul>
-                    </div>
-                """, unsafe_allow_html=True)
-    
-    st.markdown('<div class="tab-specific-container">', unsafe_allow_html=True)
-
-        # 3. ОБЩИЙ CSS
-    st.markdown("""
-            <style>
-                .data-box {
-                    padding: 15px;
-                    border-radius: 0 0 12px 12px;
-                    border-left: 5px solid;
-                    background: #ffffff;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                    min-height: 280px; /* Немного увеличил, чтобы текст влезал */
-                    margin-bottom: 20px;
-                }
-                .data-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #1f2937; }
-                .data-list { font-size: 0.85em; padding-left: 20px; color: #4b5563; line-height: 1.4; }
-                .data-list b { color: #1f2937; }
-            </style>
-        """, unsafe_allow_html=True)
-
-    # Переводы для карточек
-    data_cards_content = {
-        "RU": {
-            "titles": ["📍 Наземная сеть", "🗺️ Аналитика", "📡 Спутники", "⚙️ Численные модели"],
-            "items": [
-                ["<b>МС:</b> Непрерывный мониторинг параметров 24/7.", "<b>Аэрология:</b> Зондирование атмосферы до 30 км.", "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."],
-                ["<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.", "<b>ГСТ ВМО:</b> Обмен данными.", "<b>Сетки:</b> Анализ полей метеопараметров."],
-                ["<b>EUMETSAT:</b> Европейские геостационары.", "<b>FengYun:</b> Оперативные данные из КНР.", "<b>Метеор-М:</b> Российские орбитальные системы."],
-                ["<b>ECMWF:</b> Глобальные прогнозы до 9 км.", "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.", "<b>WRF-Kaz:</b> Локальная модель Казгидромет."]
-            ]
-        },
-        "KZ": {
-            "titles": ["📍 Жерүсті желісі", "🗺️ Аналитика", "📡 Жерсеріктер", "⚙️ Сандық модельдер"],
-            "items": [
-                ["<b>МС:</b> 24/7 үздіксіз мониторинг.", "<b>Аэрология:</b> 30 км-ге дейін зондтау.", "<b>ДМРЛ:</b> Бұршақ пен дауылды анықтау."],
-                ["<b>АРМ ГИС-Метео, Metcap+:</b> Синоптикалық карталар.", "<b>ГСТ ДМҰ:</b> Мәліметтер алмасу.", "<b>Торлар:</b> Өрістерді талдау."],
-                ["<b>EUMETSAT:</b> Еуропалық геостационарлар.", "<b>FengYun:</b> ҚХР деректері.", "<b>Метеор-М:</b> Ресейлік жүйелер."],
-                ["<b>ECMWF:</b> 9 км-ге дейінгі болжамдар.", "<b>ICON, COSMO:</b> Мезомасштабты модельдер.", "<b>WRF-Kaz:</b> Қазгидромет моделі."]
-            ]
-        },
-        "EN": {
-            "titles": ["📍 Ground Network", "🗺️ Analytics", "📡 Satellites", "⚙️ Numerical Models"],
-            "items": [
-                ["<b>MS:</b> 24/7 continuous monitoring.", "<b>Aerology:</b> Sounding up to 30 km.", "<b>DWR:</b> Hail and squall detection."],
-                ["<b>AWS GIS-Meteo, Metcap+:</b> Synoptic charts.", "<b>WMO GTS:</b> Data exchange.", "<b>Grids:</b> Field analysis."],
-                ["<b>EUMETSAT:</b> European geostationary.", "<b>FengYun:</b> China data.", "<b>Meteor-M:</b> Russian orbital systems."],
-                ["<b>ECMWF:</b> Global forecasts (9 km).", "<b>ICON, COSMO:</b> Mesoscale models.", "<b>WRF-Kaz:</b> Kazhydromet model."]
-            ]
-        }
+    # 2. ДАННЫЕ ДЛЯ КАРТОЧЕК (Три языка)
+    data_content = {
+        "Русский": [
+            {
+                "title": "📍 Наземная сеть",
+                "file": "precipitation.gif",
+                "color": "#3b82f6",
+                "items": [
+                    "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
+                    "<b>Аэрология:</b> Зондирование атмосферы до 30 км.",
+                    "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."
+                ]
+            },
+            {
+                "title": "🗺️ Аналитика",
+                "file": "station2.gif",
+                "color": "#10b981",
+                "items": [
+                    "<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.",
+                    "<b>ГСТ ВМО:</b> Обмен данными.",
+                    "<b>Сетки:</b> Анализ полей метеопараметров."
+                ]
+            },
+            {
+                "title": "📡 Спутники",
+                "file": "station3.gif",
+                "color": "#8b5cf6",
+                "items": [
+                    "<b>EUMETSAT:</b> Европейские геостационары.",
+                    "<b>FengYun:</b> Оперативные данные из КНР.",
+                    "<b>Метеор-М:</b> Российские орбитальные системы."
+                ]
+            },
+            {
+                "title": "⚙️ Численные модели",
+                "file": "station4.gif",
+                "color": "#f59e0b",
+                "items": [
+                    "<b>ECMWF:</b> Глобальные прогнозы до 9 км.",
+                    "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.",
+                    "<b>WRF-Kaz:</b> Локальная модель Казгидромет."
+                ]
+            }
+        ],
+        "Қазақша": [
+            {
+                "title": "📍 Жерүсті желісі",
+                "file": "precipitation.gif",
+                "color": "#3b82f6",
+                "items": [
+                    "<b>МС:</b> Параметрлерді 24/7 үздіксіз мониторингілеу.",
+                    "<b>Аэрология:</b> Атмосфераны 30 км-ге дейін зондтау.",
+                    "<b>ДМРЛ:</b> Бұршақ пен дауылды анықтауға арналған локаторлар."
+                ]
+            },
+            {
+                "title": "🗺️ Аналитика",
+                "file": "station2.gif",
+                "color": "#10b981",
+                "items": [
+                    "<b>АРМ ГИС-Метео, Metcap+:</b> Синоптикалық карталарды құру.",
+                    "<b>ГСТ ДМҰ:</b> Мәліметтер алмасу.",
+                    "<b>Торлар:</b> Метеопараметрлер өрістерін талдау."
+                ]
+            },
+            {
+                "title": "📡 Жерсеріктер",
+                "file": "station3.gif",
+                "color": "#8b5cf6",
+                "items": [
+                    "<b>EUMETSAT:</b> Еуропалық геостационарлар.",
+                    "<b>FengYun:</b> ҚХР-дан жедел деректер.",
+                    "<b>Метеор-М:</b> Ресейлік орбиталық жүйелер."
+                ]
+            },
+            {
+                "title": "⚙️ Сандық модельдер",
+                "file": "station4.gif",
+                "color": "#f59e0b",
+                "items": [
+                    "<b>ECMWF:</b> 9 км-ге дейінгі жаһандық болжамдар.",
+                    "<b>ICON, COSMO:</b> Жоғары дәлдіктегі мезомасштабты модельдер.",
+                    "<b>WRF-Kaz:</b> Қазгидрометтің жергілікті моделі."
+                ]
+            }
+        ],
+        "English": [
+            {
+                "title": "📍 Ground Network",
+                "file": "precipitation.gif",
+                "color": "#3b82f6",
+                "items": [
+                    "<b>MS:</b> Continuous 24/7 monitoring of parameters.",
+                    "<b>Aerology:</b> Atmospheric sounding up to 30 km.",
+                    "<b>DWR:</b> Radars for hail and squall detection."
+                ]
+            },
+            {
+                "title": "🗺️ Analytics",
+                "file": "station2.gif",
+                "color": "#10b981",
+                "items": [
+                    "<b>AWS GIS-Meteo, Metcap+:</b> Synoptic chart generation.",
+                    "<b>WMO GTS:</b> Data exchange.",
+                    "<b>Grids:</b> Analysis of meteorological fields."
+                ]
+            },
+            {
+                "title": "📡 Satellites",
+                "file": "station3.gif",
+                "color": "#8b5cf6",
+                "items": [
+                    "<b>EUMETSAT:</b> European geostationary satellites.",
+                    "<b>FengYun:</b> Operational data from China.",
+                    "<b>Meteor-M:</b> Russian orbital systems."
+                ]
+            },
+            {
+                "title": "⚙️ Numerical Models",
+                "file": "station4.gif",
+                "color": "#f59e0b",
+                "items": [
+                    "<b>ECMWF:</b> Global forecasts up to 9 km.",
+                    "<b>ICON, COSMO:</b> High-precision mesoscale models.",
+                    "<b>WRF-Kaz:</b> Kazhydromet local model."
+                ]
+            }
+        ]
     }
 
-    # Получаем текущий язык из вашего session_state (замените 'language' на ваш ключ)
-    # Если вы используете другую переменную, просто подставьте её сюда
-    current_lang = st.session_state.get('language', 'RU') 
-    content = data_cards_content[current_lang]
+    # 3. ФУНКЦИЯ ДЛЯ ОТРИСОВКИ
+    def draw_data_card(col, file_name, title, color, items):
+        path = os.path.join(IMG_DIR, file_name)
+        with col:
+            if os.path.exists(path):
+                st.image(path, use_container_width=True)
+            else:
+                st.warning(f"Файл {file_name} не найден")
+            
+            list_html = "".join([f"<li>{item}</li>" for item in items])
+            st.markdown(f"""
+                <div class="data-box" style="border-left-color: {color};">
+                    <div class="data-title">{title}</div>
+                    <ul class="data-list">
+                        {list_html}
+                    </ul>
+                </div>
+            """, unsafe_allow_html=True)
 
-    # 4. СОЗДАНИЕ КОЛОНОК И ВЫЗОВ ФУНКЦИЙ
-    col_d1, col_d2, col_d3, col_d4 = st.columns(4)
+    # 4. CSS СТИЛИ
+    st.markdown("""
+        <style>
+            .data-box {
+                padding: 15px;
+                border-radius: 0 0 12px 12px;
+                border-left: 5px solid;
+                background: #ffffff;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                min-height: 280px;
+                margin-bottom: 20px;
+            }
+            .data-title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #1f2937; }
+            .data-list { font-size: 0.85em; padding-left: 20px; color: #4b5563; line-height: 1.4; }
+            .data-list b { color: #1f2937; }
+        </style>
+    """, unsafe_allow_html=True)
 
-    draw_data_card(col_d1, "precipitation.gif", content["titles"][0], "#3b82f6", content["items"][0])
-    draw_data_card(col_d2, "station2.gif",      content["titles"][1], "#10b981", content["items"][1])
-    draw_data_card(col_d3, "station3.gif",      content["titles"][2], "#8b5cf6", content["items"][2])
-    draw_data_card(col_d4, "station4.gif",      content["titles"][3], "#f59e0b", content["items"][3])
+    # 5. ОТОБРАЖЕНИЕ КАРТОЧЕК
+    st.markdown('<div class="tab-specific-container">', unsafe_allow_html=True)
 
+    # Получаем данные на основе текущего языка (lang)
+    current_data = data_content.get(lang, data_content["Русский"])
+
+    cols = st.columns(4)
+    for i, col in enumerate(cols):
+        card = current_data[i]
+        draw_data_card(
+            col, 
+            card["file"], 
+            card["title"], 
+            card["color"], 
+            card["items"]
+        )
+        
+    
 # Разделитель перед текстом о Казгидромете
     st.markdown("---")    
     
