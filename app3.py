@@ -3641,6 +3641,14 @@ with tabs[1]:
     import os
     import streamlit as st
     import base64
+    # Инициализация языка, если его еще нет в памяти
+    if 'lang' not in st.session_state:
+        st.session_state['lang'] = 'Русский'
+
+    # Принудительная конвертация в короткий код
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
+    current_lang = lang_map.get(st.session_state['lang'], "ru")
+
     st.write(st.session_state)
 
     # 1. Тексты на трех языках
