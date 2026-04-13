@@ -3599,33 +3599,33 @@ with tabs[1]:
         }
     }
 
-    # --- 2. ЛОГИКА ОТОБРАЖЕНИЯ ---
-    lang = lang_code if 'lang_code' in locals() else "ru"
-    a_col1, a_col2, a_col3 = st.columns(3)
+        # --- 2. ЛОГИКА ОТОБРАЖЕНИЯ ---
+        lang = lang_code if 'lang_code' in locals() else "ru"
+        a_col1, a_col2, a_col3 = st.columns(3)
 
-    # Блок 1
-    draw_block(a_col1, "agro_btn_1", 
-               AGRO_DETAILS["agro_1"]["title"][lang], 
-               AGRO_DETAILS["agro_1"]["icon"],
-               AGRO_DETAILS["agro_1"]["desc"][lang],
-               AGRO_DETAILS["agro_1"]["stats"][lang], 
-               AGRO_DETAILS["agro_1"]["img_key"])
+        # Блок 1
+        draw_block(a_col1, "agro_btn_1", 
+                   AGRO_DETAILS["agro_1"]["title"][lang], 
+                   AGRO_DETAILS["agro_1"]["icon"],
+                   AGRO_DETAILS["agro_1"]["desc"][lang],
+                   AGRO_DETAILS["agro_1"]["stats"][lang], 
+                   AGRO_DETAILS["agro_1"]["img_key"])
 
-    # Блок 2
-    draw_block(a_col2, "agro_btn_2", 
-               AGRO_DETAILS["agro_2"]["title"][lang], 
-               AGRO_DETAILS["agro_2"]["icon"],
-               AGRO_DETAILS["agro_2"]["desc"][lang],
-               AGRO_DETAILS["agro_2"]["stats"][lang], 
-               AGRO_DETAILS["agro_2"]["img_key"])
+        # Блок 2
+        draw_block(a_col2, "agro_btn_2", 
+                   AGRO_DETAILS["agro_2"]["title"][lang], 
+                   AGRO_DETAILS["agro_2"]["icon"],
+                   AGRO_DETAILS["agro_2"]["desc"][lang],
+                   AGRO_DETAILS["agro_2"]["stats"][lang], 
+                   AGRO_DETAILS["agro_2"]["img_key"])
 
-    # Блок 3
-    draw_block(a_col3, "agro_btn_3", 
-               AGRO_DETAILS["agro_3"]["title"][lang], 
-               AGRO_DETAILS["agro_3"]["icon"],
-               AGRO_DETAILS["agro_3"]["desc"][lang],
-               AGRO_DETAILS["agro_3"]["stats"][lang], 
-               AGRO_DETAILS["agro_3"]["img_key"])
+        # Блок 3
+        draw_block(a_col3, "agro_btn_3", 
+                   AGRO_DETAILS["agro_3"]["title"][lang], 
+                   AGRO_DETAILS["agro_3"]["icon"],
+                   AGRO_DETAILS["agro_3"]["desc"][lang],
+                   AGRO_DETAILS["agro_3"]["stats"][lang], 
+                   AGRO_DETAILS["agro_3"]["img_key"])
 
 
     import os
