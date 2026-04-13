@@ -3436,7 +3436,10 @@ with tabs[1]:
 
 
 
-                
+    import streamlit as st
+    import os
+    import base64  # ОБЯЗАТЕЛЬНО ДОБАВЬТЕ ЭТУ СТРОКУ
+                   
             
 # 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
 
