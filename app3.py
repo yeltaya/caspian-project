@@ -853,106 +853,168 @@ with tabs[0]: # ОБЗОР
     import streamlit as st
     import pandas as pd
 
-    def show_monitoring_block():
+    def show_monitoring_block(lang):
         # 1. Определяем пути ВНУТРИ функции
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         path_risk = os.path.join(BASE_DIR, "risk.jpeg")
         path_hydro = os.path.join(BASE_DIR, "hydro.png")
+        path_agro = os.path.join(BASE_DIR, "AGRO.jpg")
+        path_agro1 = os.path.join(BASE_DIR, "agro1.jpg")
+
+        # СЛОВАРЬ ПЕРЕВОДОВ
+        translations = {
+            "Русский": {
+                "hydro_sub": "💧 Гидрологические прогнозы",
+                "hydro_title": "#### Водная безопасность Казахстана",
+                "hydro_list": """
+                * 🌊 **Мониторинг рек** – равнинные и горные
+                * ⚠️ **Оценка паводков** и притока к водохранилищам
+                * 💧 **Моделирование стока** в реальном времени
+                * 🌪 **Прогноз опасных явлений** – наводнения, ледоходы, оползни
+                * 🛡 **Стратегическая поддержка** – управление ресурсами и экстренными службами
+                """,
+                "hydro_cap1": "Карта рисков паводков в 2026 г.",
+                "hydro_cap2": "Интерактивная карта гидрологического мониторинга",
+                "agro_sub": "🌾 Агрометеорологические прогнозы",
+                "agro_mon": "**🔍 Мониторинг**",
+                "agro_mon_list": """
+                * 📉 **Прогноз запасов влаги** в почве
+                * 🌽 **Фенологический мониторинг** культур
+                * 🌡️ **Оценка рисков заморозков** и засухи
+                * 🚜 **Рекомендации** для проведения посевных работ
+                """,
+                "agro_plat": "**📱 Платформа AGRODATA.kz**",
+                "agro_plat_text": """
+                Интерактивный агрометеорологический портал, предоставляющий фермерам:
+                * Высокоточные прогнозы погоды для сельхозугодий.
+                * Карты фактических запасов продуктивной влаги в почве.
+                * Рекомендации по срокам посева и внесения удобрений.
+                """,
+                "agro_cap1": "Пункты агрометеорологического наблюдения",
+                "agro_cap2": "Сроки сева зерновых культур"
+            },
+            "Қазақша": {
+                "hydro_sub": "💧 Гидрологиялық болжамдар",
+                "hydro_title": "#### Қазақстанның су қауіпсіздігі",
+                "hydro_list": """
+                * 🌊 **Өзендер мониторингі** – жазық және таулы
+                * ⚠️ **Су тасқынын бағалау** және су қоймаларына келетін су ағыны
+                * 💧 **Ағындыны нақты уақытта модельдеу**
+                * 🌪 **Қауіпті құбылыстарды болжау** – су тасқыны, мұз жүру, көшкін
+                * 🛡 **Стратегиялық қолдау** – ресурстарды басқару және төтенше қызметтер
+                """,
+                "hydro_cap1": "2026 жылғы су тасқыны қаупінің картасы",
+                "hydro_cap2": "Гидрологиялық мониторингтің интерактивті картасы",
+                "agro_sub": "🌾 Агрометеорологиялық болжамдар",
+                "agro_mon": "**🔍 Мониторинг**",
+                "agro_mon_list": """
+                * 📉 **Топырақтағы ылғал қорын болжау**
+                * 🌽 **Дақылдардың фенологиялық мониторингі**
+                * 🌡️ **Үсік жүру және құрғақшылық қаупін бағалау**
+                * 🚜 **Егіс жұмыстарын жүргізуге арналған ұсынымдар**
+                """,
+                "agro_plat": "**📱 AGRODATA.kz платформасы**",
+                "agro_plat_text": """
+                Фермерлерге арналған интерактивті агрометеорологиялық портал:
+                * Ауыл шаруашылығы жерлеріне арналған жоғары дәлдіктегі ауа райы болжамдары.
+                * Топырақтың өнімді ылғалдылығының нақты қорының карталары.
+                * Егіс мерзімі мен тыңайтқыштарды қолдану бойынша ұсыныстар.
+                """,
+                "agro_cap1": "Агрометеорологиялық бақылау пункттері",
+                "agro_cap2": "Дәнді дақылдарды себу мерзімдері"
+            },
+            "English": {
+                "hydro_sub": "💧 Hydrological Forecasts",
+                "hydro_title": "#### Water Security of Kazakhstan",
+                "hydro_list": """
+                * 🌊 **River Monitoring** – lowland and mountain rivers
+                * ⚠️ **Flood Assessment** and reservoir inflow
+                * 💧 **Real-time runoff modeling**
+                * 🌪 **Hazard Forecasting** – floods, ice runs, landslides
+                * 🛡 **Strategic Support** – resource management and emergency services
+                """,
+                "hydro_cap1": "Flood Risk Map 2026",
+                "hydro_cap2": "Interactive Hydrological Monitoring Map",
+                "agro_sub": "🌾 Agrometeorological Forecasts",
+                "agro_mon": "**🔍 Monitoring**",
+                "agro_mon_list": """
+                * 📉 **Soil moisture reserves forecast**
+                * 🌽 **Phenological monitoring** of crops
+                * 🌡️ **Frost and drought risk assessment**
+                * 🚜 **Recommendations** for sowing operations
+                """,
+                "agro_plat": "**📱 AGRODATA.kz Platform**",
+                "agro_plat_text": """
+                An interactive agrometeorological portal providing farmers with:
+                * High-precision weather forecasts for farmland.
+                * Maps of actual productive soil moisture reserves.
+                * Recommendations on sowing dates and fertilizer application.
+                """,
+                "agro_cap1": "Agrometeorological observation points",
+                "agro_cap2": "Sowing dates for grain crops"
+            }
+        }
+
+        t = translations.get(lang, translations["Русский"])
 
         # 2. Создаем основные колонки
         col_main_left, col_main_right = st.columns(2, gap="large")
 
         # --- ЛЕВАЯ КОЛОНКА: ГИДРОЛОГИЯ ---
         with col_main_left:
-            st.subheader("💧 Гидрологические прогнозы")
-            st.markdown("#### Водная безопасность Казахстана")
-            
-            st.write("""
-            * 🌊 **Мониторинг рек** – равнинные и горные
-            * ⚠️ **Оценка паводков** и притока к водохранилищам
-            * 💧 **Моделирование стока** в реальном времени
-            * 🌪 **Прогноз опасных явлений** – наводнения, ледоходы, оползни
-            * 🛡 **Стратегическая поддержка** – управление ресурсами и экстренными службами
-            """)
-
+            st.subheader(t["hydro_sub"])
+            st.markdown(t["hydro_title"])
+            st.write(t["hydro_list"])
             st.write("---")
             
             st.markdown("""
                 <style>
-                /* Находим все изображения внутри колонок Streamlit */
                 [data-testid="stImage"] img {
-                    height: 300px; /* Установите нужную вам высоту */
-                    object-fit: contain; /* Картинка впишется полностью без обрезки */
-                    /* Или используйте 'cover', если хотите, чтобы заполнила всё поле (но края могут обрезаться) */
+                    height: 300px;
+                    object-fit: contain;
                 }
                 </style>
                 """, unsafe_allow_html=True)
-    
-            # Внутренние колонки для фото (БЕЗ лишних отступов)
-            img_row_col1, img_row_col2 = st.columns([1, 1.2])
 
+            img_row_col1, img_row_col2 = st.columns([1, 1.2])
             with img_row_col1:
                 if os.path.exists(path_risk):
-                    st.image(path_risk, caption="Карта рисков паводков в 2026 г.", use_container_width=True)
+                    st.image(path_risk, caption=t["hydro_cap1"], use_container_width=True)
                 else:
-                    st.error("Файл risk.jpeg не найден")
-
+                    st.error("risk.jpeg not found")
             with img_row_col2:
                 if os.path.exists(path_hydro):
-                    st.image(path_hydro, caption="Интерактивная карта гидрологического мониторинга", use_container_width=True)
+                    st.image(path_hydro, caption=t["hydro_cap2"], use_container_width=True)
                 else:
-                    st.error("Файл hydro.png не найден")
-                    
-# --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
+                    st.error("hydro.png not found")
+
+        # --- ПРАВАЯ КОЛОНКА: АГРОМЕТЕОРОЛОГИЯ ---
         with col_main_right:
-            st.subheader("🌾 Агрометеорологические прогнозы")
-            
-            # Создаем 3 внутренние колонки
+            st.subheader(t["agro_sub"])
             a_col1, a_col2 = st.columns(2, gap="medium")
-
             with a_col1:
-                st.markdown("**🔍 Мониторинг**")
-                st.write("""
-                * 📉 **Прогноз запасов влаги** в почве
-                * 🌽 **Фенологический мониторинг** культур
-                * 🌡️ **Оценка рисков заморозков** и засухи
-                * 🚜 **Рекомендации** для проведения посевных работ
-                """)
-
+                st.markdown(t["agro_mon"])
+                st.write(t["agro_mon_list"])
             with a_col2:
-                st.markdown("**📱 Платформа AGRODATA.kz**")
-                st.write("""
-                Интерактивный агрометеорологический портал, предоставляющий фермерам:
-                * Высокоточные прогнозы погоды для сельхозугодий.
-                * Карты фактических запасов продуктивной влаги в почве.
-                * Рекомендации по срокам посева и внесения удобрений.
-                """)             
-           
-            st.write("---")
+                st.markdown(t["agro_plat"])
+                st.write(t["agro_plat_text"])
             
-            # Пути к агро-рисункам
-            path_agro = os.path.join(BASE_DIR, "AGRO.jpg")
-            path_agro1 = os.path.join(BASE_DIR, "agro1.jpg")
-
-            # Внутренние колонки для агро-фото (2 в ряд)
+            st.write("---")
             agro_col1, agro_col2 = st.columns(2)
-
             with agro_col1:
                 if os.path.exists(path_agro):
-                    st.image(path_agro, caption="Пункты агрометеорологического наблюдения", use_container_width=True)
+                    st.image(path_agro, caption=t["agro_cap1"], use_container_width=True)
                 else:
-                    st.warning("AGRO.jpg не найден")
-
+                    st.warning("AGRO.jpg not found")
             with agro_col2:
                 if os.path.exists(path_agro1):
-                    st.image(path_agro1, caption="Сроки сева зерновых культур", use_container_width=True)
+                    st.image(path_agro1, caption=t["agro_cap2"], use_container_width=True)
                 else:
-                    st.warning("agro1.jpg не найден")
-                    
+                    st.warning("agro1.jpg not found")
 
-    # 3. ВАЖНО: Вызов функции БЕЗ отступа в самом конце
-    show_monitoring_block()
-    
+    # Вызов функции с передачей текущего языка
+    show_monitoring_block(lang)
+
     import base64
     import os
     import streamlit as st
