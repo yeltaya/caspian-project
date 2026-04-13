@@ -4670,15 +4670,15 @@ with tabs[2]:
         </svg>
 
         <div class="main-node">
-            <i class="fas fa-satellite-dish"></i>КАЗГИДРОМЕТ<br>Штормовое предупреждение
+            <i class="fas fa-satellite-dish"></i>КАЗГИДРОМЕТ/ҚАЗГИДРОМЕТ/KAZHYDROMET<br>Штормовое предупреждение/Дауылды ескерту/Storm Warning
         </div>
 
         <div class="columns-container">
             <div class="branch">
-                <div class="node blue"><i class="fas fa-shield-alt"></i>МЧС РК</div>
+                <div class="node blue"><i class="fas fa-shield-alt"></i>МЧС РК/ҚР ТЖМ/Ministry of Emergency Situations</div>
                 <div class="node-row">
-                    <div class="node blue">Командный центр планирования</div>
-                    <div class="node blue">Департаменты по ЧС (ДЧС)</div>
+                    <div class="node blue">Командный центр планирования/Командалық жоспарлау орталығы/Command Planning Center</div>
+                    <div class="node blue">Департаменты по ЧС (ДЧС)/ТЖ департаменттері (ТЖД)/Emergency Management Departments</div>
                 </div>
                 <div class="node-row">
                     <div class="node red"><i class="fas fa-sms"></i>SMS 112</div>
@@ -4689,19 +4689,19 @@ with tabs[2]:
             <div class="branch">
                 <div class="node orange">
                     <i class="fas fa-university"></i>
-                    Государственные и местные исполнительные органы (Министерства, Акиматы)
+                    Государственные и местные исполнительные органы (Министерства, Акиматы)/Мемлекеттік және жергілікті атқарушы органдар (министрліктер, әкімдіктер)/State and local executive bodies (ministries, akimats) 
                 </div>
             </div>
 
             <div class="branch">
-                <div class="node green"><i class="fas fa-map-marked-alt"></i>Карта Метеоалерт</div>
-                <div class="node green"><i class="fas fa-code-branch"></i>Протокол CAP</div>
+                <div class="node green"><i class="fas fa-map-marked-alt"></i>Карта Метеоалерт/Метеоалерт Картасы/Meteoalert Map</div>
+                <div class="node green"><i class="fas fa-code-branch"></i>Протокол CAP/CAP Хаттамасы/CAP Protocol </div>
             </div>
 
             <div class="branch">
-                <div class="node purple"><i class="fas fa-globe"></i>Сайт Казгидромета</div>
-                <div class="node purple"><i class="fas fa-share-alt"></i>Социальные сети</div>
-                <div class="node purple"><i class="fas fa-tv"></i>СМИ</div>
+                <div class="node purple"><i class="fas fa-globe"></i>Сайт Казгидромета/Қазгидромет сайты/Kazhydromet website</div>
+                <div class="node purple"><i class="fas fa-share-alt"></i>Социальные сети/Әлеуметтік медиа/Social media</div>
+                <div class="node purple"><i class="fas fa-tv"></i>СМИ/БАҚ/Media</div>
             </div>
         </div>
     </div>
