@@ -3435,7 +3435,16 @@ with tabs[1]:
         """, unsafe_allow_html=True)
 
                
-            
+     # --- 0. ЕДИНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА (Вставить в начало) ---
+    # Это гарантирует, что 'current_lang' будет одинаковым для всех блоков кода ниже
+    mapping = {
+        "Русский": "ru", "ru": "ru", "RU": "ru",
+        "Қазақша": "kz", "kz": "kz", "KZ": "kz",
+        "English": "en", "en": "en", "EN": "en"
+    }
+    raw_lang = st.session_state.get('lang_code') or st.session_state.get('lang') or 'ru'
+    current_lang = mapping.get(raw_lang, "ru").lower()
+                   
 # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ АГРОСЕКЦИИ ---
     agro_ui = {
         "ru": {
@@ -3654,48 +3663,21 @@ with tabs[1]:
         }
     }
 
-    def render_final_agro_map():
-        # --- УНИВЕРСАЛЬНОЕ ПОЛУЧЕНИЕ ЯЗЫКА ---
-        # Пробуем достать язык из разных возможных ключей session_state
-        # (иногда используется 'lang', иногда 'lang_code', иногда полные названия)
-        
-        raw_lang = st.session_state.get('lang_code') or st.session_state.get('lang') or 'ru'
-        
-        # Маппинг для сопоставления с вашим lang_map
-        mapping = {
-            "Русский": "ru", "ru": "ru", "RU": "ru",
-            "Қазақша": "kz", "kz": "kz", "KZ": "kz",
-            "English": "en", "en": "en", "EN": "en"
-        }
-        
-        current_lang = mapping.get(raw_lang, "ru").lower()
-        
-        # Выбираем контент
-        content = AGRO_MAP_TRANSLATIONS.get(current_lang, AGRO_MAP_TRANSLATIONS["ru"])
-
-        # Отрисовка
+    def render_final_agro_map(lang_to_use):
+        content = AGRO_MAP_TRANSLATIONS.get(lang_to_use, AGRO_MAP_TRANSLATIONS["ru"])
         st.markdown(content["title"])
         
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         
         col_map, col_text = st.columns([1.5, 0.5])
-        
         with col_map:
             if os.path.exists(img_path):
                 with open(img_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
-                st.markdown(
-                    f"""
-                    <div style="display: flex; justify-content: center;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                st.markdown(f'<div style="display: flex; justify-content: center;"><img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px;"></div>', unsafe_allow_html=True)
             else:
                 st.warning("Файл AGRO.jpg не найден")
-                
         with col_text:
             st.markdown("---")
             st.write(content["main_text"])
@@ -3703,8 +3685,9 @@ with tabs[1]:
             for crop in content["crops"]:
                 st.markdown(f"* {crop}")
 
-    # Вызов функции
-    render_final_agro_map()
+    # ВЫЗОВ ФУНКЦИИ С ПЕРЕДАЧЕЙ ЯЗЫКА
+    render_final_agro_map(current_lang)
+
 
 
 
