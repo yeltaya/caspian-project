@@ -1394,26 +1394,59 @@ with tabs[1]:
     """, unsafe_allow_html=True)
        
     
+    # 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ХЕДЕРА И БАННЕРА
+    translations = {
+        "Русский": {
+            "header_sub": "Национальная гидрометеорологическая служба Казахстана с 1922 года",
+            "banner_title": "🌍 Глобальный мониторинг — Национальная безопасность",
+            "banner_text": "«Казгидромет» — фундамент гидрометеорологической и экологической стабильности Казахстана. Опираясь на вековой опыт и данные государственной наблюдательной сети, мы создаем качественные аналитические продукты для стратегических отраслей экономики.",
+            "m1": ["История и опыт", "100+ лет наблюдений", "мониторинг 24/7"],
+            "m2": ["География", "17 филиалов", "весь Казахстан"],
+            "m3": ["Команда", "3160", "сотрудников в штате"],
+            "m4": ["Мировой стандарт", "ВМО (WMO)", "с 1993 года"]
+        },
+        "Қазақша": {
+            "header_sub": "Қазақстанның ұлттық гидрометеорологиялық қызметі 1922 жылдан бастап",
+            "banner_title": "🌍 Жаһандық мониторинг — Ұлттық қауіпсіздік",
+            "banner_text": "«Қазгидромет» — Қазақстанның гидрометеорологиялық және экологиялық тұрақтылығының негізі. Ғасырлық тәжірибеге және мемлекеттік бақылау желісінің мәліметтеріне сүйене отырып, біз экономиканың стратегиялық салалары үшін сапалы талдау өнімдерін жасаймыз.",
+            "m1": ["Тарих және тәжірибе", "100+ жыл бақылау", "24/7 мониторинг"],
+            "m2": ["География", "17 филиал", "бүкіл Қазақстан"],
+            "m3": ["Команда", "3160", "штаттағы қызметкер"],
+            "m4": ["Әлемдік стандарт", "ДМҰ (WMO)", "1993 жылдан бастап"]
+        },
+        "English": {
+            "header_sub": "National Hydrometeorological Service of Kazakhstan since 1922",
+            "banner_title": "🌍 Global Monitoring — National Security",
+            "banner_text": "Kazhydromet is the foundation of hydrometeorological and environmental stability in Kazakhstan. Drawing on a century of experience and data from the state observation network, we create high-quality analytical products for strategic economic sectors.",
+            "m1": ["History & Experience", "100+ years of obs", "24/7 monitoring"],
+            "m2": ["Geography", "17 branches", "all over Kazakhstan"],
+            "m3": ["Team", "3,160", "employees on staff"],
+            "m4": ["World Standard", "WMO", "since 1993"]
+        }
+    }
+
+    # Получаем текущий набор текстов (предполагается, что переменная lang определена выше)
+    t = translations.get(lang, translations["Русский"])
+
     # 2. HEADER
-    st.markdown('<p class="promo-subtitle">Национальная гидрометеорологическая служба Казахстана с 1922 года</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="promo-subtitle">{t["header_sub"]}</p>', unsafe_allow_html=True)
 
     # 3. ГЛАВНЫЙ ИНФО-БАННЕР
-    st.markdown("""
+    st.markdown(f"""
         <div class="kaz-banner">
-            <h3 style="color: #004a99; margin-top:0;">🌍 Глобальный мониторинг — Национальная безопасность</h3>
+            <h3 style="color: #004a99; margin-top:0;">{t["banner_title"]}</h3>
             <p style="font-size: 1.1em; color: #334e68; max-width: 85%;">
-                «Казгидромет» — фундамент гидрометеорологической и экологической стабильности Казахстана. 
-                Опираясь на вековой опыт и данные государственной наблюдательной сети, мы создаем качественные аналитические продукты для стратегических отраслей экономики</b>.
+                {t["banner_text"]}
             </p>
         </div>
     """, unsafe_allow_html=True)
 
     # 4. МЕТРИКИ МАСШТАБА
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("История и опыт", "100+ лет наблюдений", "мониторинг 24/7")
-    m2.metric("География", "17 филиалов", "весь Казахстан")
-    m3.metric("Команда", "3160", "сотрудников в штате")
-    m4.metric("Мировой стандарт", "ВМО (WMO)", "с 1993 года")
+    m1.metric(t["m1"][0], t["m1"][1], t["m1"][2])
+    m2.metric(t["m2"][0], t["m2"][1], t["m2"][2])
+    m3.metric(t["m3"][0], t["m3"][1], t["m3"][2])
+    m4.metric(t["m4"][0], t["m4"][1], t["m4"][2])
 
     st.markdown("<br>", unsafe_allow_html=True)
 
