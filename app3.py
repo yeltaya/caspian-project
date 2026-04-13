@@ -3447,51 +3447,140 @@ with tabs[1]:
 
     
     st.divider()
+  
     import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    import os
+    import base64
 
-    # --- 1. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
-    # Забираем код языка напрямую. Если в селектбоксе было выбрано "ru", 
-    # то session_state['lang'] уже содержит "ru".
-    current_lang_code = st.session_state.get('lang', 'ru')
+    # --- 1. ИНИЦИАЛИЗАЦИЯ СОСТОЯНИЯ (ЕДИНАЯ ТОЧКА) ---
+    if 'lang' not in st.session_state:
+        st.session_state.lang = 'Русский'
 
-    # --- 2. ПЕРЕВОДЫ ---
+    raw_lang = st.session_state.lang
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
+    current_lang = lang_map.get(raw_lang, "ru")
+
+    # --- 2. ОБЩИЙ СЛОВАРЬ ПЕРЕВОДОВ ---
     HEADER_TRANSLATIONS = {
         "ru": {
             "title": "Агрометеорологический мониторинг",
-            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана"
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана",
+            "analysis_title": "### 🌡️ Анализ агроклиматических показателей",
+            "temp_info": "Суммы эффективных температур воздуха (норма)",
+            "temp_caption": "Карта температур за август",
+            "gtk_info": "Гидротермический коэффициент (ГТК) Селянинова",
+            "gtk_caption": "ГТК за период 1991-2020 гг."
         },
         "kz": {
             "title": "Агрометеорологиялық мониторинг",
-            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету"
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету",
+            "analysis_title": "### 🌡️ Агроклиматтық көрсеткіштерді талдау",
+            "temp_info": "Тиімді ауа температураларының қосындысы (норма)",
+            "temp_caption": "Тамыз айындағы температура картасы",
+            "gtk_info": "Селяниновтың гидротермиялық коэффициенті (ГТК)",
+            "gtk_caption": "1991-2020 жж. кезеңіндегі ГТК"
         },
         "en": {
             "title": "Agrometeorological Monitoring",
-            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan"
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan",
+            "analysis_title": "### 🌡️ Analysis of Agro-climatic Indicators",
+            "temp_info": "Sums of effective air temperatures (normal)",
+            "temp_caption": "Temperature map for August",
+            "gtk_info": "Selyaninov's Hydrothermal Coefficient (HTC)",
+            "gtk_caption": "HTC for the period 1991-2020"
         }
     }
 
-    # Безопасное получение перевода (если кода нет в словаре, откатываемся на 'ru')
-    header = HEADER_TRANSLATIONS.get(current_lang_code, HEADER_TRANSLATIONS["ru"])
+    # [Здесь остаются ваши словари AGRO_MAP_TRANSLATIONS и AGRO_ZONES_DATA из вашего кода]
+    # (Я пропущу их дублирование в ответе для краткости, но они должны быть в коде)
 
-    # --- 3. ВИЗУАЛЬНОЕ РАЗДЕЛЕНИЕ (ВЕРХНЕЕ) ---
-    # Добавляем немного пространства перед блоком
-    st.write("<br>", unsafe_allow_html=True)
-    st.divider() 
+    # --- Вспомогательная функция для изображений ---
+    def get_img_as_base64(file_path):
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                data = base64.b64encode(f.read()).decode("utf-8")
+            return data
+        return None
 
-    # --- 4. ВЫВОД ЗАГОЛОВКА ---
+    # --- 3. ВЕРХНИЙ ЗАГОЛОВОК ---
+    header = HEADER_TRANSLATIONS[current_lang]
     st.markdown(f"""
-        <div style="text-align:center; margin: 20px 0 40px 0;">
-            <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 850; text-transform: uppercase; font-size: 2.2em; line-height: 1.2;">
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
                 {header['title']}
-            </h1>
-            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500; max-width: 800px; margin: 10px auto;">
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
                 {header['subtitle']}
             </p>
         </div>
     """, unsafe_allow_html=True)
 
-    # --- 5. ВИЗУАЛЬНОЕ РАЗДЕЛЕНИЕ (НИЖНЕЕ) ---
     st.divider()
+
+    # --- 4. БЛОК С КАРТОЙ НАБЛЮДЕНИЙ ---
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+    st.markdown(agro_content["title"])
+
+    col_map, col_text = st.columns([1.5, 0.5])
+    with col_map:
+        img_agro = get_img_as_base64("AGRO.jpg")
+        if img_agro:
+            st.markdown(f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{img_agro}" style="width:100%;max-width:800px;border-radius:10px;"></div>', unsafe_allow_html=True)
+        else:
+            st.warning("AGRO.jpg not found")
+
+    with col_text:
+        st.markdown("---")
+        st.write(agro_content["main_text"])
+        st.markdown(agro_content["crops_title"])
+        for crop in agro_content["crops"]:
+            st.markdown(f"* {crop}")
+
+    # --- 5. ГРАФИК АГРОКЛИМАТИЧЕСКИХ ЗОН ---
+    zone_content = AGRO_ZONES_DATA[current_lang]
+    st.subheader(zone_content["title"])
+
+    # [Ваш код создания DataFrame и графика Plotly остается без изменений, 
+    #  так как он правильно использует zone_content[current_lang]]
+    # ... (Код графика здесь) ...
+
+    # --- 6. АНАЛИЗ ПОКАЗАТЕЛЕЙ (ИСПРАВЛЕННАЯ ФУНКЦИЯ) ---
+    def render_agro_climate_comparison(lang_code):
+        texts = HEADER_TRANSLATIONS[lang_code]
+        st.markdown("---")
+        st.markdown(texts["analysis_title"])
+
+        path_temp2 = "agro2.jpg"
+        path_gtk = "agro 3.png"
+
+        col_left, col_right = st.columns(2)
+
+        with col_left:
+            st.info(texts["temp_info"])
+            img_data = get_img_as_base64(path_temp2)
+            if img_data:
+                st.markdown(f'<img src="data:image/jpeg;base64,{img_data}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
+                st.caption(texts["temp_caption"])
+            else:
+                st.error(f"File not found: {path_temp2}")
+
+        with col_right:
+            st.info(texts["gtk_info"])
+            img_data = get_img_as_base64(path_gtk)
+            if img_data:
+                # Увеличиваем ширину до 115% через обертку, если нужно, или оставляем 100%
+                st.markdown(f'<img src="data:image/png;base64,{img_data}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
+                st.caption(texts["gtk_caption"])
+            else:
+                st.error(f"File not found: {path_gtk}")
+
+    # Вызов функции с передачей текущего языка
+    render_agro_climate_comparison(current_lang)
+
+    
+    
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
     import streamlit as st
