@@ -3409,15 +3409,15 @@ with tabs[1]:
         }
     }
 
-    # --- ЛОГИКА ОТОБРАЖЕНИЯ ГИДРОЛОГИИ ---
-    # Используем единый ключ из session_state, который во втором блоке обновляется селектбоксом
-    lang = st.session_state.get('lang', 'ru') 
+    # --- 3. ЛОГИКА ОТОБРАЖЕНИЯ ---
+    # Выбираем текущий язык (предполагаем, что lang_code определен ранее)
+    lang = lang_code if 'lang_code' in locals() else "ru"
     ui = retro_ui[lang]
 
     st.markdown(ui["title"])
     st.write(ui["desc"])
 
-    # Создаем список для выбора рек
+    # Создаем список для выбора (отображаем названия на текущем языке)
     river_map = {v["name"][lang]: k for k, v in HISTORICAL_DATA.items()}
     river_choice = st.selectbox(ui["select"], list(river_map.keys()))
 
@@ -3431,7 +3431,7 @@ with tabs[1]:
             <div style="background-color: #f1f3f4; padding: 20px; border-radius: 15px; border-left: 8px solid #607d8b; min-height: 150px;">
                 <h5 style="margin:0; color: #455a64;">{ui['hist_cap']}</h5>
                 <h2 style="margin:0; color: #263238;">{selected_data['record_level']} {ui['unit']}</h2>
-                <p style="font-weight: bold; color: #78909c;">{selected_data['record_year']} {"г." if lang=="ru" else "ж." if lang=="kz" else "y."}</p>
+                <p style="font-weight: bold; color: #78909c;">{selected_data['record_year']} {"год" if lang=="ru" else ""}</p>
             </div>
         """, unsafe_allow_html=True)
 
@@ -3444,40 +3444,19 @@ with tabs[1]:
                 <p style="font-weight: bold; color: #1e88e5;">{ui['date']}</p>
             </div>
         """, unsafe_allow_html=True)
-        
 
 
-    import streamlit as st
 
-    # 1. Инициализация состояния языка (выполняется один раз)
     if 'lang' not in st.session_state:
         st.session_state.lang = 'ru'
 
-    # 2. Словарь соответствия отображаемых имен и кодов
-    # Это позволит пользователю видеть красивые названия, а коду работать с индексами
-    languages = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
+    # Выбор языка
+    lang_choice = st.selectbox("Language", ["ru", "kz", "en"], key="language_selector")
+    st.session_state.lang = lang_choice
+                    
+    import streamlit as st
 
-    # 3. Выбор языка
-    # Находим индекс текущего языка, чтобы селектбокс не сбрасывался
-    list_of_names = list(languages.keys())
-    list_of_codes = list(languages.values())
-    default_index = list_of_codes.index(st.session_state.lang)
-
-    selected_lang_name = st.selectbox(
-        "Выберите язык / Тілді таңдаңыз / Select language", 
-        options=list_of_names,
-        index=default_index
-    )
-
-    # Обновляем код языка в состоянии
-    st.session_state.lang = languages[selected_lang_name]
-    current_lang_code = st.session_state.lang
-
-    # 4. Данные переводов
+    # --- АГРОМЕТЕОРОЛОГИЯ
     HEADER_TRANSLATIONS = {
         "ru": {
             "title": "Агрометеорологический мониторинг",
@@ -3493,10 +3472,27 @@ with tabs[1]:
         }
     }
 
-    # 5. Получение текущего перевода
+    # --- 2. ЛОГИКА СИНХРОНИЗАЦИИ ---
+    # Проверяем ключ 'lang'. Если блоки выше переключились, значит они используют именно этот ключ в session_state
+    selected_lang_name = st.session_state.get('lang', 'Русский')
+
+    # Маппинг (должен точно совпадать с тем, что в вашем selectbox)
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+
+    # Получаем активный код языка
+    current_lang_code = lang_map.get(selected_lang_name, "ru")
+
+    # Для того, чтобы не было ошибки NameError ниже по коду:
+    lang_code = current_lang_code 
+
+    # Выбираем нужный перевод
     header = HEADER_TRANSLATIONS[current_lang_code]
 
-    # 6. Вывод интерфейса
+    # --- 3. ВЫВОД ---
     st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
             <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 850; text-transform: uppercase; font-size: 2.5em;">
@@ -3507,8 +3503,8 @@ with tabs[1]:
             </p>
         </div>
     """, unsafe_allow_html=True)
-
-
+    
+    st.divider()
 
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
