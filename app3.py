@@ -3655,29 +3655,27 @@ with tabs[1]:
     }
 
     def render_final_agro_map():
-        # Проверяем, что лежит в session_state
-        raw_lang = st.session_state.get('lang_code', 'ru')
+        # --- УНИВЕРСАЛЬНОЕ ПОЛУЧЕНИЕ ЯЗЫКА ---
+        # Пробуем достать язык из разных возможных ключей session_state
+        # (иногда используется 'lang', иногда 'lang_code', иногда полные названия)
         
-        # Маппинг для синхронизации с вашим lang_map
-        # Это гарантирует, что даже если в сессии лежит "Қазақша", мы выберем "kz"
+        raw_lang = st.session_state.get('lang_code') or st.session_state.get('lang') or 'ru'
+        
+        # Маппинг для сопоставления с вашим lang_map
         mapping = {
-            "Русский": "ru", 
-            "Қазақша": "kz", 
-            "English": "en", 
-            "ru": "ru", 
-            "kz": "kz", 
-            "en": "en"
+            "Русский": "ru", "ru": "ru", "RU": "ru",
+            "Қазақша": "kz", "kz": "kz", "KZ": "kz",
+            "English": "en", "en": "en", "EN": "en"
         }
         
         current_lang = mapping.get(raw_lang, "ru").lower()
         
-        # Берем контент из словаря
+        # Выбираем контент
         content = AGRO_MAP_TRANSLATIONS.get(current_lang, AGRO_MAP_TRANSLATIONS["ru"])
 
-        # Отрисовка заголовка
+        # Отрисовка
         st.markdown(content["title"])
         
-        # Путь к изображению
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         
@@ -3696,7 +3694,7 @@ with tabs[1]:
                     unsafe_allow_html=True
                 )
             else:
-                st.warning(f"Файл AGRO.jpg не найден по пути: {img_path}")
+                st.warning("Файл AGRO.jpg не найден")
                 
         with col_text:
             st.markdown("---")
@@ -3705,8 +3703,9 @@ with tabs[1]:
             for crop in content["crops"]:
                 st.markdown(f"* {crop}")
 
-    # Вызов функции (убедитесь, что нет лишних отступов перед вызовом)
+    # Вызов функции
     render_final_agro_map()
+
 
 
 
