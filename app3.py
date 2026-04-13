@@ -2524,14 +2524,17 @@ with tabs[1]:
 
         c_t = chart_lang.get(lang_code, chart_lang["ru"])
 
-        # --- 2. ВЕРХНИЕ МЕТРИКИ ---
+        # --- 3. ТЕПЕРЬ ВЕРХНИЕ МЕТРИКИ (Теперь они видят total_values!) ---
         m1, m2, m3 = st.columns(3)
         with m1:
             st.metric(c_t["m1_label"], "2024", f"16 217 {c_t['m1_delta']}")
         with m2:
             st.metric(c_t["m2_label"], "EKO / ШҚО / ВКО", "2 644")
         with m3:
-            st.metric(c_t["m3_label"], f"{int(sum(total_values)/len(total_values))}")
+            # Ошибка исчезнет, так как total_values уже существует в памяти
+            avg_val = int(sum(total_values)/len(total_values))
+            st.metric(c_t["m3_label"], f"{avg_val:,}".replace(",", " "))
+            
 
         # --- 3. ГРАФИКИ ---
         col_left, col_right = st.columns([1.2, 1])
