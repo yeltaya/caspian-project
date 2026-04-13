@@ -4707,17 +4707,9 @@ with tabs[2]:
     </div>
     """
 
-    # Заголовок с поддержкой 3-х языков и исправленным шрифтом
-    st.markdown(f"""
-        <h2 class='kazakh-font' style='text-align: center; color: #1E3A8A; margin-top: 30px; font-weight: 800;'>
-            {t['header']}
-        </h2>
-    """, unsafe_allow_html=True)
-
-    # Сама интерактивная схема
+    st.markdown("<h2 style='text-align: center; color: #1d4d2b; font-family: sans-serif;'>Схема распространения штормового предупреждения</h2>", unsafe_allow_html=True)
     components.html(html_content, height=580)
 
-    # Разделитель
     st.divider()
 
 #ДОЛГОСРОЧНЫЕ ПРОГНОЗЫ
