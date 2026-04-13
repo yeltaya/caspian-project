@@ -1129,117 +1129,164 @@ with tabs[0]: # ОБЗОР
 
 
 
+    import os
     import streamlit as st
-    import pandas as pd
-    import numpy as np
-    import plotly.graph_objects as go
-    import io
-    import matplotlib.pyplot as plt
-    import matplotlib.animation as animation
 
-    def show_science_block():
-        st.markdown("""
+    def show_science_block(lang):
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        
+        # 1. СЛОВАРЬ ПЕРЕВОДОВ
+        translations = {
+            "Русский": {
+                "main_title": "🔬 Научные исследования",
+                "main_subtitle": "Анализ долгосрочных изменений природной среды Казахстана",
+                "clime_title": "### 🌍 Климат Казахстана",
+                "clime_text": """
+                    За последние годы темпы потепления в Казахстане опережают среднеглобальные значения. 
+                    
+                    **Ключевые факты:**
+                    * Средний рост: **+0.3°C** за десятилетие.
+                    * Участились периоды экстремальной жары.
+                    * Тренд потепления носит устойчивый характер.
+                """,
+                "clime_cap1": "Тренды температуры",
+                "clime_cap2": "Ранг температуры",
+                "caspian_title": "### 🌊 Каспийское море",
+                "caspian_text": """
+                    Динамика уровня моря с 1900 года показывает циклы трансгрессий и регрессий, определяющие экологию региона.
+                    
+                    **Текущее состояние:**
+                    * Исторический минимум 1977 года (**-29.01 м**) достигнут в 2024 году.
+                    * С 2006 года море потеряло более **2-х метров** уровня.
+                    * Критическая ситуация для мелководного Северного Каспия.
+                """,
+                "caspian_cap1": "Многолетняя динамика уровня",
+                "caspian_cap2": "Оценка на будущее (2006-2050)",
+                "footer_quote": "«Наблюдая сегодня — защищаем завтра»",
+                "footer_sub": "Всемирная метеорологическая организация (ВМО)"
+            },
+            "Қазақша": {
+                "main_title": "🔬 Ғылыми зерттеулер",
+                "main_subtitle": "Қазақстанның табиғи ортасының ұзақ мерзімді өзгерістерін талдау",
+                "clime_title": "### 🌍 Қазақстан климаты",
+                "clime_text": """
+                    Соңғы жылдары Қазақстандағы жылыну қарқыны орташа жаһандық мәндерден озып кетті.
+                    
+                    **Негізгі фактілер:**
+                    * Орташа өсім: онжылдықта **+0.3°C**.
+                    * Экстремалды ыстық кезеңдері жиіледі.
+                    * Жылыну тренді тұрақты сипатқа ие.
+                """,
+                "clime_cap1": "Температура трендтері",
+                "clime_cap2": "Температура рангі",
+                "caspian_title": "### 🌊 Каспий теңізі",
+                "caspian_text": """
+                    1900 жылдан бергі теңіз деңгейінің динамикасы аймақтың экологиясын анықтайтын трансгрессиялар мен регрессиялар циклдерін көрсетеді.
+                    
+                    **Ағымдағы жағдайы:**
+                    * 1977 жылғы тарихи минимумға (**-29.01 м**) 2024 жылы қол жеткізілді.
+                    * 2006 жылдан бастап теңіз деңгейі **2 метрден** астам төмендеді.
+                    * Солтүстік Каспийдің таяз сулары үшін критикалық жағдай.
+                """,
+                "caspian_cap1": "Деңгейдің көпжылдық динамикасы",
+                "caspian_cap2": "Болашаққа болжам (2006-2050)",
+                "footer_quote": "«Бүгін бақылай отырып — ертеңді қорғаймыз»",
+                "footer_sub": "Дүниежүзілік метеорологиялық ұйым (ДМҰ)"
+            },
+            "English": {
+                "main_title": "🔬 Scientific Research",
+                "main_subtitle": "Analysis of long-term changes in Kazakhstan's environment",
+                "clime_title": "### 🌍 Climate of Kazakhstan",
+                "clime_text": """
+                    In recent years, the rate of warming in Kazakhstan has outpaced global average values.
+                    
+                    **Key Facts:**
+                    * Average increase: **+0.3°C** per decade.
+                    * Periods of extreme heat have become more frequent.
+                    * The warming trend remains steady.
+                """,
+                "clime_cap1": "Temperature trends",
+                "clime_cap2": "Temperature rank",
+                "caspian_title": "### 🌊 Caspian Sea",
+                "caspian_text": """
+                    Sea level dynamics since 1900 show cycles of transgressions and regressions that define the region's ecology.
+                    
+                    **Current State:**
+                    * The 1977 historical minimum (**-29.01 m**) was reached again in 2024.
+                    * Since 2006, the sea level has dropped by more than **2 meters**.
+                    * A critical situation for the shallow Northern Caspian.
+                """,
+                "caspian_cap1": "Long-term level dynamics",
+                "caspian_cap2": "Future assessment (2006-2050)",
+                "footer_quote": "«Observing today — protecting tomorrow»",
+                "footer_sub": "World Meteorological Organization (WMO)"
+            }
+        }
+
+        t = translations.get(lang, translations["Русский"])
+
+        # 2. ШАПКА БЛОКА
+        st.markdown(f"""
             <div style="text-align: center; margin-top: 50px;">
-                <h2 style='color: #003366;'>🔬 Научные исследования</h2>
+                <h2 style='color: #003366;'>{t['main_title']}</h2>
                 <p style='color: #666; font-size: 1.1rem; margin-bottom: 40px;'>
-                    Анализ долгосрочных изменений природной среды Казахстана
+                    {t['main_subtitle']}
                 </p>
             </div>
         """, unsafe_allow_html=True)
 
-        # Устанавливаем общую высоту для обоих графиков
-        CHART_HEIGHT = 400
-
         col_left, col_right = st.columns(2, gap="large")
 
+        # --- ЛЕВЫЙ БЛОК: КЛИМАТ ---
         with col_left:
-            st.markdown("### 🌍 Климат Казахстана")
-            st.write("""
-                За последние годы темпы потепления в Казахстане опережают среднеглобальные значения. 
-                
-                **Ключевые факты:**
-                * Средний рост: **+0.3°C** за десятилетие.
-                * Участились периоды экстремальной жары.
-                * Тренд потепления носит устойчивый характер.
-            """)
-            
-            st.write("---") # Разделительная линия для аккуратности
+            st.markdown(t['clime_title'])
+            st.write(t['clime_text'])
+            st.write("---")
 
-            # Определяем пути к файлам
             path_clime = os.path.join(BASE_DIR, "climate.png")
             path_clime1 = os.path.join(BASE_DIR, "climate1.png")
 
-            # Создаем внутренние мини-колонки для двух рисунков рядом
             clime_col1, clime_col2 = st.columns(2)
-
             with clime_col1:
                 if os.path.exists(path_clime):
-                    st.image(path_clime, caption="Тренды температуры", use_container_width=True)
-                else:
-                    st.warning("climate.png не найден")
-
+                    st.image(path_clime, caption=t['clime_cap1'], use_container_width=True)
             with clime_col2:
                 if os.path.exists(path_clime1):
-                    st.image(path_clime1, caption="Ранг температуры", use_container_width=True)
-                else:
-                    st.warning("climate1.png не найден")
-                    
+                    st.image(path_clime1, caption=t['clime_cap2'], use_container_width=True)
 
-        
-
-# --- ПРАВЫЙ БЛОК: КАСПИЙ ---
+        # --- ПРАВЫЙ БЛОК: КАСПИЙ ---
         with col_right:
-            st.markdown("### 🌊 Каспийское море")
-            st.write("""
-                Динамика уровня моря с 1900 года показывает циклы трансгрессий и регрессий, определяющие экологию региона.
-                
-                **Текущее состояние:**
-                * Исторический минимум 1977 года (**-29.01 м**) достигнут в 2024 году.
-                * С 2006 года море потеряло более **2-х метров** уровня.
-                * Критическая ситуация для мелководного Северного Каспия.
-            """)
-            
+            st.markdown(t['caspian_title'])
+            st.write(t['caspian_text'])
             st.write("---")
 
-            # Пути к файлам Каспия
             path_cs = os.path.join(BASE_DIR, "CS.png")
             path_cs1 = os.path.join(BASE_DIR, "CS1.png")
 
-            # Создаем 2 колонки для графиков уровня моря
             cs_col1, cs_col2 = st.columns(2)
-
             with cs_col1:
                 if os.path.exists(path_cs):
-                    st.image(path_cs, caption="Многолетняя динамика уровня", use_container_width=True)
-                else:
-                    st.warning("CS.png не найден")
-
+                    st.image(path_cs, caption=t['caspian_cap1'], use_container_width=True)
             with cs_col2:
                 if os.path.exists(path_cs1):
-                    st.image(path_cs1, caption="Оценка на будущее (2006-2050)", use_container_width=True)
-                else:
-                    st.warning("CS1.png не найден")
-                    
+                    st.image(path_cs1, caption=t['caspian_cap2'], use_container_width=True)
 
-    show_science_block()
+        # 3. ФУТЕР БЛОКА (СЛОГАН)
+        st.write("---")
+        st.markdown(f"""
+            <div style="text-align: center; padding: 40px; margin-top: 20px;">
+                <h1 style="color: #003366; font-size: 36px; margin-bottom: 5px; font-weight: 400;">
+                    {t['footer_quote']}
+                </h1>
+                <p style="color: #666; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">
+                    {t['footer_sub']}
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
-    st.write("---")
-    st.markdown(
-        """
-        <div style="text-align: center; padding: 40px; margin-top: 20px;">
-            <h1 style="color: #003366; font-size: 36px; margin-bottom: 5px; font-weight: 400;">
-                «Наблюдая сегодня — защищаем завтра»
-            </h1>
-            <p style="color: #666; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">
-                Всемирная метеорологическая организация (ВМО)
-            </p>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
+    # ВЫЗОВ
+    show_science_block(lang)
 
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
    
