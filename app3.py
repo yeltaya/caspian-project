@@ -3997,53 +3997,86 @@ with tabs[2]:
         </style>
     """, unsafe_allow_html=True)
 
-    # Создаем 5 колонок
-    col1, col2, col3, col4, col5 = st.columns(5)
+    # 1. Дополняем словарь переводов
+    forecast_cards_text = {
+        "ru": {
+            "c1_t": "Наукастинг<br>(2-6 часов)", "c1_d": "Сверхкраткосрочные данные.",
+            "c2_t": "Краткосрочные прогнозы", "c2_d": "Детальная сводка на 1-3 дня, неделю.",
+            "c3_t": "Долгосрочные прогнозы", "c3_d": "Прогнозы на декаду, месяц и сезон.",
+            "c4_t": "Специализированные прогнозы", "c4_d": "Прогноз НМУ, по горной территории, пожарной опасности.",
+            "c5_t": "Штормовые предупреждения", "c5_d": "Об опасных ОЯ и СГЯ."
+        },
+        "kz": {
+            "c1_t": "Наукастинг<br>(2-6 сағат)", "c1_d": "Өте қысқа мерзімді деректер.",
+            "c2_t": "Қысқа мерзімді болжамдар", "c2_d": "1-3 күнге, аптаға арналған егжей-тегжейлі мәліметтер.",
+            "c3_t": "Ұзақ мерзімді болжамдар", "c3_d": "Он күндікке, айға және маусымға арналған болжамдар.",
+            "c4_t": "Мамандандырылған болжамдар", "c4_d": "ҚМЖ, таулы аймақтар, өрт қаупі бойынша болжамдар.",
+            "c5_t": "Дауылды ескертулер", "c5_d": "Қауіпті ТҚ және СГҚ туралы."
+        },
+        "en": {
+            "c1_t": "Nowcasting<br>(2-6 hours)", "c1_d": "Ultra-short-term data.",
+            "c2_t": "Short-term forecasts", "c2_d": "Detailed summary for 1-3 days, a week.",
+            "c3_t": "Long-term forecasts", "c3_d": "Forecasts for a decade, month, and season.",
+            "c4_t": "Specialized forecasts", "c4_d": "Forecast for MSW, mountain areas, fire hazard.",
+            "c5_t": "Storm warnings", "c5_d": "About dangerous HP and SHP."
+        }
+    }
 
-    with col1:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">⚡</div>
-                <div class="title">Наукастинг<br>(2-6 часов)</div>
-                <div class="description">Сверхкраткосрочные данные.</div>
-            </div>
-        """, unsafe_allow_html=True)
+    # 2. Определяем данные
+    c = forecast_cards_text[lang_code]
 
-    with col2:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">📅</div>
-                <div class="title">Краткосрочные прогнозы</div>
-                <div class="description">Детальная сводка на 1-3 дня, неделю.</div>
-            </div>
-        """, unsafe_allow_html=True)
+    # 3. Добавляем стили для карточек (чтобы были одной высоты)
+    st.markdown("""
+        <style>
+        .forecast-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-bottom: 5px solid #2563EB;
+            min-height: 280px; /* Фиксируем минимальную высоту */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: transform 0.3s ease;
+        }
+        .forecast-card:hover {
+            transform: translateY(-5px);
+        }
+        .forecast-card .icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .forecast-card .title { 
+            font-weight: 800; 
+            color: #1E3A8A; 
+            margin-bottom: 10px; 
+            line-height: 1.2;
+            font-size: 1rem;
+        }
+        .forecast-card .description { color: #546e7a; font-size: 0.85rem; }
+        </style>
+    """, unsafe_allow_html=True)
 
-    with col3:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">🔭</div>
-                <div class="title">Долгосрочные прогнозы</div>
-                <div class="description">Прогнозы на декаду, месяц и сезон.</div>
-            </div>
-        """, unsafe_allow_html=True)
+    # 4. Вывод колонок
+    cols = st.columns(5)
+    card_data = [
+        {"icon": "⚡", "title": c['c1_t'], "desc": c['c1_d']},
+        {"icon": "📅", "title": c['c2_t'], "desc": c['c2_d']},
+        {"icon": "🔭", "title": c['c3_t'], "desc": c['c3_d']},
+        {"icon": "⚠️", "title": c['c4_t'], "desc": c['c4_d']},
+        {"icon": "🏔️", "title": c['c5_t'], "desc": c['c5_d']}
+    ]
 
-    with col4:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">⚠️</div>
-                <div class="title">Специализированные прогнозы</div>
-                <div class="description">Прогноз неблагоприятных метеорологических условии, по горной территории, пожарной опасности.</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    with col5:
-        st.markdown("""
-            <div class="forecast-card">
-                <div class="icon">🏔️</div>
-                <div class="title">Штормовые предупреждения</div>
-                <div class="description">Об опасных ОЯ и СГЯ.</div>
-            </div>
-        """, unsafe_allow_html=True)
+    for i, col in enumerate(cols):
+        with col:
+            st.markdown(f"""
+                <div class="forecast-card kazakh-font">
+                    <div class="icon">{card_data[i]['icon']}</div>
+                    <div class="title">{card_data[i]['title']}</div>
+                    <div class="description">{card_data[i]['desc']}</div>
+                </div>
+            """, unsafe_allow_html=True)
+            
+        
     
     st.markdown("### 🕒 Горизонты планирования")
 
