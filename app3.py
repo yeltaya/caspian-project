@@ -3273,79 +3273,170 @@ with tabs[1]:
         }
         st.table(top_3_df.rename(columns=display_columns).set_index(display_columns["Region"]))
         
-                # --- ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ ---
-    HISTORICAL_DATA = {
-                "р. Есиль (г. Астана)": {
-                    "record_level": 742, "record_year": "18.04.2021", "current_level": 701, "danger_level": 742,
-                    "fact": "В 2017 году уровень воды достиг рекордной отметки, что привело к заполнению защитной дамбы."
-                },
-                "р. Жайык (г. Уральск)": {
-                    "record_level": 945, "record_year": "9.05.1942 г.", "current_level": 349, "danger_level": 945,
-                    "fact": "Исторический максимум был зафиксирован в середине 90-х. Сейчас уровень в пределах нормы."
-                },
-                "р. Иле (пр. Добын (КНР))": {
-                    "record_level": 1980, "record_year": "08.05.2016 г.", "current_level": 248, "danger_level": 1980,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                },
-                "р. Илек (г. Актобе)": {
-                    "record_level": 741, "record_year": "13.04.1941 г.", "current_level": 137, "danger_level": 741,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                },
-                "р. Есиль (г. Державинск)": {
-                    "record_level": 1709, "record_year": "18.04.2024 г.", "current_level": 433, "danger_level": 1709,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                },
-                "р. Талас (а.Жасоркен)": {
-                    "record_level": 378, "record_year": "06.11.2017 г.", "current_level": 91, "danger_level": 378,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                },
-                "р. Нура (с. Шешенкара)": {
-                    "record_level": 715, "record_year": "11.04.2015 г.", "current_level": 400, "danger_level": 715,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                },
-                "р. Тобыл (г. Костанай)": {
-                    "record_level": 730, "record_year": "12.04.2000 г.", "current_level": 329, "danger_level": 730,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                },
-                "р. Сырдарья (с. Кокбулак)": {
-                    "record_level": 852, "record_year": "20.04.2003 г.", "current_level": 591, "danger_level": 852,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                },
-                "р. Ертис (г. Семей)": {
-                    "record_level": 635, "record_year": "11.04.1941 г.", "current_level": 161, "danger_level": 635,
-                    "fact": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС."
-                }                
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ИНТЕРФЕЙСА ---
+    retro_ui = {
+        "ru": {
+            "title": "### 📜 Историческая память рек",
+            "desc": "Сравните текущее состояние реки с самым масштабным наводнением в истории наблюдений.",
+            "select": "Выберите реку для сравнения:",
+            "hist_cap": "📊 ИСТОРИЧЕСКИЙ ПИК",
+            "curr_cap": "🌊 ТЕКУЩИЙ УРОВЕНЬ",
+            "unit": "см",
+            "date": "13 апреля 2026 г."
+        },
+        "kz": {
+            "title": "### 📜 Өзендердің тарихи жады",
+            "desc": "Өзеннің ағымдағы жай-күйін бақылау тарихындағы ең ауқымды су тасқынымен салыстырыңыз.",
+            "select": "Салыстыру үшін өзенді таңдаңыз:",
+            "hist_cap": "📊 ТАРИХИ ШЫҢ",
+            "curr_cap": "🌊 АҒЫМДАҒЫ ДЕҢГЕЙ",
+            "unit": "см",
+            "date": "2026 жылғы 13 сәуір"
+        },
+        "en": {
+            "title": "### 📜 Historical River Memory",
+            "desc": "Compare the current river status with the largest flood in recorded history.",
+            "select": "Select a river to compare:",
+            "hist_cap": "📊 HISTORICAL PEAK",
+            "curr_cap": "🌊 CURRENT LEVEL",
+            "unit": "cm",
+            "date": "April 13, 2026"
         }
+    }
 
-    st.markdown("### 📜 Историческая память рек")
-    st.write("Сравните текущее состояние реки с самым масштабным наводнением в истории наблюдений.")
+    # --- 2. ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ (Мультиязычные) ---
+    HISTORICAL_DATA = {
+        "Esil_Astana": {
+            "name": {"ru": "р. Есиль (г. Астана)", "kz": "Есіл өз. (Астана қ.)", "en": "Esil River (Astana)"},
+            "record_level": 742, "record_year": "18.04.2021", "current_level": 701, "danger_level": 742,
+            "fact": {
+                "ru": "В 2017 году уровень воды достиг рекордной отметки, что привело к заполнению дамбы.",
+                "kz": "2017 жылы су деңгейі рекордтық шекке жетіп, бөгеттің толуына әкелді.",
+                "en": "In 2017, the water level reached a record high, filling the protective dam."
+            }
+        },
+        "Zhayik_Uralsk": {
+            "name": {"ru": "р. Жайык (г. Уральск)", "kz": "Жайық өз. (Орал қ.)", "en": "Zhayik River (Uralsk)"},
+            "record_level": 945, "record_year": "9.05.1942", "current_level": 349, "danger_level": 945,
+            "fact": {
+                "ru": "Исторический максимум зафиксирован в середине века. Сейчас уровень в норме.",
+                "kz": "Тарихи максимум ғасыр ортасында тіркелді. Қазір деңгей қалыпты.",
+                "en": "The historical maximum was recorded in the mid-century. Current levels are normal."
+            }
+        },
+        "Ile_Dobyn": {
+            "name": {"ru": "р. Иле (пр. Добын (КНР))", "kz": "Іле өз. (Добын (ҚХР))", "en": "Ile River (Dobyn, China)"},
+            "record_level": 1980, "record_year": "08.05.2016", "current_level": 248, "danger_level": 1980,
+            "fact": {
+                "ru": "Максимальный уровень регулируется Бухтарминским каскадом ГЭС.",
+                "kz": "Максималды деңгей Бұқтырма ГЭС каскадымен реттеледі.",
+                "en": "The maximum level is regulated by the Bukhtarma HPP cascade."
+            }
+        },
+        "Ilek_Aktobe": {
+            "name": {"ru": "р. Илек (г. Актобе)", "kz": "Елек өз. (Ақтөбе қ.)", "en": "Ilek River (Aktobe)"},
+            "record_level": 741, "record_year": "13.04.1941", "current_level": 137, "danger_level": 741,
+            "fact": {
+                "ru": "Уровень значительно зависит от весеннего снеготаяния в верховьях.",
+                "kz": "Деңгей жоғарғы жағындағы көктемгі қардың еруіне байланысты.",
+                "en": "The level significantly depends on spring snowmelt upstream."
+            }
+        },
+        "Esil_Derzhavinsk": {
+            "name": {"ru": "р. Есиль (г. Державинск)", "kz": "Есіл өз. (Державинск қ.)", "en": "Esil River (Derzhavinsk)"},
+            "record_level": 1709, "record_year": "18.04.2024", "current_level": 433, "danger_level": 1709,
+            "fact": {
+                "ru": "В 2024 году зафиксирован абсолютный исторический рекорд уровня.",
+                "kz": "2024 жылы деңгейдің абсолютті тарихи рекорды тіркелді.",
+                "en": "In 2024, an absolute historical level record was recorded."
+            }
+        },
+        "Talas_Zhasorken": {
+            "name": {"ru": "р. Талас (а.Жасоркен)", "kz": "Талас өз. (Жасөркен а.)", "en": "Talas River (Zhasorken)"},
+            "record_level": 378, "record_year": "06.11.2017", "current_level": 91, "danger_level": 378,
+            "fact": {
+                "ru": "Река имеет важное значение для орошения земель Жамбылской области.",
+                "kz": "Өзен Жамбыл облысының жерлерін суару үшін маңызды маңызға ие.",
+                "en": "The river is vital for irrigation in the Zhambyl region."
+            }
+        },
+        "Nura_Sheshenkara": {
+            "name": {"ru": "р. Нура (с. Шешенкара)", "kz": "Нұра өз. (Шешенқара а.)", "en": "Nura River (Sheshenkara)"},
+            "record_level": 715, "record_year": "11.04.2015", "current_level": 400, "danger_level": 715,
+            "fact": {
+                "ru": "Паводки на Нуре часто угрожают населенным пунктам Карагандинской области.",
+                "kz": "Нұрадағы тасқындар Қарағанды облысының елді мекендеріне жиі қауіп төндіреді.",
+                "en": "Floods on the Nura often threaten settlements in the Karaganda region."
+            }
+        },
+        "Tobyl_Kostanay": {
+            "name": {"ru": "р. Тобыл (г. Костанай)", "kz": "Тобыл өз. (Қостанай қ.)", "en": "Tobyl River (Kostanay)"},
+            "record_level": 730, "record_year": "12.04.2000", "current_level": 329, "danger_level": 730,
+            "fact": {
+                "ru": "Уровень регулируется каскадом водохранилищ (Верхне-Тобольское, Каратомарское).",
+                "kz": "Деңгей су қоймалары каскадымен реттеледі.",
+                "en": "The level is regulated by a cascade of reservoirs."
+            }
+        },
+        "Syrdariya_Kokbulak": {
+            "name": {"ru": "р. Сырдарья (с. Кокбулак)", "kz": "Сырдария өз. (Көкбұлақ а.)", "en": "Syrdarya River (Kokbulak)"},
+            "record_level": 852, "record_year": "20.04.2003", "current_level": 591, "danger_level": 852,
+            "fact": {
+                "ru": "Главная водная артерия юга Казахстана, регулируемая Шардаринским вдхр.",
+                "kz": "Оңтүстік Қазақстанның негізгі су артериясы, Шардара су қоймасымен реттеледі.",
+                "en": "The main water artery of southern Kazakhstan, regulated by Shardara reservoir."
+            }
+        },
+        "Ertis_Semey": {
+            "name": {"ru": "р. Ертис (г. Семей)", "kz": "Ертіс өз. (Семей қ.)", "en": "Ertis River (Semey)"},
+            "record_level": 635, "record_year": "11.04.1941", "current_level": 161, "danger_level": 635,
+            "fact": {
+                "ru": "Уровень воды в районе Семея зависит от сбросов Шульбинской ГЭС.",
+                "kz": "Семей ауданындағы су деңгейі Шүлбі ГЭС-інің су жіберуіне байланысты.",
+                "en": "The water level near Semey depends on releases from the Shulba HPP."
+            }
+        }
+    }
 
-            # Выбор объекта
-    river_choice = st.selectbox("Выберите реку для сравнения:", list(HISTORICAL_DATA.keys()))
-    data = HISTORICAL_DATA[river_choice]
+    # --- 3. ЛОГИКА ОТОБРАЖЕНИЯ ---
+    # Выбираем текущий язык (предполагаем, что lang_code определен ранее)
+    lang = lang_code if 'lang_code' in locals() else "ru"
+    ui = retro_ui[lang]
 
-            # Визуал: Две карточки
+    st.markdown(ui["title"])
+    st.write(ui["desc"])
+
+    # Создаем список для выбора (отображаем названия на текущем языке)
+    river_map = {v["name"][lang]: k for k, v in HISTORICAL_DATA.items()}
+    river_choice = st.selectbox(ui["select"], list(river_map.keys()))
+
+    # Данные выбранной реки
+    selected_data = HISTORICAL_DATA[river_map[river_choice]]
+
     col_hist, col_curr = st.columns(2)
 
     with col_hist:
-            st.markdown(f"""
-                    <div style="background-color: #f1f3f4; padding: 20px; border-radius: 15px; border-left: 8px solid #607d8b;">
-                        <h5 style="margin:0; color: #455a64;">📊 ИСТОРИЧЕСКИЙ ПИК</h5>
-                        <h2 style="margin:0; color: #263238;">{data['record_level']} см</h2>
-                        <p style="font-weight: bold; color: #78909c;">{data['record_year']} год</p>
-                    </div>
-                """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style="background-color: #f1f3f4; padding: 20px; border-radius: 15px; border-left: 8px solid #607d8b; min-height: 150px;">
+                <h5 style="margin:0; color: #455a64;">{ui['hist_cap']}</h5>
+                <h2 style="margin:0; color: #263238;">{selected_data['record_level']} {ui['unit']}</h2>
+                <p style="font-weight: bold; color: #78909c;">{selected_data['record_year']} {"год" if lang=="ru" else ""}</p>
+            </div>
+        """, unsafe_allow_html=True)
 
     with col_curr:
-                # Динамический цвет в зависимости от уровня
-                status_color = "#2ecc71" if data['current_level'] < data['danger_level'] else "#e74c3c"
-                st.markdown(f"""
-                    <div style="background-color: #e3f2fd; padding: 20px; border-radius: 15px; border-left: 8px solid {status_color};">
-                        <h5 style="margin:0; color: #1565c0;">🌊 ТЕКУЩИЙ УРОВЕНЬ</h5>
-                        <h2 style="margin:0; color: #0d47a1;">{data['current_level']} см</h2>
-                        <p style="font-weight: bold; color: #1e88e5;">9 апреля 2026 г.</p>
-                    </div>
-                """, unsafe_allow_html=True)
+        status_color = "#2ecc71" if selected_data['current_level'] < selected_data['danger_level'] else "#e74c3c"
+        st.markdown(f"""
+            <div style="background-color: #e3f2fd; padding: 20px; border-radius: 15px; border-left: 8px solid {status_color}; min-height: 150px;">
+                <h5 style="margin:0; color: #1565c0;">{ui['curr_cap']}</h5>
+                <h2 style="margin:0; color: #0d47a1;">{selected_data['current_level']} {ui['unit']}</h2>
+                <p style="font-weight: bold; color: #1e88e5;">{ui['date']}</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # Отображаем факт на текущем языке
+    st.info(selected_data["fact"][lang])
+
 
                 
             
