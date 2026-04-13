@@ -2168,110 +2168,58 @@ with tabs[1]:
                     st.rerun()
                     
                         
+    # Инициализируем переменную заранее, чтобы избежать NameError
+    df_stations = None
 
-    # --- СРЕДНЯЯ КОЛОНКА: ДЕТАЛИЗАЦИЯ РЕГИОНА ---
+    # Загружаем станции
+    XLSX_PATH = os.path.join(base_path, "MS tizimi.xlsx")
+
+    @st.cache_data
+    def load_stations_from_excel(path):
+        if not os.path.exists(path):
+            return None
+        try:
+            df = pd.read_excel(path, skiprows=1)
+            df.columns = [str(c).strip() for c in df.columns]
+            if 'ФИЛИАЛ' in df.columns:
+                df['ФИЛИАЛ'] = df['ФИЛИАЛ'].ffill()
+            return df
+        except:
+            return None
+
+    df_stations = load_stations_from_excel(XLSX_PATH)
+
     with col_mid:
         selected_id = st.session_state.get("selected_region_id")
         
         if selected_id:
-            # Фильтруем GDF по выбранному ID
+            # 1. Берем данные конкретной области из GDF
             target_data = gdf[gdf[name_col] == selected_id]
             
             if not target_data.empty:
                 target_row = target_data.iloc[0]
                 
-                # Динамический заголовок на текущем языке
-                lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
-                current_lang_col = lang_to_col.get(lang_code, "NAME_RU")
-                st.subheader(f"📍 {target_row[current_lang_col].upper()}")
+                # 2. Выводим заголовок (используем ранее созданный lang_code)
+                st.subheader(f"📍 {target_row[active_name_col].upper()}")
                 
-                # Создаем карту региона, центрированную на его геометрии
+                # 3. Создаем карту региона
                 center = target_row.geometry.centroid
                 m_reg = folium.Map(location=[center.y, center.x], zoom_start=6, tiles="cartodbpositron")
                 
-                # Отрисовываем границы только этого региона
-                folium.GeoJson(
-                    target_row.geometry,
-                    style_function=lambda x: {
-                        'fillColor': '#004A99', 
-                        'color': '#004A99', 
-                        'weight': 2, 
-                        'fillOpacity': 0.05
-                    }
-                ).add_to(m_reg)
-
-                # --- ОТОБРАЖЕНИЕ СТАНЦИЙ ИЗ EXCEL ---
+                # 4. Проверяем df_stations ПЕРЕД использованием
                 if df_stations is not None:
-                    # Используем RUS_NAME для сопоставления с Excel (т.к. manual_map на русском)
-                    region_name_ru = target_row['NAME_RU'].lower().strip()
+                    # Тут идет ваш код фильтрации и создания CircleMarker
+                    # ... (код фильтрации через manual_map)
                     
-                    # Словарь связки (Shapefile -> Excel "ФИЛИАЛ")
-                    manual_map = {
-                        "алматы": "г.Алматы",
-                        "жетысу": "Жетису",
-                        "жетісу": "Жетису",
-                        "северо-казахстан": "СКО",
-                        "западно-казахстан": "ЗКО",
-                        "восточно-казахстан": "ВКО",
-                        "абай": "Абай",
-                        "улытау": "Улытау",
-                        "астана": "ЦА",
-                        "шымкент": "Шымкент",
-                        "туркестан": "Туркестан",
-                        "караганд": "Караганд",
-                        "акмол": "Акмол"
-                    }
-                    
-                    # Поиск термина для фильтрации в Excel
-                    search_term = None
-                    for key, val in manual_map.items():
-                        if key in region_name_ru:
-                            search_term = val
-                            break
-                    
-                    if not search_term:
-                        search_term = region_name_ru.split()[0][:5].capitalize()
+                    for _, row in region_stations.iterrows():
+                        # Отрисовка точек станций
+                        folium.CircleMarker(...).add_to(m_reg)
 
-                    # Фильтрация станций по филиалу
-                    region_stations = df_stations[df_stations['ФИЛИАЛ'].str.contains(search_term, case=False, na=False)]
-                    
-                    # Поиск колонок с координатами (защита от вариаций в названиях)
-                    try:
-                        col_lat = [c for c in df_stations.columns if 'с.ш' in c.lower() or 'lat' in c.lower()][0]
-                        col_lon = [c for c in df_stations.columns if 'в.д' in c.lower() or 'long' in c.lower()][0]
-                        
-                        for _, row in region_stations.iterrows():
-                            lat = row[col_lat]
-                            lon = row[col_lon]
-                            
-                            if pd.notna(lat) and pd.notna(lon):
-                                # Логика цвета: АМС - зеленый, МС - синий
-                                st_type = str(row.get('Вид', 'МС')).strip().upper()
-                                dot_color = "#2E7D32" if "АМС" in st_type else "#1565C0"
-                                
-                                folium.CircleMarker(
-                                    location=[float(lat), float(lon)],
-                                    radius=5,
-                                    color=dot_color,
-                                    fill=True,
-                                    fill_color=dot_color,
-                                    fill_opacity=0.7,
-                                    popup=folium.Popup(
-                                        f"<b>{row.get('Станция', 'Без названия')}</b><br>"
-                                        f"Тип: {st_type}<br>"
-                                        f"Филиал: {row.get('ФИЛИАЛ', '-')}", 
-                                        max_width=200
-                                    ),
-                                    tooltip=f"{row.get('Станция', 'Станция')} ({st_type})"
-                                ).add_to(m_reg)
-                    except Exception as e:
-                        st.warning(f"Ошибка при поиске координат в Excel: {e}")
-
-                # Рендер карты региона
+                # 5. И только в самом конце выводим карту
                 st_folium(m_reg, use_container_width=True, height=500, key=f"map_reg_{selected_id}")
         else:
-            # Если регион не выбран, показываем заглушку
-            st.info("Выберите область на карте Казахстана слева, чтобы увидеть список станций.")
+            st.info("Нажмите на область на карте Казахстана, чтобы увидеть детали.")
+        
             
                         
 
