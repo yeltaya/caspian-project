@@ -3630,82 +3630,114 @@ with tabs[1]:
         
     
 
-        # --- ХАЙЛАЙТЫ ПО ЭКОЛОГИИ ---
-    st.markdown("""
-            <style>
-            .eco-highlight-container {
-                display: flex;
-                justify-content: space-between;
-                gap: 10px;
-                margin: 20px 0;
-            }
-            .eco-card {
-                flex: 1;
-                background: #f8f9fa;
-                border-radius: 12px;
-                padding: 15px;
-                text-align: center;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                border-bottom: 4px solid #003366;
-                transition: transform 0.2s;
-            }
-            .eco-card:hover {
-                transform: scale(1.02);
-                background: #ffffff;
-            }
-            .eco-val {
-                font-size: 1.8em;
-                font-weight: 800;
-                color: #003366;
-                margin-bottom: 2px;
-            }
-            .eco-label {
-                font-size: 0.8em;
-                color: #546e7a;
-                text-transform: uppercase;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                line-height: 1.2;
-            }
-            .eco-icon {
-                font-size: 1.8em;
-                margin-bottom: 5px;
-                display: block;
-            }
-            </style>
-            
-            <div class="eco-highlight-container">
-                <div class="eco-card" style="border-bottom-color: #004A99;">
-                    <span class="eco-icon">🏙️</span>
-                    <div class="eco-val">70</div>
-                    <div class="eco-label">Населенных пунктов под мониторингом</div>
-                </div>
-                <div class="eco-card" style="border-bottom-color: #0288d1;">
-                    <span class="eco-icon">📍</span>
-                    <div class="eco-val">175</div>
-                    <div class="eco-label">Постов наблюдения за воздухом</div>
-                </div>
-                    <div class="eco-card" style="border-bottom-color: #7b1fa2;">
-                    <span class="eco-icon">📱</span>
-                    <div class="eco-val">131</div>
-                    <div class="eco-label">Автоматических постов</div>
-                </div> 
-                <div class="eco-card" style="border-bottom-color: #43a047;">
-                    <span class="eco-icon">🌊</span>
-                    <div class="eco-val">373</div>
-                    <div class="eco-label">Гидрохимических створа</div>
-                </div>
-                <div class="eco-card" style="border-bottom-color: #fbc02d;">
-                    <span class="eco-icon">🧪</span>
-                    <div class="eco-val">60+</div>
-                    <div class="eco-label">Показателей качества воды</div>
-                </div>
-                <div class="eco-card" style="border-bottom-color: #d32f2f;">
-                    <span class="eco-icon">☢️</span>
-                    <div class="eco-val">89</div>
-                    <div class="eco-label">Станций радиационного фона</div>
+     # 1. Добавляем переводы для хайлайтов
+    highlights_text = {
+        "ru": {
+            "cities": "Населенных пунктов под мониторингом",
+            "posts": "Постов наблюдения за воздухом",
+            "auto": "Автоматических постов",
+            "water_points": "Гидрохимических створа",
+            "indicators": "Показателей качества воды",
+            "rad_stations": "Станций радиационного фона"
+        },
+        "kz": {
+            "cities": "Мониторингпен қамтылған елді мекендер",
+            "posts": "Ауаны бақылау бекеттері",
+            "auto": "Автоматты бекеттер",
+            "water_points": "Гидрохимиялық тұстамалар",
+            "indicators": "Су сапасының көрсеткіштері",
+            "rad_stations": "Радиациялық фон станциялары"
+        },
+        "en": {
+            "cities": "Settlements under monitoring",
+            "posts": "Air monitoring stations",
+            "auto": "Automatic stations",
+            "water_points": "Hydrochemical sections",
+            "indicators": "Water quality indicators",
+            "rad_stations": "Radiation background stations"
+        }
+    }
+
+    # 2. Вывод блока
+    h = highlights_text[lang_code]
+
+    st.markdown(f"""
+        <style>
+        .eco-highlight-container {{
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 20px 0;
+        }}
+        .eco-card {{
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-bottom: 4px solid #003366;
+            transition: transform 0.2s;
+        }}
+        .eco-card:hover {{
+            transform: scale(1.02);
+            background: #ffffff;
+        }}
+        .eco-val {{
+            font-size: 1.8em;
+            font-weight: 800;
+            color: #003366;
+            margin-bottom: 2px;
+        }}
+        .eco-label {{
+            font-size: 0.8em;
+            color: #546e7a;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }}
+        .eco-icon {{
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            display: block;
+        }}
+        </style>
+        
+        <div class="eco-highlight-container">
+            <div class="eco-card" style="border-bottom-color: #004A99;">
+                <span class="eco-icon">🏙️</span>
+                <div class="eco-val">70</div>
+                <div class="eco-label">{h['cities']}</div>
             </div>
-        """, unsafe_allow_html=True)
+            <div class="eco-card" style="border-bottom-color: #0288d1;">
+                <span class="eco-icon">📍</span>
+                <div class="eco-val">175</div>
+                <div class="eco-label">{h['posts']}</div>
+            </div>
+            <div class="eco-card" style="border-bottom-color: #7b1fa2;">
+                <span class="eco-icon">📱</span>
+                <div class="eco-val">131</div>
+                <div class="eco-label">{h['auto']}</div>
+            </div> 
+            <div class="eco-card" style="border-bottom-color: #43a047;">
+                <span class="eco-icon">🌊</span>
+                <div class="eco-val">373</div>
+                <div class="eco-label">{h['water_points']}</div>
+            </div>
+            <div class="eco-card" style="border-bottom-color: #fbc02d;">
+                <span class="eco-icon">🧪</span>
+                <div class="eco-val">60+</div>
+                <div class="eco-label">{h['indicators']}</div>
+            </div>
+            <div class="eco-card" style="border-bottom-color: #d32f2f;">
+                <span class="eco-icon">☢️</span>
+                <div class="eco-val">89</div>
+                <div class="eco-label">{h['rad_stations']}</div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
 
         # --- УЛУЧШЕННЫЙ БЛОК: ИНФОРМАЦИОННЫЕ РЕСУРСЫ И БЮЛЛЕТЕНИ ---
     st.markdown("""
