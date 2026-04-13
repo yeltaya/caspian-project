@@ -3642,7 +3642,7 @@ with tabs[1]:
     import streamlit as st
     import base64
 
-    # 1. Словарь ОБЯЗАТЕЛЬНО должен быть определен ПЕРЕД функцией
+    # 1. Словарь переводов на 3 языка
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
             "title": "### 🗺️ Агрометеорологические наблюдения",
@@ -3665,28 +3665,44 @@ with tabs[1]:
     }
 
     def render_final_agro_map(lang_to_use):
+        # Получаем контент по ключу, если ключа нет — по умолчанию русский
         content = AGRO_MAP_TRANSLATIONS.get(lang_to_use, AGRO_MAP_TRANSLATIONS["ru"])
+        
+        # Заголовок блока
         st.markdown(content["title"])
         
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         
         col_map, col_text = st.columns([1.5, 0.5])
+        
         with col_map:
             if os.path.exists(img_path):
                 with open(img_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
-                st.markdown(f'<div style="display: flex; justify-content: center;"><img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px;"></div>', unsafe_allow_html=True)
+                st.markdown(
+                    f"""
+                    <div style="display: flex; justify-content: center;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
             else:
                 st.warning("Файл AGRO.jpg не найден")
+                
         with col_text:
             st.markdown("---")
+            # Основной текст
             st.write(content["main_text"])
+            # Заголовок списка культур
             st.markdown(content["crops_title"])
+            # Список культур через цикл
             for crop in content["crops"]:
                 st.markdown(f"* {crop}")
 
-    # ВЫЗОВ ФУНКЦИИ С ПЕРЕДАЧЕЙ ЯЗЫКА
+    # ВЫЗОВ ФУНКЦИИ
+    # Убедитесь, что переменная current_lang определена выше в вашем коде
     render_final_agro_map(current_lang)
 
 
