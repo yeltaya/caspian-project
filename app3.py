@@ -3409,15 +3409,15 @@ with tabs[1]:
         }
     }
 
-    # --- 3. ЛОГИКА ОТОБРАЖЕНИЯ ---
-    # Выбираем текущий язык (предполагаем, что lang_code определен ранее)
-    lang = lang_code if 'lang_code' in locals() else "ru"
+    # --- ЛОГИКА ОТОБРАЖЕНИЯ ГИДРОЛОГИИ ---
+    # Используем единый ключ из session_state, который во втором блоке обновляется селектбоксом
+    lang = st.session_state.get('lang', 'ru') 
     ui = retro_ui[lang]
 
     st.markdown(ui["title"])
     st.write(ui["desc"])
 
-    # Создаем список для выбора (отображаем названия на текущем языке)
+    # Создаем список для выбора рек
     river_map = {v["name"][lang]: k for k, v in HISTORICAL_DATA.items()}
     river_choice = st.selectbox(ui["select"], list(river_map.keys()))
 
@@ -3431,7 +3431,7 @@ with tabs[1]:
             <div style="background-color: #f1f3f4; padding: 20px; border-radius: 15px; border-left: 8px solid #607d8b; min-height: 150px;">
                 <h5 style="margin:0; color: #455a64;">{ui['hist_cap']}</h5>
                 <h2 style="margin:0; color: #263238;">{selected_data['record_level']} {ui['unit']}</h2>
-                <p style="font-weight: bold; color: #78909c;">{selected_data['record_year']} {"год" if lang=="ru" else ""}</p>
+                <p style="font-weight: bold; color: #78909c;">{selected_data['record_year']} {"г." if lang=="ru" else "ж." if lang=="kz" else "y."}</p>
             </div>
         """, unsafe_allow_html=True)
 
@@ -3444,6 +3444,7 @@ with tabs[1]:
                 <p style="font-weight: bold; color: #1e88e5;">{ui['date']}</p>
             </div>
         """, unsafe_allow_html=True)
+        
 
 
     import streamlit as st
