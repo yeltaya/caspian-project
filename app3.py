@@ -2582,173 +2582,184 @@ with tabs[1]:
             
             
 
-        # --- 4. АВТОМАТИЧЕСКОЕ АНАЛИТИЧЕСКОЕ РЕЗЮМЕ ---
+# --- 4. АВТОМАТИЧЕСКОЕ АНАЛИТИЧЕСКОЕ РЕЗЮМЕ ---
     st.markdown("---")
-    st.markdown("### 📋 Аналитическая справка")
+    
+    # Словарь переводов для резюме
+    summary_lang = {
+        "ru": {
+            "header": "### 📋 Аналитическая справка",
+            "intro": "За анализируемый период (2020–2025 гг.) наблюдаются следующие ключевые изменения:",
+            "leader": "Лидер по нагрузке",
+            "leader_text": "В 2025 году наибольшее количество штормовых телеграмм выпущено филиалом",
+            "dynamics": "Самая высокая динамика",
+            "dynamics_text": "Наиболее резкий рост активности за 5 лет зафиксирован в регионе",
+            "dynamics_val": "увеличилось на",
+            "trend": "Общий тренд",
+            "trend_up": "рост",
+            "trend_down": "незначительное снижение",
+            "trend_text": "После пиковых значений 2024 года, в 2025 году зафиксировано",
+            "trend_reason": "Это может быть связано с изменением климатических циклов.",
+            "disclaimer": "⚠️ Данные за 2025 год являются актуальными на текущую дату.",
+            "units": "ед."
+        },
+        "kz": {
+            "header": "### 📋 Аналитикалық анықтама",
+            "intro": "Талдау кезеңінде (2020–2025 жж.) келесі негізгі өзгерістер байқалады:",
+            "leader": "Жүктеме бойынша көшбасшы",
+            "leader_text": "2025 жылы дауылды жеделхаттардың ең көп санын шығарған филиал —",
+            "dynamics": "Ең жоғары динамика",
+            "dynamics_text": "5 жыл ішінде белсенділіктің ең күрт өсуі келесі аймақта тіркелді:",
+            "dynamics_val": "көрсеткіш",
+            "trend": "Жалпы тренд",
+            "trend_up": "өсу",
+            "trend_down": "болмашы төмендеу",
+            "trend_text": "2024 жылғы ең жоғары көрсеткіштерден кейін, 2025 жылы белсенділіктің",
+            "trend_reason": "Бұл климаттық циклдардың өзгеруіне байланысты болуы мүмкін.",
+            "disclaimer": "⚠️ 2025 жылға арналған деректер ағымдағы күнге өзекті.",
+            "units": "бірлік"
+        },
+        "en": {
+            "header": "### 📋 Analytical Summary",
+            "intro": "During the analyzed period (2020–2025), the following key changes are observed:",
+            "leader": "Workload Leader",
+            "leader_text": "In 2025, the highest number of storm telegrams was issued by the branch",
+            "dynamics": "Highest Dynamics",
+            "dynamics_text": "The sharpest increase in activity over 5 years was recorded in",
+            "dynamics_val": "increased by",
+            "trend": "General Trend",
+            "trend_up": "growth",
+            "trend_down": "slight decrease",
+            "trend_text": "After the peak values of 2024, in 2025 there was a",
+            "trend_reason": "This may be due to changes in climate cycles.",
+            "disclaimer": "⚠️ Data for 2025 is current as of today.",
+            "units": "units"
+        }
+    }
 
-        # Расчеты для резюме
-        # 1. Находим регион с максимальным ростом (сравнение 2025 к 2020)
+    s_t = summary_lang.get(lang_code, summary_lang["ru"])
+    st.markdown(s_t["header"])
+
+    # Расчеты
     df_storm['Growth'] = df_storm['2025'] - df_storm['2020']
     max_growth_region = df_storm.loc[df_storm['Growth'].idxmax()]
-
-        # 2. Находим регион-лидер по количеству в 2025 году
     leader_2025 = df_storm.loc[df_storm['2025'].idxmax()]
 
-        # 3. Общая тенденция (2025 vs 2024)
     total_2024 = 16217
     total_2025 = 15821
     trend_pct = round(((total_2025 - total_2024) / total_2024) * 100, 1)
-    trend_text = "незначительное снижение" if trend_pct < 0 else "рост"
+    
+    # Логика выбора текста тренда
+    current_trend_text = s_t["trend_down"] if trend_pct < 0 else s_t["trend_up"]
 
-        # Вывод резюме в стильном блоке
+    # Вывод резюме
     st.write(f"""
-        За анализируемый период (2020–2025 гг.) наблюдаются следующие ключевые изменения в штормовой активности:
+    {s_t['intro']}
 
-        * **Лидер по нагрузке:** В 2025 году наибольшее количество штормовых телеграмм было выпущено филиалом **{leader_2025['Филиал']}** ({leader_2025['2025']} ед.).
-        * **Самая высокая динамика:** Наиболее резкий рост активности за 5 лет зафиксирован в регионе **{max_growth_region['Филиал']}**. Количество штормовых оповещений здесь увеличилось на **{max_growth_region['Growth']}** единиц по сравнению с 2020 годом.
-        * **Общий тренд:** После пиковых значений 2024 года, в 2025 году зафиксировано **{trend_text}** активности на **{abs(trend_pct)}%**. Это может быть связано с изменением климатических циклов или частоты опасных метеорологических явлений в текущем году.
-        """)
+    * **{s_t['leader']}:** {s_t['leader_text']} **{leader_2025['Филиал']}** ({leader_2025['2025']} {s_t['units']}).
+    * **{s_t['dynamics']}:** {s_t['dynamics_text']} **{max_growth_region['Филиал']}**. {s_t['dynamics_val']} **{max_growth_region['Growth']}** {s_t['units']} (2025 vs 2020).
+    * **{s_t['trend']}:** {s_t['trend_text']} **{current_trend_text}** ({abs(trend_pct)}%). {s_t['trend_reason']}
+    """)
 
-        # Небольшой дисклеймер или примечание
-    st.caption("⚠️ Данные за 2025 год являются актуальными на текущую дату и могут быть уточнены по итогам годового отчета.")
-
+    st.caption(s_t["disclaimer"])
+    
             
-    # --- 1. ПОДГОТОВКА ДАННЫХ СГЯ ---
+# --- 1. ПОДГОТОВКА ДАННЫХ СГЯ ---
     data_sgy = {
-            "Филиал": [
-                "Акмола", "Актобе", "Жетысу", "г.Алматы", "Атырау", "ВКО", 
-                "Жамбыл", "ЗКО", "Караганды", "Костанай", "Кызылорда", 
-                "Мангистау", "Павлодар", "СКО", "Туркестан"
-            ],
-            "2020": [25, 82, 7, 16, 0, 2, 10, 0, 18, 15, 3, 39, 3, 7, 10],
-            "2021": [15, 26, 35, 17, 0, 2, 6, 5, 6, 7, 1, 26, 3, 9, 5],
-            "2022": [10, 5, 56, 55, 2, 2, 6, 1, 2, 5, 8, 14, 4, 2, 12],
-            "2023": [9, 65, 108, 104, 63, 32, 19, 3, 25, 5, 6, 18, 10, 31, 11],
-            "2024": [11, 17, 49, 84, 7, 6, 17, 2, 9, 9, 0, 2, 11, 8, 4],
-            "2025": [6, 11, 50, 30, 4, 5, 7, 3, 1, 4, 3, 3, 1, 7, 1]
-        }
+        "Филиал": curr_st["branches"], # Используем мультиязычный список филиалов
+        "2020": [25, 82, 7, 16, 0, 2, 10, 0, 18, 15, 3, 39, 3, 7, 10],
+        "2021": [15, 26, 35, 17, 0, 2, 6, 5, 6, 7, 1, 26, 3, 9, 5],
+        "2022": [10, 5, 56, 55, 2, 2, 6, 1, 2, 5, 8, 14, 4, 2, 12],
+        "2023": [9, 65, 108, 104, 63, 32, 19, 3, 25, 5, 6, 18, 10, 31, 11],
+        "2024": [11, 17, 49, 84, 7, 6, 17, 2, 9, 9, 0, 2, 11, 8, 4],
+        "2025": [6, 11, 50, 30, 4, 5, 7, 3, 1, 4, 3, 3, 1, 7, 1]
+    }
 
     df_sgy = pd.DataFrame(data_sgy)
     years_sgy = ["2020", "2021", "2022", "2023", "2024", "2025"]
     total_sgy = [237, 164, 184, 509, 236, 136]
 
-        # --- 2. ВИЗУАЛИЗАЦИЯ ---
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ СГЯ ---
+    sgy_lang = {
+        "ru": {
+            "header": "⚠️ Анализ Стихийных Гидрометеорологических Явлений (СГЯ)",
+            "dist_title": "**Распределение СГЯ по годам**",
+            "rating_title": "**Рейтинг регионов по количеству СГЯ (2020-2025)**",
+            "x_axis": "Год", "y_axis": "Количество", "total_axis": "Всего СГЯ",
+            "note_title": "Аналитическая заметка по СГЯ:",
+            "anomaly": "Аномальный период: 2023 год стал экстремальным — зафиксировано",
+            "risk_zones": "Зоны риска: Наибольшее суммарное количество явлений зафиксировано в",
+            "current_stat": "Текущая ситуация: В 2025 году наблюдается стабилизация",
+            "units": "ед."
+        },
+        "kz": {
+            "header": "⚠️ Дүлей гидрометеорологиялық құбылыстарды талдау (ДГҚ)",
+            "dist_title": "**ДГҚ жылдар бойынша бөлінуі**",
+            "rating_title": "**ДГҚ саны бойынша аймақтар рейтингі (2020-2025)**",
+            "x_axis": "Жыл", "y_axis": "Саны", "total_axis": "Барлығы ДГҚ",
+            "note_title": "ДГҚ бойынша аналитикалық ескертпе:",
+            "anomaly": "Аномальды кезең: 2023 жыл экстремалды болды — тіркелді",
+            "risk_zones": "Қауіпті аймақтар: Ең көп құбылыстар саны келесі филиалдарда:",
+            "current_stat": "Ағымдағы жағдай: 2025 жылы тұрақтандыру байқалады",
+            "units": "бірлік"
+        },
+        "en": {
+            "header": "⚠️ Severe Hydrometeorological Phenomena Analysis (SHP)",
+            "dist_title": "**Distribution of SHP by Year**",
+            "rating_title": "**Regional Rating by SHP Count (2020-2025)**",
+            "x_axis": "Year", "y_axis": "Count", "total_axis": "Total SHP",
+            "note_title": "Analytical Note on SHP:",
+            "anomaly": "Anomalous Period: 2023 was extreme — recorded",
+            "risk_zones": "Risk Zones: The highest total number of phenomena recorded in",
+            "current_stat": "Current Situation: Stabilization is observed in 2025",
+            "units": "units"
+        }
+    }
+    sg_t = sgy_lang.get(lang_code, sgy_lang["ru"])
+
+    # --- 3. ВИЗУАЛИЗАЦИЯ ---
     st.markdown("---")
-    st.subheader("⚠️ Анализ Стихийных Гидрометеорологических Явлений (СГЯ)")
+    st.subheader(sg_t["header"])
 
     col_left, col_right = st.columns([1, 1.2])
 
     with col_left:
-            st.markdown("**Распределение СГЯ по годам**")
-            # Используем Waterfall или Bar для демонстрации аномалии 2023 года
-            fig_sgy_total = go.Figure(go.Bar(
-                x=years_sgy, y=total_sgy,
-                marker_color=['#1f4e79', '#1f4e79', '#1f4e79', '#e74c3c', '#1f4e79', '#1f4e79'], # Выделяем 2023 красным
-                text=total_sgy, textposition='auto'
-            ))
-            fig_sgy_total.update_layout(
-                height=350, 
-                # l=80 и b=80 дадут запас для шрифта 16
-                margin=dict(l=80, r=20, t=30, b=80),
-                plot_bgcolor='rgba(0,0,0,0)', 
-                paper_bgcolor='rgba(0,0,0,0)', 
-                font=dict(color="white"),
-                
-                # Горизонтальная ось
-                xaxis=dict(
-                    tickfont=dict(size=16),
-                    title=dict(text="Год", font=dict(size=16)), # Добавил заголовок, если нужен
-                    automargin=True,
-                    type='category' # Гарантирует, что года/категории встанут ровно
-                ),
-                
-                # Вертикальная ось
-                yaxis=dict(
-                    tickfont=dict(size=16),
-                    title=dict(text="Количество", font=dict(size=16)),
-                    automargin=True
-                )
-            )
-            st.plotly_chart(fig_sgy_total, use_container_width=True)
-
+        st.markdown(sg_t["dist_title"])
+        fig_sgy_total = go.Figure(go.Bar(
+            x=years_sgy, y=total_sgy,
+            marker_color=['#1f4e79', '#1f4e79', '#1f4e79', '#e74c3c', '#1f4e79', '#1f4e79'], 
+            text=total_sgy, textposition='auto'
+        ))
+        fig_sgy_total.update_layout(
+            height=350, margin=dict(l=80, r=20, t=30, b=80),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color="white"),
+            xaxis=dict(tickfont=dict(size=14), title=dict(text=sg_t["x_axis"], font=dict(size=14)), type='category'),
+            yaxis=dict(tickfont=dict(size=14), title=dict(text=sg_t["y_axis"], font=dict(size=14)))
+        )
+        st.plotly_chart(fig_sgy_total, use_container_width=True)
 
     with col_right:
-                st.markdown("**Рейтинг регионов по количеству СГЯ (2020-2025)**")
-                
-                # 1. Считаем общую сумму за все годы
-                df_sgy['Total'] = df_sgy[years_sgy].sum(axis=1)
-                
-                # 2. Сортируем данные для наглядности (самые активные сверху)
-                df_sgy_sorted = df_sgy.sort_values(by='Total', ascending=True)
+        st.markdown(sg_t["rating_title"])
+        df_sgy['Total'] = df_sgy[years_sgy].sum(axis=1)
+        df_sgy_sorted = df_sgy.sort_values(by='Total', ascending=True)
 
-                # 3. Строим горизонтальный график
-                fig_sgy_reg = px.bar(
-                    df_sgy_sorted, 
-                    x='Total', 
-                    y='Филиал',
-                    orientation='h',
-                    text='Total', # Выводим цифры прямо на столбцах
-                    color='Total', # Цвет зависит от значения
-                    color_continuous_scale="Blues"
-                )
-
-                fig_sgy_reg.update_layout(
-                    height=450, # Увеличили высоту, чтобы все названия влезли
-                    margin=dict(l=10, r=40, t=20, b=10),
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color="white"),
-                    showlegend=False,
-                    coloraxis_showscale=False # Убираем цветовую шкалу справа
-                )
-
-                # 1. Настройка самих столбцов и цифр НАД ними
-                fig_sgy_reg.update_traces(
-                    textposition='outside', # Цифры снаружи столбцов
-                    # УВЕЛИЧИВАЕМ ШРИФТ ЦИФР НАД СТОЛБЦАМИ
-                    textfont=dict(size=16, color="white"), 
-                    marker_line_color='rgb(8,48,107)',
-                    marker_line_width=1,
-                    opacity=0.9
-                )
-
-                # 2. Настройка горизонтальной оси (X)
-                fig_sgy_reg.update_xaxes(
-                    showgrid=True, 
-                    gridcolor='rgba(255,255,255,0.1)', 
-                    title=dict(text="Всего СГЯ", font=dict(size=18)), # Размер заголовка оси
-                    tickfont=dict(size=16) # Размер чисел на оси X
-                )
-
-                # 3. Настройка вертикальной оси (Y)
-                fig_sgy_reg.update_yaxes(
-                    title="",
-                    tickfont=dict(size=16) # Размер названий (регионов/категорий) на оси Y
-                )
-
-                # 4. Не забываем про отступы в layout, чтобы крупные названия не обрезались
-                fig_sgy_reg.update_layout(
-                    margin=dict(l=100, r=20, t=40, b=60), # Увеличил отступ слева (l) для названий регионов
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color="white")
-                )
-
-                st.plotly_chart(fig_sgy_reg, use_container_width=True)
-
-                
-        # --- 3. АВТОМАТИЧЕСКОЕ РЕЗЮМЕ ПО СГЯ ---
-    max_sgy_year = 2023
-    max_sgy_val = 509
-    top_region_sgy = df_sgy.loc[df_sgy['Total'].idxmax()]
-
-    st.info(f"""
-        **Аналитическая заметка по СГЯ:**
-        * **Аномальный период:** 2023 год стал экстремальным для Казахстана — зафиксировано **{max_sgy_val}** явлений, что более чем в 2 раза превышает средние показатели.
-        * **Зоны риска:** Наибольшее суммарное количество стихийных явлений за 6 лет зафиксировано в филиалах **{top_region_sgy['Филиал']}**.
-        * **Текущая ситуация:** В 2025 году наблюдается стабилизация и снижение количества СГЯ ({total_sgy[-1]} ед.).
-        """)
-
+        fig_sgy_reg = px.bar(
+            df_sgy_sorted, x='Total', y='Филиал', orientation='h',
+            text='Total', color='Total', color_continuous_scale="Blues"
+        )
+        fig_sgy_reg.update_traces(
+            textposition='outside', textfont=dict(size=14, color="white"), 
+            marker_line_color='rgb(8,48,107)', marker_line_width=1, opacity=0.9
+        )
+        fig_sgy_reg.update_layout(
+            height=450, margin=dict(l=120, r=40, t=20, b=60), # Увеличен l для длинных названий
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="white"), showlegend=False, coloraxis_showscale=False,
+            xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)', title=dict(text=sg_t["total_axis"], font=dict(size=14)), tickfont=dict(size=14)),
+            yaxis=dict(title="", tickfont=dict(size=12))
+        )
+        st.plotly_chart(fig_sgy_reg, use
+        
 
         
     # --- БЛОК МЕТЕО-РЕКОРДОВ ---
@@ -2780,43 +2791,81 @@ with tabs[1]:
                 </style>
         """, unsafe_allow_html=True)
 
-    st.write("### 🏆 Метео-рекорды Казахстана за сегодня")
-    st.caption(f"Данные на {pd.Timestamp.now().strftime('%d.%m.%Y %H:%M')} по сети РГП 'Казгидромет'")
+# Словарь переводов
+    rec_lang = {
+        "ru": {
+            "title": "🏆 Метео-рекорды Казахстана за сегодня",
+            "source": "по сети РГП 'Казгидромет'",
+            "cold": "Самый холодный",
+            "warm": "Самый теплый",
+            "wind": "Сильный ветер",
+            "atbasar": "ст. Атбасар",
+            "shymkent": "г. Шымкент",
+            "dostyk": "ст. Достык (Джунгарские ворота)",
+            "unit_v": "м/с"
+        },
+        "kz": {
+            "title": "🏆 Бүгінгі Қазақстанның метео-рекордтары",
+            "source": "'Қазгидромет' РМК желісі бойынша",
+            "cold": "Ең суық",
+            "warm": "Ең жылы",
+            "wind": "Қатты жел",
+            "atbasar": "Атбасар ст.",
+            "shymkent": "Шымкент қ.",
+            "dostyk": "Достық ст. (Жоңғар қақпасы)",
+            "unit_v": "м/с"
+        },
+        "en": {
+            "title": "🏆 Kazakhstan Weather Records for Today",
+            "source": "via Kazhydromet network",
+            "cold": "Coldest",
+            "warm": "Warmest",
+            "wind": "Strong Wind",
+            "atbasar": "Atbasar st.",
+            "shymkent": "Shymkent city",
+            "dostyk": "Dostyk st. (Dzungarian Gate)",
+            "unit_v": "m/s"
+        }
+    }
+    r_t = rec_lang.get(lang_code, rec_lang["ru"])
+
+    st.write(f"### {r_t['title']}")
+    st.caption(f"Data as of {pd.Timestamp.now().strftime('%d.%m.%Y %H:%M')} {r_t['source']}")
 
     rec_col1, rec_col2, rec_col3 = st.columns(3)
 
     with rec_col1:
-            st.markdown(f"""
-                    <div class="record-card">
-                        <div style="font-size: 2em;">❄️</div>
-                        <div class="record-city">Самый холодный</div>
-                        <div class="record-val" style="color: #0288d1;">-28°C</div>
-                        <div style="font-size: 0.8em; color: #78909c;">ст. Атбасар</div>
-                    </div>
-            """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="record-card">
+                <div style="font-size: 2em;">❄️</div>
+                <div class="record-city">{r_t['cold']}</div>
+                <div class="record-val" style="color: #0288d1;">-28°C</div>
+                <div style="font-size: 0.8em; color: #78909c;">{r_t['atbasar']}</div>
+            </div>
+        """, unsafe_allow_html=True)
 
     with rec_col2:
-            st.markdown(f"""
-                    <div class="record-card">
-                        <div style="font-size: 2em;">☀️</div>
-                        <div class="record-city">Самый теплый</div>
-                        <div class="record-val" style="color: #f57c00;">+12°C</div>
-                        <div style="font-size: 0.8em; color: #78909c;">г. Шымкент</div>
-                    </div>
-            """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="record-card">
+                <div style="font-size: 2em;">☀️</div>
+                <div class="record-city">{r_t['warm']}</div>
+                <div class="record-val" style="color: #f57c00;">+12°C</div>
+                <div style="font-size: 0.8em; color: #78909c;">{r_t['shymkent']}</div>
+            </div>
+        """, unsafe_allow_html=True)
 
     with rec_col3:
-                st.markdown(f"""
-                    <div class="record-card">
-                        <div style="font-size: 2em;">💨</div>
-                        <div class="record-city">Сильный ветер</div>
-                        <div class="record-val" style="color: #455a64;">35 м/с</div>
-                        <div style="font-size: 0.8em; color: #78909c;">ст. Достык (Джунгарские ворота)</div>
-                    </div>
-                """, unsafe_allow_html=True)
-            
+        st.markdown(f"""
+            <div class="record-card">
+                <div style="font-size: 2em;">💨</div>
+                <div class="record-city">{r_t['wind']}</div>
+                <div class="record-val" style="color: #455a64;">35 {r_t['unit_v']}</div>
+                <div style="font-size: 0.8em; color: #78909c;">{r_t['dostyk']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
     st.markdown("<br>", unsafe_allow_html=True)
-        
+    
     import streamlit as st
     import pandas as pd
     import numpy as np
