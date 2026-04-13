@@ -3523,19 +3523,61 @@ with tabs[1]:
 
 
     import streamlit as st
-    from PIL import Image
     import os
+    import base64
 
     def render_agro_climate_comparison():
-        st.markdown("---")
-        # Заголовок блока
-        st.markdown("### 🌡️ Анализ агроклиматических показателей")
+        # 1. Словарь с переводами
+        translations = {
+            "ru": {
+                "header": "### 🌡️ Анализ агроклиматических показателей",
+                "temp_title": "Суммы эффективных температур воздуха (норма)",
+                "temp_caption": "Карта температур за август",
+                "gtk_title": "Гидротермический коэффициент (ГТК) Селянинова",
+                "gtk_caption": "ГТК за период 1991-2020 гг.",
+                "error": "Файл не найден"
+            },
+            "kk": {
+                "header": "### 🌡️ Агроклиматтық көрсеткіштерді талдау",
+                "temp_title": "Тиімді ауа температураларының қосындысы (норма)",
+                "temp_caption": "Тамыз айындағы температура картасы",
+                "gtk_title": "Селяниновтың гидротермиялық коэффициенті (ГТК)",
+                "gtk_caption": "1991-2020 жж. кезеңіндегі ГТК",
+                "error": "Файл табылмады"
+            },
+            "en": {
+                "header": "### 🌡️ Analysis of Agro-climatic Indicators",
+                "temp_title": "Sum of Effective Air Temperatures (Normal)",
+                "temp_caption": "August Temperature Map",
+                "gtk_title": "Selyaninov Hydrothermal Coefficient (HTC)",
+                "gtk_caption": "HTC for the period 1991-2020",
+                "error": "File not found"
+            }
+        }
 
-        # Пути к файлам (используем ваши локальные пути)
+        # 2. Выбор языка в интерфейсе
+        if 'lang' not in st.session_state:
+            st.session_state.lang = 'ru'
+
+        col_lang_1, col_lang_2 = st.columns([8, 2])
+        with col_lang_2:
+            lang_choice = st.selectbox(
+                "Language / Тіл / Язык",
+                options=["ru", "kk", "en"],
+                index=0 if st.session_state.lang == 'ru' else (1 if st.session_state.lang == 'kk' else 2),
+                key="lang_selector"
+            )
+            st.session_state.lang = lang_choice
+
+        t = translations[st.session_state.lang]
+
+        st.markdown("---")
+        st.markdown(t["header"])
+
+        # Пути к файлам
         path_temp2 = "agro2.jpg"
         path_gtk = "agro 3.png"
 
-# Функция для перевода картинки в HTML-строку (делаем крупнее через width)
         def img_to_html(img_path, width=115):
             if os.path.exists(img_path):
                 with open(img_path, "rb") as f:
@@ -3547,25 +3589,26 @@ with tabs[1]:
         col_left, col_right = st.columns(2)
 
         with col_left:
-            st.info("Суммы эффективных температур воздуха (норма)")
+            st.info(t["temp_title"])
             html_img_temp = img_to_html(path_temp2, width=100)
             if html_img_temp:
                 st.markdown(html_img_temp, unsafe_allow_html=True)
-                st.caption("Карта температур за август")
+                st.caption(t["temp_caption"])
             else:
-                st.error(f"Файл не найден: {path_temp2}")
+                st.error(f"{t['error']}: {path_temp2}")
 
         with col_right:
-            st.info("Гидротермический коэффициент (ГТК) Селянинова")
+            st.info(t["gtk_title"])
             html_img_gtk = img_to_html(path_gtk, width=115)
             if html_img_gtk:
                 st.markdown(html_img_gtk, unsafe_allow_html=True)
-                st.caption("ГТК за период 1991-2020 гг.")
+                st.caption(t["gtk_caption"])
             else:
-                st.error(f"Файл не найден: {path_gtk}")
-                
-    # Вызов функции в основном теле приложения
+                st.error(f"{t['error']}: {path_gtk}")
+
+    # Вызов функции
     render_agro_climate_comparison()
+
 
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
