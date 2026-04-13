@@ -3642,7 +3642,7 @@ with tabs[1]:
     import streamlit as st
     import base64
 
-    # 1. Словарь переводов на 3 языка
+    # 1. Тексты на трех языках
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
             "title": "### 🗺️ Агрометеорологические наблюдения",
@@ -3664,11 +3664,25 @@ with tabs[1]:
         }
     }
 
-    def render_final_agro_map(lang_to_use):
-        # Получаем контент по ключу, если ключа нет — по умолчанию русский
-        content = AGRO_MAP_TRANSLATIONS.get(lang_to_use, AGRO_MAP_TRANSLATIONS["ru"])
+    def render_final_agro_map():
+        # --- САМАЯ ВАЖНАЯ ЧАСТЬ: ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
+        # Мы смотрим сначала в lang_code, потом в lang (как может быть в гидрологии)
+        chosen = st.session_state.get('lang_code') or st.session_state.get('lang') or 'ru'
         
-        # Заголовок блока
+        # Если в переменную попало полное слово "Қазақша" или "Русский", превращаем в код
+        mapping = {
+            "Русский": "ru", "ru": "ru",
+            "Қазақша": "kz", "kz": "kz",
+            "English": "en", "en": "en"
+        }
+        
+        # Итоговый код языка (ru, kz или en)
+        active_lang = mapping.get(chosen, "ru")
+
+        # Выбираем нужный перевод
+        content = AGRO_MAP_TRANSLATIONS[active_lang]
+
+        # --- Отрисовка интерфейса ---
         st.markdown(content["title"])
         
         base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -3681,11 +3695,7 @@ with tabs[1]:
                 with open(img_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
                 st.markdown(
-                    f"""
-                    <div style="display: flex; justify-content: center;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    </div>
-                    """, 
+                    f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{data}" style="width:100%;max-width:800px;border-radius:10px;"></div>', 
                     unsafe_allow_html=True
                 )
             else:
@@ -3693,17 +3703,14 @@ with tabs[1]:
                 
         with col_text:
             st.markdown("---")
-            # Основной текст
             st.write(content["main_text"])
-            # Заголовок списка культур
             st.markdown(content["crops_title"])
-            # Список культур через цикл
             for crop in content["crops"]:
                 st.markdown(f"* {crop}")
 
-    # ВЫЗОВ ФУНКЦИИ
-    # Убедитесь, что переменная current_lang определена выше в вашем коде
-    render_final_agro_map(current_lang)
+    # Вызываем функцию БЕЗ параметров, она сама всё найдет внутри
+    render_final_agro_map()
+
 
 
 
