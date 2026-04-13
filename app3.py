@@ -3447,7 +3447,7 @@ with tabs[1]:
 
     
     st.divider()
-     import streamlit as st
+    import streamlit as st
 
     # --- 1. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
     # Забираем код языка напрямую. Если в селектбоксе было выбрано "ru", 
