@@ -2414,7 +2414,7 @@ with tabs[1]:
           
 
     # --- 1. ПОДГОТОВКА ТЕКСТОВ (Мультиязычность) ---
-        storm_t = {
+    storm_t = {
             "ru": {
                 "header": "🌩️ Мониторинг штормовой активности (2020-2025 гг.)",
                 "def_title": "Штормовая активность",
@@ -2447,10 +2447,10 @@ with tabs[1]:
             }
         }
 
-        curr_st = storm_t.get(lang_code, storm_t["ru"])
+    curr_st = storm_t.get(lang_code, storm_t["ru"])
 
 # --- 2. ДАННЫЕ ---
-        data_storm = {
+    data_storm = {
             "Филиал": curr_st["branches"],
             "2020": [1385, 1043, 741, 932, 456, 1367, 635, 567, 1191, 952, 380, 220, 444, 650, 746],
             "2021": [1209, 998, 922, 1336, 693, 1644, 735, 776, 1185, 693, 499, 258, 348, 669, 778],
@@ -2460,18 +2460,18 @@ with tabs[1]:
             "2025": [1670, 1192, 725, 1414, 604, 2644, 652, 1162, 1262, 965, 620, 237, 897, 1188, 589]
         }
 
-        df_storm = pd.DataFrame(data_storm)
+    df_storm = pd.DataFrame(data_storm)
         
         # --- ВНИМАНИЕ: ДОБАВЬТЕ ЭТИ СТРОКИ ЗДЕСЬ ---
-        years = ["2020", "2021", "2022", "2023", "2024", "2025"]
-        total_values = [11709, 12743, 13944, 15031, 16217, 15821]
+    years = ["2020", "2021", "2022", "2023", "2024", "2025"]
+    total_values = [11709, 12743, 13944, 15031, 16217, 15821]
         # ------------------------------------------
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.subheader(curr_st["header"])
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.subheader(curr_st["header"])
 
         # --- 3. ИНТЕРФЕЙС (HTML блок) ---
-        st.markdown(f"""
+    st.markdown(f"""
             <div style="background-color: rgba(255, 165, 0, 0.1); padding: 15px; border-left: 5px solid #FFA500; border-radius: 5px; margin-bottom: 20px;">
                 <span style="color: #FFA500; font-weight: bold;">{curr_st['def_title']}</span> {curr_st['def_text']}
                 <ul style="margin-top: 10px; font-size: 0.9em;">
@@ -2481,11 +2481,11 @@ with tabs[1]:
             </div>
         """, unsafe_allow_html=True)
 
-        import plotly.express as px
-        import plotly.graph_objects as go
+    import plotly.express as px
+    import plotly.graph_objects as go
 
         # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
-        chart_lang = {
+    chart_lang = {
             "ru": {
                 "m1_label": "Пик активности",
                 "m2_label": "Максимум в 2025",
@@ -2524,22 +2524,22 @@ with tabs[1]:
             }
         }
 
-        c_t = chart_lang.get(lang_code, chart_lang["ru"])
+    c_t = chart_lang.get(lang_code, chart_lang["ru"])
 
         # --- 3. МЕТРИКИ (Теперь total_values точно определены выше) ---
-        m1, m2, m3 = st.columns(3)
-        with m1:
+    m1, m2, m3 = st.columns(3)
+    with m1:
             st.metric(c_t["m1_label"], "2024", f"16 217 {c_t['m1_delta']}")
-        with m2:
+    with m2:
             st.metric(c_t["m2_label"], "EKO / ШҚО / ВКО", "2 644")
-        with m3:
+    with m3:
             avg_val = int(sum(total_values)/len(total_values))
             st.metric(c_t["m3_label"], f"{avg_val:,}".replace(",", " "))
 
         # --- 3. ГРАФИКИ ---
-        col_left, col_right = st.columns([1.2, 1])
+    col_left, col_right = st.columns([1.2, 1])
 
-        with col_left:
+    with col_left:
             st.markdown(c_t["left_title"])
             fig = go.Figure()
             fig.add_trace(go.Bar(
@@ -2563,7 +2563,7 @@ with tabs[1]:
             )
             st.plotly_chart(fig, use_container_width=True)
 
-        with col_right:
+    with col_right:
             st.markdown(c_t["right_title"])
             fig_heat = px.imshow(
                 df_storm.set_index("Филиал")[years],
