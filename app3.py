@@ -289,16 +289,14 @@ st.markdown(f"""
 # 1. Сначала выбор языка (сверху)
 col_l, col_r = st.columns([4, 1])
 with col_r:
-    # Сохраняем выбор сразу в session_state, чтобы другие блоки его видели
-    lang_choice = st.selectbox(
-        "Язык", 
-        ["Русский", "Қазақша", "English"], 
-        label_visibility="collapsed",
-        key="main_language_selector" # Уникальный ключ
-    )
-
-# Создаем удобную переменную для условий
-lang = lang_choice
+    lang = st.selectbox("Язык", ["Русский", "Қазақша", "English"], label_visibility="collapsed")
+    
+lang_map = {
+    "Русский": "ru",
+    "Қазақша": "kz",
+    "English": "en"
+}
+lang_code = lang_map.get(lang, "ru")
     
 
 # 2. Определяем словари названий
@@ -2159,22 +2157,13 @@ with tabs[1]:
     if result:
         gdf, name_col = result
         
-        lang_map = {
-            "Русский": "ru",
-            "Қазақша": "kz",
-            "English": "en"
-        }
-
-        # Если у вас выбор языка хранится в переменной lang:
-        lang_code = lang_map.get(lang, "ru") 
-
         # --- ТРЕХБЛОЧНЫЙ ЛЕЙАУТ ---
         col_left, col_mid, col_right = st.columns([1.1, 1.3, 0.7], gap="medium")
 
-        # Теперь ошибки не будет, так как lang_code существует
+        # Определяем, какую колонку имен использовать для тултипов (на основе lang)
+        # Предполагаем, что lang_code это 'ru', 'kz' или 'en'
         lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
         active_name_col = lang_to_col.get(lang_code, "NAME_RU")
-
 
         # --- ЛЕВАЯ КОЛОНКА ---
         with col_left:
@@ -2206,220 +2195,220 @@ with tabs[1]:
                     st.session_state.selected_region_id = new_id
                     st.rerun()
                     
-                            
-        # --- СРЕДНЯЯ КОЛОНКА: ДЕТАЛИЗАЦИЯ РЕГИОНА ---
-        with col_mid:
-            selected_id = st.session_state.get("selected_region_id")
+                        
+    # --- СРЕДНЯЯ КОЛОНКА: ДЕТАЛИЗАЦИЯ РЕГИОНА ---
+    with col_mid:
+        selected_id = st.session_state.get("selected_region_id")
+        
+        if selected_id:
+            # Фильтруем GDF по выбранному ID
+            target_data = gdf[gdf[name_col] == selected_id]
             
-            if selected_id:
-                # Фильтруем GDF по выбранному ID
-                target_data = gdf[gdf[name_col] == selected_id]
+            if not target_data.empty:
+                target_row = target_data.iloc[0]
                 
-                if not target_data.empty:
-                    target_row = target_data.iloc[0]
-                    
-                    # Динамический заголовок на текущем языке
-                    lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
-                    current_lang_col = lang_to_col.get(lang_code, "NAME_RU")
-                    st.subheader(f"📍 {target_row[current_lang_col].upper()}")
-                    
-                    # Создаем карту региона, центрированную на его геометрии
-                    center = target_row.geometry.centroid
-                    m_reg = folium.Map(location=[center.y, center.x], zoom_start=6, tiles="cartodbpositron")
-                    
-                    # Отрисовываем границы только этого региона
-                    folium.GeoJson(
-                        target_row.geometry,
-                        style_function=lambda x: {
-                            'fillColor': '#004A99', 
-                            'color': '#004A99', 
-                            'weight': 2, 
-                            'fillOpacity': 0.05
-                        }
-                    ).add_to(m_reg)
+                # Динамический заголовок на текущем языке
+                lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
+                current_lang_col = lang_to_col.get(lang_code, "NAME_RU")
+                st.subheader(f"📍 {target_row[current_lang_col].upper()}")
+                
+                # Создаем карту региона, центрированную на его геометрии
+                center = target_row.geometry.centroid
+                m_reg = folium.Map(location=[center.y, center.x], zoom_start=6, tiles="cartodbpositron")
+                
+                # Отрисовываем границы только этого региона
+                folium.GeoJson(
+                    target_row.geometry,
+                    style_function=lambda x: {
+                        'fillColor': '#004A99', 
+                        'color': '#004A99', 
+                        'weight': 2, 
+                        'fillOpacity': 0.05
+                    }
+                ).add_to(m_reg)
 
-                    # --- ОТОБРАЖЕНИЕ СТАНЦИЙ ИЗ EXCEL ---
-                    if df_stations is not None:
-                        # Используем RUS_NAME для сопоставления с Excel (т.к. manual_map на русском)
-                        region_name_ru = target_row['NAME_RU'].lower().strip()
-                        
-                        # Словарь связки (Shapefile -> Excel "ФИЛИАЛ")
-                        manual_map = {
-                            "алматы": "г.Алматы",
-                            "жетысу": "Жетису",
-                            "жетісу": "Жетису",
-                            "северо-казахстан": "СКО",
-                            "западно-казахстан": "ЗКО",
-                            "восточно-казахстан": "ВКО",
-                            "абай": "Абай",
-                            "улытау": "Улытау",
-                            "астана": "ЦА",
-                            "шымкент": "Шымкент",
-                            "туркестан": "Туркестан",
-                            "караганд": "Караганд",
-                            "акмол": "Акмол"
-                        }
-                        
-                        # Поиск термина для фильтрации в Excel
-                        search_term = None
-                        for key, val in manual_map.items():
-                            if key in region_name_ru:
-                                search_term = val
-                                break
-                        
-                        if not search_term:
-                            search_term = region_name_ru.split()[0][:5].capitalize()
+                # --- ОТОБРАЖЕНИЕ СТАНЦИЙ ИЗ EXCEL ---
+                if df_stations is not None:
+                    # Используем RUS_NAME для сопоставления с Excel (т.к. manual_map на русском)
+                    region_name_ru = target_row['NAME_RU'].lower().strip()
+                    
+                    # Словарь связки (Shapefile -> Excel "ФИЛИАЛ")
+                    manual_map = {
+                        "алматы": "г.Алматы",
+                        "жетысу": "Жетису",
+                        "жетісу": "Жетису",
+                        "северо-казахстан": "СКО",
+                        "западно-казахстан": "ЗКО",
+                        "восточно-казахстан": "ВКО",
+                        "абай": "Абай",
+                        "улытау": "Улытау",
+                        "астана": "ЦА",
+                        "шымкент": "Шымкент",
+                        "туркестан": "Туркестан",
+                        "караганд": "Караганд",
+                        "акмол": "Акмол"
+                    }
+                    
+                    # Поиск термина для фильтрации в Excel
+                    search_term = None
+                    for key, val in manual_map.items():
+                        if key in region_name_ru:
+                            search_term = val
+                            break
+                    
+                    if not search_term:
+                        search_term = region_name_ru.split()[0][:5].capitalize()
 
-                        # Фильтрация станций по филиалу
-                        region_stations = df_stations[df_stations['ФИЛИАЛ'].str.contains(search_term, case=False, na=False)]
+                    # Фильтрация станций по филиалу
+                    region_stations = df_stations[df_stations['ФИЛИАЛ'].str.contains(search_term, case=False, na=False)]
+                    
+                    # Поиск колонок с координатами (защита от вариаций в названиях)
+                    try:
+                        col_lat = [c for c in df_stations.columns if 'с.ш' in c.lower() or 'lat' in c.lower()][0]
+                        col_lon = [c for c in df_stations.columns if 'в.д' in c.lower() or 'long' in c.lower()][0]
                         
-                        # Поиск колонок с координатами (защита от вариаций в названиях)
-                        try:
-                            col_lat = [c for c in df_stations.columns if 'с.ш' in c.lower() or 'lat' in c.lower()][0]
-                            col_lon = [c for c in df_stations.columns if 'в.д' in c.lower() or 'long' in c.lower()][0]
+                        for _, row in region_stations.iterrows():
+                            lat = row[col_lat]
+                            lon = row[col_lon]
                             
-                            for _, row in region_stations.iterrows():
-                                lat = row[col_lat]
-                                lon = row[col_lon]
+                            if pd.notna(lat) and pd.notna(lon):
+                                # Логика цвета: АМС - зеленый, МС - синий
+                                st_type = str(row.get('Вид', 'МС')).strip().upper()
+                                dot_color = "#2E7D32" if "АМС" in st_type else "#1565C0"
                                 
-                                if pd.notna(lat) and pd.notna(lon):
-                                    # Логика цвета: АМС - зеленый, МС - синий
-                                    st_type = str(row.get('Вид', 'МС')).strip().upper()
-                                    dot_color = "#2E7D32" if "АМС" in st_type else "#1565C0"
-                                    
-                                    folium.CircleMarker(
-                                        location=[float(lat), float(lon)],
-                                        radius=5,
-                                        color=dot_color,
-                                        fill=True,
-                                        fill_color=dot_color,
-                                        fill_opacity=0.7,
-                                        popup=folium.Popup(
-                                            f"<b>{row.get('Станция', 'Без названия')}</b><br>"
-                                            f"Тип: {st_type}<br>"
-                                            f"Филиал: {row.get('ФИЛИАЛ', '-')}", 
-                                            max_width=200
-                                        ),
-                                        tooltip=f"{row.get('Станция', 'Станция')} ({st_type})"
-                                    ).add_to(m_reg)
-                        except Exception as e:
-                            st.warning(f"Ошибка при поиске координат в Excel: {e}")
+                                folium.CircleMarker(
+                                    location=[float(lat), float(lon)],
+                                    radius=5,
+                                    color=dot_color,
+                                    fill=True,
+                                    fill_color=dot_color,
+                                    fill_opacity=0.7,
+                                    popup=folium.Popup(
+                                        f"<b>{row.get('Станция', 'Без названия')}</b><br>"
+                                        f"Тип: {st_type}<br>"
+                                        f"Филиал: {row.get('ФИЛИАЛ', '-')}", 
+                                        max_width=200
+                                    ),
+                                    tooltip=f"{row.get('Станция', 'Станция')} ({st_type})"
+                                ).add_to(m_reg)
+                    except Exception as e:
+                        st.warning(f"Ошибка при поиске координат в Excel: {e}")
 
-                    # Рендер карты региона
-                    st_folium(m_reg, use_container_width=True, height=500, key=f"map_reg_{selected_id}")
-            else:
-                # Если регион не выбран, показываем заглушку
-                st.info("Выберите область на карте Казахстана слева, чтобы увидеть список станций.")
-                
-                            
+                # Рендер карты региона
+                st_folium(m_reg, use_container_width=True, height=500, key=f"map_reg_{selected_id}")
+        else:
+            # Если регион не выбран, показываем заглушку
+            st.info("Выберите область на карте Казахстана слева, чтобы увидеть список станций.")
+            
+                        
 
-        # --- ПРАВАЯ КОЛОНКА: СТАТИСТИКА И ЛЕГЕНДА ---
-        with col_right:
-            # Словарь переводов для интерфейса правой колонки
-            r_labels = {
-                "ru": {
-                    "title": "ℹ️ Государственная сеть",
-                    "reg_net": "Региональная сеть:",
-                    "ms_ams": "Метеостанции и АМС",
-                    "total_net": "Общая сеть РК",
-                    "total_desc": "<b>351</b> метеорологических станций, из них:<br>• <b>225</b> традиционных<br>• <b>126</b> автоматических",
-                    "hint": "Нажмите на любую область на карте для детализации по региону",
-                    "legend": "Условные обозначения:",
-                    "ms_label": "Традиционные станции (МС)",
-                    "ams_label": "Автоматические станции (АМС)",
-                    "not_found": "Данные не найдены"
-                },
-                "kz": {
-                    "title": "ℹ️ Мемлекеттік желі",
-                    "reg_net": "Өңірлік желі:",
-                    "ms_ams": "Метеостанциялар және АМС",
-                    "total_net": "ҚР жалпы желісі",
-                    "total_desc": "<b>351</b> метеорологиялық станция, оның ішінде:<br>• <b>225</b> дәстүрлі<br>• <b>126</b> автоматты",
-                    "hint": "Аймақ бойынша толық ақпарат алу үшін картаны басыңыз",
-                    "legend": "Шартты белгілер:",
-                    "ms_label": "Дәстүрлі станциялар (МС)",
-                    "ams_label": "Автоматты станциялар (АМС)",
-                    "not_found": "Мәлімет табылмады"
-                },
-                "en": {
-                    "title": "ℹ️ State Network",
-                    "reg_net": "Regional Network:",
-                    "ms_ams": "Weather Stations & AWS",
-                    "total_net": "Total RK Network",
-                    "total_desc": "<b>351</b> meteorological stations, including:<br>• <b>225</b> traditional<br>• <b>126</b> automatic",
-                    "hint": "Click on any region on the map for details",
-                    "legend": "Legend:",
-                    "ms_label": "Traditional Stations (MS)",
-                    "ams_label": "Automatic Stations (AWS)",
-                    "not_found": "Data not found"
-                }
+    # --- ПРАВАЯ КОЛОНКА: СТАТИСТИКА И ЛЕГЕНДА ---
+    with col_right:
+        # Словарь переводов для интерфейса правой колонки
+        r_labels = {
+            "ru": {
+                "title": "ℹ️ Государственная сеть",
+                "reg_net": "Региональная сеть:",
+                "ms_ams": "Метеостанции и АМС",
+                "total_net": "Общая сеть РК",
+                "total_desc": "<b>351</b> метеорологических станций, из них:<br>• <b>225</b> традиционных<br>• <b>126</b> автоматических",
+                "hint": "Нажмите на любую область на карте для детализации по региону",
+                "legend": "Условные обозначения:",
+                "ms_label": "Традиционные станции (МС)",
+                "ams_label": "Автоматические станции (АМС)",
+                "not_found": "Данные не найдены"
+            },
+            "kz": {
+                "title": "ℹ️ Мемлекеттік желі",
+                "reg_net": "Өңірлік желі:",
+                "ms_ams": "Метеостанциялар және АМС",
+                "total_net": "ҚР жалпы желісі",
+                "total_desc": "<b>351</b> метеорологиялық станция, оның ішінде:<br>• <b>225</b> дәстүрлі<br>• <b>126</b> автоматты",
+                "hint": "Аймақ бойынша толық ақпарат алу үшін картаны басыңыз",
+                "legend": "Шартты белгілер:",
+                "ms_label": "Дәстүрлі станциялар (МС)",
+                "ams_label": "Автоматты станциялар (АМС)",
+                "not_found": "Мәлімет табылмады"
+            },
+            "en": {
+                "title": "ℹ️ State Network",
+                "reg_net": "Regional Network:",
+                "ms_ams": "Weather Stations & AWS",
+                "total_net": "Total RK Network",
+                "total_desc": "<b>351</b> meteorological stations, including:<br>• <b>225</b> traditional<br>• <b>126</b> automatic",
+                "hint": "Click on any region on the map for details",
+                "legend": "Legend:",
+                "ms_label": "Traditional Stations (MS)",
+                "ams_label": "Automatic Stations (AWS)",
+                "not_found": "Data not found"
             }
+        }
+        
+        # Получаем текущий перевод
+        curr_r = r_labels.get(lang_code, r_labels["ru"])
+        
+        st.subheader(curr_r["title"])
+        
+        if selected_id:
+            # --- БЛОК ВЫБРАННОГО РЕГИОНА ---
+            search_name = str(selected_id).strip().lower()
+            found_data = kaz_stats.get(search_name)
             
-            # Получаем текущий перевод
-            curr_r = r_labels.get(lang_code, r_labels["ru"])
+            # Если прямого ключа нет, ищем частичное совпадение
+            if not found_data:
+                found_data = next((val for key, val in kaz_stats.items() if key in search_name or search_name in key), None)
             
-            st.subheader(curr_r["title"])
-            
-            if selected_id:
-                # --- БЛОК ВЫБРАННОГО РЕГИОНА ---
-                search_name = str(selected_id).strip().lower()
-                found_data = kaz_stats.get(search_name)
-                
-                # Если прямого ключа нет, ищем частичное совпадение
-                if not found_data:
-                    found_data = next((val for key, val in kaz_stats.items() if key in search_name or search_name in key), None)
-                
-                if found_data:
-                    # Карточка региона (Цвет основной: #004A99)
-                    st.markdown(f"""
-                        <div style="background:#004A99; color:white; padding:20px; border-radius:15px; margin-bottom:15px; text-align:center">
-                            <span style="font-size:1.1em; font-weight:bold">{curr_r['reg_net']}</span><br>
-                            <span style="font-size:1.8em">🏢 {found_data['ms']} | 📡 {found_data['ams']}</span>
-                            <div style="font-size:0.8em; opacity:0.8; margin-top:5px;">{curr_r['ms_ams']}</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Метрики (используем стандартные st.metric)
-                    m1, m2 = st.columns(2)
-                    with m1:
-                        st.metric("❄️ T.Min", f"{found_data['t_min']}°")
-                        st.metric("💨 Wind", f"{found_data['wind']} m/s")
-                    with m2:
-                        st.metric("🔥 T.Max", f"{found_data['t_max']}°")
-                        st.metric("🌡️ Pres.", f"{found_data['press']}")
-                else:
-                    st.warning(f"{curr_r['not_found']}: {selected_id}")
-                    
-            else:
-                # --- ОБЩАЯ СТАТИСТИКА (ПО УМОЛЧАНИЮ) ---
+            if found_data:
+                # Карточка региона (Цвет основной: #004A99)
                 st.markdown(f"""
-                    <div style="background:#f0f2f6; padding:20px; border-radius:15px; border: 1px dashed #004A99;">
-                        <h4 style="margin:0; color:#004A99;">{curr_r['total_net']}</h4>
-                        <p style="font-size:1.1em; margin:15px 0; line-height:1.5;">
-                            {curr_r['total_desc']}
-                        </p>
-                        <p style="font-size:0.85em; color:#546e7a; font-style:italic; border-top: 1px solid #ccc; padding-top:10px; margin-top:10px;">
-                            {curr_r['hint']}
-                        </p>
+                    <div style="background:#004A99; color:white; padding:20px; border-radius:15px; margin-bottom:15px; text-align:center">
+                        <span style="font-size:1.1em; font-weight:bold">{curr_r['reg_net']}</span><br>
+                        <span style="font-size:1.8em">🏢 {found_data['ms']} | 📡 {found_data['ams']}</span>
+                        <div style="font-size:0.8em; opacity:0.8; margin-top:5px;">{curr_r['ms_ams']}</div>
                     </div>
                 """, unsafe_allow_html=True)
-
-            # --- ЛЕГЕНДА (ВСЕГДА ВНИЗУ) ---
+                
+                # Метрики (используем стандартные st.metric)
+                m1, m2 = st.columns(2)
+                with m1:
+                    st.metric("❄️ T.Min", f"{found_data['t_min']}°")
+                    st.metric("💨 Wind", f"{found_data['wind']} m/s")
+                with m2:
+                    st.metric("🔥 T.Max", f"{found_data['t_max']}°")
+                    st.metric("🌡️ Pres.", f"{found_data['press']}")
+            else:
+                st.warning(f"{curr_r['not_found']}: {selected_id}")
+                
+        else:
+            # --- ОБЩАЯ СТАТИСТИКА (ПО УМОЛЧАНИЮ) ---
             st.markdown(f"""
-                <div style="margin-top: 25px; padding: 15px; border-radius: 10px; background: white; border: 1px solid #e6e9ef; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div style="font-size: 0.85em; font-weight: bold; color: #546e7a; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
-                        {curr_r['legend']}
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                        <div style="width: 12px; height: 12px; background-color: #1565C0; border-radius: 50%; margin-right: 12px;"></div>
-                        <span style="font-size: 0.9em; color: #1a1c1f;">{curr_r['ms_label']}</span>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 12px; height: 12px; background-color: #2E7D32; border-radius: 50%; margin-right: 12px;"></div>
-                        <span style="font-size: 0.9em; color: #1a1c1f;">{curr_r['ams_label']}</span>
-                    </div>
+                <div style="background:#f0f2f6; padding:20px; border-radius:15px; border: 1px dashed #004A99;">
+                    <h4 style="margin:0; color:#004A99;">{curr_r['total_net']}</h4>
+                    <p style="font-size:1.1em; margin:15px 0; line-height:1.5;">
+                        {curr_r['total_desc']}
+                    </p>
+                    <p style="font-size:0.85em; color:#546e7a; font-style:italic; border-top: 1px solid #ccc; padding-top:10px; margin-top:10px;">
+                        {curr_r['hint']}
+                    </p>
                 </div>
             """, unsafe_allow_html=True)
+
+        # --- ЛЕГЕНДА (ВСЕГДА ВНИЗУ) ---
+        st.markdown(f"""
+            <div style="margin-top: 25px; padding: 15px; border-radius: 10px; background: white; border: 1px solid #e6e9ef; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <div style="font-size: 0.85em; font-weight: bold; color: #546e7a; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    {curr_r['legend']}
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <div style="width: 12px; height: 12px; background-color: #1565C0; border-radius: 50%; margin-right: 12px;"></div>
+                    <span style="font-size: 0.9em; color: #1a1c1f;">{curr_r['ms_label']}</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 12px; height: 12px; background-color: #2E7D32; border-radius: 50%; margin-right: 12px;"></div>
+                    <span style="font-size: 0.9em; color: #1a1c1f;">{curr_r['ams_label']}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
         
     
           
@@ -3445,136 +3434,73 @@ with tabs[1]:
             </div>
         """, unsafe_allow_html=True)
 
-    
-    st.divider()
-  
+
+
+                
+            
+# 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
+    import os
     import streamlit as st
     import pandas as pd
     import plotly.graph_objects as go
-    import os
     import base64
 
+    # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
+    raw_lang = st.session_state.get('lang', 'Русский')
 
-    # --- 1. Сначала определяем ВСЕ словари (Data) ---
+    # 2. Принудительно приводим к коротким кодам, которые понимает ваш словарь
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+    current_lang = lang_map.get(raw_lang, "ru")
+
+    # 3. Теперь вызываем переводы
+    header = HEADER_TRANSLATIONS[current_lang]
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+
+    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
+
+    # Тексты для заголовка
+    HEADER_TRANSLATIONS = {
+        "ru": {
+            "title": "Агрометеорологический мониторинг",
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
+        },
+        "kz": {
+            "title": "Агрометеорологиялық мониторинг",
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
+        },
+        "en": {
+            "title": "Agrometeorological Monitoring",
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
+        }
+    }
+
+    # Тексты для блока с картой AGRO.jpg
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
             "title": "### 🗺️ Агрометеорологические наблюдения",
-            "main_text": "Агрометеорологические наблюдения включают...",
+            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами.",
             "crops_title": "**Основные культуры:**",
             "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
         },
         "kz": {
             "title": "### 🗺️ Агрометеорологиялық бақылаулар",
-            "main_text": "Агрометеорологиялық бақылауларға...",
+            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын бақылау кіреді.",
             "crops_title": "**Негізгі дақылдар:**",
             "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
         },
         "en": {
             "title": "### 🗺️ Agrometeorological Observations",
-            "main_text": "Agrometeorological observations include...",
+            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops, soil condition and moisture, as well as key meteorological parameters.",
             "crops_title": "**Main Crops:**",
             "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
         }
     }
 
-    # --- 2. Затем определяем язык (Logic) ---
-    if 'lang' not in st.session_state:
-        st.session_state.lang = 'Русский'
-
-    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
-    current_lang = lang_map.get(st.session_state.lang, "ru")
-
-    # --- 3. И только теперь используем словарь (UI) ---
-    # Теперь NameError не возникнет, так как переменная создана выше
-    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
-    st.markdown(agro_content["title"])
-
-    # --- 2. ОБЩИЙ СЛОВАРЬ ПЕРЕВОДОВ ---
-    HEADER_TRANSLATIONS = {
-        "ru": {
-            "title": "Агрометеорологический мониторинг",
-            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана",
-            "analysis_title": "### 🌡️ Анализ агроклиматических показателей",
-            "temp_info": "Суммы эффективных температур воздуха (норма)",
-            "temp_caption": "Карта температур за август",
-            "gtk_info": "Гидротермический коэффициент (ГТК) Селянинова",
-            "gtk_caption": "ГТК за период 1991-2020 гг."
-        },
-        "kz": {
-            "title": "Агрометеорологиялық мониторинг",
-            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету",
-            "analysis_title": "### 🌡️ Агроклиматтық көрсеткіштерді талдау",
-            "temp_info": "Тиімді ауа температураларының қосындысы (норма)",
-            "temp_caption": "Тамыз айындағы температура картасы",
-            "gtk_info": "Селяниновтың гидротермиялық коэффициенті (ГТК)",
-            "gtk_caption": "1991-2020 жж. кезеңіндегі ГТК"
-        },
-        "en": {
-            "title": "Agrometeorological Monitoring",
-            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan",
-            "analysis_title": "### 🌡️ Analysis of Agro-climatic Indicators",
-            "temp_info": "Sums of effective air temperatures (normal)",
-            "temp_caption": "Temperature map for August",
-            "gtk_info": "Selyaninov's Hydrothermal Coefficient (HTC)",
-            "gtk_caption": "HTC for the period 1991-2020"
-        }
-    }
-
-    # [Здесь остаются ваши словари AGRO_MAP_TRANSLATIONS и AGRO_ZONES_DATA из вашего кода]
-    # (Я пропущу их дублирование в ответе для краткости, но они должны быть в коде)
-
-    # --- Вспомогательная функция для изображений ---
-    def get_img_as_base64(file_path):
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as f:
-                data = base64.b64encode(f.read()).decode("utf-8")
-            return data
-        return None
-
-    # --- 3. ВЕРХНИЙ ЗАГОЛОВОК ---
-    header = HEADER_TRANSLATIONS[current_lang]
-    st.markdown(f"""
-        <div style="text-align:center; margin: 40px 0 20px 0;">
-            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
-                {header['title']}
-            </h2>
-            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
-                {header['subtitle']}
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.divider()
-
-    # --- 4. БЛОК С КАРТОЙ НАБЛЮДЕНИЙ ---
-    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
-    st.markdown(agro_content["title"])
-
-    col_map, col_text = st.columns([1.5, 0.5])
-    with col_map:
-        img_agro = get_img_as_base64("AGRO.jpg")
-        if img_agro:
-            st.markdown(f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{img_agro}" style="width:100%;max-width:800px;border-radius:10px;"></div>', unsafe_allow_html=True)
-        else:
-            st.warning("AGRO.jpg not found")
-
-    with col_text:
-        st.markdown("---")
-        st.write(agro_content["main_text"])
-        st.markdown(agro_content["crops_title"])
-        for crop in agro_content["crops"]:
-            st.markdown(f"* {crop}")
-
-    # --- 1. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
-    def get_img_as_base64(file_path):
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as f:
-                data = base64.b64encode(f.read()).decode("utf-8")
-            return data
-        return None
-
-    # --- 2. ВСЕ ДАННЫЕ И ПЕРЕВОДЫ (ДОЛЖНЫ БЫТЬ В НАЧАЛЕ) ---
-    # (Определяем AGRO_ZONES_DATA здесь, чтобы Python видел его при вызове)
+    # Тексты для графика агроклиматических зон
     AGRO_ZONES_DATA = {
         "ru": {
             "title": "Агроклиматические зоны по областям",
@@ -3632,11 +3558,12 @@ with tabs[1]:
         }
     }
 
-    # --- 3. ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ЯЗЫКА ---
+    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
+    raw_lang = st.session_state.get('lang', 'Русский')
     lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
-    current_lang = lang_map.get(st.session_state.get('lang', 'Русский'), 'ru')
+    current_lang = lang_map.get(raw_lang, "ru")
 
-    # --- 4. ОТОБРАЖЕНИЕ ИНТЕРФЕЙСА ---
+    # --- 3. ВЕРХНИЙ ЗАГОЛОВОК ---
     header = HEADER_TRANSLATIONS[current_lang]
     st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
@@ -3649,17 +3576,18 @@ with tabs[1]:
         </div>
     """, unsafe_allow_html=True)
 
-    st.divider()
-
-    # --- 5. КАРТА НАБЛЮДЕНИЙ ---
+    # --- 4. БЛОК С КАРТОЙ НАБЛЮДЕНИЙ ---
     agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
     st.markdown(agro_content["title"])
 
     col_map, col_text = st.columns([1.5, 0.5])
     with col_map:
-        img_agro = get_img_as_base64("AGRO.jpg")
-        if img_agro:
-            st.markdown(f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{img_agro}" style="width:100%;max-width:800px;border-radius:10px;"></div>', unsafe_allow_html=True)
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(base_dir, "AGRO.jpg")
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
+                data = base64.b64encode(f.read()).decode("utf-8")
+            st.markdown(f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{data}" style="width:100%;max-width:800px;border-radius:10px;"></div>', unsafe_allow_html=True)
         else:
             st.warning("AGRO.jpg not found")
 
@@ -3670,37 +3598,115 @@ with tabs[1]:
         for crop in agro_content["crops"]:
             st.markdown(f"* {crop}")
 
-    # --- 6. ГРАФИК АГРОКЛИМАТИЧЕСКИХ ЗОН ---
+    # --- 5. ГРАФИК АГРОКЛИМАТИЧЕСКИХ ЗОН ---
     zone_content = AGRO_ZONES_DATA[current_lang]
     st.subheader(zone_content["title"])
-    # ... здесь ваш код отрисовки графика ...
 
-    # --- 7. АНАЛИЗ ПОКАЗАТЕЛЕЙ ---
-    def render_agro_climate_comparison(lang_code):
-        texts = HEADER_TRANSLATIONS[lang_code]
+    # Данные для графика
+    raw_data = [
+        ["АКМОЛА", "I", 6], ["АКМОЛА", "II", 31], ["АКМОЛА", "VI", 63],
+        ["СКО", "I", 18], ["СКО", "II", 55], ["СКО", "III", 27],
+        ["КОСТАНАЙ", "II", 11], ["КОСТАНАЙ", "III", 33], ["КОСТАНАЙ", "IV", 33], ["КОСТАНАЙ", "V", 11], ["КОСТАНАЙ", "VI", 6], ["КОСТАНАЙ", "VII", 6],
+        ["ПАВЛОДАР", "II", 7], ["ПАВЛОДАР", "IV", 60], ["ПАВЛОДАР", "VI", 20], ["ПАВЛОДАР", "XIV", 13],
+        ["ВКО", "II", 29], ["ВКО", "IV", 13], ["ВКО", "VI", 17], ["ВКО", "VII", 24], ["ВКО", "XVI", 17],
+        ["ЗКО", "IV", 31], ["ЗКО", "V", 8], ["ЗКО", "VI", 46], ["ЗКО", "VII", 15],
+        ["АКТОБЕ", "IV", 47], ["АКТОБЕ", "VI", 6], ["АКТОБЕ", "VII", 41], ["АКТОБЕ", "VIII", 6],
+        ["КАРАГАНДЫ", "IV", 13], ["КАРАГАНДЫ", "V", 13], ["КАРАГАНДЫ", "VI", 8], ["КАРАГАНДЫ", "VII", 42], ["КАРАГАНДЫ", "VIII", 8], ["КАРАГАНДЫ", "XIV", 16],
+        ["АТЫРАУ", "VII", 33], ["АТЫРАУ", "VIII", 67],
+        ["АЛМАТЫ", "VII", 16], ["АЛМАТЫ", "VIII", 6], ["АЛМАТЫ", "XI", 9], ["АЛМАТЫ", "XIII", 9], ["АЛМАТЫ", "XIV", 3], ["АЛМАТЫ", "XV", 13], ["АЛМАТЫ", "XVI", 44],
+        ["ЖАМБЫЛ", "VII", 8], ["ЖАМБЫЛ", "XIV", 54], ["ЖАМБЫЛ", "XVI", 38],
+        ["МАНГИСТАУ", "VIII", 90], ["МАНГИСТАУ", "IX", 10],
+        ["ТУРКЕСТАН", "VIII", 8], ["ТУРКЕСТАН", "XIV", 42], ["ТУРКЕСТАН", "XVI", 50],
+        ["КЫЗЫЛОРДА", "VIII", 63], ["КЫЗЫЛОРДА", "IX", 37]
+    ]
+
+    zones_colors = {
+        "I": "#385e26", "II": "#66ff66", "III": "#92d050", "IV": "#ffff00", 
+        "V": "#e6db98", "VI": "#f8cbad", "VII": "#f1a1eb", "VIII": "#ff8080", 
+        "IX": "#ff0000", "X": "#bf9000", "XI": "#c00000", "XIII": "#843c0c", 
+        "XIV": "#7f6000", "XV": "#00b0f0", "XVI": "#bcbcbc"
+    }
+
+    df = pd.DataFrame(raw_data, columns=["Key", "Зона", "Процент"])
+    df["Область"] = df["Key"].map(zone_content["regions"])
+
+    col_chart, col_legend = st.columns([4, 1.2])
+
+    with col_chart:
+        fig = go.Figure()
+        for zone, color in zones_colors.items():
+            df_zone = df[df["Зона"] == zone]
+            if not df_zone.empty:
+                fig.add_trace(go.Bar(
+                    name=zone, y=df_zone["Область"], x=df_zone["Процент"], orientation='h',
+                    marker=dict(color=color), text=df_zone["Процент"],
+                    hovertext=[zone_content["zones"][zone]] * len(df_zone),
+                    hovertemplate="<b>%{hovertext}</b>: %{x}%<extra></extra>"
+                ))
+        fig.update_layout(
+            barmode='stack', height=700, margin=dict(l=200, r=20, t=20, b=50),
+            xaxis=dict(range=[0, 100]), yaxis=dict(autorange="reversed", type='category'),
+            showlegend=False, plot_bgcolor='rgba(0,0,0,0)'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col_legend:
+        st.write(f"**{zone_content['legend_title']}**")
+        for zone, color in zones_colors.items():
+            st.markdown(f'''
+                <div style="display:flex; align-items:flex-start; margin-bottom:4px;">
+                    <div style="min-width:14px; height:14px; background-color:{color}; margin-right:8px; margin-top:3px; border:1px solid #444;"></div>
+                    <div style="font-size:0.85rem; line-height:1.2;"><strong>{zone}</strong>: {zone_content["zones"][zone]}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+            
+
+
+    import streamlit as st
+    from PIL import Image
+    import os
+
+    def render_agro_climate_comparison():
         st.markdown("---")
-        st.markdown(texts["analysis_title"])
+        # Заголовок блока
+        st.markdown("### 🌡️ Анализ агроклиматических показателей")
 
+        # Пути к файлам (используем ваши локальные пути)
+        path_temp2 = "agro2.jpg"
+        path_gtk = "agro 3.png"
+
+# Функция для перевода картинки в HTML-строку (делаем крупнее через width)
+        def img_to_html(img_path, width=115):
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                return f'<img src="data:image/jpeg;base64,{data}" style="width: {width}%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">'
+            return None
+
+        # Создаем две колонки
         col_left, col_right = st.columns(2)
 
         with col_left:
-            st.info(texts["temp_info"])
-            img_temp = get_img_as_base64("agro2.jpg")
-            if img_temp:
-                st.markdown(f'<img src="data:image/jpeg;base64,{img_temp}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
-                st.caption(texts["temp_caption"])
+            st.info("Суммы эффективных температур воздуха (норма)")
+            html_img_temp = img_to_html(path_temp2, width=100)
+            if html_img_temp:
+                st.markdown(html_img_temp, unsafe_allow_html=True)
+                st.caption("Карта температур за август")
+            else:
+                st.error(f"Файл не найден: {path_temp2}")
 
         with col_right:
-            st.info(texts["gtk_info"])
-            img_gtk = get_img_as_base64("agro 3.png")
-            if img_gtk:
-                st.markdown(f'<img src="data:image/png;base64,{img_gtk}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
-                st.caption(texts["gtk_caption"])
+            st.info("Гидротермический коэффициент (ГТК) Селянинова")
+            html_img_gtk = img_to_html(path_gtk, width=115)
+            if html_img_gtk:
+                st.markdown(html_img_gtk, unsafe_allow_html=True)
+                st.caption("ГТК за период 1991-2020 гг.")
+            else:
+                st.error(f"Файл не найден: {path_gtk}")
+                
+    # Вызов функции в основном теле приложения
+    render_agro_climate_comparison()
 
-    render_agro_climate_comparison(current_lang)
-
-    
-    
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
     import streamlit as st
