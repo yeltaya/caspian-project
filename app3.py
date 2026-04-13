@@ -3454,13 +3454,40 @@ with tabs[1]:
     import os
     import base64
 
-    # --- 1. ИНИЦИАЛИЗАЦИЯ СОСТОЯНИЯ (ЕДИНАЯ ТОЧКА) ---
+
+    # --- 1. Сначала определяем ВСЕ словари (Data) ---
+    AGRO_MAP_TRANSLATIONS = {
+        "ru": {
+            "title": "### 🗺️ Агрометеорологические наблюдения",
+            "main_text": "Агрометеорологические наблюдения включают...",
+            "crops_title": "**Основные культуры:**",
+            "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
+        },
+        "kz": {
+            "title": "### 🗺️ Агрометеорологиялық бақылаулар",
+            "main_text": "Агрометеорологиялық бақылауларға...",
+            "crops_title": "**Негізгі дақылдар:**",
+            "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
+        },
+        "en": {
+            "title": "### 🗺️ Agrometeorological Observations",
+            "main_text": "Agrometeorological observations include...",
+            "crops_title": "**Main Crops:**",
+            "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
+        }
+    }
+
+    # --- 2. Затем определяем язык (Logic) ---
     if 'lang' not in st.session_state:
         st.session_state.lang = 'Русский'
 
-    raw_lang = st.session_state.lang
     lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
-    current_lang = lang_map.get(raw_lang, "ru")
+    current_lang = lang_map.get(st.session_state.lang, "ru")
+
+    # --- 3. И только теперь используем словарь (UI) ---
+    # Теперь NameError не возникнет, так как переменная создана выше
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+    st.markdown(agro_content["title"])
 
     # --- 2. ОБЩИЙ СЛОВАРЬ ПЕРЕВОДОВ ---
     HEADER_TRANSLATIONS = {
