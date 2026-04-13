@@ -3436,188 +3436,53 @@ with tabs[1]:
 
 
 
+                
     import streamlit as st
-    import os
-    import base64
 
-    # --- 1. СЛОВАРЬ (Оставляем без изменений, он верный) ---
-    AGRO_CONTENT = {
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
+    HEADER_TRANSLATIONS = {
         "ru": {
-            "header_title": "Агрометеорологический мониторинг",
-            "header_subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/",
-            "map_title": "### 🗺️ Агрометеорологические наблюдения",
-            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами.",
-            "crops_title": "**Основные культуры:**",
-            "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
+            "title": "Агрометеорологический мониторинг",
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
         },
         "kz": {
-            "header_title": "Агрометеорологиялық мониторинг",
-            "header_subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/",
-            "map_title": "### 🗺️ Агрометеорологиялық бақылаулар",
-            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын бақылау кіреді.",
-            "crops_title": "**Негізгі дақылдар:**",
-            "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
+            "title": "Агрометеорологиялық мониторинг",
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
         },
         "en": {
-            "header_title": "Agrometeorological Monitoring",
-            "header_subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/",
-            "map_title": "### 🗺️ Agrometeorological Observations",
-            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops, soil condition and moisture, as well as key meteorological parameters.",
-            "crops_title": "**Main Crops:**",
-            "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
+            "title": "Agrometeorological Monitoring",
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
         }
     }
 
-    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА (Как в гидрологии) ---
-    # Проверяем все возможные варианты, где может лежать выбранный язык
-    raw_lang = (
-        st.session_state.get('lang') or 
-        st.session_state.get('language') or 
-        st.session_state.get('lang_code') or 
-        'Русский'
-    )
+    # --- 2. ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ЯЗЫКА ---
+    # Проверяем, какой ключ используется в вашем приложении ('lang' или 'lang_code')
+    raw_lang = st.session_state.get('lang', 'Русский')
 
-    # Если raw_lang уже является кодом (ru/kz/en), используем его, иначе маппим
+    # Маппинг полных названий на ключи словаря
     lang_map = {
-        "Русский": "ru", "Рус": "ru", "ru": "ru",
-        "Қазақша": "kz", "Қаз": "kz", "kz": "kz", "kk": "kz",
-        "English": "en", "Eng": "en", "en": "en"
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
     }
+    current_lang = lang_map.get(raw_lang, "ru")
 
-    L = lang_map.get(raw_lang, "ru")
-    txt = AGRO_CONTENT[L]
+    # Получаем нужный перевод
+    header = HEADER_TRANSLATIONS.get(current_lang, HEADER_TRANSLATIONS["ru"])
 
-    # --- 3. ВЫВОД ЗАГОЛОВКА ---
+    # --- 3. ОТОБРАЖЕНИЕ КРАСИВОГО ЗАГОЛОВКА ---
     st.markdown(f"""
-        <div style="text-align:center; margin: 20px 0 20px 0;">
-            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 2em;">
-                {txt['header_title']}
-            </h2>
-            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
-                {txt['header_subtitle']}
+        <div style="text-align:center; margin-bottom: 30px;">
+            <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 2.2em;">
+                {header['title']}
+            </h1>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500; max-width: 800px; margin: 0 auto;">
+                {header['subtitle']}
             </p>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown(txt["map_title"])
-
-    # --- 4. КОЛОНКИ С КОНТЕНТОМ ---
-    col_map, col_text = st.columns([1.5, 0.5])
-
-    with col_map:
-        # Оптимизированный путь к фото
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        img_path = os.path.join(base_dir, "AGRO.jpg")
-        
-        if os.path.exists(img_path):
-            with open(img_path, "rb") as f:
-                encoded_img = base64.b64encode(f.read()).decode("utf-8")
-            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_img}" style="width:100%; border-radius:10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">', unsafe_allow_html=True)
-        else:
-            st.warning("Map image not found.")
-
-    with col_text:
-        st.markdown("---")
-        st.write(txt["main_text"])
-        st.markdown(txt["crops_title"])
-        # Вывод списка культур через цикл
-        for crop in txt["crops"]:
-            st.markdown(f" {crop}")
-            
-            
-                
-
-
-            
-
-
-    import streamlit as st
-    import os
-    import base64
-
-    def render_agro_climate_comparison():
-        # 1. Словарь с переводами
-        translations = {
-            "ru": {
-                "header": "### 🌡️ Анализ агроклиматических показателей",
-                "temp_title": "Суммы эффективных температур воздуха (норма)",
-                "temp_caption": "Карта температур за август",
-                "gtk_title": "Гидротермический коэффициент (ГТК) Селянинова",
-                "gtk_caption": "ГТК за период 1991-2020 гг.",
-                "error": "Файл не найден"
-            },
-            "kk": {
-                "header": "### 🌡️ Агроклиматтық көрсеткіштерді талдау",
-                "temp_title": "Тиімді ауа температураларының қосындысы (норма)",
-                "temp_caption": "Тамыз айындағы температура картасы",
-                "gtk_title": "Селяниновтың гидротермиялық коэффициенті (ГТК)",
-                "gtk_caption": "1991-2020 жж. кезеңіндегі ГТК",
-                "error": "Файл табылмады"
-            },
-            "en": {
-                "header": "### 🌡️ Analysis of Agro-climatic Indicators",
-                "temp_title": "Sum of Effective Air Temperatures (Normal)",
-                "temp_caption": "August Temperature Map",
-                "gtk_title": "Selyaninov Hydrothermal Coefficient (HTC)",
-                "gtk_caption": "HTC for the period 1991-2020",
-                "error": "File not found"
-            }
-        }
-
-        # 2. Выбор языка в интерфейсе
-        if 'lang' not in st.session_state:
-            st.session_state.lang = 'ru'
-
-        col_lang_1, col_lang_2 = st.columns([8, 2])
-        with col_lang_2:
-            lang_choice = st.selectbox(
-                "Language / Тіл / Язык",
-                options=["ru", "kk", "en"],
-                index=0 if st.session_state.lang == 'ru' else (1 if st.session_state.lang == 'kk' else 2),
-                key="lang_selector"
-            )
-            st.session_state.lang = lang_choice
-
-        t = translations[st.session_state.lang]
-
-        st.markdown("---")
-        st.markdown(t["header"])
-
-        # Пути к файлам
-        path_temp2 = "agro2.jpg"
-        path_gtk = "agro 3.png"
-
-        def img_to_html(img_path, width=115):
-            if os.path.exists(img_path):
-                with open(img_path, "rb") as f:
-                    data = base64.b64encode(f.read()).decode("utf-8")
-                return f'<img src="data:image/jpeg;base64,{data}" style="width: {width}%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">'
-            return None
-
-        # Создаем две колонки
-        col_left, col_right = st.columns(2)
-
-        with col_left:
-            st.info(t["temp_title"])
-            html_img_temp = img_to_html(path_temp2, width=100)
-            if html_img_temp:
-                st.markdown(html_img_temp, unsafe_allow_html=True)
-                st.caption(t["temp_caption"])
-            else:
-                st.error(f"{t['error']}: {path_temp2}")
-
-        with col_right:
-            st.info(t["gtk_title"])
-            html_img_gtk = img_to_html(path_gtk, width=115)
-            if html_img_gtk:
-                st.markdown(html_img_gtk, unsafe_allow_html=True)
-                st.caption(t["gtk_caption"])
-            else:
-                st.error(f"{t['error']}: {path_gtk}")
-
-    # Вызов функции
-    render_agro_climate_comparison()
-
+    st.markdown("---")
 
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
