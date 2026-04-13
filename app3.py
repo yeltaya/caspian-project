@@ -3655,16 +3655,6 @@ with tabs[1]:
     active_lang = mapping.get(chosen_lang, "ru")
     
 
-    raw_lang = st.session_state.get('lang', 'Русский')
-    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
-    current_lang = lang_map.get(raw_lang, "ru")
-
-    # 2. Выбираем нужный пакет текстов (используем словарь AGRO_ZONES_DATA из предыдущего ответа)
-    lang_content = AGRO_MAP_TRANSLATIONS[current_lang]
-
-
-    st.write(st.session_state)
-
     # 1. Тексты на трех языках
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
@@ -3687,40 +3677,27 @@ with tabs[1]:
         }
     }
 
-    def render_final_agro_map():
-        # --- САМАЯ ВАЖНАЯ ЧАСТЬ: ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
-        # Мы смотрим сначала в lang_code, потом в lang (как может быть в гидрологии)
-        chosen = st.session_state.get('lang_code') or st.session_state.get('lang') or 'ru'
+    # --- КЛЮЧЕВОЙ МОМЕНТ: ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
+    # Исходя из вашего лога, ключ в сессии называется 'lang'
+    raw_lang = st.session_state.get('lang', 'Русский')
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
+    current_lang = lang_map.get(raw_lang, "ru")
         
-        # Если в переменную попало полное слово "Қазақша" или "Русский", превращаем в код
-        mapping = {
-            "Русский": "ru", "ru": "ru",
-            "Қазақша": "kz", "kz": "kz",
-            "English": "en", "en": "en"
-        }
+    def render_final_agro_map(lang_to_use):
+        # Берем данные из словаря, используя наш current_lang
+        content = AGRO_MAP_TRANSLATIONS.get(lang_to_use, AGRO_MAP_TRANSLATIONS["ru"])
         
-        # Итоговый код языка (ru, kz или en)
-        active_lang = mapping.get(chosen, "ru")
-
-        # Выбираем нужный перевод
-        content = AGRO_MAP_TRANSLATIONS[active_lang]
-
-        # --- Отрисовка интерфейса ---
         st.markdown(content["title"])
         
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         
         col_map, col_text = st.columns([1.5, 0.5])
-        
         with col_map:
             if os.path.exists(img_path):
                 with open(img_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
-                st.markdown(
-                    f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{data}" style="width:100%;max-width:800px;border-radius:10px;"></div>', 
-                    unsafe_allow_html=True
-                )
+                st.markdown(f'<div style="display: flex; justify-content: center;"><img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px;"></div>', unsafe_allow_html=True)
             else:
                 st.warning("Файл AGRO.jpg не найден")
                 
@@ -3731,8 +3708,9 @@ with tabs[1]:
             for crop in content["crops"]:
                 st.markdown(f"* {crop}")
 
-    # Вызываем функцию БЕЗ параметров, она сама всё найдет внутри
-    render_final_agro_map()
+    # Вызов функции
+    render_final_agro_map(current_lang)
+
 
 
 
