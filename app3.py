@@ -2168,27 +2168,6 @@ with tabs[1]:
                     st.rerun()
                     
                         
-    # Инициализируем переменную заранее, чтобы избежать NameError
-    df_stations = None
-
-    # Загружаем станции
-    XLSX_PATH = os.path.join(base_path, "MS tizimi.xlsx")
-
-    @st.cache_data
-    def load_stations_from_excel(path):
-        if not os.path.exists(path):
-            return None
-        try:
-            df = pd.read_excel(path, skiprows=1)
-            df.columns = [str(c).strip() for c in df.columns]
-            if 'ФИЛИАЛ' in df.columns:
-                df['ФИЛИАЛ'] = df['ФИЛИАЛ'].ffill()
-            return df
-        except:
-            return None
-
-    df_stations = load_stations_from_excel(XLSX_PATH)
-
     # --- СРЕДНЯЯ КОЛОНКА: ДЕТАЛИЗАЦИЯ РЕГИОНА ---
     with col_mid:
         selected_id = st.session_state.get("selected_region_id")
