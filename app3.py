@@ -2159,13 +2159,22 @@ with tabs[1]:
     if result:
         gdf, name_col = result
         
+        lang_map = {
+            "Русский": "ru",
+            "Қазақша": "kz",
+            "English": "en"
+        }
+
+        # Если у вас выбор языка хранится в переменной lang:
+        lang_code = lang_map.get(lang, "ru") 
+
         # --- ТРЕХБЛОЧНЫЙ ЛЕЙАУТ ---
         col_left, col_mid, col_right = st.columns([1.1, 1.3, 0.7], gap="medium")
 
-        # Определяем, какую колонку имен использовать для тултипов (на основе lang)
-        # Предполагаем, что lang_code это 'ru', 'kz' или 'en'
+        # Теперь ошибки не будет, так как lang_code существует
         lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
         active_name_col = lang_to_col.get(lang_code, "NAME_RU")
+
 
         # --- ЛЕВАЯ КОЛОНКА ---
         with col_left:
