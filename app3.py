@@ -3565,15 +3565,16 @@ with tabs[1]:
         for crop in agro_content["crops"]:
             st.markdown(f"* {crop}")
 
-    # --- 5. ГРАФИК АГРОКЛИМАТИЧЕСКИХ ЗОН ---
-    zone_content = AGRO_ZONES_DATA[current_lang]
-    st.subheader(zone_content["title"])
+    # --- 1. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
+    def get_img_as_base64(file_path):
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                data = base64.b64encode(f.read()).decode("utf-8")
+            return data
+        return None
 
-    import streamlit as st
-    import pandas as pd
-    import plotly.graph_objects as go
-
-    # 1. ОБЯЗАТЕЛЬНО ОПРЕДЕЛЯЕМ ДАННЫЕ ПЕРЕД ИСПОЛЬЗОВАНИЕМ
+    # --- 2. ВСЕ ДАННЫЕ И ПЕРЕВОДЫ (ДОЛЖНЫ БЫТЬ В НАЧАЛЕ) ---
+    # (Определяем AGRO_ZONES_DATA здесь, чтобы Python видел его при вызове)
     AGRO_ZONES_DATA = {
         "ru": {
             "title": "Агроклиматические зоны по областям",
@@ -3631,45 +3632,71 @@ with tabs[1]:
         }
     }
 
-    # 2. ОПРЕДЕЛЯЕМ ТЕКУЩИЙ ЯЗЫК
-    # Убедитесь, что переменная current_lang существует!
+    # --- 3. ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ЯЗЫКА ---
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
     current_lang = lang_map.get(st.session_state.get('lang', 'Русский'), 'ru')
 
-    # 3. ТЕПЕРЬ МОЖНО ВЫЗЫВАТЬ
+    # --- 4. ОТОБРАЖЕНИЕ ИНТЕРФЕЙСА ---
+    header = HEADER_TRANSLATIONS[current_lang]
+    st.markdown(f"""
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
+                {header['title']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
+                {header['subtitle']}
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.divider()
+
+    # --- 5. КАРТА НАБЛЮДЕНИЙ ---
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+    st.markdown(agro_content["title"])
+
+    col_map, col_text = st.columns([1.5, 0.5])
+    with col_map:
+        img_agro = get_img_as_base64("AGRO.jpg")
+        if img_agro:
+            st.markdown(f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{img_agro}" style="width:100%;max-width:800px;border-radius:10px;"></div>', unsafe_allow_html=True)
+        else:
+            st.warning("AGRO.jpg not found")
+
+    with col_text:
+        st.markdown("---")
+        st.write(agro_content["main_text"])
+        st.markdown(agro_content["crops_title"])
+        for crop in agro_content["crops"]:
+            st.markdown(f"* {crop}")
+
+    # --- 6. ГРАФИК АГРОКЛИМАТИЧЕСКИХ ЗОН ---
     zone_content = AGRO_ZONES_DATA[current_lang]
     st.subheader(zone_content["title"])
+    # ... здесь ваш код отрисовки графика ...
 
-    # --- 6. АНАЛИЗ ПОКАЗАТЕЛЕЙ (ИСПРАВЛЕННАЯ ФУНКЦИЯ) ---
+    # --- 7. АНАЛИЗ ПОКАЗАТЕЛЕЙ ---
     def render_agro_climate_comparison(lang_code):
         texts = HEADER_TRANSLATIONS[lang_code]
         st.markdown("---")
         st.markdown(texts["analysis_title"])
 
-        path_temp2 = "agro2.jpg"
-        path_gtk = "agro 3.png"
-
         col_left, col_right = st.columns(2)
 
         with col_left:
             st.info(texts["temp_info"])
-            img_data = get_img_as_base64(path_temp2)
-            if img_data:
-                st.markdown(f'<img src="data:image/jpeg;base64,{img_data}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
+            img_temp = get_img_as_base64("agro2.jpg")
+            if img_temp:
+                st.markdown(f'<img src="data:image/jpeg;base64,{img_temp}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
                 st.caption(texts["temp_caption"])
-            else:
-                st.error(f"File not found: {path_temp2}")
 
         with col_right:
             st.info(texts["gtk_info"])
-            img_data = get_img_as_base64(path_gtk)
-            if img_data:
-                # Увеличиваем ширину до 115% через обертку, если нужно, или оставляем 100%
-                st.markdown(f'<img src="data:image/png;base64,{img_data}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
+            img_gtk = get_img_as_base64("agro 3.png")
+            if img_gtk:
+                st.markdown(f'<img src="data:image/png;base64,{img_gtk}" style="width: 100%; border-radius: 8px;">', unsafe_allow_html=True)
                 st.caption(texts["gtk_caption"])
-            else:
-                st.error(f"File not found: {path_gtk}")
 
-    # Вызов функции с передачей текущего языка
     render_agro_climate_comparison(current_lang)
 
     
