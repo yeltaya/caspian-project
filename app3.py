@@ -3902,16 +3902,16 @@ forecast_content = {
 with tabs[2]:
     f = forecast_content[lang_code]
     
-    # Заголовок
+    # Заголовок с использованием правильного шрифта
     st.markdown(f"""
-        <h1 style='color: #1E3A8A; font-family: sans-serif; font-size: 2.2rem; margin-bottom: 20px;'>
+        <h1 class="kazakh-font" style='color: #1E3A8A; font-size: 2.2rem; margin-bottom: 20px; font-weight: 800; line-height: 1.2;'>
             {f['title']}
         </h1>
     """, unsafe_allow_html=True)
     
-    # Описание
+    # Описание с использованием правильного шрифта
     st.markdown(f"""
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 6px solid #2563EB; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
+    <div class="kazakh-font" style="background-color: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 6px solid #2563EB; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
         <p style="font-size: 1.15em; color: #333; margin: 0; line-height: 1.5;">
             {f['description']}
         </p>
