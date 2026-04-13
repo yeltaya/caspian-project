@@ -3562,11 +3562,6 @@ with tabs[1]:
         }
     }
 
-    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
-    raw_lang = st.session_state.get('lang', 'Русский')
-    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
-    current_lang = lang_map.get(raw_lang, "ru")
-
     # --- 3. ВЕРХНИЙ ЗАГОЛОВОК ---
     header = HEADER_TRANSLATIONS[current_lang]
     st.markdown(f"""
