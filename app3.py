@@ -3488,9 +3488,10 @@ with tabs[1]:
                 {header['subtitle']}
             </p>
         </div>
-    """, unsafe_allow_html=
+    """, unsafe_allow_html=True)
 
-
+    # --- 5. ВИЗУАЛЬНОЕ РАЗДЕЛЕНИЕ (НИЖНЕЕ) ---
+    st.divider()
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
     import streamlit as st
