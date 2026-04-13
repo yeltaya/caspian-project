@@ -2413,13 +2413,45 @@ with tabs[1]:
     
           
 
-        # --- 1. ПОДГОТОВКА ДАННЫХ ---
-    data_storm = {
-            "Филиал": [
-                "Акмола", "Актобе", "Жетысу", "г.Алматы", "Атырау", "ВКО", 
-                "Жамбыл", "ЗКО", "Караганды", "Костанай", "Кызылорда", 
-                "Мангистау", "Павлодар", "СКО", "Туркестан"
-            ],
+    # --- 1. ПОДГОТОВКА ТЕКСТОВ (Мультиязычность) ---
+        storm_t = {
+            "ru": {
+                "header": "🌩️ Мониторинг штормовой активности (2020-2025 гг.)",
+                "def_title": "Штормовая активность",
+                "def_text": "— это интенсивность возникновения опасных метеорологических явлений, требующих оперативного оповещения. Статистика включает в себя выпуск штормовых телеграмм по двум категориям:",
+                "oy_title": "ОЯ (Опасные явления)",
+                "oy_text": "метеорологические явления, которые по своей интенсивности могут нанести значительный ущерб.",
+                "sgy_title": "СГЯ (Стихийные явления)",
+                "sgy_text": "экстремально интенсивные явления, представляющие непосредственную угрозу жизни людей.",
+                "branches": ["Акмола", "Актобе", "Жетысу", "г.Алматы", "Атырау", "ВКО", "Жамбыл", "ЗКО", "Караганды", "Костанай", "Кызылорда", "Мангистау", "Павлодар", "СКО", "Туркестан"]
+            },
+            "kz": {
+                "header": "🌩️ Дауыл белсенділігінің мониторингі (2020-2025 жж.)",
+                "def_title": "Дауыл белсенділігі",
+                "def_text": "— бұл жедел хабарлауды талап ететін қауіпті метеорологиялық құбылыстардың пайда болу қарқындылығы. Статистика екі санат бойынша дауылды жеделхаттардың шығарылуын қамтиды:",
+                "oy_title": "ҚҚ (Қауіпті құбылыстар)",
+                "oy_text": "қарқындылығы бойынша экономика мен халыққа айтарлықтай зиян келтіруі мүмкін метеорологиялық құбылыстар.",
+                "sgy_title": "ТГҚ (Төтенше гидрометеорологиялық құбылыстар)",
+                "sgy_text": "адам өміріне тікелей қауіп төндіретін өте қарқынды құбылыстар.",
+                "branches": ["Ақмола", "Ақтөбе", "Жетісу", "Алматы қ.", "Атырау", "ШҚО", "Жамбыл", "БҚО", "Қарағанды", "Қостанай", "Қызылорда", "Маңғыстау", "Павлодар", "СҚО", "Түркістан"]
+            },
+            "en": {
+                "header": "🌩️ Storm Activity Monitoring (2020-2025)",
+                "def_title": "Storm Activity",
+                "def_text": "is the intensity of hazardous meteorological events requiring rapid notification. Statistics include storm telegrams issued in two categories:",
+                "oy_title": "HP (Hazardous Phenomena)",
+                "oy_text": "meteorological events that can cause significant damage due to their intensity.",
+                "sgy_title": "EHP (Extreme Hydromet Phenomena)",
+                "sgy_text": "extremely intense events posing a direct threat to human life.",
+                "branches": ["Akmola", "Aktobe", "Zhetysu", "Almaty city", "Atyrau", "EKO", "Zhambyl", "WKO", "Karaganda", "Kostanay", "Kyzylorda", "Mangystau", "Pavlodar", "NKO", "Turkestan"]
+            }
+        }
+
+        curr_st = storm_t.get(lang_code, storm_t["ru"])
+
+        # --- 2. ДАННЫЕ ---
+        data_storm = {
+            "Филиал": curr_st["branches"],
             "2020": [1385, 1043, 741, 932, 456, 1367, 635, 567, 1191, 952, 380, 220, 444, 650, 746],
             "2021": [1209, 998, 922, 1336, 693, 1644, 735, 776, 1185, 693, 499, 258, 348, 669, 778],
             "2022": [1228, 955, 765, 1659, 699, 1842, 755, 885, 1162, 836, 496, 229, 692, 663, 1078],
@@ -2428,138 +2460,124 @@ with tabs[1]:
             "2025": [1670, 1192, 725, 1414, 604, 2644, 652, 1162, 1262, 965, 620, 237, 897, 1188, 589]
         }
 
-    df_storm = pd.DataFrame(data_storm)
-    years = ["2020", "2021", "2022", "2023", "2024", "2025"]
-    total_values = [11709, 12743, 13944, 15031, 16217, 15821]
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    
-    # --- 2. ИНТЕРФЕЙС ---
-    st.subheader("🌩️ Мониторинг штормовой активности (2020-2025 гг.)")
+        df_storm = pd.DataFrame(data_storm)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.subheader(curr_st["header"])
 
-    # --- ДОБАВЛЕННЫЙ ТЕКСТ С ПОЯСНЕНИЕМ ---
-    st.markdown("""
-        <div style="background-color: rgba(255, 165, 0, 0.1); padding: 15px; border-left: 5px solid #FFA500; border-radius: 5px; margin-bottom: 20px;">
-            <span style="color: #FFA500; font-weight: bold;">Штормовая активность</span> — это интенсивность возникновения опасных метеорологических явлений, требующих оперативного оповещения. 
-            Статистика включает в себя выпуск штормовых телеграмм по двум категориям:
-            <ul style="margin-top: 10px; font-size: 0.9em;">
-                <li><b>ОЯ (Опасные явления)</b> — метеорологические явления, которые по своей интенсивности или времени возникновения могут нанести значительный ущерб экономике и населению.</li>
-                <li><b>СГЯ (Стихийные гидрометеорологические явления)</b> — экстремально интенсивные явления (ураганный ветер, сильные ливни, аномальная жара/мороз), представляющие непосредственную угрозу жизни людей.</li>
-            </ul>
-        </div>
-    """, unsafe_allow_html=True)
-
-
-        # Верхние метрики
-    m1, m2, m3 = st.columns(3)
-    with m1:
-            st.metric("Пик активности", "2024 г.", "16 217 телеграмм")
-    with m2:
-            st.metric("Максимум в 2025", "ВКО", "2 644")
-    with m3:
-            st.metric("Среднее за год", f"{int(sum(total_values)/len(total_values))}")
-
-        # Разделение на графики
-    col_left, col_right = st.columns([1.2, 1])
-
-    import plotly.graph_objects as go
-
-    with col_left:
-            st.markdown("**Анализ штормовых оповещений (по годам)**")
-            
-            fig = go.Figure()
-
-            # 1. Столбцы для объемов (более наглядно для сравнения лет)
-            fig.add_trace(go.Bar(
-                x=years,
-                y=total_values,
-                name="Количество",
-                marker=dict(
-                    color='rgba(52, 152, 219, 0.6)', # Полупрозрачный синий
-                    line=dict(color='#3498db', width=1)
-                ),
-                hovertemplate="Год: %{x}<br>Всего: %{y}<extra></extra>"
-            ))
-
-            # 2. Линия тренда поверх столбцов
-            fig.add_trace(go.Scatter(
-                x=years,
-                y=total_values,
-                mode='lines+markers',
-                name="Динамика",
-                line=dict(color='#FFA500', width=3), # Яркий оранжевый для контраста
-                marker=dict(size=8, symbol='circle', color='white', line=dict(width=2, color='#FFA500')),
-                hoverinfo="skip" # Чтобы не дублировать подсказку
-            ))
-
-            # Настройка внешнего вида
-            fig.update_layout(
-                height=450,
-                margin=dict(l=50, r=10, t=50, b=50), # Увеличили отступы (l и b), чтобы крупные цифры не обрезались
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                legend=dict(
-                    orientation="h", 
-                    yanchor="bottom", 
-                    y=1.02, 
-                    xanchor="right", 
-                    x=1,
-                    font=dict(size=14) # Размер текста в легенде
-                ),
-                font=dict(color="#dee2e6"),
-                bargap=0.3,
-                yaxis=dict(
-                    showgrid=True, 
-                    gridcolor='rgba(200,200,200,0.1)',
-                    zeroline=False,
-                    title=dict(text="Кол-во оповещений", font=dict(size=16)), # Размер заголовка оси Y
-                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ЧИСЕЛ ВДОЛЬ ОСИ Y
-                ),
-                xaxis=dict(
-                    dtick=1, 
-                    showgrid=False,
-                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ГОДОВ ВДОЛЬ ОСИ X
-                )
-            )
-
-
-
-            st.plotly_chart(fig, use_container_width=True)
+        # --- 3. ИНТЕРФЕЙС (HTML блок) ---
+        st.markdown(f"""
+            <div style="background-color: rgba(255, 165, 0, 0.1); padding: 15px; border-left: 5px solid #FFA500; border-radius: 5px; margin-bottom: 20px;">
+                <span style="color: #FFA500; font-weight: bold;">{curr_st['def_title']}</span> {curr_st['def_text']}
+                <ul style="margin-top: 10px; font-size: 0.9em;">
+                    <li><b>{curr_st['oy_title']}</b> — {curr_st['oy_text']}</li>
+                    <li><b>{curr_st['sgy_title']}</b> — {curr_st['sgy_text']}</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+        
         
 
-    with col_right:
-            st.markdown("**Распределение по регионам (Тепловая карта)**")
-            # Heatmap для наглядности интенсивности
+
+    import plotly.express as px
+        import plotly.graph_objects as go
+
+        # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ГРАФИКОВ ---
+        chart_lang = {
+            "ru": {
+                "m1_label": "Пик активности",
+                "m2_label": "Максимум в 2025",
+                "m3_label": "Среднее за год",
+                "m1_delta": "телеграмм",
+                "left_title": "**Анализ штормовых оповещений (по годам)**",
+                "right_title": "**Распределение по регионам (Тепловая карта)**",
+                "bar_name": "Количество",
+                "line_name": "Динамика",
+                "y_axis": "Кол-во оповещений",
+                "heat_labels": dict(x="Год", y="Филиал", color="Кол-во")
+            },
+            "kz": {
+                "m1_label": "Белсенділік шыңы",
+                "m2_label": "2025 ж. максимумы",
+                "m3_label": "Жылдық орташа мән",
+                "m1_delta": "жеделхат",
+                "left_title": "**Дауылды ескертулерді талдау (жылдар бойынша)**",
+                "right_title": "**Аймақтар бойынша бөлу (Жылу картасы)**",
+                "bar_name": "Саны",
+                "line_name": "Динамика",
+                "y_axis": "Ескертулер саны",
+                "heat_labels": dict(x="Жыл", y="Филиал", color="Саны")
+            },
+            "en": {
+                "m1_label": "Peak Activity",
+                "m2_label": "2025 Maximum",
+                "m3_label": "Annual Average",
+                "m1_delta": "telegrams",
+                "left_title": "**Storm Alert Analysis (by Year)**",
+                "right_title": "**Regional Distribution (Heatmap)**",
+                "bar_name": "Quantity",
+                "line_name": "Trend",
+                "y_axis": "Alert Count",
+                "heat_labels": dict(x="Year", y="Branch", color="Count")
+            }
+        }
+
+        c_t = chart_lang.get(lang_code, chart_lang["ru"])
+
+        # --- 2. ВЕРХНИЕ МЕТРИКИ ---
+        m1, m2, m3 = st.columns(3)
+        with m1:
+            st.metric(c_t["m1_label"], "2024", f"16 217 {c_t['m1_delta']}")
+        with m2:
+            st.metric(c_t["m2_label"], "EKO / ШҚО / ВКО", "2 644")
+        with m3:
+            st.metric(c_t["m3_label"], f"{int(sum(total_values)/len(total_values))}")
+
+        # --- 3. ГРАФИКИ ---
+        col_left, col_right = st.columns([1.2, 1])
+
+        with col_left:
+            st.markdown(c_t["left_title"])
+            
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                x=years, y=total_values, name=c_t["bar_name"],
+                marker=dict(color='rgba(52, 152, 219, 0.6)', line=dict(color='#3498db', width=1)),
+                hovertemplate="Year: %{x}<br>Total: %{y}<extra></extra>"
+            ))
+            fig.add_trace(go.Scatter(
+                x=years, y=total_values, mode='lines+markers', name=c_t["line_name"],
+                line=dict(color='#FFA500', width=3),
+                marker=dict(size=8, symbol='circle', color='white', line=dict(width=2, color='#FFA500'))
+            ))
+
+            fig.update_layout(
+                height=450, margin=dict(l=50, r=10, t=50, b=50),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=14)),
+                font=dict(color="#dee2e6"), bargap=0.3,
+                yaxis=dict(showgrid=True, gridcolor='rgba(200,200,200,0.1)', title=dict(text=c_t["y_axis"], font=dict(size=16)), tickfont=dict(size=14)),
+                xaxis=dict(dtick=1, tickfont=dict(size=14))
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        with col_right:
+            st.markdown(c_t["right_title"])
             fig_heat = px.imshow(
                 df_storm.set_index("Филиал")[years],
-                labels=dict(x="Год", y="Филиал", color="Кол-во"),
-                color_continuous_scale="Blues",
-                aspect="auto"
+                labels=c_t["heat_labels"],
+                color_continuous_scale="Blues", aspect="auto"
             )
             
-            # Исправленный блок для Heatmap
             fig_heat.update_layout(
-                height=450, # Немного увеличим высоту для крупных шрифтов
-                margin=dict(l=80, r=20, t=50, b=80), # Увеличили отступы, чтобы шрифт 16 не обрезался
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
+                height=450, margin=dict(l=80, r=20, t=50, b=80),
+                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color="white"),
-                
-                # Настройка горизонтальной оси (X)
-                xaxis=dict(
-                    tickfont=dict(size=16),
-                    side='bottom' # Гарантирует, что подписи будут снизу
-                ),
-                
-                # Настройка вертикальной оси (Y)
-                yaxis=dict(
-                    tickfont=dict(size=16),
-                    autorange='reversed' # Важно для тепловых карт, чтобы данные шли сверху вниз
-                )
+                xaxis=dict(tickfont=dict(size=14), side='bottom'),
+                yaxis=dict(tickfont=dict(size=12), autorange='reversed') # Уменьшил шрифт для Y, чтобы влезли все филиалы
             )
-
             st.plotly_chart(fig_heat, use_container_width=True)
-
+            
 
         # --- 4. АВТОМАТИЧЕСКОЕ АНАЛИТИЧЕСКОЕ РЕЗЮМЕ ---
     st.markdown("---")
