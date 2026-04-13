@@ -3500,87 +3500,135 @@ with tabs[1]:
     """, unsafe_allow_html=True)
 
 
-    # --- ПЕРВЫЙ РЯД КАРТОЧЕК ---
-    col1, col2, col3 = st.columns(3)
+    # 1. Расширяем словарь контента для карточек
+    cards_content = {
+        "ru": {
+            "air_title": "📡 Атмосферный воздух",
+            "air_desc": "Контроль в <b>70</b> городах на <b>175</b> постах.",
+            "air_list": "• <b>131</b> автоматический пост<br>• <b>44</b> поста ручного отбора<br>• Определение <b>30+</b> показателей",
+            
+            "water_title": "💧 Поверхностные воды",
+            "water_desc": "<b>373</b> створа на <b>134</b> водных объектах.",
+            "water_list": "• 88 рек, 29 озер, 13 вдхр, Каспийское море<br>• <b>60</b> показателей<br>• Анализ состава и потоков",
+            
+            "soil_title": "🌱 Загрязнение почв",
+            "soil_desc": "Мониторинг в <b>101</b> точке наблюдения.",
+            "soil_list": "• Отбор проб 3 раза в год<br>• Тяжелые металлы и нефтепродукты<br>• Анализ промзон",
+            
+            "snow_title": "❄️ Осадки и снег",
+            "snow_desc": "Анализ кислотности и состава.",
+            "snow_list": "• <b>47</b> станций (осадки - ежемесячно)<br>• <b>40</b> станций (снег - 1 раз в год)",
+            
+            "rad_title": "☢️ Радиационный фон",
+            "rad_desc": "Измерение гамма и бета активности.",
+            "rad_list": "• <b>89</b> станций (гамма-фон)<br>• <b>43</b> станции (бета-активность)",
+            
+            "spec_title": "📍 Особый мониторинг",
+            "spec_desc": "Трансграничные реки и фоновый статус.",
+            "spec_list": "• <b>32</b> трансграничные реки<br>• <b>СКФМ «Боровое»</b>: комплексный мониторинг"
+        },
+        "kz": {
+            "air_title": "📡 Атмосфералық ауа",
+            "air_desc": "<b>70</b> қаладағы <b>175</b> бекетте бақылау.",
+            "air_list": "• <b>131</b> автоматты бекет<br>• <b>44</b> қолмен іріктеу бекеті<br>• <b>30+</b> көрсеткішті анықтау",
+            
+            "water_title": "💧 Беткі сулар",
+            "water_desc": "<b>134</b> су нысанындағы <b>373</b> тұстама.",
+            "water_list": "• 88 өзен, 29 көл, 13 су қоймасы, Каспий теңізі<br>• <b>60</b> көрсеткіш<br>• Құрамы мен ағындарын талдау",
+            
+            "soil_title": "🌱 Топырақтың ластануы",
+            "soil_desc": "<b>101</b> бақылау нүктесіндегі мониторинг.",
+            "soil_list": "• Жылына 3 рет сынама алу<br>• Ауыр металдар мен мұнай өнімдері<br>• Өнеркәсіптік аймақтарды талдау",
+            
+            "snow_title": "❄️ Жауын-шашын мен қар",
+            "snow_desc": "Қышқылдықты және құрамды талдау.",
+            "snow_list": "• <b>47</b> станция (жауын-шашын - ай сайын)<br>• <b>40</b> станция (қар - жылына 1 рет)",
+            
+            "rad_title": "☢️ Радиациялық фон",
+            "rad_desc": "Гамма және бета белсенділігін өлшеу.",
+            "rad_list": "• <b>89</b> станция (гамма-фон)<br>• <b>43</b> станция (бета-белсенділік)",
+            
+            "spec_title": "📍 Ерекше мониторинг",
+            "spec_desc": "Шекаралас өзендер және фондық статус.",
+            "spec_list": "• <b>32</b> трансшекаралық өзен<br>• <b>«Бурабай» КФМС</b>: кешенді фондық мониторинг"
+        },
+        "en": {
+            "air_title": "📡 Ambient Air",
+            "air_desc": "Monitoring in <b>70</b> cities at <b>175</b> stations.",
+            "air_list": "• <b>131</b> automatic stations<br>• <b>44</b> manual sampling posts<br>• <b>30+</b> parameters measured",
+            
+            "water_title": "💧 Surface Waters",
+            "water_desc": "<b>373</b> sections at <b>134</b> water bodies.",
+            "water_list": "• 88 rivers, 29 lakes, 13 res., Caspian Sea<br>• <b>60</b> physicochemical parameters<br>• Composition & transboundary flows",
+            
+            "soil_title": "🌱 Soil Pollution",
+            "soil_desc": "Monitoring at <b>101</b> observation points.",
+            "soil_list": "• Sampling 3 times a year<br>• Heavy metals & oil products<br>• Industrial area analysis",
+            
+            "snow_title": "❄️ Precipitation & Snow",
+            "snow_desc": "Acidity and chemical composition analysis.",
+            "snow_list": "• <b>47</b> stations (precip. - monthly)<br>• <b>40</b> stations (snow - annually)",
+            
+            "rad_title": "☢️ Radiation Background",
+            "rad_desc": "Gamma radiation and beta activity measurement.",
+            "rad_list": "• <b>89</b> stations (gamma-background)<br>• <b>43</b> stations (beta-activity)",
+            
+            "spec_title": "📍 Special Monitoring",
+            "spec_desc": "Transboundary rivers and background status.",
+            "spec_list": "• <b>32</b> transboundary rivers<br>• <b>Berezovka (Borovoye)</b>: complex station"
+        }
+    }
 
+    # --- ОТОБРАЖЕНИЕ КАРТОЧЕК ---
+    c = cards_content[lang_code]
+
+    # Первый ряд
+    col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("""
-            <div class="monitor-card" style="border-top-color: #004A99;">
-                <div class="monitor-title" style="color: #004A99;">📡 Атмосферный воздух</div>
-                <p style="font-size: 1.0em; color: #455a64;">Контроль в <b>70</b> городах на <b>175</b> постах.</p>
-                <div style="font-size: 1.2em; line-height: 1.4;">
-                    • <b>131</b> автоматический пост<br>
-                    • <b>44</b> поста ручного отбора<br>
-                    • Определение <b>30+</b> показателей (PM2.5, PM10, ЛОС, тяжелые металлы)
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div class="monitor-card" style="border-top-color: #004A99;">
+            <div class="monitor-title" style="color: #004A99;">{c['air_title']}</div>
+            <p style="font-size: 1.0em; color: #455a64;">{c['air_desc']}</p>
+            <div style="font-size: 1.2em; line-height: 1.4;">{c['air_list']}</div>
+        </div>""", unsafe_allow_html=True)
 
     with col2:
-        st.markdown("""
-            <div class="monitor-card" style="border-top-color: #0288d1;">
-                <div class="monitor-title" style="color: #0288d1;">💧 Поверхностные воды</div>
-                <p style="font-size: 1.0em; color: #455a64;"><b>373</b> створа на <b>134</b> водных объектах.</p>
-                <div style="font-size: 1.2em; line-height: 1.4;">
-                    • 88 рек, 29 озер, 13 вдхр, Каспийское море<br>
-                    • <b>60</b> физико-химических показателей<br>
-                    • Анализ состава и трансграничных потоков
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div class="monitor-card" style="border-top-color: #0288d1;">
+            <div class="monitor-title" style="color: #0288d1;">{c['water_title']}</div>
+            <p style="font-size: 1.0em; color: #455a64;">{c['water_desc']}</p>
+            <div style="font-size: 1.2em; line-height: 1.4;">{c['water_list']}</div>
+        </div>""", unsafe_allow_html=True)
 
     with col3:
-        st.markdown("""
-            <div class="monitor-card" style="border-top-color: #8d6e63;">
-                <div class="monitor-title" style="color: #8d6e63;">🌱 Загрязнение почв</div>
-                <p style="font-size: 1.0em; color: #455a64;">Мониторинг в <b>101</b> точке наблюдения.</p>
-                <div style="font-size: 1.2em; line-height: 1.4;">
-                    • Отбор проб 3 раза в год<br>
-                    • Контроль тяжелых металлов и нефтепродуктов<br>
-                    • Анализ зон промышленных районов
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div class="monitor-card" style="border-top-color: #8d6e63;">
+            <div class="monitor-title" style="color: #8d6e63;">{c['soil_title']}</div>
+            <p style="font-size: 1.0em; color: #455a64;">{c['soil_desc']}</p>
+            <div style="font-size: 1.2em; line-height: 1.4;">{c['soil_list']}</div>
+        </div>""", unsafe_allow_html=True)
 
-    # --- ВТОРОЙ РЯД КАРТОЧЕК ---
+    # Второй ряд
     col4, col5, col6 = st.columns(3)
-
     with col4:
-        st.markdown("""
-            <div class="monitor-card" style="border-top-color: #4fc3f7;">
-                <div class="monitor-title" style="color: #03a9f4;">❄️ Осадки и снег</div>
-                <p style="font-size: 1.0em; color: #455a64;">Анализ кислотности и анионно-катионного состава.</p>
-                <div style="font-size: 1.2em; line-height: 1.4;">
-                    • <b>47</b> станций (осадки - ежемесячно)<br>
-                    • <b>40</b> станций (снег - 1 раз в год)<br>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div class="monitor-card" style="border-top-color: #4fc3f7;">
+            <div class="monitor-title" style="color: #03a9f4;">{c['snow_title']}</div>
+            <p style="font-size: 1.0em; color: #455a64;">{c['snow_desc']}</p>
+            <div style="font-size: 1.2em; line-height: 1.4;">{c['snow_list']}</div>
+        </div>""", unsafe_allow_html=True)
 
     with col5:
-        st.markdown("""
-            <div class="monitor-card" style="border-top-color: #f44336;">
-                <div class="monitor-title" style="color: #d32f2f;">☢️ Радиационный фон</div>
-                <p style="font-size: 1.0em; color: #455a64;">Измерение гамма-излучения и бета-активности.</p>
-                <div style="font-size: 1.2em; line-height: 1.4;">
-                    • <b>89</b> метеостанций (гамма-фон)<br>
-                    • <b>43</b> станции (бета-активность)<br>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div class="monitor-card" style="border-top-color: #f44336;">
+            <div class="monitor-title" style="color: #d32f2f;">{c['rad_title']}</div>
+            <p style="font-size: 1.0em; color: #455a64;">{c['rad_desc']}</p>
+            <div style="font-size: 1.2em; line-height: 1.4;">{c['rad_list']}</div>
+        </div>""", unsafe_allow_html=True)
 
     with col6:
-        st.markdown("""
-            <div class="monitor-card" style="border-top-color: #ff9800;">
-                <div class="monitor-title" style="color: #ef6c00;">📍 Особый мониторинг</div>
-                <p style="font-size: 1.0em; color: #455a64;">Трансграничные реки и фоновый статус.</p>
-                <div style="font-size: 1.2em; line-height: 1.4;">
-                    • <b>32</b> трансграничные реки (РФ, КНР, КР, УЗ)<br>
-                    • <b>СКФМ «Боровое»</b>: единственная станция комплексного фонового мониторинга
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div class="monitor-card" style="border-top-color: #ff9800;">
+            <div class="monitor-title" style="color: #ef6c00;">{c['spec_title']}</div>
+            <p style="font-size: 1.0em; color: #455a64;">{c['spec_desc']}</p>
+            <div style="font-size: 1.2em; line-height: 1.4;">{c['spec_list']}</div>
+        </div>""", unsafe_allow_html=True)
         
+    
 
         # --- ХАЙЛАЙТЫ ПО ЭКОЛОГИИ ---
     st.markdown("""
