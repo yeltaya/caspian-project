@@ -3448,59 +3448,55 @@ with tabs[1]:
 
 
                     
-    import streamlit as st
-    import os
-    import base64
+import streamlit as st
 
-    # --- ШАГ 1: ОБЪЯВЛЯЕМ ВСЕ ПЕРЕВОДЫ ---
-    HEADER_TRANSLATIONS = {
-        "ru": {
-            "title": "Агрометеорологический мониторинг",
-            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана"
-        },
-        "kz": {
-            "title": "Агрометеорологиялық мониторинг",
-            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету"
-        },
-        "en": {
-            "title": "Agrometeorological Monitoring",
-            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan"
-        }
+# --- 1. ПЕРЕВОДЫ ---
+HEADER_TRANSLATIONS = {
+    "ru": {
+        "title": "Агрометеорологический мониторинг",
+        "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана"
+    },
+    "kz": {
+        "title": "Агрометеорологиялық мониторинг",
+        "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету"
+    },
+    "en": {
+        "title": "Agrometeorological Monitoring",
+        "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan"
     }
+}
 
-    # --- ШАГ 2: ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА (Ключевой момент) ---
-    # Получаем выбор из селектора. Если его еще нет, ставим "Русский"
-    raw_selection = st.session_state.get('lang', 'Русский') 
+# --- 2. ЛОГИКА СИНХРОНИЗАЦИИ ---
+# Проверяем ключ 'lang'. Если блоки выше переключились, значит они используют именно этот ключ в session_state
+selected_lang_name = st.session_state.get('lang', 'Русский')
 
-    lang_map = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
+# Маппинг (должен точно совпадать с тем, что в вашем selectbox)
+lang_map = {
+    "Русский": "ru",
+    "Қазақша": "kz",
+    "English": "en"
+}
 
-    # СОЗДАЕМ lang_code (именно это имя ожидает ваш код в строке 2168)
-    lang_code = lang_map.get(raw_selection, "ru")
+# Получаем активный код языка
+current_lang_code = lang_map.get(selected_lang_name, "ru")
 
-    # Теперь берем данные из словаря, используя наш lang_code
-    header = HEADER_TRANSLATIONS[lang_code]
+# Для того, чтобы не было ошибки NameError ниже по коду:
+lang_code = current_lang_code 
 
-    # --- ШАГ 3: ОПРЕДЕЛЯЕМ КОЛОНКИ ДЛЯ КАРТЫ/ТАБЛИЦ (Чтобы не было NameError) ---
-    lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
-    active_name_col = lang_to_col.get(lang_code, "NAME_RU")
+# Выбираем нужный перевод
+header = HEADER_TRANSLATIONS[current_lang_code]
 
-    # --- ШАГ 4: ВЫВОД НА ЭКРАН ---
-    st.markdown(f"""
-        <div style="text-align:center; margin-bottom: 20px;">
-            <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 800;">
-                {header['title']}
-            </h1>
-            <p style="color: #546e7a; font-size: 1.1em;">
-                {header['subtitle']}
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Теперь всё, что идет ниже (карты, статистика), будет видеть lang_code и active_name_col
+# --- 3. ВЫВОД ---
+st.markdown(f"""
+    <div style="text-align:center; margin: 40px 0 20px 0;">
+        <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 850; text-transform: uppercase; font-size: 2.5em;">
+            {header['title']}
+        </h1>
+        <p style="color: #546e7a; font-size: 1.2em; font-weight: 500;">
+            {header['subtitle']}
+        </p>
+    </div>
+""", unsafe_allow_html=True)
 
 
 
