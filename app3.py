@@ -3167,25 +3167,25 @@ with tabs[1]:
     
     import plotly.graph_objects as go
 
-        fig = go.Figure(go.Bar(
+    fig = go.Figure(go.Bar(
             x=df_posts["Гидропосты"],
             y=df_posts[column_name],
             orientation='h',
             marker_color=colors_posts,
             text=df_posts["Гидропосты"],
             textposition='outside'
-        ))
+    ))
 
-        fig.update_layout(
+    fig.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(color="white"),
             margin=dict(l=20, r=20, t=40, b=20),
             xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
             height=500
-        )
+    )
 
-        st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
     
 # 1. ПЕРЕВОДЫ ДЛЯ ЭТОГО РАЗДЕЛА
     monitoring_lang = {
