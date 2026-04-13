@@ -3445,6 +3445,21 @@ with tabs[1]:
     import plotly.graph_objects as go
     import base64
 
+    # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
+    raw_lang = st.session_state.get('lang', 'Русский')
+
+    # 2. Принудительно приводим к коротким кодам, которые понимает ваш словарь
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+    current_lang = lang_map.get(raw_lang, "ru")
+
+    # 3. Теперь вызываем переводы
+    header = HEADER_TRANSLATIONS[current_lang]
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+
     # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
 
     # Тексты для заголовка
