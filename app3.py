@@ -4861,14 +4861,14 @@ with tabs[2]:
         
 
             # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
-        col_climat_data, col_viz1 = st.columns([1, 1], gap="medium")
+    col_climat_data, col_viz1 = st.columns([1, 1], gap="medium")
 
         # 1. Словарь локализации заголовка
-        climate_header_dict = {
+    climate_header_dict = {
             "ru": "📜 Климатическая характеристика: Апрель",
             "kz": "📜 Климаттық сипаттама: Сәуір",
             "en": "📜 Climate Characteristics: April"
-        }
+    }
 
         # 2. Отрисовка блока
         with col_climat_data:
