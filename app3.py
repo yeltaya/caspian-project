@@ -2087,77 +2087,78 @@ with tabs[1]:
     
     @st.cache_data
     def load_data(path):
-            if not os.path.exists(path): 
-                return None
-            gdf = gpd.read_file(path)
+        if not os.path.exists(path): 
+            return None
+        gdf = gpd.read_file(path)
+        
+        # Убираем общий контур страны (если есть)
+        if 'ADMO_EN' in gdf.columns: 
+            gdf = gdf[gdf['ADMO_EN'] != 'KAZ']
+        
+        # Определяем колонку с ID (обычно ADM1_EN)
+        name_col = 'ADM1_EN' if 'ADM1_EN' in gdf.columns else gdf.select_dtypes(include=['object']).columns[0]
+        
+        # Функция для получения названий на всех языках сразу
+        def get_all_names(val):
+            clean_key = str(val).strip().lower()
+            found = kaz_stats.get(clean_key)
+            if not found:
+                found = next((v for k, v in kaz_stats.items() if k in clean_key or clean_key in k), None)
             
-            # Убираем общий контур страны (если есть)
-            if 'ADMO_EN' in gdf.columns: 
-                gdf = gdf[gdf['ADMO_EN'] != 'KAZ']
-            
-            # Определяем колонку с ID (обычно ADM1_EN)
-            name_col = 'ADM1_EN' if 'ADM1_EN' in gdf.columns else gdf.select_dtypes(include=['object']).columns[0]
-            
-            # Функция для получения названий на всех языках сразу
-            def get_all_names(val):
-                clean_key = str(val).strip().lower()
-                found = kaz_stats.get(clean_key)
-                if not found:
-                    found = next((v for k, v in kaz_stats.items() if k in clean_key or clean_key in k), None)
-                
-                if found:
-                    return found['ru'], found['kz'], found['en']
-                return str(val).title(), str(val).title(), str(val).title()
+            if found:
+                return found['ru'], found['kz'], found['en']
+            return str(val).title(), str(val).title(), str(val).title()
 
-            # Создаем отдельные колонки под каждый язык для GeoJSON
-            names_df = gdf[name_col].apply(get_all_names).apply(pd.Series)
-            names_df.columns = ['NAME_RU', 'NAME_KZ', 'NAME_EN']
-            gdf = pd.concat([gdf, names_df], axis=1)
-            
-            return gdf.to_crs(epsg=4326), name_col
+        # Создаем отдельные колонки под каждый язык для GeoJSON
+        names_df = gdf[name_col].apply(get_all_names).apply(pd.Series)
+        names_df.columns = ['NAME_RU', 'NAME_KZ', 'NAME_EN']
+        gdf = pd.concat([gdf, names_df], axis=1)
+        
+        return gdf.to_crs(epsg=4326), name_col
 
     result = load_data(SHP_PATH)
 
     if result:
-            gdf, name_col = result
+        gdf, name_col = result
+        
+        # --- ТРЕХБЛОЧНЫЙ ЛЕЙАУТ ---
+        col_left, col_mid, col_right = st.columns([1.1, 1.3, 0.7], gap="medium")
+
+        # Определяем, какую колонку имен использовать для тултипов (на основе lang)
+        # Предполагаем, что lang_code это 'ru', 'kz' или 'en'
+        lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
+        active_name_col = lang_to_col.get(lang_code, "NAME_RU")
+
+        # --- ЛЕВАЯ КОЛОНКА ---
+        with col_left:
+            # t["main_header"] — заголовок из словаря переводов интерфейса
+            st.subheader(t["main_header"])
             
-            # --- ТРЕХБЛОЧНЫЙ ЛЕЙАУТ ---
-            col_left, col_mid, col_right = st.columns([1.1, 1.3, 0.7], gap="medium")
-
-            # Определяем, какую колонку имен использовать для тултипов (на основе lang)
-            # Предполагаем, что lang_code это 'ru', 'kz' или 'en'
-            lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
-            active_name_col = lang_to_col.get(lang_code, "NAME_RU")
-
-            # --- ЛЕВАЯ КОЛОНКА ---
-            with col_left:
-                # t["main_header"] — заголовок из словаря переводов интерфейса
-                st.subheader(t["main_header"])
-                
-                m_full = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
-                
-                folium.GeoJson(
-                    gdf,
-                    style_function=lambda x: {
-                        'fillColor': '#e3f2fd', 'color': '#004A99', 'weight': 1, 'fillOpacity': 0.5
-                    },
-                    highlight_function=lambda x: {'fillColor': '#004A99', 'fillOpacity': 0.2},
-                    tooltip=folium.GeoJsonTooltip(
-                        fields=[active_name_col], 
-                        aliases=[t["tooltip_alias"]], # "Область:" / "Облыс:" / "Region:"
-                        localize=True
-                    )
-                ).add_to(m_full)
-                
-                # Рендер карты
-                out_full = st_folium(m_full, use_container_width=True, height=500, key="map_kaz_main")
-                
-                # Обработка клика
-                if out_full and out_full.get("last_active_drawing"):
-                    new_id = out_full["last_active_drawing"]["properties"].get(name_col)
-                    if st.session_state.selected_region_id != new_id:
-                        st.session_state.selected_region_id = new_id
-                        st.rerun()
+            m_full = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
+            
+            folium.GeoJson(
+                gdf,
+                style_function=lambda x: {
+                    'fillColor': '#e3f2fd', 'color': '#004A99', 'weight': 1, 'fillOpacity': 0.5
+                },
+                highlight_function=lambda x: {'fillColor': '#004A99', 'fillOpacity': 0.2},
+                tooltip=folium.GeoJsonTooltip(
+                    fields=[active_name_col], 
+                    aliases=[t["tooltip_alias"]], # "Область:" / "Облыс:" / "Region:"
+                    localize=True
+                )
+            ).add_to(m_full)
+            
+            # Рендер карты
+            out_full = st_folium(m_full, use_container_width=True, height=500, key="map_kaz_main")
+            
+            # Обработка клика
+            if out_full and out_full.get("last_active_drawing"):
+                new_id = out_full["last_active_drawing"]["properties"].get(name_col)
+                if st.session_state.selected_region_id != new_id:
+                    st.session_state.selected_region_id = new_id
+                    st.rerun()
+                    
                         
 
     # --- СРЕДНЯЯ КОЛОНКА: ДЕТАЛИЗАЦИЯ РЕГИОНА ---
