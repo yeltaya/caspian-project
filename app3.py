@@ -2479,7 +2479,7 @@ with tabs[1]:
         
 
 
-    import plotly.express as px
+        import plotly.express as px
         import plotly.graph_objects as go
 
         # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ГРАФИКОВ ---
