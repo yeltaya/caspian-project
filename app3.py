@@ -3282,7 +3282,7 @@ with tabs[1]:
             "hist_cap": "📊 ИСТОРИЧЕСКИЙ ПИК",
             "curr_cap": "🌊 ТЕКУЩИЙ УРОВЕНЬ",
             "unit": "см",
-            "date": "13 апреля 2026 г."
+            "date": "13.04.2026"
         },
         "kz": {
             "title": "### 📜 Өзендердің тарихи жады",
@@ -3291,7 +3291,7 @@ with tabs[1]:
             "hist_cap": "📊 ТАРИХИ ШЫҢ",
             "curr_cap": "🌊 АҒЫМДАҒЫ ДЕҢГЕЙ",
             "unit": "см",
-            "date": "2026 жылғы 13 сәуір"
+            "date": "13.04.2026"
         },
         "en": {
             "title": "### 📜 Historical River Memory",
@@ -3300,7 +3300,7 @@ with tabs[1]:
             "hist_cap": "📊 HISTORICAL PEAK",
             "curr_cap": "🌊 CURRENT LEVEL",
             "unit": "cm",
-            "date": "April 13, 2026"
+            "date": "13.04.2026"
         }
     }
 
@@ -3433,9 +3433,6 @@ with tabs[1]:
                 <p style="font-weight: bold; color: #1e88e5;">{ui['date']}</p>
             </div>
         """, unsafe_allow_html=True)
-
-    # Отображаем факт на текущем языке
-    st.info(selected_data["fact"][lang])
 
 
                 
