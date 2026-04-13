@@ -3209,46 +3209,71 @@ with tabs[1]:
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
         
 
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ (ОБЯЗАТЕЛЬНО ДОЛЖЕН БЫТЬ ТУТ) ---
+    monitoring_lang = {
+        "ru": {
+            "prod_title": "### 📄 Выпускаемая продукция",
+            "daily": "**📅 Ежедневные бюллетени**\n* Оперативные данные по уровням воды\n* Состояние снежного покрова в горах",
+            "forecast": "**🌊 Прогнозы и кадастр**\n* Прогноз весеннего половодья\n* Государственный водный кадастр",
+            "emergency": "**🚨 Экстренные оповещения**\n* Штормовые предупреждения (СГЯ)\n* Резкие подъемы уровней",
+            "metric_label": "Общий охват сети",
+            "top_3": "**Топ-3 региона:**",
+            "help_text": "Данные на 2026 год"
+        },
+        "kz": {
+            "prod_title": "### 📄 Шығарылатын өнімдер",
+            "daily": "**📅 Күнделікті бюллетеньдер**\n* Су деңгейі бойынша жедел деректер\n* Таулардағы қар жамылғысының күйі",
+            "forecast": "**🌊 Болжамдар және кадастр**\n* Көктемгі су тасқынының болжамы\n* Мемлекеттік су кадастры",
+            "emergency": "**🚨 Шұғыл хабарламалар** \n* Дауылды ескертулер (ҚГҚ)\n* Деңгейлердің күрт көтерілуі",
+            "metric_label": "Желінің жалпы қамтылуы",
+            "top_3": "**Топ-3 өңір:**",
+            "help_text": "2026 жылғы мәліметтер"
+        },
+        "en": {
+            "prod_title": "### 📄 Deliverables",
+            "daily": "**📅 Daily Bulletins**\n* Operational water level data\n* Mountain snow cover status",
+            "forecast": "**🌊 Forecasts & Cadastre**\n* Spring flood forecast (annual)\n* State Water Cadastre",
+            "emergency": "**🚨 Emergency Alerts**\n* Weather warnings (HWM)\n* Sudden water level rise alerts",
+            "metric_label": "Total Network Coverage",
+            "top_3": "**Top 3 Regions:**",
+            "help_text": "2026 data"
+        }
+    }
+
+    # 2. ОПРЕДЕЛЯЕМ ТЕКУЩИЙ ЯЗЫК И ПЕРЕМЕННУЮ m_t
+    curr_lang = lang_code if 'lang_code' in locals() else "ru"
+    m_t = monitoring_lang.get(curr_lang, monitoring_lang["ru"])
+
+    # --- 3. ВАШ БЛОК ВЫВОДА ---
     with col_info:
-        # ПРАВЫЙ БЛОК: ПРОДУКЦИЯ
-        # Используем m_t — это выбранный словарь перевода (m_t = monitoring_lang[lang_code])
+        # Теперь m_t существует и ошибки не будет
         st.markdown(m_t["prod_title"])
         
-        # Информационные карточки
         st.info(m_t["daily"])
-        
         st.success(m_t["forecast"])
-        
         st.warning(m_t["emergency"])
         
-        # Дополнительная метрика снизу
         st.divider()
         
-        # Подсчитываем общую сумму постов из DataFrame
+        # Расчет метрики
         total_posts = df_posts['Count'].sum()
-        
         st.metric(
             label=m_t["metric_label"], 
             value=f"{total_posts}", 
             help=m_t["help_text"]
         )
         
-        # Маленькая таблица ТОП-3
         st.write(m_t["top_3"])
         
-        # Выбираем ТОП-3, используя динамическое имя колонки Region
+        # Таблица ТОП-3
         top_3_df = df_posts.nlargest(3, 'Count')[['Region', 'Count']]
-        
-        # Переименовываем колонки для красивого отображения в таблице
         display_columns = {
             "Region": "Область" if curr_lang != "en" else "Region",
             "Count": "Посты" if curr_lang == "ru" else ("Бекеттер" if curr_lang == "kz" else "Posts")
         }
-        
         st.table(top_3_df.rename(columns=display_columns).set_index(display_columns["Region"]))
         
-
-            # --- ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ ---
+                # --- ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ ---
     HISTORICAL_DATA = {
                 "р. Есиль (г. Астана)": {
                     "record_level": 742, "record_year": "18.04.2021", "current_level": 701, "danger_level": 742,
