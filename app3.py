@@ -4707,8 +4707,23 @@ with tabs[2]:
     </div>
     """
 
-    st.markdown("<h2 style='text-align: center; color: #1d4d2b; font-family: sans-serif;'>Схема распространения штормового предупреждения</h2>", unsafe_allow_html=True)
+    # Заголовок блока с поддержкой 3-х языков
+    st.markdown(f"""
+        <h2 class='kazakh-font' style='text-align: center; color: #1d4d2b; margin-top: 30px; font-weight: 700;'>
+            {t['header']}
+        </h2>
+    """, unsafe_allow_html=True)
+
+    # Сама интерактивная схема (переменная html_content также должна быть локализована)
     components.html(html_content, height=580)
+    
+    flowchart_headers = {
+        "ru": {"header": "Схема распространения штормового предупреждения"},
+        "kz": {"header": "Дауылды ескертуді тарату схемасы"},
+        "en": {"header": "Storm Warning Distribution Scheme"}
+    }
+    t = flowchart_headers[lang_code]
+
 
     st.divider()
 
