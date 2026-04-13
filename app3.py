@@ -3631,7 +3631,7 @@ with tabs[1]:
     import streamlit as st
     import base64
 
-    # 1. Лучше вынести словарь за пределы функции, чтобы не создавать его при каждом рендере
+    # Убедитесь, что импорты и словарь находятся ВНЕ всех функций
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
             "title": "### 🗺️ Агрометеорологические наблюдения",
@@ -3654,15 +3654,16 @@ with tabs[1]:
     }
 
     def render_final_agro_map():
-        # Проверяем язык, если его нет — ставим ru по умолчанию
+        # 1. Получаем язык. 
+        # СОВЕТ: Если перевод не меняется, добавьте st.write(st.session_state.lang_code) для теста
         lang = st.session_state.get('lang_code', 'ru')
         
-        # Защита на случай, если lang_code есть, но его нет в нашем словаре
+        # 2. Берем контент
         content = AGRO_MAP_TRANSLATIONS.get(lang, AGRO_MAP_TRANSLATIONS['ru'])
 
         st.markdown(content["title"])
         
-        # Формируем путь (используем текущую папку скрипта)
+        # 3. Путь к файлу
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         
@@ -3675,25 +3676,28 @@ with tabs[1]:
                 
                 st.markdown(
                     f"""
-                    <div style="display: flex; justify-content: center;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                        <img src="data:image/jpeg;base64,{data}" 
+                             style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                     </div>
                     """,
                     unsafe_allow_html=True
                 )
             else:
-                st.warning(f"Файл AGRO.jpg не найден по пути: {img_path}")
+                st.warning(f"Файл AGRO.jpg не найден")
                 
         with col_text:
-            st.markdown("---") # Заменил на стандартный разделитель
-            st.write(content["main_text"].strip())
+            st.markdown("---")
+            # Используем st.info или просто st.write для текста
+            st.write(content["main_text"])
             
-            st.markdown(content["crops_title"])
+            st.markdown(f"<br>{content['crops_title']}", unsafe_allow_html=True)
             for crop in content["crops"]:
                 st.markdown(f"* {crop}")
 
-    # Вызов функции
-    render_final_agro_map()
+    # Важно: Вызов функции должен идти ПОСЛЕ того, как в коде определены кнопки переключения языка
+    # Либо используйте st.rerun() в логике кнопок.
+
 
 
 
