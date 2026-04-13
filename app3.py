@@ -2116,9 +2116,9 @@ with tabs[1]:
             
             return gdf.to_crs(epsg=4326), name_col
 
-        result = load_data(SHP_PATH)
+    result = load_data(SHP_PATH)
 
-        if result:
+    if result:
             gdf, name_col = result
             
             # --- ТРЕХБЛОЧНЫЙ ЛЕЙАУТ ---
