@@ -4706,6 +4706,13 @@ with tabs[2]:
         </div>
     </div>
     """
+    
+    flowchart_headers = {
+        "ru": {"header": "Схема распространения штормового предупреждения"},
+        "kz": {"header": "Дауылды ескертуді тарату схемасы"},
+        "en": {"header": "Storm Warning Distribution Scheme"}
+    }
+    t = flowchart_headers[lang_code]
 
     # Заголовок блока с поддержкой 3-х языков
     st.markdown(f"""
@@ -4717,12 +4724,6 @@ with tabs[2]:
     # Сама интерактивная схема (переменная html_content также должна быть локализована)
     components.html(html_content, height=580)
     
-    flowchart_headers = {
-        "ru": {"header": "Схема распространения штормового предупреждения"},
-        "kz": {"header": "Дауылды ескертуді тарату схемасы"},
-        "en": {"header": "Storm Warning Distribution Scheme"}
-    }
-    t = flowchart_headers[lang_code]
 
 
     st.divider()
