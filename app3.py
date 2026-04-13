@@ -3468,22 +3468,26 @@ with tabs[1]:
         }
     }
 
-    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА (ПРОВЕРЕННАЯ) ---
-    if 'lang' in st.session_state:
-        actual_selection = st.session_state['lang']
-    else:
-        actual_selection = "Русский"
+    # --- 1. ПРИНУДИТЕЛЬНО ОБНОВЛЯЕМ ПЕРЕМЕННУЮ ЯЗЫКА ИЗ СЕССИИ ---
+    # Это гарантирует, что блок увидит смену языка в меню
+    lang = st.session_state.get('lang', 'Русский')
 
-    lang_map = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
-    L = lang_map.get(actual_selection, "ru")
+    # --- 2. ВЫБИРАЕМ АКТИВНЫЙ СПИСОК (И словарь текстов) ---
+    if lang == "Русский":
+        current_tabs = tabs_ru
+        L = "ru"
+    elif lang == "Қазақша":
+        current_tabs = tabs_kk
+        L = "kz"
+    else:
+        current_tabs = tabs_en
+        L = "en"
+
+    # --- 3. ПОЛУЧАЕМ ТЕКСТЫ ИЗ ВАШЕГО СЛОВАРЯ AGRO_CONTENT ---
+    # Убедитесь, что словарь AGRO_CONTENT определен выше этого места
     txt = AGRO_CONTENT[L]
 
-    # --- ТЕПЕРЬ ВЫВОД (ОБЯЗАТЕЛЬНО ИСПОЛЬЗУЙТЕ f-строки) ---
-
+    # --- 4. ВЫВОД ЗАГОЛОВКА (ОБЯЗАТЕЛЬНО ЧЕРЕЗ f-строку и txt) ---
     st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
             <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
