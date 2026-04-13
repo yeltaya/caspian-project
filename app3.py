@@ -701,112 +701,49 @@ with tabs[0]: # ОБЗОР
             </style>
         """, unsafe_allow_html=True)
 
-    import streamlit as st
-
-    # Словарь с текстами
-    LANGUAGES = {
+    # Переводы для карточек
+    data_cards_content = {
         "RU": {
-            "card1_title": "📍 Наземная сеть",
-            "card1_items": [
-                "<b>МС:</b> Непрерывный мониторинг параметров 24/7.",
-                "<b>Аэрология:</b> Зондирование атмосферы до 30 км.",
-                "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."
-            ],
-            "card2_title": "🗺️ Аналитика",
-            "card2_items": [
-                "<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.",
-                "<b>ГСТ ВМО:</b> Обмен данными.",
-                "<b>Сетки:</b> Анализ полей метеопараметров."
-            ],
-            "card3_title": "📡 Спутники",
-            "card3_items": [
-                "<b>EUMETSAT:</b> Европейские геостационары.",
-                "<b>FengYun:</b> Оперативные данные из КНР.",
-                "<b>Метеор-М:</b> Российские орбитальные системы."
-            ],
-            "card4_title": "⚙️ Численные модели",
-            "card4_items": [
-                "<b>ECMWF:</b> Глобальные прогнозы до 9 км.",
-                "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.",
-                "<b>WRF-Kaz:</b> Локальная модель Казгидромет."
+            "titles": ["📍 Наземная сеть", "🗺️ Аналитика", "📡 Спутники", "⚙️ Численные модели"],
+            "items": [
+                ["<b>МС:</b> Непрерывный мониторинг параметров 24/7.", "<b>Аэрология:</b> Зондирование атмосферы до 30 км.", "<b>ДМРЛ:</b> Локаторы для детекции града и шквалов."],
+                ["<b>АРМ ГИС-Метео, Metcap+:</b> Построение синоптических карт.", "<b>ГСТ ВМО:</b> Обмен данными.", "<b>Сетки:</b> Анализ полей метеопараметров."],
+                ["<b>EUMETSAT:</b> Европейские геостационары.", "<b>FengYun:</b> Оперативные данные из КНР.", "<b>Метеор-М:</b> Российские орбитальные системы."],
+                ["<b>ECMWF:</b> Глобальные прогнозы до 9 км.", "<b>ICON, COSMO:</b> Высокоточные мезомасштабные модели.", "<b>WRF-Kaz:</b> Локальная модель Казгидромет."]
             ]
         },
         "KZ": {
-            "card1_title": "📍 Жерүсті желісі",
-            "card1_items": [
-                "<b>МС:</b> Параметрлерді 24/7 үздіксіз мониторингілеу.",
-                "<b>Аэрология:</b> Атмосфераны 30 км-ге дейін зондтау.",
-                "<b>ДМРЛ:</b> Бұршақ пен дауылды анықтауға арналған локаторлар."
-            ],
-            "card2_title": "🗺️ Аналитика",
-            "card2_items": [
-                "<b>АРМ ГИС-Метео, Metcap+:</b> Синоптикалық карталарды құру.",
-                "<b>ГСТ ДМҰ:</b> Мәліметтер алмасу.",
-                "<b>Торлар:</b> Метеопараметрлер өрістерін талдау."
-            ],
-            "card3_title": "📡 Жерсеріктер",
-            "card3_items": [
-                "<b>EUMETSAT:</b> Еуропалық геостационарлар.",
-                "<b>FengYun:</b> ҚХР-дан жедел деректер.",
-                "<b>Метеор-М:</b> Ресейлік орбиталық жүйелер."
-            ],
-            "card4_title": "⚙️ Сандық модельдер",
-            "card4_items": [
-                "<b>ECMWF:</b> 9 км-ге дейінгі жаһандық болжамдар.",
-                "<b>ICON, COSMO:</b> Жоғары дәлдіктегі мезомасштабты модельдер.",
-                "<b>WRF-Kaz:</b> Қазгидрометтің жергілікті моделі."
+            "titles": ["📍 Жерүсті желісі", "🗺️ Аналитика", "📡 Жерсеріктер", "⚙️ Сандық модельдер"],
+            "items": [
+                ["<b>МС:</b> 24/7 үздіксіз мониторинг.", "<b>Аэрология:</b> 30 км-ге дейін зондтау.", "<b>ДМРЛ:</b> Бұршақ пен дауылды анықтау."],
+                ["<b>АРМ ГИС-Метео, Metcap+:</b> Синоптикалық карталар.", "<b>ГСТ ДМҰ:</b> Мәліметтер алмасу.", "<b>Торлар:</b> Өрістерді талдау."],
+                ["<b>EUMETSAT:</b> Еуропалық геостационарлар.", "<b>FengYun:</b> ҚХР деректері.", "<b>Метеор-М:</b> Ресейлік жүйелер."],
+                ["<b>ECMWF:</b> 9 км-ге дейінгі болжамдар.", "<b>ICON, COSMO:</b> Мезомасштабты модельдер.", "<b>WRF-Kaz:</b> Қазгидромет моделі."]
             ]
         },
         "EN": {
-            "card1_title": "📍 Ground Network",
-            "card1_items": [
-                "<b>MS:</b> Continuous 24/7 monitoring of parameters.",
-                "<b>Aerology:</b> Atmospheric sounding up to 30 km.",
-                "<b>DWR:</b> Radars for hail and squall detection."
-            ],
-            "card2_title": "🗺️ Analytics",
-            "card2_items": [
-                "<b>AWS GIS-Meteo, Metcap+:</b> Synoptic chart generation.",
-                "<b>WMO GTS:</b> Data exchange.",
-                "<b>Grids:</b> Analysis of meteorological fields."
-            ],
-            "card3_title": "📡 Satellites",
-            "card3_items": [
-                "<b>EUMETSAT:</b> European geostationary satellites.",
-                "<b>FengYun:</b> Operational data from China.",
-                "<b>Meteor-M:</b> Russian orbital systems."
-            ],
-            "card4_title": "⚙️ Numerical Models",
-            "card4_items": [
-                "<b>ECMWF:</b> Global forecasts up to 9 km.",
-                "<b>ICON, COSMO:</b> High-precision mesoscale models.",
-                "<b>WRF-Kaz:</b> Kazhydromet local model."
+            "titles": ["📍 Ground Network", "🗺️ Analytics", "📡 Satellites", "⚙️ Numerical Models"],
+            "items": [
+                ["<b>MS:</b> 24/7 continuous monitoring.", "<b>Aerology:</b> Sounding up to 30 km.", "<b>DWR:</b> Hail and squall detection."],
+                ["<b>AWS GIS-Meteo, Metcap+:</b> Synoptic charts.", "<b>WMO GTS:</b> Data exchange.", "<b>Grids:</b> Field analysis."],
+                ["<b>EUMETSAT:</b> European geostationary.", "<b>FengYun:</b> China data.", "<b>Meteor-M:</b> Russian orbital systems."],
+                ["<b>ECMWF:</b> Global forecasts (9 km).", "<b>ICON, COSMO:</b> Mesoscale models.", "<b>WRF-Kaz:</b> Kazhydromet model."]
             ]
         }
     }
 
-    # Выбор языка в сайдбаре или вверху страницы
-    lang = st.radio("Select Language / Тілді таңдаңыз / Выберите язык", ["RU", "KZ", "EN"], horizontal=True)
-    t = LANGUAGES[lang] # Текущий набор текстов
+    # Получаем текущий язык из вашего session_state (замените 'language' на ваш ключ)
+    # Если вы используете другую переменную, просто подставьте её сюда
+    current_lang = st.session_state.get('language', 'RU') 
+    content = data_cards_content[current_lang]
 
     # 4. СОЗДАНИЕ КОЛОНОК И ВЫЗОВ ФУНКЦИЙ
     col_d1, col_d2, col_d3, col_d4 = st.columns(4)
 
-    draw_data_card(
-        col_d1, "precipitation.gif", t["card1_title"], "#3b82f6", t["card1_items"]
-    )
-
-    draw_data_card(
-        col_d2, "station2.gif", t["card2_title"], "#10b981", t["card2_items"]
-    )
-
-    draw_data_card(
-        col_d3, "station3.gif", t["card3_title"], "#8b5cf6", t["card3_items"]
-    )
-
-    draw_data_card(
-        col_d4, "station4.gif", t["card4_title"], "#f59e0b", t["card4_items"]
-    )
+    draw_data_card(col_d1, "precipitation.gif", content["titles"][0], "#3b82f6", content["items"][0])
+    draw_data_card(col_d2, "station2.gif",      content["titles"][1], "#10b981", content["items"][1])
+    draw_data_card(col_d3, "station3.gif",      content["titles"][2], "#8b5cf6", content["items"][2])
+    draw_data_card(col_d4, "station4.gif",      content["titles"][3], "#f59e0b", content["items"][3])
 
 # Разделитель перед текстом о Казгидромете
     st.markdown("---")    
