@@ -3435,54 +3435,73 @@ with tabs[1]:
         """, unsafe_allow_html=True)
 
 
+ #ЭКОЛОГИЧЕНСКИЙ МОНИТОРИНГ
+    # 1. Определяем переводы
+    translations = {
+        'RU': {
+            'title': 'Экологический мониторинг Казахстана',
+            'subtitle': 'Государственная сеть наблюдения за качеством природной среды'
+        },
+        'KZ': {
+            'title': 'Қазақстанның экологиялық мониторингі',
+            'subtitle': 'Табиғи ортаның сапасын бақылаудың мемлекеттік желісі'
+        },
+        'EN': {
+            'title': 'Environmental Monitoring of Kazakhstan',
+            'subtitle': 'State network for environmental quality observation'
+        }
+    }
 
-        # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
-    import streamlit as st
+    # 2. Выбор языка (обычно через sidebar или радио-кнопку)
+    # Если у вас уже есть выбор языка, просто используйте вашу переменную вместо lang
+    lang = st.sidebar.selectbox("Language / Тіл / Язык", ["RU", "KZ", "EN"])
 
-        # --- 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ ---
-    st.markdown("""
-            <style>
-            .monitor-card {
-                background: #ffffff; 
-                padding: 20px; 
-                border-radius: 15px; 
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-                height: 280px; 
-                transition: transform 0.3s ease;
-                border-top: 5px solid;
-                margin-bottom: 20px;
-                display: flex;
-                flex-direction: column;
-            }
-            .monitor-card:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-            }
-            .monitor-title {
-                font-weight: 800;
-                font-size: 1.5em;
-                margin-bottom: 8px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                text-transform: uppercase;
-            }
-            .stat-badge {
-                background: #f0f2f6;
-                padding: 2px 8px;
-                border-radius: 5px;
-                font-weight: bold;
-                color: #003366;
-            }
-            </style>
-            
-            <div style="text-align:center; margin: 40px 0 30px 0;">
-                <h2 style="color: #003366; font-family: 'Exo 2'; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">
-                    Экологический мониторинг Казахстана
-                </h2>
-                <p style="color: #546e7a; font-size: 1.2em;">Государственная сеть наблюдения за качеством природной среды</p>
-            </div>
-        """, unsafe_allow_html=True)
+    # 3. Вывод блока
+    st.markdown(f"""
+        <style>
+        .monitor-card {{
+            background: #ffffff; 
+            padding: 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            height: 280px; 
+            transition: transform 0.3s ease;
+            border-top: 5px solid;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }}
+        .monitor-card:hover {{
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }}
+        .monitor-title {{
+            font-weight: 800;
+            font-size: 1.5em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }}
+        .stat-badge {{
+            background: #f0f2f6;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #003366;
+        }}
+        </style>
+        
+        <div style="text-align:center; margin: 40px 0 30px 0;">
+            <h2 style="color: #003366; font-family: 'Exo 2'; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">
+                {translations[lang]['title']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.2em;">
+                {translations[lang]['subtitle']}
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
     # --- ПЕРВЫЙ РЯД КАРТОЧЕК ---
     col1, col2, col3 = st.columns(3)
