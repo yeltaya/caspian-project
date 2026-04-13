@@ -4380,12 +4380,32 @@ with tabs[2]:
     draw_data_card(col_d3, "station3.gif", ic["c3_t"], "#8b5cf6", ic["c3_l"])
     draw_data_card(col_d4, "station4.gif", ic["c4_t"], "#f59e0b", ic["c4_l"])
 
-        # Визуальный разделитель с пояснением
-    st.warning("""
-            💡 **Интеграция данных:** Все потоки информации стекаются в единый прогностический центр, 
-            где дежурная смена синоптиков проводит финальный анализ и верификацию перед выпуском бюллетеней.
-        """)
+    # 1. Добавляем перевод в ваш словарь
+    integration_text = {
+        "ru": {
+            "text": "💡 **Интеграция данных:** Все потоки информации стекаются в единый прогностический центр, где дежурная смена синоптиков проводит финальный анализ и верификацию перед выпуском бюллетеней."
+        },
+        "kz": {
+            "text": "💡 **Деректерді интеграциялау:** Барлық ақпарат ағындары бірыңғай болжау орталығына жиналады, онда синоптиктердің кезекші ауысымы бюллетендерді шығар алдында қорытынды талдау мен верификация жүргізеді."
+        },
+        "en": {
+            "text": "💡 **Data Integration:** All information flows into a single forecasting center, where the duty shift of synopticians performs final analysis and verification before issuing bulletins."
+        }
+    }
+
+    # 2. Получаем текущий перевод
+    it = integration_text[lang_code]
+
+    # 3. Вывод блока
+    # Мы оборачиваем текст в span с классом kazakh-font внутри warning
+    st.warning(f"""
+        <span class="kazakh-font">
+            {it['text']}
+        </span>
+    """, icon=None) # Иконку можно оставить встроенную или убрать
+
     st.divider()
+
     
     import streamlit as st
 
@@ -4442,43 +4462,94 @@ with tabs[2]:
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h2 class='alert-header'>📢 Оперативное реагирование</h2>", unsafe_allow_html=True)
+    alert_content = {
+        "ru": {
+            "header": "📢 Оперативное реагирование",
+            "storm_badge": "Экстренная сводка",
+            "storm_title": "Штормовые предупреждения",
+            "storm_desc": "Оперативное оповещение о возникновении <b>ОЯ</b> (опасных) и <b>СГЯ</b> (стихийных) гидрометеорологических явлений.",
+            "storm_r1": "<b>⏱ Заблаговременность:</b> от 6 до 48 часов",
+            "storm_r2": "<b>📍 Масштаб:</b> Области, города, ключевые трассы",
+            "storm_r3": "<b>📊 Состав:</b> Интенсивность, время, рекомендации",
+            "storm_r4": "<b>📲 Рассылка:</b> Darmen, SMS-112, телеканалы",
+            "nmu_badge": "Экологический контроль",
+            "nmu_title": "Прогнозы НМУ",
+            "nmu_desc": "Прогноз метеорологических условий, способствующих накоплению вредных веществ в приземном слое атмосферы.",
+            "nmu_r1": "<b>🏭 Режим работы:</b> Регулирование выбросов предприятий",
+            "nmu_r2": "<b>🏙 География:</b> Крупные промышленные центры РК",
+            "nmu_r3": "<b>🌥 Критерии:</b> Штиль, температурная инверсия",
+            "nmu_r4": "<b>🔄 Регулярность:</b> Выпускается ежедневно до 15:00"
+        },
+        "kz": {
+            "header": "📢 Жедел әрекет ету",
+            "storm_badge": "Шұғыл мәлімет",
+            "storm_title": "Дауылды ескертулер",
+            "storm_desc": "<b>ҚТҚ</b> (қауіпті) және <b>СГҚ</b> (стихиялық) гидрометеорологиялық құбылыстардың туындауы туралы жедел хабарлау.",
+            "storm_r1": "<b>⏱ Алдын ала дайындық:</b> 6-дан 48 сағатқа дейін",
+            "storm_r2": "<b>📍 Ауқымы:</b> Облыстар, қалалар, негізгі трассалар",
+            "storm_r3": "<b>📊 Құрамы:</b> Қарқындылығы, уақыты, ұсыныстар",
+            "storm_r4": "<b>📲 Тарату:</b> Darmen, SMS-112, телеарналар",
+            "nmu_badge": "Экологиялық бақылау",
+            "nmu_title": "КМЖ болжамдары",
+            "nmu_desc": "Атмосфераның жерге жақын қабатында зиянды заттардың жиналуына ықпал ететін метеорологиялық жағдайлардың болжамы.",
+            "nmu_r1": "<b>🏭 Жұмыс режимі:</b> Кәсіпорын шығарындыларын реттеу",
+            "nmu_r2": "<b>🏙 География:</b> ҚР ірі өнеркәсіптік орталықтары",
+            "nmu_r3": "<b>🌥 Критерийлер:</b> Штиль, температуралық инверсия",
+            "nmu_r4": "<b>🔄 Мерзімділігі:</b> Күн сайын сағат 15:00-ге дейін шығады"
+        },
+        "en": {
+            "header": "📢 Rapid Response",
+            "storm_badge": "Emergency Summary",
+            "storm_title": "Storm Warnings",
+            "storm_desc": "Prompt notification of <b>HP</b> (hazardous) and <b>SHP</b> (severe) hydrometeorological phenomena.",
+            "storm_r1": "<b>⏱ Lead time:</b> 6 to 48 hours",
+            "storm_r2": "<b>📍 Scope:</b> Regions, cities, key highways",
+            "storm_r3": "<b>📊 Content:</b> Intensity, timing, recommendations",
+            "storm_r4": "<b>📲 Distribution:</b> Darmen, SMS-112, TV channels",
+            "nmu_badge": "Environmental Control",
+            "nmu_title": "MSW Forecasts",
+            "nmu_desc": "Forecast of meteorological conditions contributing to the accumulation of harmful substances in the surface layer.",
+            "nmu_r1": "<b>🏭 Mode:</b> Regulation of industrial emissions",
+            "nmu_r2": "<b>🏙 Geography:</b> Major industrial centers of RK",
+            "nmu_r3": "<b>🌥 Criteria:</b> Calm, temperature inversion",
+            "nmu_r4": "<b>🔄 Regularity:</b> Issued daily by 15:00"
+        }
+    }
+
+    al = alert_content[lang_code]
+
+    st.markdown(f"<h2 class='alert-header kazakh-font' style='text-align: center;'>{al['header']}</h2>", unsafe_allow_html=True)
 
     col_reg1, col_reg2 = st.columns(2)
 
     with col_reg1:
-        # Оставляем розовый фон для штормовых
-        st.markdown("""
-            <div class="alert-card-base storm-bg">
-                <div class="alert-badge" style="background: #e53e3e;">Экстренная сводка</div>
-                <div class="alert-title" style="color: #9b2c2c;">Штормовые предупреждения</div>
-                <p style="font-size: 0.9rem; color: #4a5568; margin-bottom: 15px;">
-                    Оперативное оповещение о возникновении <b>ОЯ</b> (опасных) и <b>СГЯ</b> (стихийных) гидрометеорологических явлений.
-                </p>
-                <div class="info-row"><b>⏱ Заблаговременность:</b> от 6 до 48 часов</div>
-                <div class="info-row"><b>📍 Масштаб:</b> Области, города, ключевые трассы</div>
-                <div class="info-row"><b>📊 Состав:</b> Интенсивность, время, рекомендации</div>
-                <div class="info-row"><b>📲 Рассылка:</b> Darmen, SMS-112, телеканалы</div>
+        st.markdown(f"""
+            <div class="alert-card-base storm-bg kazakh-font" style="min-height: 380px;">
+                <div class="alert-badge" style="background: #e53e3e;">{al['storm_badge']}</div>
+                <div class="alert-title" style="color: #9b2c2c;">{al['storm_title']}</div>
+                <p style="font-size: 0.95rem; color: #4a5568; margin-bottom: 15px;">{al['storm_desc']}</p>
+                <div class="info-row">{al['storm_r1']}</div>
+                <div class="info-row">{al['storm_r2']}</div>
+                <div class="info-row">{al['storm_r3']}</div>
+                <div class="info-row">{al['storm_r4']}</div>
             </div>
         """, unsafe_allow_html=True)
 
     with col_reg2:
-        # Оставляем серо-голубой фон для НМУ
-        st.markdown("""
-            <div class="alert-card-base nmu-bg">
-                <div class="alert-badge" style="background: #4a5568;">Экологический контроль</div>
-                <div class="alert-title" style="color: #2d3748;">Прогнозы НМУ</div>
-                <p style="font-size: 0.9rem; color: #4a5568; margin-bottom: 15px;">
-                    Прогноз метеорологических условий, способствующих накоплению вредных веществ в приземном слое атмосферы.
-                </p>
-                <div class="info-row"><b>🏭 Режим работы:</b> Регулирование выбросов предприятий</div>
-                <div class="info-row"><b>🏙 География:</b> Крупные промышленные центры РК</div>
-                <div class="info-row"><b>🌥 Критерии:</b> Штиль, температурная инверсия</div>
-                <div class="info-row"><b>🔄 Регулярность:</b> Выпускается ежедневно до 15:00</div>
+        st.markdown(f"""
+            <div class="alert-card-base nmu-bg kazakh-font" style="min-height: 380px;">
+                <div class="alert-badge" style="background: #4a5568;">{al['nmu_badge']}</div>
+                <div class="alert-title" style="color: #2d3748;">{al['nmu_title']}</div>
+                <p style="font-size: 0.95rem; color: #4a5568; margin-bottom: 15px;">{al['nmu_desc']}</p>
+                <div class="info-row">{al['nmu_r1']}</div>
+                <div class="info-row">{al['nmu_r2']}</div>
+                <div class="info-row">{al['nmu_r3']}</div>
+                <div class="info-row">{al['nmu_r4']}</div>
             </div>
         """, unsafe_allow_html=True)
+
     st.divider()
-    
+
     import streamlit as st
     import streamlit.components.v1 as components
 
