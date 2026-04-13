@@ -2758,9 +2758,21 @@ with tabs[1]:
             xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)', title=dict(text=sg_t["total_axis"], font=dict(size=14)), tickfont=dict(size=14)),
             yaxis=dict(title="", tickfont=dict(size=12))
         )
-        st.plotly_chart(fig_sgy_reg, use
-        
+        st.plotly_chart(fig_sgy_reg, use_container_width=True)
 
+            # --- 4. АВТОМАТИЧЕСКОЕ РЕЗЮМЕ ПО СГЯ ---
+            top_region_sgy = df_sgy.loc[df_sgy['Total'].idxmax()]
+            
+# --- 4. АВТОМАТИЧЕСКОЕ РЕЗЮМЕ ПО СГЯ ---
+    top_region_sgy = df_sgy.loc[df_sgy['Total'].idxmax()]
+    
+    st.info(f"""
+        **{sg_t['note_title']}**
+        * **{sg_t['anomaly']}** **509** {sg_t['units']}.
+        * **{sg_t['risk_zones']}** **{top_region_sgy['Филиал']}**.
+        * **{sg_t['current_stat']}** ({total_sgy[-1]} {sg_t['units']}).
+    """)
+    
         
     # --- БЛОК МЕТЕО-РЕКОРДОВ ---
     st.markdown("""
@@ -2865,7 +2877,8 @@ with tabs[1]:
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    
+ 
+ 
     import streamlit as st
     import pandas as pd
     import numpy as np
