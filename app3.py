@@ -4549,6 +4549,10 @@ with tabs[2]:
         """, unsafe_allow_html=True)
 
     st.divider()
+    
+    
+    import streamlit as st
+    import streamlit.components.v1 as components
 
     # 1. Словарь переводов для схемы
     flowchart_text = {
