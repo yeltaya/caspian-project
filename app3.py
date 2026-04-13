@@ -3626,12 +3626,11 @@ with tabs[1]:
                AGRO_DETAILS["agro_3"]["desc"][lang],
                AGRO_DETAILS["agro_3"]["stats"][lang], 
                AGRO_DETAILS["agro_3"]["img_key"])
-                   
     import os
     import streamlit as st
     import base64
 
-    # 1. Словарь переводов выносим в начало файла (Global Scope)
+    # 1. Глобальный словарь (убедитесь, что ключи ru, kz, en СТРОЧНЫМИ буквами)
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
             "title": "### 🗺️ Агрометеорологические наблюдения",
@@ -3643,7 +3642,7 @@ with tabs[1]:
             "title": "### 🗺️ Агрометеорологиялық бақылаулар",
             "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын, сондай-ақ өсімдіктер мен жануарлардың тіршілік әрекетіне әсер ететін негізгі метеорологиялық параметрлерді – ауа температурасы мен ылғалдылығын, желдің жылдамдығы мен бағытын, жауын-шашынның түрі мен мөлшерін, қар жамылғысын, атмосфералық құбылыстарды және жиынтық күн радиациясын бақылау кіреді.",
             "crops_title": "**Негізгі дақылдар:**",
-            "crops": ["🌾 Дәнді дақылдар", "🌽 Жартылай шикізат", "🌻 Майлы дақылдар", "🍎 Жеміс-жидектер"]
+            "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
         },
         "en": {
             "title": "### 🗺️ Agrometeorological Observations",
@@ -3654,49 +3653,48 @@ with tabs[1]:
     }
 
     def render_final_agro_map():
-        try:
-            # Получаем текущий язык из session_state
-            lang = st.session_state.get('lang_code', 'ru')
-            content = AGRO_MAP_TRANSLATIONS.get(lang, AGRO_MAP_TRANSLATIONS['ru'])
+        # 2. Получаем язык и ПРИНУДИТЕЛЬНО переводим в нижний регистр для поиска в словаре
+        raw_lang = st.session_state.get('lang_code', 'ru')
+        current_lang = str(raw_lang).lower() 
+        
+        # 3. Выбор контента с защитой
+        content = AGRO_MAP_TRANSLATIONS.get(current_lang, AGRO_MAP_TRANSLATIONS["ru"])
 
-            # Заголовок
-            st.markdown(content["title"])
-            
-            # Путь к изображению
-            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-            img_filename = "AGRO.jpg"
-            img_path = os.path.join(BASE_DIR, img_filename)
-            
-            col_map, col_text = st.columns([1.5, 0.5])
-            
-            with col_map:
-                if os.path.exists(img_path):
-                    with open(img_path, "rb") as f:
-                        data = base64.b64encode(f.read()).decode("utf-8")
-                    
-                    st.markdown(
-                        f"""
-                        <div style="display: flex; justify-content: center;">
-                            <img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                else:
-                    # Если файла нет, выводим заглушку, чтобы блок не "пропадал"
-                    st.warning(f"Файл {img_filename} не найден.")
-                    
-            with col_text:
-                st.markdown("---")
-                st.write(content["main_text"])
+        # Заголовок
+        st.markdown(content["title"])
+        
+        # Путь к изображению
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(base_dir, "AGRO.jpg")
+        
+        col_map, col_text = st.columns([1.5, 0.5])
+        
+        with col_map:
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
                 
-                st.markdown(content["crops_title"])
-                for crop in content["crops"]:
-                    st.markdown(f"* {crop}")
-                    
-        except Exception as e:
-            # Если возникнет любая ошибка, она отобразится на экране
-            st.error(f"Ошибка в блоке агро-карты: {e}")
+                st.markdown(
+                    f"""
+                    <div style="display: flex; justify-content: center;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                st.warning("Image AGRO.jpg not found")
+                
+        with col_text:
+            st.markdown("---")
+            # Текст описания
+            st.write(content["main_text"])
+            
+            # Заголовок списка культур
+            st.markdown(content["crops_title"])
+            # Список культур
+            for crop in content["crops"]:
+                st.markdown(f"* {crop}")
 
     # Вызов функции
     render_final_agro_map()
