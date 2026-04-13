@@ -3446,17 +3446,37 @@ with tabs[1]:
         """, unsafe_allow_html=True)
 
 
+    import streamlit as st
 
+    # 1. Инициализация состояния языка (выполняется один раз)
     if 'lang' not in st.session_state:
         st.session_state.lang = 'ru'
 
-    # Выбор языка
-    lang_choice = st.selectbox("Language", ["ru", "kz", "en"], key="language_selector")
-    st.session_state.lang = lang_choice
-                    
-    import streamlit as st
+    # 2. Словарь соответствия отображаемых имен и кодов
+    # Это позволит пользователю видеть красивые названия, а коду работать с индексами
+    languages = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
 
-    # --- АГРОМЕТЕОРОЛОГИЯ
+    # 3. Выбор языка
+    # Находим индекс текущего языка, чтобы селектбокс не сбрасывался
+    list_of_names = list(languages.keys())
+    list_of_codes = list(languages.values())
+    default_index = list_of_codes.index(st.session_state.lang)
+
+    selected_lang_name = st.selectbox(
+        "Выберите язык / Тілді таңдаңыз / Select language", 
+        options=list_of_names,
+        index=default_index
+    )
+
+    # Обновляем код языка в состоянии
+    st.session_state.lang = languages[selected_lang_name]
+    current_lang_code = st.session_state.lang
+
+    # 4. Данные переводов
     HEADER_TRANSLATIONS = {
         "ru": {
             "title": "Агрометеорологический мониторинг",
@@ -3472,27 +3492,10 @@ with tabs[1]:
         }
     }
 
-    # --- 2. ЛОГИКА СИНХРОНИЗАЦИИ ---
-    # Проверяем ключ 'lang'. Если блоки выше переключились, значит они используют именно этот ключ в session_state
-    selected_lang_name = st.session_state.get('lang', 'Русский')
-
-    # Маппинг (должен точно совпадать с тем, что в вашем selectbox)
-    lang_map = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
-
-    # Получаем активный код языка
-    current_lang_code = lang_map.get(selected_lang_name, "ru")
-
-    # Для того, чтобы не было ошибки NameError ниже по коду:
-    lang_code = current_lang_code 
-
-    # Выбираем нужный перевод
+    # 5. Получение текущего перевода
     header = HEADER_TRANSLATIONS[current_lang_code]
 
-    # --- 3. ВЫВОД ---
+    # 6. Вывод интерфейса
     st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
             <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 850; text-transform: uppercase; font-size: 2.5em;">
@@ -3503,6 +3506,7 @@ with tabs[1]:
             </p>
         </div>
     """, unsafe_allow_html=True)
+
 
 
 
