@@ -4050,7 +4050,7 @@ with tabs[2]:
             color: #1E3A8A; 
             margin-bottom: 10px; 
             line-height: 1.2;
-            font-size: 1rem;
+            font-size: 3rem;
         }
         .forecast-card .description { color: #546e7a; font-size: 0.85rem; }
         </style>
@@ -4078,19 +4078,62 @@ with tabs[2]:
             
         
     
-    st.markdown("### 🕒 Горизонты планирования")
+    # 1. Дополняем словарь для горизонтов планирования
+    planning_content = {
+        "ru": {
+            "title": "### 🕒 Горизонты планирования",
+            "h1": "2-6 ч", "s1": "Наукастинг",
+            "h2": "1-3 дня", "s2": "Краткосрочный",
+            "h3": "10 дней", "s3": "Среднесрочный",
+            "h4": "Месяц+", "s4": "Долгосрочный"
+        },
+        "kz": {
+            "title": "### 🕒 Жоспарлау көкжиектері",
+            "h1": "2-6 сағ", "s1": "Наукастинг",
+            "h2": "1-3 күн", "s2": "Қысқа мерзімді",
+            "h3": "10 күн", "s3": "Орта мерзімді",
+            "h4": "Ай+", "s4": "Ұзақ мерзімді"
+        },
+        "en": {
+            "title": "### 🕒 Planning Horizons",
+            "h1": "2-6 h", "s1": "Nowcasting",
+            "h2": "1-3 days", "s2": "Short-term",
+            "h3": "10 days", "s3": "Medium-term",
+            "h4": "Month+", "s4": "Long-term"
+        }
+    }
 
-    st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 20px; border-radius: 50px; border: 1.2px solid #dee2e6;">
-        <div style="text-align: center;"><strong>2-6 ч</strong><br><small>Наукастинг</small></div>
-        <div style="color: #2563EB;">➡</div>
-        <div style="text-align: center;"><strong>1-3 дня</strong><br><small>Краткосрочный</small></div>
-        <div style="color: #2563EB;">➡</div>
-        <div style="text-align: center;"><strong>10 дней</strong><br><small>Среднесрочный</small></div>
-        <div style="color: #2563EB;">➡</div>
-        <div style="text-align: center;"><strong>Месяц+</strong><br><small>Долгосрочный</small></div>
+    # 2. Получаем текущий перевод
+    p = planning_content[lang_code]
+
+    # 3. Отображаем блок
+    st.markdown(p["title"])
+
+    st.markdown(f"""
+    <div class="kazakh-font" style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 25px 40px; border-radius: 60px; border: 1.2px solid #dee2e6; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+        <div style="text-align: center; flex: 1;">
+            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h1']}</strong><br>
+            <span style="color: #546e7a; font-size: 0.85rem;">{p['s1']}</span>
+        </div>
+        <div style="color: #2563EB; font-weight: bold; padding: 0 10px;">➡</div>
+        <div style="text-align: center; flex: 1;">
+            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h2']}</strong><br>
+            <span style="color: #546e7a; font-size: 0.85rem;">{p['s2']}</span>
+        </div>
+        <div style="color: #2563EB; font-weight: bold; padding: 0 10px;">➡</div>
+        <div style="text-align: center; flex: 1;">
+            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h3']}</strong><br>
+            <span style="color: #546e7a; font-size: 0.85rem;">{p['s3']}</span>
+        </div>
+        <div style="color: #2563EB; font-weight: bold; padding: 0 10px;">➡</div>
+        <div style="text-align: center; flex: 1;">
+            <strong style="color: #1E3A8A; font-size: 1.1rem;">{p['h4']}</strong><br>
+            <span style="color: #546e7a; font-size: 0.85rem;">{p['s4']}</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
+
+
     
 
     # Заголовок блока
