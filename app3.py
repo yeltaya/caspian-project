@@ -3738,62 +3738,130 @@ with tabs[1]:
         </div>
     """, unsafe_allow_html=True)
 
+    # 1. Словарь переводов для информационного блока
+    info_content = {
+        "ru": {
+            "title": "ИНФОРМАЦИОННАЯ ПРОДУКЦИЯ",
+            "subtitle": "Официальные отчеты, бюллетени и цифровые сервисы",
+            "expander_1_title": "📂 Ежедневная и еженедельная отчетность",
+            "expander_1_text": """
+                * **Бюллетень состояния воздуха:** Данные по 70 населенным пунктам и прогноз НМУ.  
+                * **Прогноз УФ-индекса:** Еженедельный мониторинг уровней солнечной радиации.  
+                * **НМУ:** Прогноз НМУ по 22 городам.
+            """,
+            "expander_2_title": "🔬 Специализированные данные",
+            "expander_2_text": """
+                * **Трансграничный перенос:** Бюллетень по токсичным компонентам и их перемещению.  
+                * **Радиационный отчет:** Сводка по гамма-фону и бета-активности атмосферы.  
+            """,
+            "app_title": "📱 МОБИЛЬНОЕ ПРИЛОЖЕНИЕ AirKZ",
+            "app_desc": "Получайте актуальные данные о качестве атмосферного воздуха в реальном времени. Сервис охватывает все города Казахстана и предоставляет информацию с автоматических станций мониторинга **ежечасно**.",
+            "app_caption": "• Прогноз НМУ • Уровни загрязнения • Интерактивная карта",
+            "btn_text": "СКАЧАТЬ ПРИЛОЖЕНИЕ"
+        },
+        "kz": {
+            "title": "АҚПАРАТТЫҚ ӨНІМДЕР",
+            "subtitle": "Ресми есептер, бюллетендер және цифрлық сервистер",
+            "expander_1_title": "📂 Күнделікті және апталық есептілік",
+            "expander_1_text": """
+                * **Ауа жағдайының бюллетені:** 70 елді мекен бойынша деректер және ҚМЖ болжамы.  
+                * **УК-индекс болжамы:** Күн радиациясы деңгейінің апталық мониторингі.  
+                * **ҚМЖ:** 22 қала бойынша ҚМЖ болжамы.
+            """,
+            "expander_2_title": "🔬 Мамандандырылған деректер",
+            "expander_2_text": """
+                * **Трансшекаралық тасымал:** Токсинді компоненттер мен олардың қозғалысы бойынша бюллетень.  
+                * **Радиациялық есеп:** Гамма-фон және атмосфераның бета-белсенділігі бойынша жиынтық.  
+            """,
+            "app_title": "📱 AirKZ МОБИЛЬДІ ҚОСЫМШАСЫ",
+            "app_desc": "Атмосфералық ауаның сапасы туралы өзекті деректерді нақты уақыт режимінде алыңыз. Қызмет Қазақстанның барлық қалаларын қамтиды және автоматты мониторинг станцияларынан ақпаратты **сағат сайын** ұсынады.",
+            "app_caption": "• ҚМЖ болжамы • Ластану деңгейлері • Интерактивті карта",
+            "btn_text": "ҚОСЫМШАНЫ ЖҮКТЕУ"
+        },
+        "en": {
+            "title": "INFORMATION PRODUCTS",
+            "subtitle": "Official reports, bulletins, and digital services",
+            "expander_1_title": "📂 Daily and Weekly Reporting",
+            "expander_1_text": """
+                * **Air Quality Bulletin:** Data for 70 settlements and MSW forecast.  
+                * **UV Index Forecast:** Weekly monitoring of solar radiation levels.  
+                * **MSW:** Adverse meteorological conditions forecast for 22 cities.
+            """,
+            "expander_2_title": "🔬 Specialized Data",
+            "expander_2_text": """
+                * **Transboundary Transport:** Bulletin on toxic components and their movement.  
+                * **Radiation Report:** Summary of gamma background and beta activity of the atmosphere.  
+            """,
+            "app_title": "📱 AirKZ MOBILE APP",
+            "app_desc": "Get up-to-date data on air quality in real time. The service covers all cities of Kazakhstan and provides hourly information from automatic monitoring stations.",
+            "app_caption": "• MSW Forecast • Pollution levels • Interactive map",
+            "btn_text": "DOWNLOAD APP"
+        }
+    }
 
-        # --- УЛУЧШЕННЫЙ БЛОК: ИНФОРМАЦИОННЫЕ РЕСУРСЫ И БЮЛЛЕТЕНИ ---
-    st.markdown("""
-            <div style="margin: 40px 0 20px 0; border-left: 10px solid #003366; padding-left: 20px;">
-                <h2 style="color: #003366; font-family: 'Exo 2'; font-weight: 800; margin: 0;">
-                    ИНФОРМАЦИОННАЯ ПРОДУКЦИЯ
-                </h2>
-                <p style="color: #546e7a; margin: 5px 0 0 0;">Официальные отчеты, бюллетени и цифровые сервисы</p>
-            </div>
-        """, unsafe_allow_html=True)
+    # 2. Вывод блока с использованием lang_code
+    i = info_content[lang_code]
 
-        # Группировка продукции по категориям через контейнеры
+    # Заголовок блока
+    st.markdown(f"""
+        <div style="margin: 40px 0 20px 0; border-left: 10px solid #003366; padding-left: 20px;">
+            <h2 style="color: #003366; font-family: 'Exo 2'; font-weight: 800; margin: 0;">
+                {i['title']}
+            </h2>
+            <p style="color: #546e7a; margin: 5px 0 0 0;">{i['subtitle']}</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Секция с экспандерами
     with st.container():
-            col_a, col_b = st.columns(2)
+        col_a, col_b = st.columns(2)
+        with col_a:
+            with st.expander(i['expander_1_title'], expanded=True):
+                st.markdown(i['expander_1_text'])
+        with col_b:
+            with st.expander(i['expander_2_title'], expanded=True):
+                st.markdown(i['expander_2_text'])
 
-            with col_a:
-                with st.expander("📂 Ежедневная и еженедельная отчетность", expanded=True):
-                    st.markdown("""
-                        * **Бюллетень состояния воздуха:** Данные по 70 населенным пунктам и прогноз НМУ.  
-                        * **Прогноз УФ-индекса:** Еженедельный мониторинг уровней солнечной радиации.  
-                        * **НМУ:** Прогноз НМУ по 22 городам.
-                    """)
-
-
-            with col_b:
-                with st.expander("🔬 Специализированные данные", expanded=True):
-                    st.markdown("""
-                        * **Трансграничный перенос:** Бюллетень по токсичным компонентам и их перемещению.  
-                        * **Радиационный отчет:** Сводка по гамма-фону и бета-активности атмосферы.  
-                    """)
-
+    # Секция мобильного приложения
     with st.container():
-        # Создаем визуальную рамку с помощью markdown, но контент внутри - стандартный
-        st.markdown("---") # Линия-разделитель
-        
+        st.markdown("---")
         col_text, col_btn = st.columns([3, 1])
         
         with col_text:
-            st.subheader("📱 МОБИЛЬНОЕ ПРИЛОЖЕНИЕ AirKZ")
-            st.write("""
-                Получайте актуальные данные о качестве атмосферного воздуха в реальном времени. 
-                Сервис охватывает все города Казахстана и предоставляет информацию с автоматических станций мониторинга **ежечасно**.
-            """)
-            st.caption("• Прогноз НМУ • Уровни загрязнения • Интерактивная карта")
+            st.subheader(i['app_title'])
+            st.write(i['app_desc'])
+            st.caption(i['app_caption'])
             
         with col_btn:
-            # Добавляем отступ сверху, чтобы кнопка была по центру текста
             st.write("##") 
-            st.link_button("СКАЧАТЬ ПРИЛОЖЕНИЕ", "https://play.google.com/store/apps/details?id=kz.khm.airkz", use_container_width=True)
+            st.link_button(i['btn_text'], "https://play.google.com/store/apps/details?id=kz.khm.airkz", use_container_width=True)
+            
+            
         
-# --- ФИНАЛЬНЫЙ ПОДВАЛ (WHITE FOOTER) ---
+# 1. Словарь переводов для подвала
+footer_content = {
+    "ru": {
+        "mission": "Обеспечение экологической и метеорологической безопасности Республики Казахстан через ведение непрерывного мониторинга атмосферного воздуха, водных ресурсов и климатических изменений.",
+        "entity": "© 2026 РГП «КАЗГИДРОМЕТ»"
+    },
+    "kz": {
+        "mission": "Атмосфералық ауаны, су ресурстарын және климаттың өзгеруін үздіксіз мониторингтеу арқылы Қазақстан Республикасының экологиялық және метеорологиялық қауіпсіздігін қамтамасыз ету.",
+        "entity": "© 2026 «ҚАЗГИДРОМЕТ» ШЖҚ РМК"
+    },
+    "en": {
+        "mission": "Ensuring ecological and meteorological safety of the Republic of Kazakhstan through continuous monitoring of air quality, water resources, and climate change.",
+        "entity": "© 2026 RSE 'KAZHYDROMET'"
+    }
+}
+
+# 2. Вывод подвала
+f = footer_content[lang_code]
+
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("""
+st.markdown(f"""
     <div style="background: #ffffff; padding: 40px; border-radius: 30px 30px 0 0; color: #001f3f; text-align: center; border-top: 1px solid #eaeaea; box-shadow: 0px -5px 15px rgba(0,0,0,0.02);">
         <p style="opacity: 0.8; font-size: 1.1rem; max-width: 800px; margin: 0 auto 25px auto; color: #444;">
-            Обеспечение экологической и метеорологической безопасности Республики Казахстан через ведение непрерывного мониторинга атмосферного воздуха, водных ресурсов и климатических изменений.
+            {f['mission']}
         </p>
         <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600; flex-wrap: wrap;">
             <span><a href="https://www.kazhydromet.kz" target="_blank" style="color: #001f3f; text-decoration: none;">🌐 www.kazhydromet.kz</a></span>
@@ -3802,7 +3870,7 @@ st.markdown("""
         </div>
         <hr style="opacity: 0.1; margin: 25px 0; border: 0; border-top: 1px solid #001f3f;">
         <p style="font-size: 0.8rem; opacity: 0.6; letter-spacing: 1px; color: #666;">
-            © 2026 РГП «КАЗГИДРОМЕТ» 
+            {f['entity']}
         </p>
     </div>
 """, unsafe_allow_html=True)
