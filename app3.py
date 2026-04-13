@@ -3445,7 +3445,9 @@ with tabs[1]:
             </div>
         """, unsafe_allow_html=True)
 
-
+    
+    st.divider()
+    
 
     if 'lang' not in st.session_state:
         st.session_state.lang = 'ru'
