@@ -2086,7 +2086,7 @@ with tabs[1]:
     
     
     @st.cache_data
-        def load_data(path):
+    def load_data(path):
             if not os.path.exists(path): 
                 return None
             gdf = gpd.read_file(path)
