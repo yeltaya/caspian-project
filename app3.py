@@ -3434,57 +3434,103 @@ with tabs[1]:
             </div>
         """, unsafe_allow_html=True)
 
-
-                
+               
             
-# 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
-    st.markdown("""
-            <div style="text-align:center; margin: 40px 0 20px 0;">
-                <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
-                    Агрометеорологический мониторинг
-                </h2>
-                <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/
-</p>
-            </div>
-        """, unsafe_allow_html=True)
+# --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ АГРОСЕКЦИИ ---
+    agro_ui = {
+        "ru": {
+            "header": "Агрометеорологический мониторинг",
+            "subheader": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
+        },
+        "kz": {
+            "header": "Агрометеорологиялық мониторинг",
+            "subheader": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
+        },
+        "en": {
+            "header": "Agrometeorological Monitoring",
+            "subheader": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
+        }
+    }
+
+    # Определяем текущий язык (используем lang_code, который был определен ранее в коде)
+    lang = lang_code if 'lang_code' in locals() else "ru"
+    a_t = agro_ui[lang]
+
+    # --- 2. РЕНДЕРИНГ БЛОКА ---
+    st.markdown(f"""
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
+                {a_t['header']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500; max-width: 800px; margin: 0 auto;">
+                {a_t['subheader']}
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
         
-        
-            # 9.1 HIGHLIGHTS (Обновленная агро-статистика на основе слайда)
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ХАЙЛАЙТОВ ---
+    highlights_lang = {
+        "ru": {
+            "points": "Пунктов наблюдений",
+            "digital": "Цифровая передача",
+            "types": "Видов прогнозов",
+            "acc": "Оправдываемость"
+        },
+        "kz": {
+            "points": "Бақылау пункттері",
+            "digital": "Цифрлық тасымалдау",
+            "types": "Болжам түрлері",
+            "acc": "Дәлдік көрсеткіші"
+        },
+        "en": {
+            "points": "Observation Points",
+            "digital": "Digital Transmission",
+            "types": "Forecast Types",
+            "acc": "Accuracy Rate"
+        }
+    }
+
+    # Выбираем текущий язык
+    lang = lang_code if 'lang_code' in locals() else "ru"
+    h_t = highlights_lang[lang]
+
+    # --- 2. РЕНДЕРИНГ БЛОКА ---
     st.markdown(f"""
         <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 30px;">
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #1b5e20; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #1b5e20; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 1.8em;">📍</span>
                     <div>
                         <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">226</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Пунктов наблюдений</div>
+                        <div style="font-size: 0.85em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{h_t['points']}</div>
                     </div>
                 </div>
             </div>
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #2e7d32; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #2e7d32; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 1.8em;">📲</span>
                     <div>
                         <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">100%</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Цифровая передача</div>
+                        <div style="font-size: 0.85em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{h_t['digital']}</div>
                     </div>
                 </div>
             </div>
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #43a047; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #43a047; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 1.8em;">📊</span>
                     <div>
                         <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">10</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Видов прогнозов</div>
+                        <div style="font-size: 0.85em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{h_t['types']}</div>
                     </div>
                 </div>
             </div>
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #81c784; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="flex: 1; min-width: 180px; background: #ffffff; border-left: 5px solid #81c784; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 1.8em;">🎯</span>
                     <div>
                         <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">78%</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Оправдываемость</div>
+                        <div style="font-size: 0.85em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{h_t['acc']}</div>
                     </div>
                 </div>
             </div>
@@ -3492,29 +3538,95 @@ with tabs[1]:
     """, unsafe_allow_html=True)
 
 
-            # --- БЛОКИ С ПОДРОБНОСТЯМИ ---
-            # 1. Словарь с путями к фото (Замените на актуальные пути для агро)
-    AGRO_IMAGE_PATHS = {
-                "Soil": "Agr1.jpeg",
-                "Phenology": "Agr2.jpeg",
-                "AutoAgro": "Agr3.jpeg",
+    # --- 1. СЛОВАРЬ ДАННЫХ ДЛЯ ДЕТАЛЬНЫХ БЛОКОВ ---
+    AGRO_DETAILS = {
+        "agro_1": {
+            "icon": "🚜",
+            "img_key": "Phenology",
+            "title": {
+                "ru": "🌱 Традиционные наблюдения",
+                "kz": "🌱 Дәстүрлі бақылаулар",
+                "en": "🌱 Traditional Observations"
+            },
+            "desc": {
+                "ru": "На государственной агрометеорологической сети проводятся наблюдения за метеоусловиями, радиацией, температурой почвы и ростом культур.",
+                "kz": "Мемлекеттік агрометеорологиялық желіде метеожағдайлар, радиация, топырақ температурасы және дақылдардың өсуі бақыланады.",
+                "en": "The state agrometeorological network monitors weather conditions, radiation, soil temperature, and crop growth."
+            },
+            "stats": {
+                "ru": ["<b>129:</b> метеостанций", "<b>47:</b> агропостов"],
+                "kz": ["<b>129:</b> метеорологиялық станция", "<b>47:</b> агрометеорологиялық бекет"],
+                "en": ["<b>129:</b> weather stations", "<b>47:</b> agromet posts"]
+            }
+        },
+        "agro_2": {
+            "icon": "📉",
+            "img_key": "Soil",
+            "title": {
+                "ru": "💧 Специальные измерения",
+                "kz": "💧 Арнайы өлшеулер",
+                "en": "💧 Special Measurements"
+            },
+            "desc": {
+                "ru": "Наблюдения за влиянием погоды на растениеводство и животноводство, включая влажность почвы.",
+                "kz": "Ауа райының өсімдік шаруашылығы мен мал шаруашылығына әсерін, соның ішінде топырақ ылғалдылығын бақылау.",
+                "en": "Observations of weather impact on crop and livestock farming, including soil moisture."
+            },
+            "stats": {
+                "ru": ["<b>134:</b> пункта влажности", "<b>100:</b> районов обследований"],
+                "kz": ["<b>134:</b> ылғалдылықты өлшеу пункті", "<b>100:</b> зерттеу ауданы"],
+                "en": ["<b>134:</b> moisture points", "<b>100:</b> survey districts"]
+            }
+        },
+        "agro_3": {
+            "icon": "📲",
+            "img_key": "AutoAgro",
+            "title": {
+                "ru": "📡 Автоматизированные измерения",
+                "kz": "📡 Автоматтандырылған өлшеулер",
+                "en": "📡 Automated Measurements"
+            },
+            "desc": {
+                "ru": "Посты оснащены датчиками с передачей данных в центр. Визуальные данные вносятся через планшеты.",
+                "kz": "Бекеттер орталыққа мәлімет жіберетін датчиктермен жабдықталған. Визуалды деректер планшеттер арқылы енгізіледі.",
+                "en": "Posts are equipped with sensors for data transmission. Visual observations are entered via tablets."
+            },
+            "stats": {
+                "ru": ["<b>50:</b> авто-постов", "<b>96:</b> влагомеров почвы"],
+                "kz": ["<b>50:</b> авто-бекет", "<b>96:</b> топырақ ылғал өлшегіші"],
+                "en": ["<b>50:</b> auto-posts", "<b>96:</b> soil moisture meters"]
+            }
         }
+    }
 
-    a_col1, a_col2, a_col3  = st.columns(3)
+    # --- 2. ЛОГИКА ОТОБРАЖЕНИЯ ---
+    lang = lang_code if 'lang_code' in locals() else "ru"
+    a_col1, a_col2, a_col3 = st.columns(3)
 
-    draw_block(a_col1, "agro_btn_1", "🌱 Традиционные наблюдения", "🚜", 
-                       "На государственной агрометеорологической сети проводятся наблюдения за температурой и влажностью  воздуха, осадками, атмосферными явлениями, ветром, суммарной солнечной радиацией, температурой и состоянием почвы, за ростом сельскохозяйственных и пастбищных культур.", 
-                       ["<b>129:</b> метеорологических станций", "<b>47:</b> агрометеорологических постов"], "Phenology")
+    # Блок 1
+    draw_block(a_col1, "agro_btn_1", 
+               AGRO_DETAILS["agro_1"]["title"][lang], 
+               AGRO_DETAILS["agro_1"]["icon"],
+               AGRO_DETAILS["agro_1"]["desc"][lang],
+               AGRO_DETAILS["agro_1"]["stats"][lang], 
+               AGRO_DETAILS["agro_1"]["img_key"])
 
-    draw_block(a_col2, "agro_btn_2", "💧 Специальные измерения", "📉", 
-                       "Наблюдения за влиянием погоды на растениеводство и животноводство.", 
-                       ["<b>134:</b> пункта влажность почвы", "<b>100:</b> районов с маршрутными обследованиями"], "Soil")
+    # Блок 2
+    draw_block(a_col2, "agro_btn_2", 
+               AGRO_DETAILS["agro_2"]["title"][lang], 
+               AGRO_DETAILS["agro_2"]["icon"],
+               AGRO_DETAILS["agro_2"]["desc"][lang],
+               AGRO_DETAILS["agro_2"]["stats"][lang], 
+               AGRO_DETAILS["agro_2"]["img_key"])
 
-    draw_block(a_col3, "agro_btn_3", "📡 Автоматизированные измерения ", "📲", 
-                       "Современные агрометеорологические посты оснащены автоматическими датчиками с передачей данных в центр обработки. Визуальные наблюдения и данные с ручных постов передаются автоматически после заноски данных с помощью планшета. ", 
-                       ["<b>50:</b> агрометеорологических постов ", "<b>96:</b> влагомеров почвы"], "AutoAgro")
-
-
+    # Блок 3
+    draw_block(a_col3, "agro_btn_3", 
+               AGRO_DETAILS["agro_3"]["title"][lang], 
+               AGRO_DETAILS["agro_3"]["icon"],
+               AGRO_DETAILS["agro_3"]["desc"][lang],
+               AGRO_DETAILS["agro_3"]["stats"][lang], 
+               AGRO_DETAILS["agro_3"]["img_key"])
+               
     import os
     import streamlit as st
 
