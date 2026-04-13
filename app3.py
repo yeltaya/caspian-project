@@ -3456,20 +3456,20 @@ with tabs[1]:
     HEADER_TRANSLATIONS = {
         "ru": {
             "title": "Агрометеорологический мониторинг",
-            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности..."
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана"
         },
         "kz": {
             "title": "Агрометеорологиялық мониторинг",
-            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін..."
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету"
         },
         "en": {
             "title": "Agrometeorological Monitoring",
-            "subtitle": "Hydrometeorological support for food security..."
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan"
         }
     }
 
-    # --- ШАГ 2: ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
-    # Важно! Используйте тот же ключ, что и в остальной части сайта
+    # --- ШАГ 2: ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА (Ключевой момент) ---
+    # Получаем выбор из селектора. Если его еще нет, ставим "Русский"
     raw_selection = st.session_state.get('lang', 'Русский') 
 
     lang_map = {
@@ -3478,19 +3478,30 @@ with tabs[1]:
         "English": "en"
     }
 
-    # Определяем короткий код (ru, kz или en)
-    current_lang = lang_map.get(raw_selection, "ru")
+    # СОЗДАЕМ lang_code (именно это имя ожидает ваш код в строке 2168)
+    lang_code = lang_map.get(raw_selection, "ru")
 
-    # Теперь, когда словари созданы и язык определен, берем данные
-    header = HEADER_TRANSLATIONS[current_lang]
+    # Теперь берем данные из словаря, используя наш lang_code
+    header = HEADER_TRANSLATIONS[lang_code]
 
-    # --- ШАГ 3: ВЫВОД НА ЭКРАН ---
+    # --- ШАГ 3: ОПРЕДЕЛЯЕМ КОЛОНКИ ДЛЯ КАРТЫ/ТАБЛИЦ (Чтобы не было NameError) ---
+    lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
+    active_name_col = lang_to_col.get(lang_code, "NAME_RU")
+
+    # --- ШАГ 4: ВЫВОД НА ЭКРАН ---
     st.markdown(f"""
-        <div style="text-align:center;">
-            <h1 style="color: #1b5e20;">{header['title']}</h1>
-            <p>{header['subtitle']}</p>
+        <div style="text-align:center; margin-bottom: 20px;">
+            <h1 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 800;">
+                {header['title']}
+            </h1>
+            <p style="color: #546e7a; font-size: 1.1em;">
+                {header['subtitle']}
+            </p>
         </div>
     """, unsafe_allow_html=True)
+
+    # Теперь всё, что идет ниже (карты, статистика), будет видеть lang_code и active_name_col
+
 
 
         # 10. ЭКОЛОГИЧЕСКИЙ МОНИТОРИНГ
