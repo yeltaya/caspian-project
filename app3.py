@@ -3641,13 +3641,27 @@ with tabs[1]:
     import os
     import streamlit as st
     import base64
-    # Инициализация языка, если его еще нет в памяти
-    if 'lang' not in st.session_state:
-        st.session_state['lang'] = 'Русский'
+    
+    chosen_lang = st.session_state.get('lang', 'Русский')
 
-    # Принудительная конвертация в короткий код
+    # Маппинг: превращаем полное название в короткий код
+    mapping = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+
+    # Итоговый код (ru, kz или en)
+    active_lang = mapping.get(chosen_lang, "ru")
+    
+
+    raw_lang = st.session_state.get('lang', 'Русский')
     lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
-    current_lang = lang_map.get(st.session_state['lang'], "ru")
+    current_lang = lang_map.get(raw_lang, "ru")
+
+    # 2. Выбираем нужный пакет текстов (используем словарь AGRO_ZONES_DATA из предыдущего ответа)
+    lang_content = AGRO_ZONES_DATA[current_lang]
+
 
     st.write(st.session_state)
 
@@ -3731,14 +3745,8 @@ with tabs[1]:
     import plotly.graph_objects as go
     import pandas as pd
 
-    # --- 0. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
-    mapping = {
-        "Русский": "ru", "ru": "ru",
-        "Қазақша": "kz", "kz": "kz",
-        "English": "en", "en": "en"
-    }
-    raw_lang = st.session_state.get('lang_code') or st.session_state.get('lang') or 'ru'
-    current_lang = mapping.get(raw_lang, "ru").lower()
+
+
 
     # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
     AGRO_ZONES_DATA = {
