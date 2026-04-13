@@ -3468,53 +3468,53 @@ with tabs[1]:
         }
     }
 
-    # --- 1. ПРИНУДИТЕЛЬНО ОБНОВЛЯЕМ ПЕРЕМЕННУЮ ЯЗЫКА ИЗ СЕССИИ ---
-# Проверяем оба возможных ключа в сессии
-raw_selection = st.session_state.get('lang') or st.session_state.get('language') or 'Русский'
+        # --- 1. ПРИНУДИТЕЛЬНО ОБНОВЛЯЕМ ПЕРЕМЕННУЮ ЯЗЫКА ИЗ СЕССИИ ---
+    # Проверяем оба возможных ключа в сессии
+    raw_selection = st.session_state.get('lang') or st.session_state.get('language') or 'Русский'
 
-lang_map = {
-    "Русский": "ru",
-    "Қазақша": "kz",
-    "English": "en"
-}
-L = lang_map.get(raw_selection, "ru")
-txt = AGRO_CONTENT[L]
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+    L = lang_map.get(raw_selection, "ru")
+    txt = AGRO_CONTENT[L]
 
 
-    # --- 4. ВЫВОД ЗАГОЛОВКА (ОБЯЗАТЕЛЬНО ЧЕРЕЗ f-строку и txt) ---
-st.markdown(f"""
-        <div style="text-align:center; margin: 40px 0 20px 0;">
-            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
-                {txt['header_title']}
-            </h2>
-            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
-                {txt['header_subtitle']}
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+        # --- 4. ВЫВОД ЗАГОЛОВКА (ОБЯЗАТЕЛЬНО ЧЕРЕЗ f-строку и txt) ---
+    st.markdown(f"""
+            <div style="text-align:center; margin: 40px 0 20px 0;">
+                <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
+                    {txt['header_title']}
+                </h2>
+                <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
+                    {txt['header_subtitle']}
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
-    # Проверка: если заголовок изменился, а текст ниже нет — значит проблема в отрисовке колонок
-st.markdown(txt["map_title"])
+        # Проверка: если заголовок изменился, а текст ниже нет — значит проблема в отрисовке колонок
+    st.markdown(txt["map_title"])
 
-col_map, col_text = st.columns([1.5, 0.5])
+    col_map, col_text = st.columns([1.5, 0.5])
 
-with col_map:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        img_path = os.path.join(base_dir, "AGRO.jpg")
-        if os.path.exists(img_path):
-            with open(img_path, "rb") as f:
-                encoded_img = base64.b64encode(f.read()).decode("utf-8")
-            # Добавляем случайный параметр к картинке, чтобы браузер её обновил
-            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_img}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
+    with col_map:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            img_path = os.path.join(base_dir, "AGRO.jpg")
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as f:
+                    encoded_img = base64.b64encode(f.read()).decode("utf-8")
+                # Добавляем случайный параметр к картинке, чтобы браузер её обновил
+                st.markdown(f'<img src="data:image/jpeg;base64,{encoded_img}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
 
-with col_text:
-        st.markdown("---")
-        # Используем st.subheader или st.info для проверки, меняется ли текст
-        st.write(txt["main_text"])
-        st.markdown(txt["crops_title"])
-        for crop in txt["crops"]:
-            st.markdown(f"* {crop}")
-        
+    with col_text:
+            st.markdown("---")
+            # Используем st.subheader или st.info для проверки, меняется ли текст
+            st.write(txt["main_text"])
+            st.markdown(txt["crops_title"])
+            for crop in txt["crops"]:
+                st.markdown(f"* {crop}")
+            
             
                 
 
