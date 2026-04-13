@@ -3037,10 +3037,10 @@ with tabs[1]:
         draw_block(h_col4, "hydro_btn_4", b_t["b4_title"], "📁", b_t["b4_desc"], b_t["b4_list"], "Cadastre")
 
     st.write("##")
-    
+
 
     def render_hydro_chart(lang_code="ru"):
-        # 1. Словарь переводов для графика
+        # 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ГРАФИКА
         chart_lang = {
             "ru": {
                 "title": "Динамика развития гидрологической сети (1917-2026 гг.)",
@@ -3059,12 +3059,13 @@ with tabs[1]:
             "en": {
                 "title": "Hydrological Network Development Dynamics (1917-2026)",
                 "xaxis": "Year",
-                "yaxis": "Number of posts",
-                "hover": "Number of posts",
-                "anno": "Current status (2026)"
+                "yaxis": "Number of Posts",
+                "hover": "Number of Posts",
+                "anno": "Current Status (2026)"
             }
         }
         
+        # Получаем текущий перевод (по умолчанию русский)
         c_t = chart_lang.get(lang_code, chart_lang["ru"])
 
         # Данные
@@ -3087,26 +3088,27 @@ with tabs[1]:
             text=posts,
             textposition='outside',
             marker_color=colors, 
+            # Используем перевод для всплывающей подсказки
             hovertemplate=f"<b>{c_t['xaxis']}: %{{x}}</b><br>{c_t['hover']}: %{{y}}<extra></extra>"
         ))
 
         fig.update_layout(
             title=dict(
                 text=c_t['title'],
-                font=dict(size=20, color="white")
+                font=dict(size=20)
             ),
             xaxis=dict(
-                title=dict(text=c_t['xaxis'], font=dict(size=18, color="white")),
+                title=dict(text=c_t['xaxis'], font=dict(size=18)),
                 type='category',
                 tickangle=-45,
-                tickfont=dict(size=14, color="white")
+                tickfont=dict(size=14) # Немного уменьшил, чтобы года не слипались
             ),
             yaxis=dict(
-                title=dict(text=c_t['yaxis'], font=dict(size=18, color="white")),
+                title=dict(text=c_t['yaxis'], font=dict(size=18)),
                 range=[0, 600],
                 showgrid=True,
                 gridcolor='rgba(200, 200, 200, 0.2)',
-                tickfont=dict(size=14, color="white")
+                tickfont=dict(size=16)
             ),
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
@@ -3114,7 +3116,7 @@ with tabs[1]:
             font=dict(color="white")
         )
 
-        # Аннотация
+        # Используем перевод для аннотации
         fig.add_annotation(
             x=len(years)-1, 
             y=442,
@@ -3128,165 +3130,114 @@ with tabs[1]:
         
         st.plotly_chart(fig, use_container_width=True)
 
-    # Вызов функции (убедитесь, что lang_code передается правильно)
+    # ВЫЗОВ ФУНКЦИИ
+    # Убедитесь, что переменная lang_code определена в вашем основном коде (например, через селектор)
     render_hydro_chart(lang_code)
 
-    regions_lang = {
-        "ru": [
-            "Восточно-Казахстанская и Абайская", "Акмолинская", "Актюбинская", "Алматинская", "Атырауская", 
-            "ЗКО", "Жамбылская", "Жетысу", "Карагандинская и Улытауская", "Костанайская", 
-            "Кызылординская", "Мангистауская", "Павлодарская", "СКО", "Туркестанская"
-        ],
-        "kz": [
-            "Шығыс Қазақстан және Абай", "Ақмола", "Ақтөбе", "Алматы", "Атырау", 
-            "БҚО", "Жамбыл", "Жетісу", "Қарағанды және Ұлытау", "Қостанай", 
-            "Қызылорда", "Маңғыстау", "Павлодар", "СҚО", "Түркістан"
-        ],
-        "en": [
-            "East Kazakhstan & Abai", "Akmola", "Aktobe", "Almaty", "Atyrau", 
-            "WKO", "Zhambyl", "Zhetysu", "Karaganda & Ulytau", "Kostanay", 
-            "Kyzylorda", "Mangystau", "Pavlodar", "NKO", "Turkestan"
-        ]
-    }
 
-    # Определяем текущий язык (по умолчанию RU)
-    current_lang = lang_code if 'lang_code' in locals() else "ru"
-    column_name = "Region" if current_lang == "en" else "Область"
-
-# --- 1. ПОДГОТОВКА ДАННЫХ ---
+        # --- 1. ПОДГОТОВКА ДАННЫХ ---
     data = {
-        column_name: regions_lang.get(current_lang, regions_lang["ru"]),
-        "Гидропосты": [68, 45, 39, 40, 15, 30, 24, 32, 38, 28, 13, 7, 6, 27, 30]
-    }
+            "Область": [
+                "Восточно-Казахстанская и Абайская", "Акмолинская", "Актюбинская", "Алматинская", "Атырауская", 
+                "ЗКО", "Жамбылская", "Жетысу", "Карагандинская и Улытауская", "Костанайская", 
+                "Кызылординская", "Мангистауская", "Павлодарская", "СКО", "Туркестанская"
+            ],
+            "Гидропосты": [68, 45, 39, 40, 15, 30, 24, 32, 38, 28, 13, 7, 6, 27, 30]
+        }
 
     df_posts = pd.DataFrame(data).sort_values(by="Гидропосты", ascending=True)
-    
-    # Логика выделения ТОП-3 (оранжевый цвет)
     top_3_cutoff = df_posts["Гидропосты"].nlargest(3).min()
     colors_posts = ['#FFA500' if x >= top_3_cutoff else '#1f4e79' for x in df_posts["Гидропосты"]]
-    
-    import plotly.graph_objects as go
 
-    fig = go.Figure(go.Bar(
-            x=df_posts["Гидропосты"],
-            y=df_posts[column_name],
-            orientation='h',
-            marker_color=colors_posts,
-            text=df_posts["Гидропосты"],
-            textposition='outside'
-    ))
+        # --- 2. ЗАГОЛОВОК ---
+    st.subheader("📊 Мониторинг и информационная продукция")
 
-    fig.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color="white"),
-            margin=dict(l=20, r=20, t=40, b=20),
-            xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
-            height=500
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-    
-# 1. ПЕРЕВОДЫ ДЛЯ ЭТОГО РАЗДЕЛА
-    monitoring_lang = {
-        "ru": {
-            "section_title": "📊 Мониторинг и информационная продукция",
-            "graph_title": "### Региональная сеть",
-            "xaxis_label": "Количество постов",
-            "prod_title": "### 📄 Выпускаемая продукция",
-            "daily": "**📅 Ежедневные бюллетени**\n* Оперативные данные по уровням воды\n* Состояние снежного покрова в горах",
-            "forecast": "**🌊 Прогнозы и кадастр**\n* Прогноз весеннего половодья\n* Государственный водный кадастр",
-            "emergency": "**🚨 Экстренные оповещения**\n* Штормовые предупреждения (СГЯ)\n* Резкие подъемы уровней",
-            "metric_label": "Общий охват сети",
-            "top_3": "**Топ-3 региона:**",
-            "help_text": "Данные на 2026 год"
-        },
-        "kz": {
-            "section_title": "📊 Мониторинг және ақпараттық өнімдер",
-            "graph_title": "### Өңірлік желі",
-            "xaxis_label": "Бекеттер саны",
-            "prod_title": "### 📄 Шығарылатын өнімдер",
-            "daily": "**📅 Күнделікті бюллетеньдер**\n* Су деңгейі бойынша жедел деректер\n* Таулардағы қар жамылғысының күйі",
-            "forecast": "**🌊 Болжамдар және кадастр**\n* Көктемгі су тасқынының болжамы\n* Мемлекеттік су кадастры",
-            "emergency": "**🚨 Шұғыл хабарламалар** \n* Дауылды ескертулер (ҚГҚ)\n* Деңгейлердің күрт көтерілуі",
-            "metric_label": "Желінің жалпы қамтылуы",
-            "top_3": "**Топ-3 өңір:**",
-            "help_text": "2026 жылғы мәліметтер"
-        },
-        "en": {
-            "section_title": "📊 Monitoring & Information Products",
-            "graph_title": "### Regional Network",
-            "xaxis_label": "Number of Posts",
-            "prod_title": "### 📄 Deliverables",
-            "daily": "**📅 Daily Bulletins**\n* Operational water level data\n* Mountain snow cover status",
-            "forecast": "**🌊 Forecasts & Cadastre**\n* Spring flood forecast (annual)\n* State Water Cadastre",
-            "emergency": "**🚨 Emergency Alerts**\n* Weather warnings (HWM)\n* Sudden water level rise alerts",
-            "metric_label": "Total Network Coverage",
-            "top_3": "**Top 3 Regions:**",
-            "help_text": "2026 data"
-        }
-    }
-
-    # Получаем текущий перевод
-    m_t = monitoring_lang.get(lang_code, monitoring_lang["ru"])
-
-    # --- 2. ЗАГОЛОВОК ---
-    st.subheader(m_t["section_title"])
-
-    # --- 3. РАЗДЕЛЕНИЕ НА КОЛОНКИ ---
+        # --- 3. РАЗДЕЛЕНИЕ НА ЛЕВЫЙ И ПРАВЫЙ БЛОКИ ---
     col_graph, col_info = st.columns([2, 1], gap="large")
 
     with col_graph:
-        st.markdown(m_t["graph_title"])
-        
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            # Используем динамическое имя колонки (Region или Область)
-            y=df_posts[column_name], 
-            x=df_posts["Гидропосты"],
-            orientation='h', 
-            marker_color=colors_posts,
-            text=df_posts["Гидропосты"], 
-            textposition='outside'
-        ))
-        
-        fig.update_layout(
-            height=700, 
-            # l=250 для казахских названий (они длиннее)
-            margin=dict(l=250, r=50, t=20, b=80), 
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)', 
-            font=dict(color="#1f4e79"),
-            xaxis=dict(
-                tickfont=dict(size=14),
-                title=dict(text=m_t["xaxis_label"], font=dict(size=16)),
-                gridcolor='rgba(0,0,0,0.1)',
-                automargin=True
-            ),
-            yaxis=dict(
-                type='category', 
-                tickfont=dict(size=14),
-                automargin=True,
-                title=dict(text="") 
+            # ЛЕВЫЙ БЛОК: ГРАФИК
+            st.markdown("### Региональная сеть")
+            
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                y=df_posts["Область"], x=df_posts["Гидропосты"],
+                name="Посты", orientation='h', marker_color=colors_posts,
+                text=df_posts["Гидропосты"], textposition='outside'
+            ))
+            
+            fig.update_layout(
+                barmode='group', 
+                height=700, 
+                # Увеличиваем левый отступ (l), так как названия областей длинные
+                margin=dict(l=200, r=50, t=50, b=100), 
+                
+                plot_bgcolor='rgba(0,0,0,0)', 
+                paper_bgcolor='rgba(0,0,0,0)', 
+                font=dict(color="#1f4e79"), # Темно-синий текст для светлой темы (как на фото)
+                
+                # Горизонтальная ось (теперь здесь ЧИСЛА)
+                xaxis=dict(
+                    visible=True,
+                    showticklabels=True,
+                    tickfont=dict(size=16, color="#1f4e79"),
+                    title=dict(
+                        text="Количество постов", 
+                        font=dict(size=18, color="#1f4e79")
+                    ),
+                    gridcolor='rgba(0,0,0,0.1)',
+                    automargin=True
+                ),
+                
+                # Вертикальная ось (теперь здесь НАЗВАНИЯ ОБЛАСТЕЙ)
+                yaxis=dict(
+                    visible=True,
+                    showticklabels=True,
+                    # Указываем тип 'category' здесь, так как области по вертикали
+                    type='category', 
+                    tickfont=dict(size=16, color="#1f4e79"),
+                    automargin=True,
+                    # Убираем заголовок оси Y, так как названия регионов говорят сами за себя
+                    title=dict(text="") 
+                )
             )
-        )
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+
 
     with col_info:
-        st.markdown(m_t["prod_title"])
-        
-        st.info(m_t["daily"])
-        st.success(m_t["forecast"])
-        st.warning(m_t["emergency"])
-        
-        st.divider()
-        st.metric(m_t["metric_label"], f"{df_posts['Гидропосты'].sum()}", help=m_t["help_text"])
-        
-        st.write(m_t["top_3"])
-        # Таблица тоже должна использовать правильную колонку региона
-        st.table(df_posts.nlargest(3, 'Гидропосты')[[column_name, 'Гидропосты']].set_index(column_name))
-        
-        
+            # ПРАВЫЙ БЛОК: ПРОДУКЦИЯ (Стиль как на фото)
+            st.markdown("### 📄 Выпускаемая продукция")
+            
+            # Стилизация карточек через Markdown
+            st.info("""
+            **📅 Ежедневные бюллетени**
+            * Оперативные данные по уровням воды
+            * Состояние снежного покрова в горах
+            """)
+            
+            st.success("""
+            **🌊 Прогнозы и кадастр**
+            * Прогноз весеннего половодья (ежегодно)
+            * Государственный водный кадастр
+            * Справочники многолетних данных
+            """)
+            
+            st.warning("""
+            **🚨 Экстренные оповещения**
+            * Штормовые предупреждения (СГЯ)
+            * Уведомления о резких подъемах уровней
+            """)
+            
+            # Дополнительная метрика снизу
+            st.divider()
+            st.metric("Общий охват сети", f"{df_posts['Гидропосты'].sum()} постов", help="Данные на 2026 год")
+            
+            # Маленькая таблица ТОП-3
+            st.write("**Топ-3 региона:**")
+            st.table(df_posts.nlargest(3, 'Гидропосты')[['Область', 'Гидропосты']].set_index('Область'))
+
 
             # --- ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ ---
     HISTORICAL_DATA = {
