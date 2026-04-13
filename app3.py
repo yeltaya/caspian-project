@@ -2449,7 +2449,7 @@ with tabs[1]:
 
         curr_st = storm_t.get(lang_code, storm_t["ru"])
 
-        # --- 2. ДАННЫЕ ---
+# --- 2. ДАННЫЕ ---
         data_storm = {
             "Филиал": curr_st["branches"],
             "2020": [1385, 1043, 741, 932, 456, 1367, 635, 567, 1191, 952, 380, 220, 444, 650, 746],
@@ -2462,6 +2462,11 @@ with tabs[1]:
 
         df_storm = pd.DataFrame(data_storm)
         
+        # --- ВНИМАНИЕ: ДОБАВЬТЕ ЭТИ СТРОКИ ЗДЕСЬ ---
+        years = ["2020", "2021", "2022", "2023", "2024", "2025"]
+        total_values = [11709, 12743, 13944, 15031, 16217, 15821]
+        # ------------------------------------------
+
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader(curr_st["header"])
 
@@ -2475,14 +2480,11 @@ with tabs[1]:
                 </ul>
             </div>
         """, unsafe_allow_html=True)
-        
-        
-
 
         import plotly.express as px
         import plotly.graph_objects as go
 
-        # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ГРАФИКОВ ---
+        # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
         chart_lang = {
             "ru": {
                 "m1_label": "Пик активности",
@@ -2524,24 +2526,21 @@ with tabs[1]:
 
         c_t = chart_lang.get(lang_code, chart_lang["ru"])
 
-        # --- 3. ТЕПЕРЬ ВЕРХНИЕ МЕТРИКИ (Теперь они видят total_values!) ---
+        # --- 3. МЕТРИКИ (Теперь total_values точно определены выше) ---
         m1, m2, m3 = st.columns(3)
         with m1:
             st.metric(c_t["m1_label"], "2024", f"16 217 {c_t['m1_delta']}")
         with m2:
             st.metric(c_t["m2_label"], "EKO / ШҚО / ВКО", "2 644")
         with m3:
-            # Ошибка исчезнет, так как total_values уже существует в памяти
             avg_val = int(sum(total_values)/len(total_values))
             st.metric(c_t["m3_label"], f"{avg_val:,}".replace(",", " "))
-            
 
         # --- 3. ГРАФИКИ ---
         col_left, col_right = st.columns([1.2, 1])
 
         with col_left:
             st.markdown(c_t["left_title"])
-            
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=years, y=total_values, name=c_t["bar_name"],
@@ -2571,15 +2570,16 @@ with tabs[1]:
                 labels=c_t["heat_labels"],
                 color_continuous_scale="Blues", aspect="auto"
             )
-            
             fig_heat.update_layout(
                 height=450, margin=dict(l=80, r=20, t=50, b=80),
                 paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color="white"),
                 xaxis=dict(tickfont=dict(size=14), side='bottom'),
-                yaxis=dict(tickfont=dict(size=12), autorange='reversed') # Уменьшил шрифт для Y, чтобы влезли все филиалы
+                yaxis=dict(tickfont=dict(size=12), autorange='reversed')
             )
             st.plotly_chart(fig_heat, use_container_width=True)
+            
+            
             
 
         # --- 4. АВТОМАТИЧЕСКОЕ АНАЛИТИЧЕСКОЕ РЕЗЮМЕ ---
