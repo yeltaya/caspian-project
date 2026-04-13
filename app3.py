@@ -4871,7 +4871,7 @@ with tabs[2]:
     }
 
         # 2. Отрисовка блока
-        with col_climat_data:
+    with col_climat_data:
             st.markdown(f"""
                 <h4 class='kazakh-font' style='color: #1d4d2b; margin-bottom: 15px;'>
                     {climate_header_dict[lang_code]}
@@ -4935,7 +4935,7 @@ with tabs[2]:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-        with col_viz1:
+    with col_viz1:
             st.subheader("🗺️ Визуализация")
             
             # 1. Формируем полный путь к GIF-файлу
@@ -4957,7 +4957,7 @@ with tabs[2]:
                     """,
                     unsafe_allow_html=True
                 )
-            else:
+    else:
                 # На случай, если файл не найден
                 st.error(f"⚠️ Файл 'udpp1.gif' не найден по пути: {gif_path}")
             
