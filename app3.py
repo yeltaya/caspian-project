@@ -3482,7 +3482,7 @@ txt = AGRO_CONTENT[L]
 
 
     # --- 4. ВЫВОД ЗАГОЛОВКА (ОБЯЗАТЕЛЬНО ЧЕРЕЗ f-строку и txt) ---
-    st.markdown(f"""
+st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
             <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
                 {txt['header_title']}
@@ -3494,11 +3494,11 @@ txt = AGRO_CONTENT[L]
     """, unsafe_allow_html=True)
 
     # Проверка: если заголовок изменился, а текст ниже нет — значит проблема в отрисовке колонок
-    st.markdown(txt["map_title"])
+st.markdown(txt["map_title"])
 
-    col_map, col_text = st.columns([1.5, 0.5])
+col_map, col_text = st.columns([1.5, 0.5])
 
-    with col_map:
+with col_map:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         if os.path.exists(img_path):
@@ -3507,7 +3507,7 @@ txt = AGRO_CONTENT[L]
             # Добавляем случайный параметр к картинке, чтобы браузер её обновил
             st.markdown(f'<img src="data:image/jpeg;base64,{encoded_img}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
 
-    with col_text:
+with col_text:
         st.markdown("---")
         # Используем st.subheader или st.info для проверки, меняется ли текст
         st.write(txt["main_text"])
