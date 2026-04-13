@@ -3054,7 +3054,7 @@ with tabs[1]:
                 "xaxis": "Жыл",
                 "yaxis": "Бекеттер саны",
                 "hover": "Бекеттер саны",
-                "anno": "Ағымдағы мәртебе (2026)"
+                "anno": "Ағымдағы жағдайы (2026)"
             },
             "en": {
                 "title": "Hydrological Network Development Dynamics (1917-2026)",
@@ -3130,114 +3130,123 @@ with tabs[1]:
         
         st.plotly_chart(fig, use_container_width=True)
 
-    # ВЫЗОВ ФУНКЦИИ
-    # Убедитесь, что переменная lang_code определена в вашем основном коде (например, через селектор)
-    render_hydro_chart(lang_code)
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ РЕГИОНОВ И ИНТЕРФЕЙСА ---
+    regions_map = {
+        "ru": [
+            "Восточно-Казахстанская и Абайская", "Акмолинская", "Актюбинская", "Алматинская", "Атырауская", 
+            "ЗКО", "Жамбылская", "Жетысу", "Карагандинская и Улытауская", "Костанайская", 
+            "Кызылординская", "Мангистауская", "Павлодарская", "СКО", "Туркестанская"
+        ],
+        "kz": [
+            "Шығыс Қазақстан және Абай", "Ақмола", "Ақтөбе", "Алматы", "Атырау", 
+            "БҚО", "Жамбыл", "Жетісу", "Қарағанды және Ұлытау", "Қостанай", 
+            "Қызылорда", "Маңғыстау", "Павлодар", "СҚО", "Түркістан"
+        ],
+        "en": [
+            "East Kazakhstan & Abai", "Akmola", "Aktobe", "Almaty", "Atyrau", 
+            "WKO", "Zhambyl", "Zhetysu", "Karaganda & Ulytau", "Kostanay", 
+            "Kyzylorda", "Mangystau", "Pavlodar", "NKO", "Turkestan"
+        ]
+    }
 
+    ui_labels = {
+        "ru": {"sub": "📊 Мониторинг и информационная продукция", "graph": "### Региональная сеть", "axis": "Количество постов"},
+        "kz": {"sub": "📊 Мониторинг және ақпараттық өнімдер", "graph": "### Өңірлік желі", "axis": "Бекеттер саны"},
+        "en": {"sub": "📊 Monitoring & Information Products", "graph": "### Regional Network", "axis": "Number of Posts"}
+    }
 
-        # --- 1. ПОДГОТОВКА ДАННЫХ ---
+    # Текущий язык
+    curr_lang = lang_code if 'lang_code' in locals() else "ru"
+    labels = ui_labels.get(curr_lang, ui_labels["ru"])
+
+    # --- 2. ПОДГОТОВКА ДАННЫХ ---
     data = {
-            "Область": [
-                "Восточно-Казахстанская и Абайская", "Акмолинская", "Актюбинская", "Алматинская", "Атырауская", 
-                "ЗКО", "Жамбылская", "Жетысу", "Карагандинская и Улытауская", "Костанайская", 
-                "Кызылординская", "Мангистауская", "Павлодарская", "СКО", "Туркестанская"
-            ],
-            "Гидропосты": [68, 45, 39, 40, 15, 30, 24, 32, 38, 28, 13, 7, 6, 27, 30]
-        }
+        "Region": regions_map.get(curr_lang, regions_map["ru"]),
+        "Count": [68, 45, 39, 40, 15, 30, 24, 32, 38, 28, 13, 7, 6, 27, 30]
+    }
 
-    df_posts = pd.DataFrame(data).sort_values(by="Гидропосты", ascending=True)
-    top_3_cutoff = df_posts["Гидропосты"].nlargest(3).min()
-    colors_posts = ['#FFA500' if x >= top_3_cutoff else '#1f4e79' for x in df_posts["Гидропосты"]]
+    df_posts = pd.DataFrame(data).sort_values(by="Count", ascending=True)
+    top_3_cutoff = df_posts["Count"].nlargest(3).min()
+    colors_posts = ['#FFA500' if x >= top_3_cutoff else '#1f4e79' for x in df_posts["Count"]]
 
-        # --- 2. ЗАГОЛОВОК ---
-    st.subheader("📊 Мониторинг и информационная продукция")
-
-        # --- 3. РАЗДЕЛЕНИЕ НА ЛЕВЫЙ И ПРАВЫЙ БЛОКИ ---
+    # --- 3. ОТРИСОВКА ---
+    st.subheader(labels["sub"])
     col_graph, col_info = st.columns([2, 1], gap="large")
 
     with col_graph:
-            # ЛЕВЫЙ БЛОК: ГРАФИК
-            st.markdown("### Региональная сеть")
-            
-            fig = go.Figure()
-            fig.add_trace(go.Bar(
-                y=df_posts["Область"], x=df_posts["Гидропосты"],
-                name="Посты", orientation='h', marker_color=colors_posts,
-                text=df_posts["Гидропосты"], textposition='outside'
-            ))
-            
-            fig.update_layout(
-                barmode='group', 
-                height=700, 
-                # Увеличиваем левый отступ (l), так как названия областей длинные
-                margin=dict(l=200, r=50, t=50, b=100), 
-                
-                plot_bgcolor='rgba(0,0,0,0)', 
-                paper_bgcolor='rgba(0,0,0,0)', 
-                font=dict(color="#1f4e79"), # Темно-синий текст для светлой темы (как на фото)
-                
-                # Горизонтальная ось (теперь здесь ЧИСЛА)
-                xaxis=dict(
-                    visible=True,
-                    showticklabels=True,
-                    tickfont=dict(size=16, color="#1f4e79"),
-                    title=dict(
-                        text="Количество постов", 
-                        font=dict(size=18, color="#1f4e79")
-                    ),
-                    gridcolor='rgba(0,0,0,0.1)',
-                    automargin=True
-                ),
-                
-                # Вертикальная ось (теперь здесь НАЗВАНИЯ ОБЛАСТЕЙ)
-                yaxis=dict(
-                    visible=True,
-                    showticklabels=True,
-                    # Указываем тип 'category' здесь, так как области по вертикали
-                    type='category', 
-                    tickfont=dict(size=16, color="#1f4e79"),
-                    automargin=True,
-                    # Убираем заголовок оси Y, так как названия регионов говорят сами за себя
-                    title=dict(text="") 
-                )
+        st.markdown(labels["graph"])
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            y=df_posts["Region"], 
+            x=df_posts["Count"],
+            orientation='h', 
+            marker_color=colors_posts,
+            text=df_posts["Count"], 
+            textposition='outside'
+        ))
+        
+        fig.update_layout(
+            height=700, 
+            # l=250 чтобы длинные названия (особенно на KZ) не обрезались
+            margin=dict(l=250, r=50, t=20, b=80), 
+            plot_bgcolor='rgba(0,0,0,0)', 
+            paper_bgcolor='rgba(0,0,0,0)', 
+            font=dict(color="#1f4e79"),
+            xaxis=dict(
+                title=dict(text=labels["axis"], font=dict(size=18)),
+                tickfont=dict(size=16),
+                gridcolor='rgba(0,0,0,0.1)',
+                automargin=True
+            ),
+            yaxis=dict(
+                type='category', 
+                tickfont=dict(size=16),
+                automargin=True,
+                title=dict(text="") 
             )
-
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-
+        )
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        
 
     with col_info:
-            # ПРАВЫЙ БЛОК: ПРОДУКЦИЯ (Стиль как на фото)
-            st.markdown("### 📄 Выпускаемая продукция")
-            
-            # Стилизация карточек через Markdown
-            st.info("""
-            **📅 Ежедневные бюллетени**
-            * Оперативные данные по уровням воды
-            * Состояние снежного покрова в горах
-            """)
-            
-            st.success("""
-            **🌊 Прогнозы и кадастр**
-            * Прогноз весеннего половодья (ежегодно)
-            * Государственный водный кадастр
-            * Справочники многолетних данных
-            """)
-            
-            st.warning("""
-            **🚨 Экстренные оповещения**
-            * Штормовые предупреждения (СГЯ)
-            * Уведомления о резких подъемах уровней
-            """)
-            
-            # Дополнительная метрика снизу
-            st.divider()
-            st.metric("Общий охват сети", f"{df_posts['Гидропосты'].sum()} постов", help="Данные на 2026 год")
-            
-            # Маленькая таблица ТОП-3
-            st.write("**Топ-3 региона:**")
-            st.table(df_posts.nlargest(3, 'Гидропосты')[['Область', 'Гидропосты']].set_index('Область'))
-
+        # ПРАВЫЙ БЛОК: ПРОДУКЦИЯ
+        # Используем m_t — это выбранный словарь перевода (m_t = monitoring_lang[lang_code])
+        st.markdown(m_t["prod_title"])
+        
+        # Информационные карточки
+        st.info(m_t["daily"])
+        
+        st.success(m_t["forecast"])
+        
+        st.warning(m_t["emergency"])
+        
+        # Дополнительная метрика снизу
+        st.divider()
+        
+        # Подсчитываем общую сумму постов из DataFrame
+        total_posts = df_posts['Count'].sum()
+        
+        st.metric(
+            label=m_t["metric_label"], 
+            value=f"{total_posts}", 
+            help=m_t["help_text"]
+        )
+        
+        # Маленькая таблица ТОП-3
+        st.write(m_t["top_3"])
+        
+        # Выбираем ТОП-3, используя динамическое имя колонки Region
+        top_3_df = df_posts.nlargest(3, 'Count')[['Region', 'Count']]
+        
+        # Переименовываем колонки для красивого отображения в таблице
+        display_columns = {
+            "Region": "Область" if curr_lang != "en" else "Region",
+            "Count": "Посты" if curr_lang == "ru" else ("Бекеттер" if curr_lang == "kz" else "Posts")
+        }
+        
+        st.table(top_3_df.rename(columns=display_columns).set_index(display_columns["Region"]))
+        
 
             # --- ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ ---
     HISTORICAL_DATA = {
