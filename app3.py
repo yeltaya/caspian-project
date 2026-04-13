@@ -4549,110 +4549,155 @@ with tabs[2]:
         """, unsafe_allow_html=True)
 
     st.divider()
-    
-    
+
     import streamlit as st
     import streamlit.components.v1 as components
 
-    # 1. Словарь переводов для схемы
-    flowchart_text = {
-        "ru": {
-            "header": "Схема распространения штормового предупреждения",
-            "main": "КАЗГИДРОМЕТ<br>Штормовое предупреждение",
-            "mchs": "МЧС РК", "center": "Командный центр", "dchs": "ДЧС",
-            "organs": "Государственные и исполнительные органы (Акиматы)",
-            "map": "Карта Метеоалерт", "cap": "Протокол CAP",
-            "site": "Сайт Казгидромета", "soc": "Соцсети", "media": "СМИ"
-        },
-        "kz": {
-            "header": "Дауылды ескертуді тарату схемасы",
-            "main": "ҚАЗГИДРОМЕТ<br>Дауылды ескерту",
-            "mchs": "ҚР ТЖМ", "center": "Командалық орталық", "dchs": "ТЖД",
-            "organs": "Мемлекеттік және атқарушы органдар (Әкімдіктер)",
-            "map": "Метеоалерт картасы", "cap": "CAP протоколы",
-            "site": "Қазгидромет сайты", "soc": "Әлеуметтік желілер", "media": "БАҚ"
-        },
-        "en": {
-            "header": "Storm Warning Distribution Scheme",
-            "main": "KAZHYDROMET<br>Storm Warning",
-            "mchs": "MES RK", "center": "Command Center", "dchs": "DES",
-            "organs": "State and Executive Bodies (Akimats)",
-            "map": "Meteoalert Map", "cap": "CAP Protocol",
-            "site": "Kazhydromet Website", "soc": "Social Networks", "media": "Mass Media"
+    st.set_page_config(layout="wide")
+
+    # Выносим HTML в переменную (добавил Montserrat для исправления букв)
+    html_content = """
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: transparent; 
+            font-family: 'Montserrat', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            overflow: hidden; 
         }
-    }
+        
+        .flowchart-wrapper {
+            width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
 
-    t = flowchart_text[lang_code]
+        .flow-line-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
 
-    # 2. Формируем HTML с подставленными значениями
-    html_content = f"""
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-        <style>
-            body {{ 
-                background-color: transparent; 
-                font-family: 'Montserrat', sans-serif; 
-                margin: 0; 
-                display: flex; 
-                justify-content: center; 
-                overflow: hidden; 
-            }}
-            /* ... оставляем ваши стили без изменений ... */
-            .node {{ font-family: 'Montserrat', sans-serif !important; }}
-            .main-node {{ font-family: 'Montserrat', sans-serif !important; }}
-        </style>
+        .path-line {
+            fill: none;
+            stroke: #d1d8e0;
+            stroke-width: 2.5;
+            stroke-dasharray: 12, 6;
+            animation: flow 20s linear infinite;
+        }
 
-        <div class="flowchart-wrapper">
-            <svg class="flow-line-svg">
-                <path class="path-line" d="M 550 70 V 130 H 150 V 160" />
-                <path class="path-line" d="M 550 70 V 160" />
-                <path class="path-line" d="M 550 130 H 950 V 160" />
-                <path class="path-line" d="M 550 130 H 700 V 160" />
-            </svg>
+        @keyframes flow { to { stroke-dashoffset: -500; } }
 
-            <div class="main-node">
-                <i class="fas fa-satellite-dish"></i>{t['main']}
+        .main-node {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 20px;
+            margin-bottom: 45px;
+            box-shadow: 0 6px 20px rgba(0,176,155,0.3);
+            border: 3px solid #fff;
+        }
+
+        .columns-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .branch { width: 240px; display: flex; flex-direction: column; gap: 15px; }
+
+        .node {
+            padding: 15px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            line-height: 1.3;
+        }
+
+        .blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .orange { background: linear-gradient(135deg, #f39c12, #e67e22); min-height: 150px; }
+        .green { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .purple { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .red { background: linear-gradient(135deg, #e74c3c, #c0392b); font-weight: 700; }
+
+        .node-row { display: flex; gap: 10px; width: 100%; }
+        .node-row .node { flex: 1; padding: 10px; font-size: 11px; min-height: 50px; }
+
+        i { margin-right: 8px; font-size: 16px; }
+    </style>
+
+    <div class="flowchart-wrapper">
+        <svg class="flow-line-svg">
+            <path class="path-line" d="M 500 70 V 130 H 130 V 160" />
+            <path class="path-line" d="M 500 70 V 160" />
+            <path class="path-line" d="M 500 130 H 870 V 160" />
+            <path class="path-line" d="M 500 130 H 630 V 160" />
+        </svg>
+
+        <div class="main-node">
+            <i class="fas fa-satellite-dish"></i>КАЗГИДРОМЕТ<br>Штормовое предупреждение
+        </div>
+
+        <div class="columns-container">
+            <div class="branch">
+                <div class="node blue"><i class="fas fa-shield-alt"></i>МЧС РК</div>
+                <div class="node-row">
+                    <div class="node blue">Командный центр</div>
+                    <div class="node blue">ДЧС</div>
+                </div>
+                <div class="node-row">
+                    <div class="node red"><i class="fas fa-sms"></i>SMS 112</div>
+                    <div class="node red"><i class="fas fa-mobile-alt"></i>DARMEN</div>
+                </div>
             </div>
 
-            <div class="columns-container">
-                <div class="branch">
-                    <div class="node blue"><i class="fas fa-shield-alt"></i>{t['mchs']}</div>
-                    <div class="node-row">
-                        <div class="node blue">{t['center']}</div>
-                        <div class="node blue">{t['dchs']}</div>
-                    </div>
-                    <div class="node-row">
-                        <div class="node red"><i class="fas fa-sms"></i>SMS 112</div>
-                        <div class="node red"><i class="fas fa-mobile-alt"></i>DARMEN</div>
-                    </div>
+            <div class="branch">
+                <div class="node orange">
+                    <i class="fas fa-university"></i>
+                    Государственные и местные органы (Акиматы)
                 </div>
+            </div>
 
-                <div class="branch">
-                    <div class="node orange">
-                        <i class="fas fa-university"></i>{t['organs']}
-                    </div>
-                </div>
+            <div class="branch">
+                <div class="node green"><i class="fas fa-map-marked-alt"></i>Карта Метеоалерт</div>
+                <div class="node green"><i class="fas fa-code-branch"></i>Протокол CAP</div>
+            </div>
 
-                <div class="branch">
-                    <div class="node green"><i class="fas fa-map-marked-alt"></i>{t['map']}</div>
-                    <div class="node green"><i class="fas fa-code-branch"></i>{t['cap']}</div>
-                </div>
-
-                <div class="branch">
-                    <div class="node purple"><i class="fas fa-globe"></i>{t['site']}</div>
-                    <div class="node purple"><i class="fas fa-share-alt"></i>{t['soc']}</div>
-                    <div class="node purple"><i class="fas fa-tv"></i>{t['media']}</div>
-                </div>
+            <div class="branch">
+                <div class="node purple"><i class="fas fa-globe"></i>Сайт Казгидромета</div>
+                <div class="node purple"><i class="fas fa-share-alt"></i>Соцсети</div>
+                <div class="node purple"><i class="fas fa-tv"></i>СМИ</div>
             </div>
         </div>
+    </div>
     """
 
-    # 3. Отображение
-    st.markdown(f"<h2 class='kazakh-font' style='text-align: center; color: #1d4d2b;'>{t['header']}</h2>", unsafe_allow_html=True)
-    components.html(html_content, height=580)
+    # Заголовок с использованием класса шрифта (если он у вас определен)
+    st.markdown("<h2 class='kazakh-font' style='text-align: center; color: #1E3A8A;'>Схема распространения штормового предупреждения</h2>", unsafe_allow_html=True)
+
+    # Отображение компонента
+    components.html(html_content, height=520)
+
     st.divider()
-
-
 
 #ДОЛГОСРОЧНЫЕ ПРОГНОЗЫ
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
