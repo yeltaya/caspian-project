@@ -3439,163 +3439,155 @@ with tabs[1]:
                 
             
 # 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
-    st.markdown("""
-            <div style="text-align:center; margin: 40px 0 20px 0;">
-                <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
-                    Агрометеорологический мониторинг
-                </h2>
-                <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/
-</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        
-            # 9.1 HIGHLIGHTS (Обновленная агро-статистика на основе слайда)
+    import os
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    import base64
+
+    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
+
+    # Тексты для заголовка
+    HEADER_TRANSLATIONS = {
+        "ru": {
+            "title": "Агрометеорологический мониторинг",
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
+        },
+        "kz": {
+            "title": "Агрометеорологиялық мониторинг",
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
+        },
+        "en": {
+            "title": "Agrometeorological Monitoring",
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
+        }
+    }
+
+    # Тексты для блока с картой AGRO.jpg
+    AGRO_MAP_TRANSLATIONS = {
+        "ru": {
+            "title": "### 🗺️ Агрометеорологические наблюдения",
+            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами.",
+            "crops_title": "**Основные культуры:**",
+            "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
+        },
+        "kz": {
+            "title": "### 🗺️ Агрометеорологиялық бақылаулар",
+            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын бақылау кіреді.",
+            "crops_title": "**Негізгі дақылдар:**",
+            "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
+        },
+        "en": {
+            "title": "### 🗺️ Agrometeorological Observations",
+            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops, soil condition and moisture, as well as key meteorological parameters.",
+            "crops_title": "**Main Crops:**",
+            "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
+        }
+    }
+
+    # Тексты для графика агроклиматических зон
+    AGRO_ZONES_DATA = {
+        "ru": {
+            "title": "Агроклиматические зоны по областям",
+            "legend_title": "Легенда зон:",
+            "zones": {
+                "I": "Слабо влажная умеренно-теплая", "II": "Засушливая умеренно-теплая", "III": "Засушливая теплая",
+                "IV": "Очень засушливая теплая", "V": "Сухая теплая", "VI": "Сухая умеренно-теплая",
+                "VII": "Очень сухая умеренно-жаркая", "VIII": "Очень сухая жаркая", "IX": "Очень сухая",
+                "X": "Центрально-казахстанский мелкосопочник", "XI": "Предгорья Заилийского Алатау",
+                "XIII": "Предгорья Джунгарского Алатау", "XIV": "Предгорья Северного и Западного Тянь-Шаня",
+                "XV": "Долина р. Или", "XVI": "Горные районы"
+            },
+            "regions": {
+                "АКМОЛА": "Акмолинская", "СКО": "СКО", "КОСТАНАЙ": "Костанайская", "ПАВЛОДАР": "Павлодарская",
+                "ВКО": "ВКО и Абай", "ЗКО": "ЗКО", "АКТОБЕ": "Актюбинская", "КАРАГАНДЫ": "Карагандинская и Улытау",
+                "АТЫРАУ": "Атырауская", "АЛМАТЫ": "Алматинская и Жетысу", "ЖАМБЫЛ": "Жамбылская",
+                "МАНГИСТАУ": "Мангистауская", "ТУРКЕСТАН": "Туркестанская", "КЫЗЫЛОРДА": "Кызылординская"
+            }
+        },
+        "kz": {
+            "title": "Облыстар бойынша агроклиматтық аймақтар",
+            "legend_title": "Аймақтардың шартты белгілері:",
+            "zones": {
+                "I": "Әлсіз ылғалды қоңыржай-жылы", "II": "Құрғақшылық қоңыржай-жылы", "III": "Құрғақшылық жылы",
+                "IV": "Өте құрғақшылық жылы", "V": "Құрғақ жылы", "VI": "Құрғақ қоңыржай-жылы",
+                "VII": "Өте құрғақ қоңыржай-ыстық", "VIII": "Өте құрғақ ыстық", "IX": "Өте құрғақ",
+                "X": "Орталық Қазақстан ұсақ шоқысы", "XI": "Іле Алатауы етегі",
+                "XIII": "Жетісу Алатауы етегі", "XIV": "Солтүстік және Батыс Тянь-Шань етегі",
+                "XV": "Іле өзенінің аңғары", "XVI": "Таулы аймақтар"
+            },
+            "regions": {
+                "АКМОЛА": "Ақмола", "СКО": "СҚО", "КОСТАНАЙ": "Қостанай", "ПАВЛОДАР": "Павлодар",
+                "ВКО": "ШҚО және Абай", "ЗКО": "БҚО", "АКТОБЕ": "Ақтөбе", "КАРАГАНДЫ": "Қарағанды және Ұлытау",
+                "АТЫРАУ": "Атырау", "АЛМАТЫ": "Алматы және Жетісу", "ЖАМБЫЛ": "Жамбыл",
+                "МАНГИСТАУ": "Маңғыстау", "ТУРКЕСТАН": "Түркістан", "КЫЗЫЛОРДА": "Қызылорда"
+            }
+        },
+        "en": {
+            "title": "Agro-climatic Zones by Region",
+            "legend_title": "Zone Legend:",
+            "zones": {
+                "I": "Slightly humid moderate-warm", "II": "Arid moderate-warm", "III": "Arid warm",
+                "IV": "Very arid warm", "V": "Dry warm", "VI": "Dry moderate-warm",
+                "VII": "Very dry moderate-hot", "VIII": "Very dry hot", "IX": "Very dry",
+                "X": "Central Kazakh Uplands", "XI": "Trans-Ili Alatau Foothills",
+                "XIII": "Dzungarian Alatau Foothills", "XIV": "Tien Shan Foothills",
+                "XV": "Ili River Valley", "XVI": "Mountainous regions"
+            },
+            "regions": {
+                "АКМОЛА": "Akmola", "СКО": "North Kazakhstan", "КОСТАНАЙ": "Kostanay", "ПАВЛОДАР": "Pavlodar",
+                "ВКО": "East Kazakhstan & Abai", "ЗКО": "West Kazakhstan", "АКТОБЕ": "Aktobe", 
+                "КАРАГАНДЫ": "Karaganda & Ulytau", "АТЫРАУ": "Atyrau", "АЛМАТЫ": "Almaty & Zhetysu",
+                "ЖАМБЫЛ": "Zhambyl", "МАНГИСТАУ": "Mangystau", "ТУРКЕСТАН": "Turkistan", "КЫЗЫЛОРДА": "Kyzylorda"
+            }
+        }
+    }
+
+    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
+    raw_lang = st.session_state.get('lang', 'Русский')
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
+    current_lang = lang_map.get(raw_lang, "ru")
+
+    # --- 3. ВЕРХНИЙ ЗАГОЛОВОК ---
+    header = HEADER_TRANSLATIONS[current_lang]
     st.markdown(f"""
-        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 30px;">
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #1b5e20; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 1.8em;">📍</span>
-                    <div>
-                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">226</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Пунктов наблюдений</div>
-                    </div>
-                </div>
-            </div>
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #2e7d32; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 1.8em;">📲</span>
-                    <div>
-                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">100%</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Цифровая передача</div>
-                    </div>
-                </div>
-            </div>
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #43a047; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 1.8em;">📊</span>
-                    <div>
-                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">10</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Видов прогнозов</div>
-                    </div>
-                </div>
-            </div>
-            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #81c784; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 1.8em;">🎯</span>
-                    <div>
-                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">78%</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Оправдываемость</div>
-                    </div>
-                </div>
-            </div>
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
+                {header['title']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
+                {header['subtitle']}
+            </p>
         </div>
     """, unsafe_allow_html=True)
 
+    # --- 4. БЛОК С КАРТОЙ НАБЛЮДЕНИЙ ---
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+    st.markdown(agro_content["title"])
 
-            # --- БЛОКИ С ПОДРОБНОСТЯМИ ---
-            # 1. Словарь с путями к фото (Замените на актуальные пути для агро)
-    AGRO_IMAGE_PATHS = {
-                "Soil": "Agr1.jpeg",
-                "Phenology": "Agr2.jpeg",
-                "AutoAgro": "Agr3.jpeg",
-        }
+    col_map, col_text = st.columns([1.5, 0.5])
+    with col_map:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(base_dir, "AGRO.jpg")
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
+                data = base64.b64encode(f.read()).decode("utf-8")
+            st.markdown(f'<div style="display:flex;justify-content:center;"><img src="data:image/jpeg;base64,{data}" style="width:100%;max-width:800px;border-radius:10px;"></div>', unsafe_allow_html=True)
+        else:
+            st.warning("AGRO.jpg not found")
 
-    a_col1, a_col2, a_col3  = st.columns(3)
+    with col_text:
+        st.markdown("---")
+        st.write(agro_content["main_text"])
+        st.markdown(agro_content["crops_title"])
+        for crop in agro_content["crops"]:
+            st.markdown(f"* {crop}")
 
-    draw_block(a_col1, "agro_btn_1", "🌱 Традиционные наблюдения", "🚜", 
-                       "На государственной агрометеорологической сети проводятся наблюдения за температурой и влажностью  воздуха, осадками, атмосферными явлениями, ветром, суммарной солнечной радиацией, температурой и состоянием почвы, за ростом сельскохозяйственных и пастбищных культур.", 
-                       ["<b>129:</b> метеорологических станций", "<b>47:</b> агрометеорологических постов"], "Phenology")
+    # --- 5. ГРАФИК АГРОКЛИМАТИЧЕСКИХ ЗОН ---
+    zone_content = AGRO_ZONES_DATA[current_lang]
+    st.subheader(zone_content["title"])
 
-    draw_block(a_col2, "agro_btn_2", "💧 Специальные измерения", "📉", 
-                       "Наблюдения за влиянием погоды на растениеводство и животноводство.", 
-                       ["<b>134:</b> пункта влажность почвы", "<b>100:</b> районов с маршрутными обследованиями"], "Soil")
-
-    draw_block(a_col3, "agro_btn_3", "📡 Автоматизированные измерения ", "📲", 
-                       "Современные агрометеорологические посты оснащены автоматическими датчиками с передачей данных в центр обработки. Визуальные наблюдения и данные с ручных постов передаются автоматически после заноски данных с помощью планшета. ", 
-                       ["<b>50:</b> агрометеорологических постов ", "<b>96:</b> влагомеров почвы"], "AutoAgro")
-
-
-    import os
-    import streamlit as st
-
-    # 1. Используем глобальный BASE_DIR (определен в начале файла)
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-    def render_final_agro_map():
-        st.markdown("### 🗺️ Агрометеорологические наблюдения")
-        
-        # Формируем путь к вашему изображению
-        # Убедитесь, что файл на GitHub называется именно AGRO.jpg (регистр важен!)
-        img_filename = "AGRO.jpg"
-        img_path = os.path.join(BASE_DIR, img_filename)
-        
-        # Создаем две колонки: для карты и для пояснительного текста
-        col_map, col_text = st.columns([1.5, 0.5])
-        
-        with col_map:
-            if os.path.exists(img_path):
-                # Вместо st.image используем HTML для полного контроля
-                import base64
-                with open(img_path, "rb") as f:
-                    data = base64.b64encode(f.read()).decode("utf-8")
-                
-                st.markdown(
-                    f"""
-                    <div style="width: 70%; display: flex; justify-content: center;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 70%; min-width: 800px; border-radius: 10px;">
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                
-                    
-                
-        with col_text:
-            st.markdown("""
-            ****
-            Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами, оказывающими влияние на жизнедеятельность растений и животных – температурой и влажностью воздуха, скоростью и направлением ветра, видом и количеством осадков, снежным покровом, атмосферными явлениями и суммарной солнечной радиацией.
-            
-            **Основные культуры:**
-            * 🌾 Зерновые
-            * 🌽 Пропашные
-            * 🌻 Масличные
-            * 🍎 Плодовые
-            """)
-            
-    # Вызов функции
-    render_final_agro_map()
-
-
-    
-#АГРОКЛИМАТИЧЕСИК ЗОНЫ
-    import streamlit as st
-    import plotly.graph_objects as go
-    import pandas as pd
-
-    # Настройка широкого экрана
-    st.set_page_config(layout="wide", page_title="Агроклиматический мониторинг")
-
-    # 1. Справочник зон (Цвета и описания из предоставленной легенды)
-    zones_info = {
-        "I": {"color": "#385e26", "desc": "Слабо влажная умеренно-теплая"},
-        "II": {"color": "#66ff66", "desc": "Засушливая умеренно-теплая"},
-        "III": {"color": "#92d050", "desc": "Засушливая теплая"},
-        "IV": {"color": "#ffff00", "desc": "Очень засушливая теплая"},
-        "V": {"color": "#e6db98", "desc": "Сухая теплая"},
-        "VI": {"color": "#f8cbad", "desc": "Сухая умеренно-теплая"},
-        "VII": {"color": "#f1a1eb", "desc": "Очень сухая умеренно-жаркая"},
-        "VIII": {"color": "#ff8080", "desc": "Очень сухая жаркая"},
-        "IX": {"color": "#ff0000", "desc": "Очень сухая"},
-        "X": {"color": "#bf9000", "desc": "Центрально-казахстанский мелкосопочник"},
-        "XI": {"color": "#c00000", "desc": "Предгорья Заилийского Алатау"},
-        "XIII": {"color": "#843c0c", "desc": "Предгорья Джунгарского Алатау"},
-        "XIV": {"color": "#7f6000", "desc": "Предгорья Северного и Западного Тянь-Шаня"},
-        "XV": {"color": "#00b0f0", "desc": "Долина р. Или"},
-        "XVI": {"color": "#bcbcbc", "desc": "Горные районы"}
-    }
-
-    # 2. Полные данные (Оцифровано с вашего графика)
+    # Данные для графика
     raw_data = [
         ["АКМОЛА", "I", 6], ["АКМОЛА", "II", 31], ["АКМОЛА", "VI", 63],
         ["СКО", "I", 18], ["СКО", "II", 55], ["СКО", "III", 27],
@@ -3613,102 +3605,46 @@ with tabs[1]:
         ["КЫЗЫЛОРДА", "VIII", 63], ["КЫЗЫЛОРДА", "IX", 37]
     ]
 
-    df = pd.DataFrame(raw_data, columns=["Область", "Зона", "Процент"])
+    zones_colors = {
+        "I": "#385e26", "II": "#66ff66", "III": "#92d050", "IV": "#ffff00", 
+        "V": "#e6db98", "VI": "#f8cbad", "VII": "#f1a1eb", "VIII": "#ff8080", 
+        "IX": "#ff0000", "X": "#bf9000", "XI": "#c00000", "XIII": "#843c0c", 
+        "XIV": "#7f6000", "XV": "#00b0f0", "XVI": "#bcbcbc"
+    }
 
-    st.subheader("Агроклиматические зоны по областям")
+    df = pd.DataFrame(raw_data, columns=["Key", "Зона", "Процент"])
+    df["Область"] = df["Key"].map(zone_content["regions"])
 
-    # 3. Разделение на колонки: График (80%) и Легенда (20%)
-    col_chart, col_legend = st.columns([4, 1])
+    col_chart, col_legend = st.columns([4, 1.2])
 
     with col_chart:
         fig = go.Figure()
-
-        # Отрисовка слоев зон
-        for zone, info in zones_info.items():
+        for zone, color in zones_colors.items():
             df_zone = df[df["Зона"] == zone]
             if not df_zone.empty:
                 fig.add_trace(go.Bar(
-                    name=zone,
-                    y=df_zone["Область"],
-                    x=df_zone["Процент"],
-                    orientation='h',
-                    marker=dict(color=info["color"]),
-                    text=df_zone["Процент"],
-                    textposition='inside',
-                    insidetextanchor='middle',
-                    textfont=dict(color="black", size=11, family="Arial Black"),
-                    hovertemplate=f"<b>Зона {zone}</b>: %{{x}}%<extra></extra>"
+                    name=zone, y=df_zone["Область"], x=df_zone["Процент"], orientation='h',
+                    marker=dict(color=color), text=df_zone["Процент"],
+                    hovertext=[zone_content["zones"][zone]] * len(df_zone),
+                    hovertemplate="<b>%{hovertext}</b>: %{x}%<extra></extra>"
                 ))
-
-        # Настройки отображения графика
         fig.update_layout(
-            barmode='stack',
-            height=750,
-            # УВЕЛИЧИВАЕМ ОТСТУП СЛЕВА ДО 250. 
-            # Названия типа "Восточно-Казахстанская и Абайская" требуют много места.
-            margin=dict(l=250, r=20, t=50, b=50), 
-            
-            # Ось X (проценты снизу)
-            xaxis=dict(
-                visible=True, 
-                range=[0, 100],
-                tickfont=dict(size=16, color="#1f4e79"),
-                title=dict(text="%", font=dict(size=14, color="#1f4e79")),
-                gridcolor='rgba(0,0,0,0.1)'
-            ),
-            
-            # Ось Y (ЗДЕСЬ НАЗВАНИЯ ОБЛАСТЕЙ)
-            yaxis=dict(
-                visible=True,           # ПРИНУДИТЕЛЬНО ВКЛЮЧИТЬ
-                showticklabels=True,    # ПОКАЗАТЬ ПОДПИСИ
-                autorange="reversed", 
-                type='category',        # ЯВНО УКАЗЫВАЕМ, ЧТО ЭТО ТЕКСТ
-                tickfont=dict(
-                    size=16, 
-                    family="Arial", 
-                    color="#1f4e79"     # ТЕМНО-СИНИЙ (не белый!)
-                ),
-                automargin=False        # Отключаем авто, так как мы задали l=250 вручную
-            ),
-            
-            showlegend=False,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            barmode='stack', height=700, margin=dict(l=200, r=20, t=20, b=50),
+            xaxis=dict(range=[0, 100]), yaxis=dict(autorange="reversed", type='category'),
+            showlegend=False, plot_bgcolor='rgba(0,0,0,0)'
         )
-
-        # Шрифт цифр внутри полосок
-        fig.update_traces(
-            textfont=dict(size=18, family="Arial Black", color="black"),
-            textposition='inside'
-        )
-
         st.plotly_chart(fig, use_container_width=True)
 
-    # 4. Наполнение правой колонки легендой
     with col_legend:
-        st.markdown("<br><br>", unsafe_allow_html=True) # Отступ сверху
-        st.write("**Легенда зон:**")
-        
-        for zone, info in zones_info.items():
-            # HTML-контейнер для каждой строки легенды
-            st.markdown(
-                f'''
-                <div style="display: flex; align-items: flex-start; margin-bottom: 6px;">
-                    <div style="
-                        min-width: 16px; 
-                        height: 16px; 
-                        background-color: {info["color"]}; 
-                        margin-right: 8px; 
-                        margin-top: 2px;
-                        border: 1px solid #444;">
-                    </div>
-                    <div style="font-size: 1.0rem; line-height: 1.1;">
-                        <strong>{zone}</strong>: {info["desc"]}
-                    </div>
+        st.write(f"**{zone_content['legend_title']}**")
+        for zone, color in zones_colors.items():
+            st.markdown(f'''
+                <div style="display:flex; align-items:flex-start; margin-bottom:4px;">
+                    <div style="min-width:14px; height:14px; background-color:{color}; margin-right:8px; margin-top:3px; border:1px solid #444;"></div>
+                    <div style="font-size:0.85rem; line-height:1.2;"><strong>{zone}</strong>: {zone_content["zones"][zone]}</div>
                 </div>
-                ''', 
-                unsafe_allow_html=True
-            )
+            ''', unsafe_allow_html=True)
+            
 
 
     import streamlit as st
