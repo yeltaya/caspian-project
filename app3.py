@@ -2953,232 +2953,340 @@ with tabs[1]:
         </div>
     """, unsafe_allow_html=True)
 
-            
-            # 1. Словарь с путями к фото
+# --- 1. ПУТИ К ИЗОБРАЖЕНИЯМ ---
+    # Убедитесь, что файлы лежат в папке с проектом или доступны по путям
     IMAGE_PATHS = {
-                "HP": "HP1.jpeg",
-                "Auto": "auto.png",
-                "TDS": "tds.png",
-                "Cadastre": "cad.png"
-        }
+        "HP": "HP1.jpeg",
+        "Auto": "auto.png",
+        "TRANS": "trans.png", # Добавил ключ для трансграничных постов
+        "Cadastre": "cad.png"
+    }
 
-    # 1. Создаем контейнер для карточек
-    with st.container():
-            h_col1, h_col2, h_col3, h_col4 = st.columns(4)
-
-                # 3. Отрисовываем блоки (используем h_col вместо met_col, чтобы не путать с метео)
-            draw_block(h_col1, "hydro_btn_1", "🌊 Национальная сеть гидрологических наблюдений", "📷", 
-                           "Комплексный мониторинг рек, озер и каналов (442 поста).", 
-                           [
-                            "<b>Инфраструктура:</b> 25 снегомерных и 2 осадкомерных маршрута, 15 испарительных площадок",
-                            "<b>Регламент:</b> Замеры уровня и температуры ежедневно в 08:00 и 20:00 (учащенно в паводки)",
-                            "<b>Расход воды:</b> 3 раза в месяц в межень; 5-8 раз на подъеме и спаде половодья",
-                            "<b>Оборудование:</b> Водомерные рейки, термометры, вертушки и Акустические доплеровские профилографы"
-                            ], "HP")
-
-            draw_block(h_col2, "hydro_btn_2", "📟 Автоматические посты", "📸", 
-                           "Системы непрерывного мониторинга и передачи данных.", 
-                           ["<b>Тип:</b> OTT Ecolog 1000", "<b>Режим:</b> поступление ежечасных данных каждые 4 часа", "<b>Передача:</b> GSM связь"], "Auto")
-
-                # Блок трансграничного мониторинга
-            draw_block(
-                h_col3, 
-                "hydro_btn_trans", 
-                "🌍 Трансграничные посты", 
-                "🤝", 
-                "Мониторинг на водных объектах, разделяемых с сопредельными государствами.", 
-                [
-                    "<b>Всего:</b> 43 трансграничных гидрологических поста",
-                    "<b>РФ и КНР:</b> 23 поста с Россией и 11 с Китаем",
-                    "<b>Центральная Азия:</b> 7 постов с Кыргызстаном и 2 с Узбекистаном",
-                    "<b>Цель:</b> совместный контроль водных ресурсов и обмен данными"
-                ], 
-                "TRANS"
-            )
-
-            draw_block(h_col4, "hydro_btn_4", "💧 Водный кадастр", "📁", 
-                           "Единая система данных о водных ресурсах Казахстана.", 
-                           ["<b>Процесс:</b> сбор, контроль, обработка и анализ данных гидронаблюдений",
-                            "<b>Публикации:</b> ежегодные данные о режиме и ресурсах вод суши",
-                            "<b>Справочники:</b> многолетние данные и материалы по испарению",
-                            "<b>Цифровизация:</b> ведение электронного банка многолетних данных"
-                            ],"Cadastre")
-            st.write("##")
-
-
-               # Данные на основе предоставленного изображения
-            years = [
-                1917, 1938, 1940, 1972, 1981, 1985, 1987, 1992, 1995, 2000, 
-                2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010, 2011, 2015, 
-                2018, 2020, 2021, 2024, 2025, 2026
-            ]
-            posts = [
-                123, 123, 150, 416, 506, 486, 432, 354, 322, 165, 
-                209, 206, 215, 226, 251, 276, 291, 292, 298, 302, 
-                310, 352, 377, 377, 410, 442
-            ]
-
-    def render_hydro_chart():
-            # Основной цвет — темно-синий (#1f4e79), акцентный для 2026 — красный (#EF553B)
-            main_color = '#1f4e79'
-            highlight_color = '#EF553B'
-            colors = [main_color] * (len(years) - 1) + [highlight_color] 
-
-            fig = go.Figure()
-
-            fig.add_trace(go.Bar(
-                x=years,
-                y=posts,
-                text=posts,
-                textposition='outside',
-                marker_color=colors, 
-                hovertemplate="<b>Год: %{x}</b><br>Количество постов: %{y}<extra></extra>"
-            ))
-
-            fig.update_layout(
-                title=dict(
-                    text="Динамика развития гидрологической сети (1917-2026 гг.)",
-                    font=dict(size=20) # Увеличили размер заголовка
-                ),
-                xaxis=dict(
-                    title=dict(text="Год", font=dict(size=18)), # Шрифт заголовка оси X
-                    type='category',
-                    tickangle=-45,
-                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ГОДОВ
-                ),
-                yaxis=dict(
-                    title=dict(text="Количество постов", font=dict(size=18)), # Шрифт заголовка оси Y
-                    range=[0, 600],
-                    showgrid=True,
-                    gridcolor='rgba(200, 200, 200, 0.2)',
-                    tickfont=dict(size=16) # РАЗМЕР ШРИФТА ЧИСЕЛ (100, 200...)
-                ),
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                # УВЕЛИЧИЛИ ОТСТУПЫ (l=60, b=80), чтобы крупные подписи влезли
-                margin=dict(l=60, r=20, t=80, b=80), 
-                font=dict(color="white")
-            )
-
-            # Аннотация для выделения текущего статуса (2026 г. - 442 поста)
-            fig.add_annotation(
-                x=len(years)-1, 
-                y=442,
-                text="Текущий статус (2026)",
-                showarrow=True,
-                arrowhead=2,
-                ax=0,
-                ay=-40,
-                font=dict(color=highlight_color, size=13, family="Arial Black")
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
-
-    render_hydro_chart()
-
-        # --- 1. ПОДГОТОВКА ДАННЫХ ---
-    data = {
-            "Область": [
-                "Восточно-Казахстанская и Абайская", "Акмолинская", "Актюбинская", "Алматинская", "Атырауская", 
-                "ЗКО", "Жамбылская", "Жетысу", "Карагандинская и Улытауская", "Костанайская", 
-                "Кызылординская", "Мангистауская", "Павлодарская", "СКО", "Туркестанская"
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ БЛОКОВ ---
+    blocks_lang = {
+        "ru": {
+            "b1_title": "🌊 Национальная сеть",
+            "b1_desc": "Комплексный мониторинг рек, озер и каналов (442 поста).",
+            "b1_list": [
+                "<b>Инфраструктура:</b> 25 снегомерных и 2 осадкомерных маршрута",
+                "<b>Регламент:</b> Замеры уровня ежедневно в 08:00 и 20:00",
+                "<b>Расход воды:</b> 3 раза в месяц в межень",
+                "<b>Оборудование:</b> Акустические доплеровские профилографы"
             ],
-            "Гидропосты": [68, 45, 39, 40, 15, 30, 24, 32, 38, 28, 13, 7, 6, 27, 30]
+            "b2_title": "📟 Автоматические посты",
+            "b2_desc": "Системы непрерывного мониторинга и передачи данных.",
+            "b2_list": ["<b>Тип:</b> OTT Ecolog 1000", "<b>Режим:</b> ежечасные данные", "<b>Передача:</b> GSM связь"],
+            "b3_title": "🌍 Трансграничные посты",
+            "b3_desc": "Мониторинг на водных объектах с сопредельными странами.",
+            "b3_list": ["<b>Всего:</b> 43 поста", "<b>РФ и КНР:</b> 23 с РФ, 11 с КНР", "<b>ЦА:</b> 7 с КР, 2 с РУз"],
+            "b4_title": "💧 Водный кадастр",
+            "b4_desc": "Единая система данных о водных ресурсах РК.",
+            "b4_list": ["<b>Процесс:</b> сбор и анализ данных", "<b>Публикации:</b> ежегодники водных ресурсов", "<b>Цифровизация:</b> электронный банк данных"]
+        },
+        "kz": {
+            "b1_title": "🌊 Ұлттық желі",
+            "b1_desc": "Өзендерді, көлдерді және каналдарды кешенді мониторингілеу (442 бекет).",
+            "b1_list": [
+                "<b>Инфрақұрылым:</b> 25 қар өлшеу және 2 жауын-шашын өлшеу бағыты",
+                "<b>Регламент:</b> Деңгейді күн сайын 08:00 және 20:00-де өлшеу",
+                "<b>Су шығыны:</b> Саба деңгейінде айына 3 рет",
+                "<b>Жабдық:</b> Акустикалық Доплер профилографтары"
+            ],
+            "b2_title": "📟 Автоматты бекеттер",
+            "b2_desc": "Үздіксіз мониторинг және деректерді беру жүйелері.",
+            "b2_list": ["<b>Түрі:</b> OTT Ecolog 1000", "<b>Режимі:</b> сағаттық деректер", "<b>Байланыс:</b> GSM байланысы"],
+            "b3_title": "🌍 Трансшекаралық бекеттер",
+            "b3_title": "🌍 Трансшекаралық бекеттер",
+            "b3_desc": "Шекаралас мемлекеттермен бөлісетін су нысандарындағы мониторинг.",
+            "b3_list": ["<b>Барлығы:</b> 43 бекет", "<b>РФ және ҚХР:</b> РФ-мен 23, ҚХР-мен 11", "<b>ОА:</b> ҚР-мен 7, ӨР-мен 2"],
+            "b4_title": "💧 Су кадастры",
+            "b4_desc": "ҚР су ресурстары туралы бірыңғай деректер жүйесі.",
+            "b4_list": ["<b>Процесс:</b> деректерді жинау және талдау", "<b>Жарияланымдар:</b> су ресурстарының жылнамалары", "<b>Цифрландыру:</b> электрондық деректер банкі"]
+        },
+        "en": {
+            "b1_title": "🌊 National Network",
+            "b1_desc": "Comprehensive monitoring of rivers, lakes, and canals (442 posts).",
+            "b1_list": [
+                "<b>Infrastructure:</b> 25 snow and 2 precipitation routes",
+                "<b>Schedule:</b> Level measurements daily at 08:00 and 20:00",
+                "<b>Water discharge:</b> 3 times a month in low water",
+                "<b>Equipment:</b> Acoustic Doppler Current Profilers"
+            ],
+            "b2_title": "📟 Automatic Stations",
+            "b2_desc": "Continuous monitoring and data transmission systems.",
+            "b2_list": ["<b>Type:</b> OTT Ecolog 1000", "<b>Mode:</b> hourly data transmission", "<b>Link:</b> GSM connection"],
+            "b3_title": "🌍 Transboundary Posts",
+            "b3_desc": "Monitoring of water bodies shared with neighboring states.",
+            "b3_list": ["<b>Total:</b> 43 posts", "<b>RU & CN:</b> 23 with Russia, 11 with China", "<b>CA:</b> 7 with KG, 2 with UZ"],
+            "b4_title": "💧 Water Cadastre",
+            "b4_desc": "Unified data system on water resources of Kazakhstan.",
+            "b4_list": ["<b>Process:</b> data collection and analysis", "<b>Publications:</b> annual water resource data", "<b>Digital:</b> electronic database management"]
         }
+    }
+
+    # Выбор текущего языка (используем lang_code из вашего селектора)
+    b_t = blocks_lang.get(lang_code, blocks_lang["ru"])
+
+    # --- 3. ОТРИСОВКА КОНТЕЙНЕРА ---
+    with st.container():
+        h_col1, h_col2, h_col3, h_col4 = st.columns(4)
+
+        draw_block(h_col1, "hydro_btn_1", b_t["b1_title"], "📷", b_t["b1_desc"], b_t["b1_list"], "HP")
+        draw_block(h_col2, "hydro_btn_2", b_t["b2_title"], "📸", b_t["b2_desc"], b_t["b2_list"], "Auto")
+        draw_block(h_col3, "hydro_btn_trans", b_t["b3_title"], "🤝", b_t["b3_desc"], b_t["b3_list"], "TRANS")
+        draw_block(h_col4, "hydro_btn_4", b_t["b4_title"], "📁", b_t["b4_desc"], b_t["b4_list"], "Cadastre")
+
+    st.write("##")
+    
+
+    def render_hydro_chart(lang_code="ru"):
+        # 1. Словарь переводов для графика
+        chart_lang = {
+            "ru": {
+                "title": "Динамика развития гидрологической сети (1917-2026 гг.)",
+                "xaxis": "Год",
+                "yaxis": "Количество постов",
+                "hover": "Количество постов",
+                "anno": "Текущий статус (2026)"
+            },
+            "kz": {
+                "title": "Гидрологиялық желінің даму динамикасы (1917-2026 жж.)",
+                "xaxis": "Жыл",
+                "yaxis": "Бекеттер саны",
+                "hover": "Бекеттер саны",
+                "anno": "Ағымдағы мәртебе (2026)"
+            },
+            "en": {
+                "title": "Hydrological Network Development Dynamics (1917-2026)",
+                "xaxis": "Year",
+                "yaxis": "Number of posts",
+                "hover": "Number of posts",
+                "anno": "Current status (2026)"
+            }
+        }
+        
+        c_t = chart_lang.get(lang_code, chart_lang["ru"])
+
+        # Данные
+        years = [1917, 1938, 1940, 1972, 1981, 1985, 1987, 1992, 1995, 2000, 
+                 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010, 2011, 2015, 
+                 2018, 2020, 2021, 2024, 2025, 2026]
+        posts = [123, 123, 150, 416, 506, 486, 432, 354, 322, 165, 
+                 209, 206, 215, 226, 251, 276, 291, 292, 298, 302, 
+                 310, 352, 377, 377, 410, 442]
+
+        main_color = '#1f4e79'
+        highlight_color = '#EF553B'
+        colors = [main_color] * (len(years) - 1) + [highlight_color] 
+
+        fig = go.Figure()
+
+        fig.add_trace(go.Bar(
+            x=years,
+            y=posts,
+            text=posts,
+            textposition='outside',
+            marker_color=colors, 
+            hovertemplate=f"<b>{c_t['xaxis']}: %{{x}}</b><br>{c_t['hover']}: %{{y}}<extra></extra>"
+        ))
+
+        fig.update_layout(
+            title=dict(
+                text=c_t['title'],
+                font=dict(size=20, color="white")
+            ),
+            xaxis=dict(
+                title=dict(text=c_t['xaxis'], font=dict(size=18, color="white")),
+                type='category',
+                tickangle=-45,
+                tickfont=dict(size=14, color="white")
+            ),
+            yaxis=dict(
+                title=dict(text=c_t['yaxis'], font=dict(size=18, color="white")),
+                range=[0, 600],
+                showgrid=True,
+                gridcolor='rgba(200, 200, 200, 0.2)',
+                tickfont=dict(size=14, color="white")
+            ),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=60, r=20, t=80, b=80), 
+            font=dict(color="white")
+        )
+
+        # Аннотация
+        fig.add_annotation(
+            x=len(years)-1, 
+            y=442,
+            text=c_t['anno'],
+            showarrow=True,
+            arrowhead=2,
+            ax=0,
+            ay=-40,
+            font=dict(color=highlight_color, size=13, family="Arial Black")
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Вызов функции (убедитесь, что lang_code передается правильно)
+    render_hydro_chart(lang_code)
+
+    regions_lang = {
+        "ru": [
+            "Восточно-Казахстанская и Абайская", "Акмолинская", "Актюбинская", "Алматинская", "Атырауская", 
+            "ЗКО", "Жамбылская", "Жетысу", "Карагандинская и Улытауская", "Костанайская", 
+            "Кызылординская", "Мангистауская", "Павлодарская", "СКО", "Туркестанская"
+        ],
+        "kz": [
+            "Шығыс Қазақстан және Абай", "Ақмола", "Ақтөбе", "Алматы", "Атырау", 
+            "БҚО", "Жамбыл", "Жетісу", "Қарағанды және Ұлытау", "Қостанай", 
+            "Қызылорда", "Маңғыстау", "Павлодар", "СҚО", "Түркістан"
+        ],
+        "en": [
+            "East Kazakhstan & Abai", "Akmola", "Aktobe", "Almaty", "Atyrau", 
+            "WKO", "Zhambyl", "Zhetysu", "Karaganda & Ulytau", "Kostanay", 
+            "Kyzylorda", "Mangystau", "Pavlodar", "NKO", "Turkestan"
+        ]
+    }
+
+    # Определяем текущий язык (по умолчанию RU)
+    current_lang = lang_code if 'lang_code' in locals() else "ru"
+    column_name = "Region" if current_lang == "en" else "Область"
+
+# --- 1. ПОДГОТОВКА ДАННЫХ ---
+    data = {
+        column_name: regions_lang.get(current_lang, regions_lang["ru"]),
+        "Гидропосты": [68, 45, 39, 40, 15, 30, 24, 32, 38, 28, 13, 7, 6, 27, 30]
+    }
 
     df_posts = pd.DataFrame(data).sort_values(by="Гидропосты", ascending=True)
+    
+    # Логика выделения ТОП-3 (оранжевый цвет)
     top_3_cutoff = df_posts["Гидропосты"].nlargest(3).min()
     colors_posts = ['#FFA500' if x >= top_3_cutoff else '#1f4e79' for x in df_posts["Гидропосты"]]
+    
+    import plotly.graph_objects as go
 
-        # --- 2. ЗАГОЛОВОК ---
-    st.subheader("📊 Мониторинг и информационная продукция")
+        fig = go.Figure(go.Bar(
+            x=df_posts["Гидропосты"],
+            y=df_posts[column_name],
+            orientation='h',
+            marker_color=colors_posts,
+            text=df_posts["Гидропосты"],
+            textposition='outside'
+        ))
 
-        # --- 3. РАЗДЕЛЕНИЕ НА ЛЕВЫЙ И ПРАВЫЙ БЛОКИ ---
+        fig.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="white"),
+            margin=dict(l=20, r=20, t=40, b=20),
+            xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
+            height=500
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+    
+# 1. ПЕРЕВОДЫ ДЛЯ ЭТОГО РАЗДЕЛА
+    monitoring_lang = {
+        "ru": {
+            "section_title": "📊 Мониторинг и информационная продукция",
+            "graph_title": "### Региональная сеть",
+            "xaxis_label": "Количество постов",
+            "prod_title": "### 📄 Выпускаемая продукция",
+            "daily": "**📅 Ежедневные бюллетени**\n* Оперативные данные по уровням воды\n* Состояние снежного покрова в горах",
+            "forecast": "**🌊 Прогнозы и кадастр**\n* Прогноз весеннего половодья\n* Государственный водный кадастр",
+            "emergency": "**🚨 Экстренные оповещения**\n* Штормовые предупреждения (СГЯ)\n* Резкие подъемы уровней",
+            "metric_label": "Общий охват сети",
+            "top_3": "**Топ-3 региона:**",
+            "help_text": "Данные на 2026 год"
+        },
+        "kz": {
+            "section_title": "📊 Мониторинг және ақпараттық өнімдер",
+            "graph_title": "### Өңірлік желі",
+            "xaxis_label": "Бекеттер саны",
+            "prod_title": "### 📄 Шығарылатын өнімдер",
+            "daily": "**📅 Күнделікті бюллетеньдер**\n* Су деңгейі бойынша жедел деректер\n* Таулардағы қар жамылғысының күйі",
+            "forecast": "**🌊 Болжамдар және кадастр**\n* Көктемгі су тасқынының болжамы\n* Мемлекеттік су кадастры",
+            "emergency": "**🚨 Шұғыл хабарламалар** \n* Дауылды ескертулер (ҚГҚ)\n* Деңгейлердің күрт көтерілуі",
+            "metric_label": "Желінің жалпы қамтылуы",
+            "top_3": "**Топ-3 өңір:**",
+            "help_text": "2026 жылғы мәліметтер"
+        },
+        "en": {
+            "section_title": "📊 Monitoring & Information Products",
+            "graph_title": "### Regional Network",
+            "xaxis_label": "Number of Posts",
+            "prod_title": "### 📄 Deliverables",
+            "daily": "**📅 Daily Bulletins**\n* Operational water level data\n* Mountain snow cover status",
+            "forecast": "**🌊 Forecasts & Cadastre**\n* Spring flood forecast (annual)\n* State Water Cadastre",
+            "emergency": "**🚨 Emergency Alerts**\n* Weather warnings (HWM)\n* Sudden water level rise alerts",
+            "metric_label": "Total Network Coverage",
+            "top_3": "**Top 3 Regions:**",
+            "help_text": "2026 data"
+        }
+    }
+
+    # Получаем текущий перевод
+    m_t = monitoring_lang.get(lang_code, monitoring_lang["ru"])
+
+    # --- 2. ЗАГОЛОВОК ---
+    st.subheader(m_t["section_title"])
+
+    # --- 3. РАЗДЕЛЕНИЕ НА КОЛОНКИ ---
     col_graph, col_info = st.columns([2, 1], gap="large")
 
     with col_graph:
-            # ЛЕВЫЙ БЛОК: ГРАФИК
-            st.markdown("### Региональная сеть")
-            
-            fig = go.Figure()
-            fig.add_trace(go.Bar(
-                y=df_posts["Область"], x=df_posts["Гидропосты"],
-                name="Посты", orientation='h', marker_color=colors_posts,
-                text=df_posts["Гидропосты"], textposition='outside'
-            ))
-            
-            fig.update_layout(
-                barmode='group', 
-                height=700, 
-                # Увеличиваем левый отступ (l), так как названия областей длинные
-                margin=dict(l=200, r=50, t=50, b=100), 
-                
-                plot_bgcolor='rgba(0,0,0,0)', 
-                paper_bgcolor='rgba(0,0,0,0)', 
-                font=dict(color="#1f4e79"), # Темно-синий текст для светлой темы (как на фото)
-                
-                # Горизонтальная ось (теперь здесь ЧИСЛА)
-                xaxis=dict(
-                    visible=True,
-                    showticklabels=True,
-                    tickfont=dict(size=16, color="#1f4e79"),
-                    title=dict(
-                        text="Количество постов", 
-                        font=dict(size=18, color="#1f4e79")
-                    ),
-                    gridcolor='rgba(0,0,0,0.1)',
-                    automargin=True
-                ),
-                
-                # Вертикальная ось (теперь здесь НАЗВАНИЯ ОБЛАСТЕЙ)
-                yaxis=dict(
-                    visible=True,
-                    showticklabels=True,
-                    # Указываем тип 'category' здесь, так как области по вертикали
-                    type='category', 
-                    tickfont=dict(size=16, color="#1f4e79"),
-                    automargin=True,
-                    # Убираем заголовок оси Y, так как названия регионов говорят сами за себя
-                    title=dict(text="") 
-                )
+        st.markdown(m_t["graph_title"])
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            # Используем динамическое имя колонки (Region или Область)
+            y=df_posts[column_name], 
+            x=df_posts["Гидропосты"],
+            orientation='h', 
+            marker_color=colors_posts,
+            text=df_posts["Гидропосты"], 
+            textposition='outside'
+        ))
+        
+        fig.update_layout(
+            height=700, 
+            # l=250 для казахских названий (они длиннее)
+            margin=dict(l=250, r=50, t=20, b=80), 
+            plot_bgcolor='rgba(0,0,0,0)', 
+            paper_bgcolor='rgba(0,0,0,0)', 
+            font=dict(color="#1f4e79"),
+            xaxis=dict(
+                tickfont=dict(size=14),
+                title=dict(text=m_t["xaxis_label"], font=dict(size=16)),
+                gridcolor='rgba(0,0,0,0.1)',
+                automargin=True
+            ),
+            yaxis=dict(
+                type='category', 
+                tickfont=dict(size=14),
+                automargin=True,
+                title=dict(text="") 
             )
-
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-
+        )
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
     with col_info:
-            # ПРАВЫЙ БЛОК: ПРОДУКЦИЯ (Стиль как на фото)
-            st.markdown("### 📄 Выпускаемая продукция")
-            
-            # Стилизация карточек через Markdown
-            st.info("""
-            **📅 Ежедневные бюллетени**
-            * Оперативные данные по уровням воды
-            * Состояние снежного покрова в горах
-            """)
-            
-            st.success("""
-            **🌊 Прогнозы и кадастр**
-            * Прогноз весеннего половодья (ежегодно)
-            * Государственный водный кадастр
-            * Справочники многолетних данных
-            """)
-            
-            st.warning("""
-            **🚨 Экстренные оповещения**
-            * Штормовые предупреждения (СГЯ)
-            * Уведомления о резких подъемах уровней
-            """)
-            
-            # Дополнительная метрика снизу
-            st.divider()
-            st.metric("Общий охват сети", f"{df_posts['Гидропосты'].sum()} постов", help="Данные на 2026 год")
-            
-            # Маленькая таблица ТОП-3
-            st.write("**Топ-3 региона:**")
-            st.table(df_posts.nlargest(3, 'Гидропосты')[['Область', 'Гидропосты']].set_index('Область'))
-
+        st.markdown(m_t["prod_title"])
+        
+        st.info(m_t["daily"])
+        st.success(m_t["forecast"])
+        st.warning(m_t["emergency"])
+        
+        st.divider()
+        st.metric(m_t["metric_label"], f"{df_posts['Гидропосты'].sum()}", help=m_t["help_text"])
+        
+        st.write(m_t["top_3"])
+        # Таблица тоже должна использовать правильную колонку региона
+        st.table(df_posts.nlargest(3, 'Гидропосты')[[column_name, 'Гидропосты']].set_index(column_name))
+        
+        
 
             # --- ДАННЫЕ ДЛЯ РЕТРОСПЕКТИВЫ ---
     HISTORICAL_DATA = {
