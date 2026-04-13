@@ -3469,24 +3469,21 @@ with tabs[1]:
     }
 
     # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА (ПРОВЕРЕННАЯ) ---
-    # Получаем значение. Если в сессии пусто, ставим Русский
-    current_selection = st.session_state.get('lang', 'Русский')
+    if 'lang' in st.session_state:
+        actual_selection = st.session_state['lang']
+    else:
+        actual_selection = "Русский"
 
-    # Создаем мапу (важно: ключи должны точно совпадать с текстом в вашем selectbox)
     lang_map = {
         "Русский": "ru",
         "Қазақша": "kz",
         "English": "en"
     }
-
-    # Получаем код языка (ru, kz или en)
-    L = lang_map.get(current_selection, "ru")
-
-    # Выбираем контент
+    L = lang_map.get(actual_selection, "ru")
     txt = AGRO_CONTENT[L]
 
-    # --- 3. ВЫВОД ---
-    # Заголовок
+    # --- ТЕПЕРЬ ВЫВОД (ОБЯЗАТЕЛЬНО ИСПОЛЬЗУЙТЕ f-строки) ---
+
     st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
             <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
@@ -3498,6 +3495,7 @@ with tabs[1]:
         </div>
     """, unsafe_allow_html=True)
 
+    # Проверка: если заголовок изменился, а текст ниже нет — значит проблема в отрисовке колонок
     st.markdown(txt["map_title"])
 
     col_map, col_text = st.columns([1.5, 0.5])
@@ -3507,17 +3505,18 @@ with tabs[1]:
         img_path = os.path.join(base_dir, "AGRO.jpg")
         if os.path.exists(img_path):
             with open(img_path, "rb") as f:
-                encoded = base64.b64encode(f.read()).decode("utf-8")
-            st.markdown(f'<img src="data:image/jpeg;base64,{encoded}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
-        else:
-            st.error("Файл AGRO.jpg не найден")
+                encoded_img = base64.b64encode(f.read()).decode("utf-8")
+            # Добавляем случайный параметр к картинке, чтобы браузер её обновил
+            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_img}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
 
     with col_text:
         st.markdown("---")
+        # Используем st.subheader или st.info для проверки, меняется ли текст
         st.write(txt["main_text"])
         st.markdown(txt["crops_title"])
         for crop in txt["crops"]:
             st.markdown(f"* {crop}")
+        
             
                 
 
