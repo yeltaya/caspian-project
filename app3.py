@@ -3435,6 +3435,235 @@ with tabs[1]:
         """, unsafe_allow_html=True)
 
 
+    # 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
+    import os
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+    import base64
+
+    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ (Объявляем в начале) ---
+
+    AGRO_TRANSLATIONS = {
+        "ru": {
+            "title": "Агрометеорологический мониторинг",
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана",
+            "obs_title": "### 🗺️ Агрометеорологические наблюдения",
+            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур, за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами.",
+            "crops_title": "**Основные культуры:**",
+            "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"],
+            "zones_title": "Агроклиматические зоны по областям",
+            "legend_title": "Легенда зон:",
+            "analysis_title": "### 🌡️ Анализ агроклиматических показателей",
+            "temp_label": "Суммы эффективных температур воздуха (норма)",
+            "gtk_label": "Гидротермический коэффициент (ГТК) Селянинова",
+            "temp_cap": "Карта температур за август",
+            "gtk_cap": "ГТК за период 1991-2020 гг.",
+            "zones_dict": {
+                "I": "Слабо влажная умеренно-теплая", "II": "Засушливая умеренно-теплая", "III": "Засушливая теплая",
+                "IV": "Очень засушливая теплая", "V": "Сухая теплая", "VI": "Сухая умеренно-теплая",
+                "VII": "Очень сухая умеренно-жаркая", "VIII": "Очень сухая жаркая", "IX": "Очень сухая",
+                "X": "Центрально-казахстанский мелкосопочник", "XI": "Предгорья Заилийского Алатау",
+                "XIII": "Предгорья Джунгарского Алатау", "XIV": "Предгорья Северного и Западного Тянь-Шаня",
+                "XV": "Долина р. Или", "XVI": "Горные районы"
+            }
+        },
+        "kz": {
+            "title": "Агрометеорологиялық мониторинг",
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету",
+            "obs_title": "### 🗺️ Агрометеорологиялық бақылаулар",
+            "main_text": "Агрометеорологиялық бақылауларға дақылдардың өсуі мен дамуын бақылау, топырақтың жай-күйі мен ылғалдылығын бақылау кіреді.",
+            "crops_title": "**Негізгі дақылдар:**",
+            "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"],
+            "zones_title": "Облыстар бойынша агроклиматтық аймақтар",
+            "legend_title": "Аймақтардың шартты белгілері:",
+            "analysis_title": "### 🌡️ Агроклиматтық көрсеткіштерді талдау",
+            "temp_label": "Тиімді ауа температураларының қосындысы (норма)",
+            "gtk_label": "Селяниновтың гидротермиялық коэффициенті (ГТК)",
+            "temp_cap": "Тамыз айындағы температура картасы",
+            "gtk_cap": "1991-2020 жж. кезеңіндегі ГТК",
+            "zones_dict": {
+                "I": "Әлсіз ылғалды қоңыржай-жылы", "II": "Құрғақшылық қоңыржай-жылы", "III": "Құрғақшылық жылы",
+                "IV": "Өте құрғақшылық жылы", "V": "Құрғақ жылы", "VI": "Құрғақ қоңыржай-жылы",
+                "VII": "Өте құрғақ қоңыржай-ыстық", "VIII": "Өте құрғақ ыстық", "IX": "Өте құрғақ",
+                "X": "Орталық Қазақстан ұсақ шоқысы", "XI": "Іле Алатауы етегі",
+                "XIII": "Жетісу Алатауы етегі", "XIV": "Солтүстік және Батыс Тянь-Шань етегі",
+                "XV": "Іле өзенінің аңғары", "XVI": "Таулы аймақтар"
+            }
+        },
+        "en": {
+            "title": "Agrometeorological Monitoring",
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan",
+            "obs_title": "### 🗺️ Agrometeorological Observations",
+            "main_text": "Observations include monitoring the growth of crops, soil condition and moisture, as well as key meteorological parameters.",
+            "crops_title": "**Main Crops:**",
+            "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"],
+            "zones_title": "Agro-climatic Zones by Region",
+            "legend_title": "Zone Legend:",
+            "analysis_title": "### 🌡️ Agro-climatic Analysis",
+            "temp_label": "Sum of effective temperatures (norm)",
+            "gtk_label": "Selyaninov Hydrothermal Coefficient (HTC)",
+            "temp_cap": "August temperature map",
+            "gtk_cap": "HTC for the period 1991-2020",
+            "zones_dict": {
+                "I": "Slightly humid moderate-warm", "II": "Arid moderate-warm", "III": "Arid warm",
+                "IV": "Very arid warm", "V": "Dry warm", "VI": "Dry moderate-warm",
+                "VII": "Very dry moderate-hot", "VIII": "Very dry hot", "IX": "Very dry",
+                "X": "Central Kazakh Uplands", "XI": "Trans-Ili Alatau Foothills",
+                "XIII": "Dzungarian Alatau Foothills", "XIV": "Tien Shan Foothills",
+                "XV": "Ili River Valley", "XVI": "Mountainous regions"
+            }
+        }
+    }
+
+    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
+    raw_lang = st.session_state.get('lang', 'Русский')
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
+    cur_lang = lang_map.get(raw_lang, "ru")
+    t = AGRO_TRANSLATIONS[cur_lang]
+
+    # Функция для кодирования изображений
+    def get_base64_img(img_path):
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
+                return base64.b64encode(f.read()).decode("utf-8")
+        return None
+
+    # --- 3. ОТОБРАЖЕНИЕ ЗАГОЛОВКА ---
+    st.markdown(f"""
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #1b5e20; font-family: 'Exo 2'; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">
+                {t['title']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em;">{t['subtitle']}</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # --- 4. БЛОК С КАРТОЙ AGRO.JPG ---
+    st.markdown(t["obs_title"])
+    col_map, col_text = st.columns([1.5, 0.5])
+
+    with col_map:
+        img_agro = get_base64_img("AGRO.jpg")
+        if img_agro:
+            st.markdown(f'<img src="data:image/jpeg;base64,{img_agro}" style="width:100%; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">', unsafe_allow_html=True)
+        else:
+            st.warning("AGRO.jpg not found")
+
+    with col_text:
+        st.markdown("---")
+        st.write(t["main_text"])
+        st.markdown(t["crops_title"])
+        for crop in t["crops"]:
+            st.markdown(f"* {crop}")
+
+    # --- 5. ГРАФИК ЗОН (PLOTLY) ---
+    st.markdown(f"#### {t['zones_title']}")
+
+    # Данные для графика
+    raw_data = [
+        ["АКМОЛА", "I", 6], ["АКМОЛА", "II", 31], ["АКМОЛА", "VI", 63],
+        ["СКО", "I", 18], ["СКО", "II", 55], ["СКО", "III", 27],
+        ["КОСТАНАЙ", "II", 11], ["КОСТАНАЙ", "III", 33], ["КОСТАНАЙ", "IV", 33], ["КОСТАНАЙ", "V", 11], ["КОСТАНАЙ", "VI", 6], ["КОСТАНАЙ", "VII", 6],
+        ["ПАВЛОДАР", "II", 7], ["ПАВЛОДАР", "IV", 60], ["ПАВЛОДАР", "VI", 20], ["ПАВЛОДАР", "XIV", 13],
+        ["ВКО", "II", 29], ["ВКО", "IV", 13], ["ВКО", "VI", 17], ["ВКО", "VII", 24], ["ВКО", "XVI", 17],
+        ["ЗКО", "IV", 31], ["ЗКО", "V", 8], ["ЗКО", "VI", 46], ["ЗКО", "VII", 15],
+        ["АКТОБЕ", "IV", 47], ["АКТОБЕ", "VI", 6], ["АКТОБЕ", "VII", 41], ["АКТОБЕ", "VIII", 6],
+        ["КАРАГАНДЫ", "IV", 13], ["КАРАГАНДЫ", "V", 13], ["КАРАГАНДЫ", "VI", 8], ["КАРАГАНДЫ", "VII", 42], ["КАРАГАНДЫ", "VIII", 8], ["КАРАГАНДЫ", "XIV", 16],
+        ["АТЫРАУ", "VII", 33], ["АТЫРАУ", "VIII", 67],
+        ["АЛМАТЫ", "VII", 16], ["АЛМАТЫ", "VIII", 6], ["АЛМАТЫ", "XI", 9], ["АЛМАТЫ", "XIII", 9], ["АЛМАТЫ", "XIV", 3], ["АЛМАТЫ", "XV", 13], ["АЛМАТЫ", "XVI", 44],
+        ["ЖАМБЫЛ", "VII", 8], ["ЖАМБЫЛ", "XIV", 54], ["ЖАМБЫЛ", "XVI", 38],
+        ["МАНГИСТАУ", "VIII", 90], ["МАНГИСТАУ", "IX", 10],
+        ["ТУРКЕСТАН", "VIII", 8], ["ТУРКЕСТАН", "XIV", 42], ["ТУРКЕСТАН", "XVI", 50],
+        ["КЫЗЫЛОРДА", "VIII", 63], ["КЫЗЫЛОРДА", "IX", 37]
+    ]
+
+    zones_colors = {
+        "I": "#385e26", "II": "#66ff66", "III": "#92d050", "IV": "#ffff00", 
+        "V": "#e6db98", "VI": "#f8cbad", "VII": "#f1a1eb", "VIII": "#ff8080", 
+        "IX": "#ff0000", "X": "#bf9000", "XI": "#c00000", "XIII": "#843c0c", 
+        "XIV": "#7f6000", "XV": "#00b0f0", "XVI": "#bcbcbc"
+    }
+
+    df = pd.DataFrame(raw_data, columns=["Key", "Зона", "Процент"])
+    df["Область"] = df["Key"].map(zone_content["regions"])
+
+    col_chart, col_legend = st.columns([4, 1.2])
+
+    with col_chart:
+        fig = go.Figure()
+        for zone, color in zones_colors.items():
+            df_zone = df[df["Зона"] == zone]
+            if not df_zone.empty:
+                fig.add_trace(go.Bar(
+                    name=zone, y=df_zone["Область"], x=df_zone["Процент"], orientation='h',
+                    marker=dict(color=color), text=df_zone["Процент"],
+                    hovertext=[zone_content["zones"][zone]] * len(df_zone),
+                    hovertemplate="<b>%{hovertext}</b>: %{x}%<extra></extra>"
+                ))
+        fig.update_layout(
+            barmode='stack', height=700, margin=dict(l=200, r=20, t=20, b=50),
+            xaxis=dict(range=[0, 100]), yaxis=dict(autorange="reversed", type='category'),
+            showlegend=False, plot_bgcolor='rgba(0,0,0,0)'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col_legend:
+        st.write(f"**{zone_content['legend_title']}**")
+        for zone, color in zones_colors.items():
+            st.markdown(f'''
+                <div style="display:flex; align-items:flex-start; margin-bottom:4px;">
+                    <div style="min-width:14px; height:14px; background-color:{color}; margin-right:8px; margin-top:3px; border:1px solid #444;"></div>
+                    <div style="font-size:0.85rem; line-height:1.2;"><strong>{zone}</strong>: {zone_content["zones"][zone]}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+            
+
+
+    import streamlit as st
+    from PIL import Image
+    import os
+
+    def render_agro_climate_comparison():
+        st.markdown("---")
+        # Заголовок блока
+        st.markdown("### 🌡️ Анализ агроклиматических показателей")
+
+        # Пути к файлам (используем ваши локальные пути)
+        path_temp2 = "agro2.jpg"
+        path_gtk = "agro 3.png"
+
+# Функция для перевода картинки в HTML-строку (делаем крупнее через width)
+        def img_to_html(img_path, width=115):
+            if os.path.exists(img_path):
+                with open(img_path, "rb") as f:
+                    data = base64.b64encode(f.read()).decode("utf-8")
+                return f'<img src="data:image/jpeg;base64,{data}" style="width: {width}%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">'
+            return None
+            
+
+    st.markdown("---")
+    st.markdown(t["analysis_title"])
+
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        st.info(t["temp_label"])
+        img_data = get_base64_img("agro2.jpg")
+        if img_data:
+            st.markdown(f'<img src="data:image/jpeg;base64,{img_data}" style="width:100%; border-radius:8px;">', unsafe_allow_html=True)
+            st.caption(t["temp_cap"])
+
+    with col_right:
+        st.info(t["gtk_label"])
+        img_data = get_base64_img("agro 3.png")
+        if img_data:
+            st.markdown(f'<img src="data:image/png;base64,{img_data}" style="width:115%; border-radius:8px;">', unsafe_allow_html=True)
+            st.caption(t["gtk_cap"])
+        
+
+
+
  #ЭКОЛОГИЧЕНСКИЙ МОНИТОРИНГ
     # Словарь переводов (разместите его перед выводом блока)
     content = {
