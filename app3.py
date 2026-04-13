@@ -3641,6 +3641,7 @@ with tabs[1]:
     import os
     import streamlit as st
     import base64
+    st.write(st.session_state)
 
     # 1. Тексты на трех языках
     AGRO_MAP_TRANSLATIONS = {
@@ -3717,34 +3718,123 @@ with tabs[1]:
 
 
     
-#АГРОКЛИМАТИЧЕСИК ЗОНЫ
+    #АГРОКЛИМАТИЧЕСИК ЗОНЫ
     import streamlit as st
     import plotly.graph_objects as go
     import pandas as pd
 
-    # Настройка широкого экрана
-    st.set_page_config(layout="wide", page_title="Агроклиматический мониторинг")
+    # --- 0. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
+    mapping = {
+        "Русский": "ru", "ru": "ru",
+        "Қазақша": "kz", "kz": "kz",
+        "English": "en", "en": "en"
+    }
+    raw_lang = st.session_state.get('lang_code') or st.session_state.get('lang') or 'ru'
+    current_lang = mapping.get(raw_lang, "ru").lower()
 
-    # 1. Справочник зон (Цвета и описания из предоставленной легенды)
-    zones_info = {
-        "I": {"color": "#385e26", "desc": "Слабо влажная умеренно-теплая"},
-        "II": {"color": "#66ff66", "desc": "Засушливая умеренно-теплая"},
-        "III": {"color": "#92d050", "desc": "Засушливая теплая"},
-        "IV": {"color": "#ffff00", "desc": "Очень засушливая теплая"},
-        "V": {"color": "#e6db98", "desc": "Сухая теплая"},
-        "VI": {"color": "#f8cbad", "desc": "Сухая умеренно-теплая"},
-        "VII": {"color": "#f1a1eb", "desc": "Очень сухая умеренно-жаркая"},
-        "VIII": {"color": "#ff8080", "desc": "Очень сухая жаркая"},
-        "IX": {"color": "#ff0000", "desc": "Очень сухая"},
-        "X": {"color": "#bf9000", "desc": "Центрально-казахстанский мелкосопочник"},
-        "XI": {"color": "#c00000", "desc": "Предгорья Заилийского Алатау"},
-        "XIII": {"color": "#843c0c", "desc": "Предгорья Джунгарского Алатау"},
-        "XIV": {"color": "#7f6000", "desc": "Предгорья Северного и Западного Тянь-Шаня"},
-        "XV": {"color": "#00b0f0", "desc": "Долина р. Или"},
-        "XVI": {"color": "#bcbcbc", "desc": "Горные районы"}
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
+    AGRO_ZONES_DATA = {
+        "ru": {
+            "title": "Агроклиматические зоны по областям",
+            "legend_title": "Легенда зон:",
+            "zones": {
+                "I": "Слабо влажная умеренно-теплая",
+                "II": "Засушливая умеренно-теплая",
+                "III": "Засушливая теплая",
+                "IV": "Очень засушливая теплая",
+                "V": "Сухая теплая",
+                "VI": "Сухая умеренно-теплая",
+                "VII": "Очень сухая умеренно-жаркая",
+                "VIII": "Очень сухая жаркая",
+                "IX": "Очень сухая",
+                "X": "Центрально-казахстанский мелкосопочник",
+                "XI": "Предгорья Заилийского Алатау",
+                "XIII": "Предгорья Джунгарского Алатау",
+                "XIV": "Предгорья Северного и Западного Тянь-Шаня",
+                "XV": "Долина р. Или",
+                "XVI": "Горные районы"
+            },
+            "regions": {
+                "АКМОЛА": "Акмолинская", "СКО": "СКО", "КОСТАНАЙ": "Костанайская",
+                "ПАВЛОДАР": "Павлодарская", "ВКО": "ВКО и Абай", "ЗКО": "ЗКО",
+                "АКТОБЕ": "Актюбинская", "КАРАГАНДЫ": "Карагандинская и Улытау",
+                "АТЫРАУ": "Атырауская", "АЛМАТЫ": "Алматинская и Жетысу",
+                "ЖАМБЫЛ": "Жамбылская", "МАНГИСТАУ": "Мангистауская",
+                "ТУРКЕСТАН": "Туркестанская", "КЫЗЫЛОРДА": "Кызылординская"
+            }
+        },
+        "kz": {
+            "title": "Облыстар бойынша агроклиматтық аймақтар",
+            "legend_title": "Аймақтардың шартты белгілері:",
+            "zones": {
+                "I": "Әлсіз ылғалды қоңыржай-жылы",
+                "II": "Құрғақшылық қоңыржай-жылы",
+                "III": "Құрғақшылық жылы",
+                "IV": "Өте құрғақшылық жылы",
+                "V": "Құрғақ жылы",
+                "VI": "Құрғақ қоңыржай-жылы",
+                "VII": "Өте құрғақ қоңыржай-ыстық",
+                "VIII": "Өте құрғақ ыстық",
+                "IX": "Өте құрғақ",
+                "X": "Орталық Қазақстан ұсақ шоқысы",
+                "XI": "Іле Алатауы етегі",
+                "XIII": "Жетісу Алатауы етегі",
+                "XIV": "Солтүстік және Батыс Тянь-Шань етегі",
+                "XV": "Іле өзенінің аңғары",
+                "XVI": "Таулы аймақтар"
+            },
+            "regions": {
+                "АКМОЛА": "Ақмола", "СКО": "СҚО", "КОСТАНАЙ": "Қостанай",
+                "ПАВЛОДАР": "Павлодар", "ВКО": "ШҚО және Абай", "ЗКО": "БҚО",
+                "АКТОБЕ": "Ақтөбе", "КАРАГАНДЫ": "Қарағанды және Ұлытау",
+                "АТЫРАУ": "Атырау", "АЛМАТЫ": "Алматы және Жетісу",
+                "ЖАМБЫЛ": "Жамбыл", "МАНГИСТАУ": "Маңғыстау",
+                "ТУРКЕСТАН": "Түркістан", "КЫЗЫЛОРДА": "Қызылорда"
+            }
+        },
+        "en": {
+            "title": "Agro-climatic Zones by Region",
+            "legend_title": "Zone Legend:",
+            "zones": {
+                "I": "Slightly humid moderate-warm",
+                "II": "Arid moderate-warm",
+                "III": "Arid warm",
+                "IV": "Very arid warm",
+                "V": "Dry warm",
+                "VI": "Dry moderate-warm",
+                "VII": "Very dry moderate-hot",
+                "VIII": "Very dry hot",
+                "IX": "Very dry",
+                "X": "Central Kazakh Uplands",
+                "XI": "Trans-Ili Alatau Foothills",
+                "XIII": "Dzungarian Alatau Foothills",
+                "XIV": "Tien Shan Foothills",
+                "XV": "Ili River Valley",
+                "XVI": "Mountainous regions"
+            },
+            "regions": {
+                "АКМОЛА": "Akmola", "СКО": "North Kazakhstan", "КОСТАНАЙ": "Kostanay",
+                "ПАВЛОДАР": "Pavlodar", "ВКО": "East Kazakhstan & Abai", "ЗКО": "West Kazakhstan",
+                "АКТОБЕ": "Aktobe", "КАРАГАНДЫ": "Karaganda & Ulytau",
+                "АТЫРАУ": "Atyrau", "АЛМАТЫ": "Almaty & Zhetysu",
+                "ЖАМБЫЛ": "Zhambyl", "МАНГИСТАУ": "Mangystau",
+                "ТУРКЕСТАН": "Turkistan", "КЫЗЫЛОРДА": "Kyzylorda"
+            }
+        }
     }
 
-    # 2. Полные данные (Оцифровано с вашего графика)
+    # Текущий контент
+    lang_content = AGRO_ZONES_DATA[current_lang]
+
+    # 2. Настройка цветов
+    zones_colors = {
+        "I": "#385e26", "II": "#66ff66", "III": "#92d050", "IV": "#ffff00", 
+        "V": "#e6db98", "VI": "#f8cbad", "VII": "#f1a1eb", "VIII": "#ff8080", 
+        "IX": "#ff0000", "X": "#bf9000", "XI": "#c00000", "XIII": "#843c0c", 
+        "XIV": "#7f6000", "XV": "#00b0f0", "XVI": "#bcbcbc"
+    }
+
+    # Данные (используем ключи для регионов)
     raw_data = [
         ["АКМОЛА", "I", 6], ["АКМОЛА", "II", 31], ["АКМОЛА", "VI", 63],
         ["СКО", "I", 18], ["СКО", "II", 55], ["СКО", "III", 27],
@@ -3762,18 +3852,17 @@ with tabs[1]:
         ["КЫЗЫЛОРДА", "VIII", 63], ["КЫЗЫЛОРДА", "IX", 37]
     ]
 
-    df = pd.DataFrame(raw_data, columns=["Область", "Зона", "Процент"])
+    df = pd.DataFrame(raw_data, columns=["Key", "Зона", "Процент"])
+    # Заменяем ключи на переведенные названия областей
+    df["Область"] = df["Key"].map(lang_content["regions"])
 
-    st.subheader("Агроклиматические зоны по областям")
+    st.subheader(lang_content["title"])
 
-    # 3. Разделение на колонки: График (80%) и Легенда (20%)
-    col_chart, col_legend = st.columns([4, 1])
+    col_chart, col_legend = st.columns([4, 1.2])
 
     with col_chart:
         fig = go.Figure()
-
-        # Отрисовка слоев зон
-        for zone, info in zones_info.items():
+        for zone in zones_colors.keys():
             df_zone = df[df["Зона"] == zone]
             if not df_zone.empty:
                 fig.add_trace(go.Bar(
@@ -3781,83 +3870,32 @@ with tabs[1]:
                     y=df_zone["Область"],
                     x=df_zone["Процент"],
                     orientation='h',
-                    marker=dict(color=info["color"]),
+                    marker=dict(color=zones_colors[zone]),
                     text=df_zone["Процент"],
-                    textposition='inside',
-                    insidetextanchor='middle',
-                    textfont=dict(color="black", size=11, family="Arial Black"),
-                    hovertemplate=f"<b>Зона {zone}</b>: %{{x}}%<extra></extra>"
+                    hovertext=[lang_content["zones"][zone]] * len(df_zone),
+                    hovertemplate="<b>%{hovertext}</b>: %{x}%<extra></extra>"
                 ))
 
-        # Настройки отображения графика
         fig.update_layout(
-            barmode='stack',
-            height=750,
-            # УВЕЛИЧИВАЕМ ОТСТУП СЛЕВА ДО 250. 
-            # Названия типа "Восточно-Казахстанская и Абайская" требуют много места.
-            margin=dict(l=250, r=20, t=50, b=50), 
-            
-            # Ось X (проценты снизу)
-            xaxis=dict(
-                visible=True, 
-                range=[0, 100],
-                tickfont=dict(size=16, color="#1f4e79"),
-                title=dict(text="%", font=dict(size=14, color="#1f4e79")),
-                gridcolor='rgba(0,0,0,0.1)'
-            ),
-            
-            # Ось Y (ЗДЕСЬ НАЗВАНИЯ ОБЛАСТЕЙ)
-            yaxis=dict(
-                visible=True,           # ПРИНУДИТЕЛЬНО ВКЛЮЧИТЬ
-                showticklabels=True,    # ПОКАЗАТЬ ПОДПИСИ
-                autorange="reversed", 
-                type='category',        # ЯВНО УКАЗЫВАЕМ, ЧТО ЭТО ТЕКСТ
-                tickfont=dict(
-                    size=16, 
-                    family="Arial", 
-                    color="#1f4e79"     # ТЕМНО-СИНИЙ (не белый!)
-                ),
-                automargin=False        # Отключаем авто, так как мы задали l=250 вручную
-            ),
-            
-            showlegend=False,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            barmode='stack', height=700, margin=dict(l=200, r=20, t=20, b=50),
+            xaxis=dict(range=[0, 100], tickfont=dict(size=14), title="%"),
+            yaxis=dict(autorange="reversed", type='category', tickfont=dict(size=14, color="#1f4e79")),
+            showlegend=False, plot_bgcolor='rgba(0,0,0,0)'
         )
-
-        # Шрифт цифр внутри полосок
-        fig.update_traces(
-            textfont=dict(size=18, family="Arial Black", color="black"),
-            textposition='inside'
-        )
-
+        fig.update_traces(textfont=dict(size=14, family="Arial Black", color="black"), textposition='inside')
         st.plotly_chart(fig, use_container_width=True)
 
-    # 4. Наполнение правой колонки легендой
     with col_legend:
-        st.markdown("<br><br>", unsafe_allow_html=True) # Отступ сверху
-        st.write("**Легенда зон:**")
-        
-        for zone, info in zones_info.items():
-            # HTML-контейнер для каждой строки легенды
-            st.markdown(
-                f'''
-                <div style="display: flex; align-items: flex-start; margin-bottom: 6px;">
-                    <div style="
-                        min-width: 16px; 
-                        height: 16px; 
-                        background-color: {info["color"]}; 
-                        margin-right: 8px; 
-                        margin-top: 2px;
-                        border: 1px solid #444;">
-                    </div>
-                    <div style="font-size: 1.0rem; line-height: 1.1;">
-                        <strong>{zone}</strong>: {info["desc"]}
-                    </div>
+        st.write(f"**{lang_content['legend_title']}**")
+        for zone, color in zones_colors.items():
+            desc = lang_content["zones"].get(zone, "")
+            st.markdown(f'''
+                <div style="display: flex; align-items: flex-start; margin-bottom: 4px;">
+                    <div style="min-width: 14px; height: 14px; background-color: {color}; margin-right: 8px; margin-top: 3px; border: 1px solid #444;"></div>
+                    <div style="font-size: 0.85rem; line-height: 1.2;"><strong>{zone}</strong>: {desc}</div>
                 </div>
-                ''', 
-                unsafe_allow_html=True
-            )
+            ''', unsafe_allow_html=True)
+        
 
 
     import streamlit as st
