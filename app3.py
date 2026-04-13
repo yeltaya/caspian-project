@@ -3439,6 +3439,81 @@ with tabs[1]:
                 
             
 # 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
+
+    # --- 1. ОПРЕДЕЛЕНИЕ СЛОВАРЕЙ (В самом начале блока) ---
+    AGRO_CONTENT = {
+        "ru": {
+            "header_title": "Агрометеорологический мониторинг",
+            "header_subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/",
+            "map_title": "### 🗺️ Агрометеорологические наблюдения",
+            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами.",
+            "crops_title": "**Основные культуры:**",
+            "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
+        },
+        "kz": {
+            "header_title": "Агрометеорологиялық мониторинг",
+            "header_subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/",
+            "map_title": "### 🗺️ Агрометеорологиялық бақылаулар",
+            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын бақылау кіреді.",
+            "crops_title": "**Негізгі дақылдар:**",
+            "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
+        },
+        "en": {
+            "header_title": "Agrometeorological Monitoring",
+            "header_subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/",
+            "map_title": "### 🗺️ Agrometeorological Observations",
+            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops, soil condition and moisture, as well as key meteorological parameters.",
+            "crops_title": "**Main Crops:**",
+            "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
+        }
+    }
+
+    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
+    # Сопоставляем то, что выбрал пользователь, с ключами словаря
+    raw_lang = st.session_state.get('lang', 'Русский')
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
+    L = lang_map.get(raw_lang, "ru") # Короткая переменная для удобства
+
+    # Получаем пакет текстов для текущего языка
+    txt = AGRO_CONTENT[L]
+
+    # --- 3. ВЫВОД ЗАГОЛОВКА (ИСПОЛЬЗУЯ ПЕРЕМЕННЫЕ) ---
+    st.markdown(f"""
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
+                {txt['header_title']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">
+                {txt['header_subtitle']}
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # --- 4. ВЫВОД КАРТЫ И ОПИСАНИЯ ---
+    st.markdown(txt["map_title"])
+
+    col_map, col_text = st.columns([1.5, 0.5])
+
+    with col_map:
+        # Логика загрузки фото AGRO.jpg
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(base_dir, "AGRO.jpg")
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
+                data = base64.b64encode(f.read()).decode("utf-8")
+            st.markdown(f'<img src="data:image/jpeg;base64,{data}" style="width:100%; border-radius:10px;">', unsafe_allow_html=True)
+        else:
+            st.error("Файл AGRO.jpg не найден!")
+
+    with col_text:
+        st.markdown("---")
+        st.write(txt["main_text"]) # ТЕПЕРЬ ТУТ ПЕРЕМЕННАЯ
+        st.markdown(txt["crops_title"])
+        for crop in txt["crops"]:
+            st.markdown(f"* {crop}")
+            
+
+
     import os
     import streamlit as st
     import pandas as pd
@@ -3460,7 +3535,26 @@ with tabs[1]:
             "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
         }
     }
- 
+    
+    # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
+    raw_lang = st.session_state.get('lang', 'Русский')
+
+    # 2. Принудительно приводим к коротким кодам, которые понимает ваш словарь
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+    current_lang = lang_map.get(raw_lang, "ru")
+
+    # 3. Теперь вызываем переводы
+    header = HEADER_TRANSLATIONS[current_lang]
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+
+    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
+
+
+
     # Тексты для блока с картой AGRO.jpg
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
@@ -3482,27 +3576,6 @@ with tabs[1]:
             "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
         }
     }
-
- 
-    # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
-    raw_lang = st.session_state.get('lang', 'Русский')
-
-    # 2. Принудительно приводим к коротким кодам, которые понимает ваш словарь
-    lang_map = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
-    current_lang = lang_map.get(raw_lang, "ru")
-
-    # 3. Теперь вызываем переводы
-    header = HEADER_TRANSLATIONS[current_lang]
-    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
-
-    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
-
-
-
 
     # Тексты для графика агроклиматических зон
     AGRO_ZONES_DATA = {
@@ -3561,6 +3634,11 @@ with tabs[1]:
             }
         }
     }
+
+    # --- 2. ЛОГИКА ОПРЕДЕЛЕНИЯ ЯЗЫКА ---
+    raw_lang = st.session_state.get('lang', 'Русский')
+    lang_map = {"Русский": "ru", "Қазақша": "kz", "English": "en"}
+    current_lang = lang_map.get(raw_lang, "ru")
 
     # --- 3. ВЕРХНИЙ ЗАГОЛОВОК ---
     header = HEADER_TRANSLATIONS[current_lang]
