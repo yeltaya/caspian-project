@@ -3883,43 +3883,42 @@ st.markdown(f"""
 
     
 # ПРОГНОЗ ПОГОДЫ   
-with tabs[2]:
-    # 1. Словарь переводов для Гидрометцентра
-    hydro_content = {
-        "ru": {
-            "title": "🌦️ Гидрометцентр Казахстана: Оперативность. Безопасность.",
-            "description": "<b>Гидрометцентр — это сердце Казгидромета.</b> Мы работаем круглосуточно (24/7), чтобы вовремя предупреждать вас о штормах и давать точные прогнозы в режиме реального времени."
-        },
-        "kz": {
-            "title": "🌦️ Қазақстан Гидрометцентрі: Жеделдік. Қауіпсіздік.",
-            "description": "<b>Гидрометцентр — Қазгидрометтің жүрегі.</b> Біз дауыл туралы дер кезінде ескерту және нақты уақыт режимінде дәл болжамдар беру үшін тәулік бойы (24/7) жұмыс істейміз."
-        },
-        "en": {
-            "title": "🌦️ Hydrometcenter of Kazakhstan: Efficiency. Safety.",
-            "description": "<b>The Hydrometcenter is the heart of Kazhydromet.</b> We work 24/7 to warn you about storms in time and provide accurate real-time forecasts."
-        }
+# 1. Словарь переводов для Гидрометцентра
+hydro_content = {
+    "ru": {
+        "title": "🌦️ Гидрометцентр Казахстана: Оперативность. Безопасность.",
+        "description": "<b>Гидрометцентр — это сердце Казгидромета.</b> Мы работаем круглосуточно (24/7), чтобы вовремя предупреждать вас о штормах и давать точные прогнозы в режиме реального времени."
+    },
+    "kz": {
+        "title": "🌦️ Қазақстан Гидрометцентрі: Жеделдік. Қауіпсіздік.",
+        "description": "<b>Гидрометцентр — Қазгидрометтің жүрегі.</b> Біз дауыл туралы дер кезінде ескерту және нақты уақыт режимінде дәл болжамдар беру үшін тәулік бойы (24/7) жұмыс істейміз."
+    },
+    "en": {
+        "title": "🌦️ Hydrometcenter of Kazakhstan: Efficiency. Safety.",
+        "description": "<b>The Hydrometcenter is the heart of Kazhydromet.</b> We work 24/7 to warn you about storms in time and provide accurate real-time forecasts."
     }
+}
 
-    # 2. Логика отображения в табе
-
-        h = hydro_content[lang_code]
-        
-        # Заголовок с кастомным цветом
-        st.markdown(f"""
-            <h1 style='color: #1E3A8A; font-family: sans-serif; font-size: 2.2em;'>
-                {h['title']}
-            </h1>
-        """, unsafe_allow_html=True)
-        
-        # Описание основного подразделения
-        st.markdown(f"""
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 5px solid #2563EB; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);">
-            <p style="font-size: 1.15em; color: #333; margin: 0; line-height: 1.5;">
-                {h['description']}
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+# 2. Логика отображения в табе
+with tabs[2]:
+    h = hydro_content[lang_code]
     
+    # Заголовок с кастомным цветом
+    st.markdown(f"""
+        <h1 style='color: #1E3A8A; font-family: sans-serif; font-size: 2.2em;'>
+            {h['title']}
+        </h1>
+    """, unsafe_allow_html=True)
+    
+    # Описание основного подразделения
+    st.markdown(f"""
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 5px solid #2563EB; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);">
+        <p style="font-size: 1.15em; color: #333; margin: 0; line-height: 1.5;">
+            {h['description']}
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
 
     # Стили для карточек (адаптированные под 4 колонки)
     st.markdown("""
