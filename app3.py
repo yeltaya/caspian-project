@@ -2302,69 +2302,115 @@ with tabs[1]:
             
                         
 
-# --- ПРАВАЯ КОЛОНКА ---
-        with col_right:
-            st.subheader("ℹ️ Государственная сеть")
+    # --- ПРАВАЯ КОЛОНКА: СТАТИСТИКА И ЛЕГЕНДА ---
+    with col_right:
+        # Словарь переводов для интерфейса правой колонки
+        r_labels = {
+            "ru": {
+                "title": "ℹ️ Государственная сеть",
+                "reg_net": "Региональная сеть:",
+                "ms_ams": "Метеостанции и АМС",
+                "total_net": "Общая сеть РК",
+                "total_desc": "<b>351</b> метеорологических станций, из них:<br>• <b>225</b> традиционных<br>• <b>126</b> автоматических",
+                "hint": "Нажмите на любую область на карте для детализации по региону",
+                "legend": "Условные обозначения:",
+                "ms_label": "Традиционные станции (МС)",
+                "ams_label": "Автоматические станции (АМС)",
+                "not_found": "Данные не найдены"
+            },
+            "kz": {
+                "title": "ℹ️ Мемлекеттік желі",
+                "reg_net": "Өңірлік желі:",
+                "ms_ams": "Метеостанциялар және АМС",
+                "total_net": "ҚР жалпы желісі",
+                "total_desc": "<b>351</b> метеорологиялық станция, оның ішінде:<br>• <b>225</b> дәстүрлі<br>• <b>126</b> автоматты",
+                "hint": "Аймақ бойынша толық ақпарат алу үшін картаны басыңыз",
+                "legend": "Шартты белгілер:",
+                "ms_label": "Дәстүрлі станциялар (МС)",
+                "ams_label": "Автоматты станциялар (АМС)",
+                "not_found": "Мәлімет табылмады"
+            },
+            "en": {
+                "title": "ℹ️ State Network",
+                "reg_net": "Regional Network:",
+                "ms_ams": "Weather Stations & AWS",
+                "total_net": "Total RK Network",
+                "total_desc": "<b>351</b> meteorological stations, including:<br>• <b>225</b> traditional<br>• <b>126</b> automatic",
+                "hint": "Click on any region on the map for details",
+                "legend": "Legend:",
+                "ms_label": "Traditional Stations (MS)",
+                "ams_label": "Automatic Stations (AWS)",
+                "not_found": "Data not found"
+            }
+        }
+        
+        # Получаем текущий перевод
+        curr_r = r_labels.get(lang_code, r_labels["ru"])
+        
+        st.subheader(curr_r["title"])
+        
+        if selected_id:
+            # --- БЛОК ВЫБРАННОГО РЕГИОНА ---
+            search_name = str(selected_id).strip().lower()
+            found_data = kaz_stats.get(search_name)
             
-            if selected_id:
-                # --- БЛОК ВЫБРАННОГО РЕГИОНА ---
-                search_name = str(selected_id).strip().lower()
-                found_data = kaz_stats.get(search_name)
-                if not found_data:
-                    found_data = next((val for key, val in kaz_stats.items() if key in search_name or search_name in key), None)
-                
-                if found_data:
-                    st.markdown(f"""
-                        <div style="background:#004A99; color:white; padding:20px; border-radius:15px; margin-bottom:15px; text-align:center">
-                            <span style="font-size:1.1em; font-weight:bold">Региональная сеть:</span><br>
-                            <span style="font-size:1.8em">🏢 {found_data['ms']} | 📡 {found_data['ams']}</span>
-                            <div style="font-size:0.8em; opacity:0.8; margin-top:5px;">Метеостанции и АМС</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                    m1, m2 = st.columns(2)
-                    with m1:
-                        st.metric("❄️ Т.Мин", f"{found_data['t_min']}°")
-                        st.metric("💨 Ветер", f"{found_data['wind']} м/с")
-                    with m2:
-                        st.metric("🔥 Т.Макс", f"{found_data['t_max']}°")
-                        st.metric("🌡️ Давл.", f"{found_data['press']}")
-                else:
-                    st.warning(f"Данные для '{selected_id}' не найдены.")
+            # Если прямого ключа нет, ищем частичное совпадение
+            if not found_data:
+                found_data = next((val for key, val in kaz_stats.items() if key in search_name or search_name in key), None)
             
-            else:
-                # --- ОБЩАЯ СТАТИСТИКА (ПО УМОЛЧАНИЮ) ---
+            if found_data:
+                # Карточка региона (Цвет основной: #004A99)
                 st.markdown(f"""
-                    <div style="background:#f0f2f6; padding:20px; border-radius:15px; border: 1px dashed #004A99;">
-                        <h4 style="margin:0; color:#004A99;">Общая сеть РК</h4>
-                        <p style="font-size:1.1em; margin:15px 0; line-height:1.5;">
-                            <b>351</b> метеорологических станций, из них:<br>
-                            • <b>225</b> традиционных<br>
-                            • <b>126</b> автоматических
-                        </p>
-                        <p style="font-size:0.85em; color:#546e7a; font-style:italic; border-top: 1px solid #ccc; padding-top:10px; margin-top:10px;">
-                            Нажмите на любую область на карте для детализации по региону
-                        </p>
+                    <div style="background:#004A99; color:white; padding:20px; border-radius:15px; margin-bottom:15px; text-align:center">
+                        <span style="font-size:1.1em; font-weight:bold">{curr_r['reg_net']}</span><br>
+                        <span style="font-size:1.8em">🏢 {found_data['ms']} | 📡 {found_data['ams']}</span>
+                        <div style="font-size:0.8em; opacity:0.8; margin-top:5px;">{curr_r['ms_ams']}</div>
                     </div>
                 """, unsafe_allow_html=True)
-
-            # --- ЛЕГЕНДА (ОТОБРАЖАЕТСЯ ВСЕГДА ВНИЗУ КОЛОНКИ) ---
-            st.markdown("""
-                <div style="margin-top: 25px; padding: 10px; border-radius: 10px; background: white; border: 1px solid #e6e9ef;">
-                    <div style="font-size: 0.85em; font-weight: bold; color: #546e7a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-                        Условные обозначения:
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                        <div style="width: 12px; height: 12px; background-color: blue; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 0.9em; color: #1a1c1f;">Традиционные станции (МС)</span>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 12px; height: 12px; background-color: green; border-radius: 50%; margin-right: 10px;"></div>
-                        <span style="font-size: 0.9em; color: #1a1c1f;">Автоматические станции (АМС)</span>
-                    </div>
+                
+                # Метрики (используем стандартные st.metric)
+                m1, m2 = st.columns(2)
+                with m1:
+                    st.metric("❄️ T.Min", f"{found_data['t_min']}°")
+                    st.metric("💨 Wind", f"{found_data['wind']} m/s")
+                with m2:
+                    st.metric("🔥 T.Max", f"{found_data['t_max']}°")
+                    st.metric("🌡️ Pres.", f"{found_data['press']}")
+            else:
+                st.warning(f"{curr_r['not_found']}: {selected_id}")
+                
+        else:
+            # --- ОБЩАЯ СТАТИСТИКА (ПО УМОЛЧАНИЮ) ---
+            st.markdown(f"""
+                <div style="background:#f0f2f6; padding:20px; border-radius:15px; border: 1px dashed #004A99;">
+                    <h4 style="margin:0; color:#004A99;">{curr_r['total_net']}</h4>
+                    <p style="font-size:1.1em; margin:15px 0; line-height:1.5;">
+                        {curr_r['total_desc']}
+                    </p>
+                    <p style="font-size:0.85em; color:#546e7a; font-style:italic; border-top: 1px solid #ccc; padding-top:10px; margin-top:10px;">
+                        {curr_r['hint']}
+                    </p>
                 </div>
             """, unsafe_allow_html=True)
-            
+
+        # --- ЛЕГЕНДА (ВСЕГДА ВНИЗУ) ---
+        st.markdown(f"""
+            <div style="margin-top: 25px; padding: 15px; border-radius: 10px; background: white; border: 1px solid #e6e9ef; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <div style="font-size: 0.85em; font-weight: bold; color: #546e7a; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    {curr_r['legend']}
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <div style="width: 12px; height: 12px; background-color: #1565C0; border-radius: 50%; margin-right: 12px;"></div>
+                    <span style="font-size: 0.9em; color: #1a1c1f;">{curr_r['ms_label']}</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 12px; height: 12px; background-color: #2E7D32; border-radius: 50%; margin-right: 12px;"></div>
+                    <span style="font-size: 0.9em; color: #1a1c1f;">{curr_r['ams_label']}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    
           
 
         # --- 1. ПОДГОТОВКА ДАННЫХ ---
