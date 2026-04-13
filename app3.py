@@ -3636,7 +3636,8 @@ with tabs[1]:
                AGRO_DETAILS["agro_3"]["stats"][lang], 
                AGRO_DETAILS["agro_3"]["img_key"])
 
-
+    st.markdown("---")
+    
     import os
     import streamlit as st
     import base64
