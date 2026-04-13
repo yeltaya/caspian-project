@@ -3517,68 +3517,6 @@ with tabs[1]:
             
 
 
-    import os
-    import streamlit as st
-    import pandas as pd
-    import plotly.graph_objects as go
-    import base64
-
-    # Тексты для заголовка
-    HEADER_TRANSLATIONS = {
-        "ru": {
-            "title": "Агрометеорологический мониторинг",
-            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
-        },
-        "kz": {
-            "title": "Агрометеорологиялық мониторинг",
-            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
-        },
-        "en": {
-            "title": "Agrometeorological Monitoring",
-            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
-        }
-    }
-    
-    # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
-    raw_lang = st.session_state.get('lang', 'Русский')
-
-    # 2. Принудительно приводим к коротким кодам, которые понимает ваш словарь
-    lang_map = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
-    current_lang = lang_map.get(raw_lang, "ru")
-
-    # 3. Теперь вызываем переводы
-    header = HEADER_TRANSLATIONS[current_lang]
-    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
-
-    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
-
-
-
-    # Тексты для блока с картой AGRO.jpg
-    AGRO_MAP_TRANSLATIONS = {
-        "ru": {
-            "title": "### 🗺️ Агрометеорологические наблюдения",
-            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами.",
-            "crops_title": "**Основные культуры:**",
-            "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
-        },
-        "kz": {
-            "title": "### 🗺️ Агрометеорологиялық бақылаулар",
-            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын бақылау кіреді.",
-            "crops_title": "**Негізгі дақылдар:**",
-            "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
-        },
-        "en": {
-            "title": "### 🗺️ Agrometeorological Observations",
-            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops, soil condition and moisture, as well as key meteorological parameters.",
-            "crops_title": "**Main Crops:**",
-            "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
-        }
-    }
 
     # Тексты для графика агроклиматических зон
     AGRO_ZONES_DATA = {
