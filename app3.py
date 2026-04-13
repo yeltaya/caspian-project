@@ -3448,10 +3448,10 @@ with tabs[1]:
 
 
     if 'lang' not in st.session_state:
-        st.session_state.lang = 'RU'
+        st.session_state.lang = 'ru'
 
     # Выбор языка
-    lang_choice = st.selectbox("Language", ["RU", "KZ", "EN"], key="language_selector")
+    lang_choice = st.selectbox("Language", ["ru", "kz", "en"], key="language_selector")
     st.session_state.lang = lang_choice
                     
     import streamlit as st
