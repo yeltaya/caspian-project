@@ -3599,79 +3599,85 @@ with tabs[1]:
         }
     }
 
-        # --- 2. ЛОГИКА ОТОБРАЖЕНИЯ ---
-        lang = lang_code if 'lang_code' in locals() else "ru"
-        a_col1, a_col2, a_col3 = st.columns(3)
+    # --- 2. ЛОГИКА ОТОБРАЖЕНИЯ ---
+    lang = lang_code if 'lang_code' in locals() else "ru"
+    a_col1, a_col2, a_col3 = st.columns(3)
 
-        # Блок 1
-        draw_block(a_col1, "agro_btn_1", 
-                   AGRO_DETAILS["agro_1"]["title"][lang], 
-                   AGRO_DETAILS["agro_1"]["icon"],
-                   AGRO_DETAILS["agro_1"]["desc"][lang],
-                   AGRO_DETAILS["agro_1"]["stats"][lang], 
-                   AGRO_DETAILS["agro_1"]["img_key"])
+    # Блок 1
+    draw_block(a_col1, "agro_btn_1", 
+               AGRO_DETAILS["agro_1"]["title"][lang], 
+               AGRO_DETAILS["agro_1"]["icon"],
+               AGRO_DETAILS["agro_1"]["desc"][lang],
+               AGRO_DETAILS["agro_1"]["stats"][lang], 
+               AGRO_DETAILS["agro_1"]["img_key"])
 
-        # Блок 2
-        draw_block(a_col2, "agro_btn_2", 
-                   AGRO_DETAILS["agro_2"]["title"][lang], 
-                   AGRO_DETAILS["agro_2"]["icon"],
-                   AGRO_DETAILS["agro_2"]["desc"][lang],
-                   AGRO_DETAILS["agro_2"]["stats"][lang], 
-                   AGRO_DETAILS["agro_2"]["img_key"])
+    # Блок 2
+    draw_block(a_col2, "agro_btn_2", 
+               AGRO_DETAILS["agro_2"]["title"][lang], 
+               AGRO_DETAILS["agro_2"]["icon"],
+               AGRO_DETAILS["agro_2"]["desc"][lang],
+               AGRO_DETAILS["agro_2"]["stats"][lang], 
+               AGRO_DETAILS["agro_2"]["img_key"])
 
-        # Блок 3
-        draw_block(a_col3, "agro_btn_3", 
-                   AGRO_DETAILS["agro_3"]["title"][lang], 
-                   AGRO_DETAILS["agro_3"]["icon"],
-                   AGRO_DETAILS["agro_3"]["desc"][lang],
-                   AGRO_DETAILS["agro_3"]["stats"][lang], 
-                   AGRO_DETAILS["agro_3"]["img_key"])
+    # Блок 3
+    draw_block(a_col3, "agro_btn_3", 
+               AGRO_DETAILS["agro_3"]["title"][lang], 
+               AGRO_DETAILS["agro_3"]["icon"],
+               AGRO_DETAILS["agro_3"]["desc"][lang],
+               AGRO_DETAILS["agro_3"]["stats"][lang], 
+               AGRO_DETAILS["agro_3"]["img_key"])
 
 
     import os
     import streamlit as st
     import base64
 
-    # 1. Словарь (Ключи строго ru, kz, en)
+    # 1. Словарь ОБЯЗАТЕЛЬНО должен быть определен ПЕРЕД функцией
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
             "title": "### 🗺️ Агрометеорологические наблюдения",
-            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур...",
+            "main_text": "Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами, оказывающими влияние на жизнедеятельность растений и животных – температурой и влажностью воздуха, скоростью и направлением ветра, видом и количеством осадков, снежным покровом, атмосферными явлениями и суммарной солнечной радиацией.",
             "crops_title": "**Основные культуры:**",
             "crops": ["🌾 Зерновые", "🌽 Пропашные", "🌻 Масличные", "🍎 Плодовые"]
         },
         "kz": {
             "title": "### 🗺️ Агрометеорологиялық бақылаулар",
-            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау...",
+            "main_text": "Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың жай-күйі мен ылғалдылығын, сондай-ақ өсімдіктер мен жануарлардың тіршілік әрекетіне әсер ететін негізгі метеорологиялық параметрлерді – ауа температурасы мен ылғалдылығын, желдің жылдамдығы мен бағытын, жауын-шашынның түрі мен мөлшерін, қар жамылғысын, атмосфералық құбылыстарды және жиынтық күн радиациясын бақылау кіреді.",
             "crops_title": "**Негізгі дақылдар:**",
             "crops": ["🌾 Дәнді дақылдар", "🌽 Пропашные дақылдар", "🌻 Майлы дақылдар", "🍎 Жеміс дақылдары"]
         },
         "en": {
             "title": "### 🗺️ Agrometeorological Observations",
-            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops...",
+            "main_text": "Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops (including plant parameter measurements), soil condition and moisture, as well as key meteorological parameters affecting plants and animals — air temperature and humidity, wind speed and direction, type and amount of precipitation, snow cover, atmospheric phenomena, and total solar radiation.",
             "crops_title": "**Main Crops:**",
             "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
         }
     }
 
     def render_final_agro_map():
-        # --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ ---
-        # Если в гидрологии перевод работает, значит мы должны использовать ту же логику.
-        # Проверяем, что именно лежит в session_state
-        
+        # Проверяем, что лежит в session_state
         raw_lang = st.session_state.get('lang_code', 'ru')
         
-        # Если вдруг в lang_code лежит полное слово "Русский" или "Қазақша"
-        # нам нужно превратить его в "ru" или "kz"
-        mapping = {"Русский": "ru", "Қазақша": "kz", "English": "en", "ru": "ru", "kz": "kz", "en": "en"}
+        # Маппинг для синхронизации с вашим lang_map
+        # Это гарантирует, что даже если в сессии лежит "Қазақша", мы выберем "kz"
+        mapping = {
+            "Русский": "ru", 
+            "Қазақша": "kz", 
+            "English": "en", 
+            "ru": "ru", 
+            "kz": "kz", 
+            "en": "en"
+        }
+        
         current_lang = mapping.get(raw_lang, "ru").lower()
         
-        # -------------------------------
-
+        # Берем контент из словаря
         content = AGRO_MAP_TRANSLATIONS.get(current_lang, AGRO_MAP_TRANSLATIONS["ru"])
 
+        # Отрисовка заголовка
         st.markdown(content["title"])
         
+        # Путь к изображению
         base_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(base_dir, "AGRO.jpg")
         
@@ -3690,7 +3696,7 @@ with tabs[1]:
                     unsafe_allow_html=True
                 )
             else:
-                st.warning("Файл AGRO.jpg не найден")
+                st.warning(f"Файл AGRO.jpg не найден по пути: {img_path}")
                 
         with col_text:
             st.markdown("---")
@@ -3699,6 +3705,7 @@ with tabs[1]:
             for crop in content["crops"]:
                 st.markdown(f"* {crop}")
 
+    # Вызов функции (убедитесь, что нет лишних отступов перед вызовом)
     render_final_agro_map()
 
 
