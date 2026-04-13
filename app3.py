@@ -2877,29 +2877,58 @@ with tabs[1]:
     st.markdown("<br>", unsafe_allow_html=True)
  
  
-  
+      
         
-        
-            # 7. ГИДРОЛОГИЧЕСКИЙ МОНИТОРИНГ
+  # 7. ГИДРОЛОГИЧЕСКИЙ МОНИТОРИНГ        
+    # 1. СЛОВАРЬ ПЕРЕВОДОВ (поместите это в начало функции или скрипта)
+    hydro_translations = {
+        "ru": {
+            "title": "Гидрологический мониторинг",
+            "subtitle": "Единая государственная система наблюдений за состоянием водных объектов и ведение водного кадастра РК",
+            "posts": "Гидропостов",
+            "basins": "Бассейнов",
+            "century": "Вековых поста"
+        },
+        "kz": {
+            "title": "Гидрологиялық мониторинг",
+            "subtitle": "Су объектілерінің жай-күйін бақылаудың бірыңғай мемлекеттік жүйесі және ҚР су кадастрын жүргізу",
+            "posts": "Гидробекеттер",
+            "basins": "Алаптар",
+            "century": "Ғасырлық бекет"
+        },
+        "en": {
+            "title": "Hydrological Monitoring",
+            "subtitle": "Unified state system for monitoring water bodies and maintaining the water cadastre of the RK",
+            "posts": "Hydroposts",
+            "basins": "Basins",
+            "century": "Century posts"
+        }
+    }
+
+    # 2. ПОЛУЧЕНИЕ ТЕКУЩЕГО ПЕРЕВОДА
+    # Если lang_code не определен, по умолчанию ставим 'ru'
+    current_lang = lang_code if 'lang_code' in locals() else "ru"
+    t = hydro_translations.get(current_lang, hydro_translations["ru"])
+
     # --- 1. ЗАГОЛОВОК СЕКЦИИ ---
-    st.markdown("""
+    st.markdown(f"""
         <div style="text-align:center; margin: 40px 0 20px 0;">
             <h2 style="color: #004A99; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
-                Гидрологический мониторинг
+                {t['title']}
             </h2>
-            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">Единая государственная система наблюдений за состоянием водных объектов и ведение водного кадастра РК</p>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">{t['subtitle']}</p>
         </div>
     """, unsafe_allow_html=True)
 
     # --- 2. HIGHLIGHTS (Верхние карточки) ---
-    st.markdown("""
+    st.markdown(f"""
         <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 30px;">
             <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #003366; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 1.8em;">🏢</span>
                     <div>
                         <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">442</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Гидропостов</div>
+                        <div style="font-size: 0.9em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{t['posts']}</div>
                     </div>
                 </div>
             </div>
@@ -2908,7 +2937,7 @@ with tabs[1]:
                     <span style="font-size: 1.8em;">📊</span>
                     <div>
                         <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">8</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Бассейнов</div>
+                        <div style="font-size: 0.9em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{t['basins']}</div>
                     </div>
                 </div>
             </div>
@@ -2917,13 +2946,13 @@ with tabs[1]:
                     <span style="font-size: 1.8em;">🏛️</span>
                     <div>
                         <div style="font-size: 1.5em; font-weight: 800; color: #003366; line-height: 1.1;">24</div>
-                        <div style="font-size: 1.0em; color: #546e7a; text-transform: uppercase; font-weight: 700;">Вековых поста</div>
+                        <div style="font-size: 0.9em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{t['century']}</div>
                     </div>
                 </div>
             </div>
         </div>
     """, unsafe_allow_html=True)
-            
+
             
             # 1. Словарь с путями к фото
     IMAGE_PATHS = {
