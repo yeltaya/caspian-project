@@ -290,6 +290,14 @@ st.markdown(f"""
 col_l, col_r = st.columns([4, 1])
 with col_r:
     lang = st.selectbox("Язык", ["Русский", "Қазақша", "English"], label_visibility="collapsed")
+    
+lang_map = {
+    "Русский": "ru",
+    "Қазақша": "kz",
+    "English": "en"
+}
+lang_code = lang_map.get(lang, "ru")
+    
 
 # 2. Определяем словари названий
 tabs_ru = ["🔍 Обзор", "📊 Мониторинг", "🌤️ Прогноз погоды", "🌾 Агрометео", "📈 Гидропрогнозы", "💧 Водные ресурсы", "🌊 Каспийское море", "🇰🇿 Климат", "🏭 Экология", "🌐 Сотрудничество"]
