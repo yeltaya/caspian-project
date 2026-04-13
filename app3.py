@@ -3445,6 +3445,22 @@ with tabs[1]:
     import plotly.graph_objects as go
     import base64
 
+    # Тексты для заголовка
+    HEADER_TRANSLATIONS = {
+        "ru": {
+            "title": "Агрометеорологический мониторинг",
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
+        },
+        "kz": {
+            "title": "Агрометеорологиялық мониторинг",
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
+        },
+        "en": {
+            "title": "Agrometeorological Monitoring",
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
+        }
+    }
+    
     # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
     raw_lang = st.session_state.get('lang', 'Русский')
 
@@ -3462,21 +3478,7 @@ with tabs[1]:
 
     # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
 
-    # Тексты для заголовка
-    HEADER_TRANSLATIONS = {
-        "ru": {
-            "title": "Агрометеорологический мониторинг",
-            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/"
-        },
-        "kz": {
-            "title": "Агрометеорологиялық мониторинг",
-            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/"
-        },
-        "en": {
-            "title": "Agrometeorological Monitoring",
-            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
-        }
-    }
+
 
     # Тексты для блока с картой AGRO.jpg
     AGRO_MAP_TRANSLATIONS = {
