@@ -3460,26 +3460,7 @@ with tabs[1]:
             "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/"
         }
     }
-    
-    # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
-    raw_lang = st.session_state.get('lang', 'Русский')
-
-    # 2. Принудительно приводим к коротким кодам, которые понимает ваш словарь
-    lang_map = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
-    current_lang = lang_map.get(raw_lang, "ru")
-
-    # 3. Теперь вызываем переводы
-    header = HEADER_TRANSLATIONS[current_lang]
-    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
-
-    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
-
-
-
+ 
     # Тексты для блока с картой AGRO.jpg
     AGRO_MAP_TRANSLATIONS = {
         "ru": {
@@ -3501,6 +3482,27 @@ with tabs[1]:
             "crops": ["🌾 Cereals", "🌽 Row Crops", "🌻 Oilseeds", "🍎 Fruit Crops"]
         }
     }
+
+ 
+    # 1. Берем точное значение из переключателя (как мы видели в вашем JSON)
+    raw_lang = st.session_state.get('lang', 'Русский')
+
+    # 2. Принудительно приводим к коротким кодам, которые понимает ваш словарь
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+    current_lang = lang_map.get(raw_lang, "ru")
+
+    # 3. Теперь вызываем переводы
+    header = HEADER_TRANSLATIONS[current_lang]
+    agro_content = AGRO_MAP_TRANSLATIONS[current_lang]
+
+    # --- 1. ВСЕ СЛОВАРИ ПЕРЕВОДОВ ---
+
+
+
 
     # Тексты для графика агроклиматических зон
     AGRO_ZONES_DATA = {
