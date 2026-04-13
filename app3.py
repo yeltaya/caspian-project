@@ -3660,7 +3660,7 @@ with tabs[1]:
     current_lang = lang_map.get(raw_lang, "ru")
 
     # 2. Выбираем нужный пакет текстов (используем словарь AGRO_ZONES_DATA из предыдущего ответа)
-    lang_content = AGRO_ZONES_DATA[current_lang]
+    lang_content = AGRO_MAP_TRANSLATIONS[current_lang]
 
 
     st.write(st.session_state)
