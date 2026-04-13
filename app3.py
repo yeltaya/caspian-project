@@ -2086,183 +2086,184 @@ with tabs[1]:
     
     
     @st.cache_data
-    def load_data(path):
-        if not os.path.exists(path): 
-            return None
-        gdf = gpd.read_file(path)
-        
-        # Убираем общий контур страны, если он мешает
-        if 'ADMO_EN' in gdf.columns: 
-            gdf = gdf[gdf['ADMO_EN'] != 'KAZ']
-        
-        # Определяем колонку с ID (обычно ADM1_EN)
-        name_col = 'ADM1_EN' if 'ADM1_EN' in gdf.columns else gdf.select_dtypes(include=['object']).columns[0]
-        
-        def get_ru_name(val):
-            # Чистим входящее имя: в нижний регистр и убираем лишние пробелы
-            clean_key = str(val).strip().lower()
-            # Пытаемся найти в словаре kaz_stats
-            found = kaz_stats.get(clean_key)
-            if not found:
-                # Если точного совпадения нет, ищем частичное (например, 'aktobe' в 'aktobe region')
-                found = next((v for k, v in kaz_stats.items() if k in clean_key or clean_key in k), None)
-            
-            # Возвращаем русское имя или само значение с заглавной буквы, если не нашли
-            return found['ru'] if found else str(val).title()
-
-        # Создаем колонку с гарантированно русским названием для тултипов и заголовков
-        gdf['RUS_NAME'] = gdf[name_col].apply(get_ru_name)
-        
-        return gdf.to_crs(epsg=4326), name_col
-        
-        
-
-    result = load_data(SHP_PATH)
-
-    if result:
-        gdf, name_col = result
-        
-        # ТРЕХБЛОЧНЫЙ ЛЕЙАУТ
-        col_left, col_mid, col_right = st.columns([1.1, 1.3, 0.7], gap="medium")
-
-        # --- ЛЕВАЯ КОЛОНКА ---
-# --- ЛЕВАЯ КОЛОНКА ---
-        with col_left:
-            st.subheader("🇰🇿 Казахстан")
-            m_full = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
-            folium.GeoJson(
-                gdf,
-                style_function=lambda x: {
-                    'fillColor': '#e3f2fd', 'color': '#004A99', 'weight': 1, 'fillOpacity': 0.5
-                },
-                # ЗДЕСЬ: теперь при наведении будет русский язык
-                tooltip=folium.GeoJsonTooltip(fields=['RUS_NAME'], aliases=['Область:']) 
-            ).add_to(m_full)
-            # ... далее ваш код st_folium ...
-            
-            
-            # Важно: фиксированная высота для соответствия CSS
-            out_full = st_folium(m_full, use_container_width=True, height=500, key="map_kaz_main")
-            
-            if out_full and out_full.get("last_active_drawing"):
-                new_id = out_full["last_active_drawing"]["properties"].get(name_col)
-                if st.session_state.selected_region_id != new_id:
-                    st.session_state.selected_region_id = new_id
-                    st.rerun()
-
-
-        import pandas as pd
-        import os
-        import streamlit as st
-        import folium
-        from streamlit_folium import st_folium
-        # ОПРЕДЕЛЯЕМ БАЗОВЫЙ ПУТЬ (Добавьте это обязательно!)
-        base_path = os.path.dirname(os.path.abspath(__file__))
-
-        # --- ПУТЬ К ФАЙЛУ ---
-        XLSX_PATH = os.path.join(base_path, "MS tizimi.xlsx")
-
-        @st.cache_data
-        def load_stations_from_excel(path):
-            if not os.path.exists(path):
+        def load_data(path):
+            if not os.path.exists(path): 
                 return None
-            # Читаем Excel, пропуская первую пустую строку заголовка
-            df = pd.read_excel(path, skiprows=1)
+            gdf = gpd.read_file(path)
             
-            # Очищаем названия столбцов от лишних пробелов
-            df.columns = [str(c).strip() for c in df.columns]
+            # Убираем общий контур страны (если есть)
+            if 'ADMO_EN' in gdf.columns: 
+                gdf = gdf[gdf['ADMO_EN'] != 'KAZ']
             
-            # Заполняем объединенные ячейки в колонке ФИЛИАЛ
-            if 'ФИЛИАЛ' in df.columns:
-                df['ФИЛИАЛ'] = df['ФИЛИАЛ'].ffill()
+            # Определяем колонку с ID (обычно ADM1_EN)
+            name_col = 'ADM1_EN' if 'ADM1_EN' in gdf.columns else gdf.select_dtypes(include=['object']).columns[0]
+            
+            # Функция для получения названий на всех языках сразу
+            def get_all_names(val):
+                clean_key = str(val).strip().lower()
+                found = kaz_stats.get(clean_key)
+                if not found:
+                    found = next((v for k, v in kaz_stats.items() if k in clean_key or clean_key in k), None)
                 
-            return df
+                if found:
+                    return found['ru'], found['kz'], found['en']
+                return str(val).title(), str(val).title(), str(val).title()
 
-        df_stations = load_stations_from_excel(XLSX_PATH)
+            # Создаем отдельные колонки под каждый язык для GeoJSON
+            names_df = gdf[name_col].apply(get_all_names).apply(pd.Series)
+            names_df.columns = ['NAME_RU', 'NAME_KZ', 'NAME_EN']
+            gdf = pd.concat([gdf, names_df], axis=1)
+            
+            return gdf.to_crs(epsg=4326), name_col
 
-                # --- СРЕДНЯЯ КОЛОНКА ---
-        with col_mid:
-            selected_id = st.session_state.selected_region_id
-            if selected_id:
-                target_data = gdf[gdf[name_col] == selected_id]
+        result = load_data(SHP_PATH)
+
+        if result:
+            gdf, name_col = result
+            
+            # --- ТРЕХБЛОЧНЫЙ ЛЕЙАУТ ---
+            col_left, col_mid, col_right = st.columns([1.1, 1.3, 0.7], gap="medium")
+
+            # Определяем, какую колонку имен использовать для тултипов (на основе lang)
+            # Предполагаем, что lang_code это 'ru', 'kz' или 'en'
+            lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
+            active_name_col = lang_to_col.get(lang_code, "NAME_RU")
+
+            # --- ЛЕВАЯ КОЛОНКА ---
+            with col_left:
+                # t["main_header"] — заголовок из словаря переводов интерфейса
+                st.subheader(t["main_header"])
                 
-                if not target_data.empty:
-                    target_row = target_data.iloc[0]
-                    st.subheader(f"📍 {target_row['RUS_NAME'].upper()}")
+                m_full = folium.Map(location=[48.0, 67.0], zoom_start=4, tiles="cartodbpositron")
+                
+                folium.GeoJson(
+                    gdf,
+                    style_function=lambda x: {
+                        'fillColor': '#e3f2fd', 'color': '#004A99', 'weight': 1, 'fillOpacity': 0.5
+                    },
+                    highlight_function=lambda x: {'fillColor': '#004A99', 'fillOpacity': 0.2},
+                    tooltip=folium.GeoJsonTooltip(
+                        fields=[active_name_col], 
+                        aliases=[t["tooltip_alias"]], # "Область:" / "Облыс:" / "Region:"
+                        localize=True
+                    )
+                ).add_to(m_full)
+                
+                # Рендер карты
+                out_full = st_folium(m_full, use_container_width=True, height=500, key="map_kaz_main")
+                
+                # Обработка клика
+                if out_full and out_full.get("last_active_drawing"):
+                    new_id = out_full["last_active_drawing"]["properties"].get(name_col)
+                    if st.session_state.selected_region_id != new_id:
+                        st.session_state.selected_region_id = new_id
+                        st.rerun()
+                        
+
+    # --- СРЕДНЯЯ КОЛОНКА: ДЕТАЛИЗАЦИЯ РЕГИОНА ---
+    with col_mid:
+        selected_id = st.session_state.get("selected_region_id")
+        
+        if selected_id:
+            # Фильтруем GDF по выбранному ID
+            target_data = gdf[gdf[name_col] == selected_id]
+            
+            if not target_data.empty:
+                target_row = target_data.iloc[0]
+                
+                # Динамический заголовок на текущем языке
+                lang_to_col = {"ru": "NAME_RU", "kz": "NAME_KZ", "en": "NAME_EN"}
+                current_lang_col = lang_to_col.get(lang_code, "NAME_RU")
+                st.subheader(f"📍 {target_row[current_lang_col].upper()}")
+                
+                # Создаем карту региона, центрированную на его геометрии
+                center = target_row.geometry.centroid
+                m_reg = folium.Map(location=[center.y, center.x], zoom_start=6, tiles="cartodbpositron")
+                
+                # Отрисовываем границы только этого региона
+                folium.GeoJson(
+                    target_row.geometry,
+                    style_function=lambda x: {
+                        'fillColor': '#004A99', 
+                        'color': '#004A99', 
+                        'weight': 2, 
+                        'fillOpacity': 0.05
+                    }
+                ).add_to(m_reg)
+
+                # --- ОТОБРАЖЕНИЕ СТАНЦИЙ ИЗ EXCEL ---
+                if df_stations is not None:
+                    # Используем RUS_NAME для сопоставления с Excel (т.к. manual_map на русском)
+                    region_name_ru = target_row['NAME_RU'].lower().strip()
                     
-                    center = target_row.geometry.centroid
-                    m_reg = folium.Map(location=[center.y, center.x], zoom_start=6, tiles="cartodbpositron")
+                    # Словарь связки (Shapefile -> Excel "ФИЛИАЛ")
+                    manual_map = {
+                        "алматы": "г.Алматы",
+                        "жетысу": "Жетису",
+                        "жетісу": "Жетису",
+                        "северо-казахстан": "СКО",
+                        "западно-казахстан": "ЗКО",
+                        "восточно-казахстан": "ВКО",
+                        "абай": "Абай",
+                        "улытау": "Улытау",
+                        "астана": "ЦА",
+                        "шымкент": "Шымкент",
+                        "туркестан": "Туркестан",
+                        "караганд": "Караганд",
+                        "акмол": "Акмол"
+                    }
                     
-                    folium.GeoJson(
-                        target_row.geometry,
-                        style_function=lambda x: {'fillColor': '#004A99', 'color': '#004A99', 'weight': 2, 'fillOpacity': 0.05}
-                    ).add_to(m_reg)
+                    # Поиск термина для фильтрации в Excel
+                    search_term = None
+                    for key, val in manual_map.items():
+                        if key in region_name_ru:
+                            search_term = val
+                            break
+                    
+                    if not search_term:
+                        search_term = region_name_ru.split()[0][:5].capitalize()
 
-                    if df_stations is not None:
-                        # Получаем чистое название из карты
-                        region_name = target_row['RUS_NAME'].lower().strip()
+                    # Фильтрация станций по филиалу
+                    region_stations = df_stations[df_stations['ФИЛИАЛ'].str.contains(search_term, case=False, na=False)]
+                    
+                    # Поиск колонок с координатами (защита от вариаций в названиях)
+                    try:
+                        col_lat = [c for c in df_stations.columns if 'с.ш' in c.lower() or 'lat' in c.lower()][0]
+                        col_lon = [c for c in df_stations.columns if 'в.д' in c.lower() or 'long' in c.lower()][0]
                         
-                        # --- УЛУЧШЕННЫЙ МАППИНГ ДЛЯ ПОИСКА В EXCEL ---
-                        # Этот словарь связывает имя из Shapefile с тем, как оно написано в колонке ФИЛИАЛ в Excel
-                        manual_map = {
-                            "алматинская": "г.Алматы",
-                            "жетысу": "Жетису",
-                            "жетісу": "Жетису",
-                            "северо-казахстан": "СКО",
-                            "западно-казахстан": "ЗКО",
-                            "восточно-казахстан": "ВКО",
-                            "абай": "Абай",
-                            "улытау": "Улытау",
-                            "астана": "ЦА",
-                            "шымкент": "Шымкент",
-                            "туркестан": "Туркестан",
-                            "карагандин": "Караганд"
-                        }
-                        
-                        # Ищем подходящий поисковый запрос
-                        search_term = None
-                        for key, val in manual_map.items():
-                            if key in region_name:
-                                search_term = val
-                                break
-                        
-                        # Если в словаре нет (например, Павлодар, Актобе), берем корень слова
-                        if not search_term:
-                            search_term = region_name.split()[0][:5].capitalize() # Берем первые 5 букв
-
-                        # Фильтрация станций
-                        region_stations = df_stations[df_stations['ФИЛИАЛ'].str.contains(search_term, case=False, na=False)]
-                        
-                        # Если совсем ничего не нашли, попробуем очень широкий поиск по 3 буквам
-                        if region_stations.empty:
-                             region_stations = df_stations[df_stations['ФИЛИАЛ'].str.contains(search_term[:3], case=False, na=False)]
-
                         for _, row in region_stations.iterrows():
-                            try:
-                                # Динамический поиск колонок координат (на случай пробелов в Excel)
-                                col_lat = [c for c in df_stations.columns if 'с.ш' in c.lower()][0]
-                                col_lon = [c for c in df_stations.columns if 'в.д' in c.lower()][0]
+                            lat = row[col_lat]
+                            lon = row[col_lon]
+                            
+                            if pd.notna(lat) and pd.notna(lon):
+                                # Логика цвета: АМС - зеленый, МС - синий
+                                st_type = str(row.get('Вид', 'МС')).strip().upper()
+                                dot_color = "#2E7D32" if "АМС" in st_type else "#1565C0"
                                 
-                                lat, lon = float(row[col_lat]), float(row[col_lon])
-                                
-                                if pd.notna(lat) and pd.notna(lon):
-                                    st_type = str(row['Вид']).strip().upper()
-                                    dot_color = "green" if "АМС" in st_type else "blue"
-                                    
-                                    folium.CircleMarker(
-                                        location=[lat, lon],
-                                        radius=6,
-                                        color=dot_color,
-                                        fill=True,
-                                        fill_color=dot_color,
-                                        fill_opacity=0.8,
-                                        popup=f"<b>{row['Станция']}</b><br>Тип: {st_type}<br>Филиал: {row['ФИЛИАЛ']}",
-                                        tooltip=f"{row['Станция']} ({st_type})"
-                                    ).add_to(m_reg)
-                            except:
-                                continue
-                    
-                    st_folium(m_reg, use_container_width=True, height=500, key=f"map_reg_{selected_id}")
+                                folium.CircleMarker(
+                                    location=[float(lat), float(lon)],
+                                    radius=5,
+                                    color=dot_color,
+                                    fill=True,
+                                    fill_color=dot_color,
+                                    fill_opacity=0.7,
+                                    popup=folium.Popup(
+                                        f"<b>{row.get('Станция', 'Без названия')}</b><br>"
+                                        f"Тип: {st_type}<br>"
+                                        f"Филиал: {row.get('ФИЛИАЛ', '-')}", 
+                                        max_width=200
+                                    ),
+                                    tooltip=f"{row.get('Станция', 'Станция')} ({st_type})"
+                                ).add_to(m_reg)
+                    except Exception as e:
+                        st.warning(f"Ошибка при поиске координат в Excel: {e}")
+
+                # Рендер карты региона
+                st_folium(m_reg, use_container_width=True, height=500, key=f"map_reg_{selected_id}")
+        else:
+            # Если регион не выбран, показываем заглушку
+            st.info("Выберите область на карте Казахстана слева, чтобы увидеть список станций.")
+            
                     
 
 # --- ПРАВАЯ КОЛОНКА ---
