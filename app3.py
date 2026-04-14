@@ -5343,61 +5343,48 @@ with tabs[3]:
     show_enhanced_farmer_calendar(current_l)
 
 
-    # --- КОНФИГУРАЦИЯ СТРАНИЦЫ ---
-    st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
+    # --- 1. ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
-    # --- КАСТОМНЫЙ CSS ---
-    st.markdown("""
-    <style>
-        /* Уменьшенный главный заголовок без подчеркивания */
-        .main-title {
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            color: #1b5e20;
-            margin-bottom: 25px;
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    map_translations = {
+        "ru": {
+            "main_title": "Агрометеорологические прогнозы перед началом весенне-полевых работ 2026 года",
+            "map1_caption": "Оптимальные сроки сева зерновых культур",
+            "map2_caption": "Прогноз запасов продуктивной влаги",
+            "error": "не найден"
+        },
+        "kz": {
+            "main_title": "2026 жылғы көктемгі егіс жұмыстары алдындағы агрометеорологиялық болжамдар",
+            "map1_caption": "Дән дақылдарын егудің оңтайлы мерзімдері",
+            "map2_caption": "Өнімді ылғал қорының болжамы",
+            "error": "табылмады"
+        },
+        "en": {
+            "main_title": "Agrometeorological forecasts before the start of spring field works in 2026",
+            "map1_caption": "Optimal sowing dates for grain crops",
+            "map2_caption": "Productive moisture reserves forecast",
+            "error": "not found"
         }
-        /* Заголовки разделов: меньше размер, без фона, просто жирный текст с линией */
-        .section-header-new {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2e7d32;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        .description-card {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-left: 5px solid #2e7d32;
-            border-radius: 5px;
-            height: 100%;
-        }
-        .desc-title {
-            font-weight: bold;
-            color: #1b5e20;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .desc-text {
-            font-size: 14px;
-            color: #333;
-            line-height: 1.4;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    }
 
-    # --- 1. ЗАГОЛОВОК И КАРТЫ ---
-    st.markdown('<div class="main-title">Агрометеорологические прогнозы перед началом весенне-полевых работ 2026 года</div>', unsafe_allow_html=True)
+    mt = map_translations.get(current_l, map_translations["ru"])
+
+    # --- 3. ЗАГОЛОВОК И КАРТЫ ---
+    st.markdown(f'<div class="main-title">{mt["main_title"]}</div>', unsafe_allow_html=True)
 
     import base64
     import os
 
     col_map1, col_map2 = st.columns(2)
 
-    # Функция для отрисовки "большого" изображения через HTML
     def get_base64_img(img_name):
+        # Убедитесь, что BASE_DIR определена в начале вашего скрипта
         img_path = os.path.join(BASE_DIR, img_name)
         if os.path.exists(img_path):
             with open(img_path, "rb") as f:
@@ -5411,13 +5398,13 @@ with tabs[3]:
                 f"""
                 <div style="width: 100%; margin-bottom: 20px;">
                     <img src="data:image/jpeg;base64,{data1}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Оптимальные сроки сева зерновых культур</p>
+                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">{mt['map1_caption']}</p>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
         else:
-            st.error("Рисунок1.jpg не найден")
+            st.error(f"Рисунок1.jpg {mt['error']}")
 
     with col_map2:
         data2 = get_base64_img("Рисунок2.jpg")
@@ -5426,13 +5413,14 @@ with tabs[3]:
                 f"""
                 <div style="width: 100%; margin-bottom: 20px;">
                     <img src="data:image/jpeg;base64,{data2}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">Прогноз запасов продуктивной влаги</p>
+                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">{mt['map2_caption']}</p>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
         else:
-            st.error("Рисунок2.jpg не найден")
+            st.error(f"Рисунок2.jpg {mt['error']}")
+        
             
 
     # --- 2. МЕТОДОЛОГИЯ ---
