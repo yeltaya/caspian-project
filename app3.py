@@ -5725,136 +5725,90 @@ with tabs[4]:
     st.divider()
 
         
-    # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ РЯДОМ) ---
-    st.markdown('<div class="predictor-header">📊 Гидрологические прогнозы на 2026 г.</div>', unsafe_allow_html=True)
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
-    def render_taskyn_info():
-        st.markdown("""
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    taskyn_translations = {
+        "ru": {
+            "header": "📊 Гидрологические прогнозы на 2026 г.",
+            "card_title": "🌊 Интеграция с системой «Таскын»",
+            "card_desc": "В <b>2025 году</b> усовершенствован долгосрочный прогноз с указанием <span class='highlight-blue'>максимальных уровней и расходов воды</span>. Это обеспечило работу системы <b>«Таскын»</b> по моделированию возможных зон затопления.",
+            "stat_year_label": "Год старта",
+            "stat_post_label": "Гидрологический пост"
+        },
+        "kz": {
+            "header": "📊 2026 жылға арналған гидрологиялық болжамдар",
+            "card_title": "🌊 «Тасқын» жүйесімен интеграция",
+            "card_desc": "<b>2025 жылы</b> <span class='highlight-blue'>судың максималды деңгейлері мен шығындары</span> көрсетілген ұзақ мерзімді болжам жетілдірілді. Бұл мүмкін болатын су басу аймақтарын модельдеу бойынша <b>«Тасқын»</b> жүйесінің жұмысын қамтамасыз етті.",
+            "stat_year_label": "Басталған жылы",
+            "stat_post_label": "Гидрологиялық бекет"
+        },
+        "en": {
+            "header": "📊 Hydrological Forecasts for 2026",
+            "card_title": "🌊 Integration with the 'Taskyn' System",
+            "card_desc": "In <b>2025</b>, the long-term forecast was enhanced by specifying <span class='highlight-blue'>maximum water levels and discharge rates</span>. This enabled the <b>'Taskyn'</b> system to model potential flood zones.",
+            "stat_year_label": "Start Year",
+            "stat_post_label": "Hydrological Post"
+        }
+    }
+
+    tt = taskyn_translations.get(current_l, taskyn_translations["ru"])
+
+    # --- 3. ФУНКЦИЯ ОТРИСОВКИ ---
+    def render_taskyn_info(t):
+        st.markdown(f"""
         <style>
-        .report-card {
-            background-color: #f0f7ff;
-            border-radius: 15px;
-            padding: 25px;
-            border-left: 8px solid #2e86c1;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin: 20px 0;
-        }
-        .card-title {
-            color: #1a5276;
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        .stat-row {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
-        }
-        .stat-item {
-            background: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            flex: 1;
-            text-align: center;
-            border: 1px solid #d4e6f1;
-        }
-        .stat-number {
-            display: block;
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #2e86c1;
-        }
-        .stat-label {
-            font-size: 0.85rem;
-            color: #566e7a;
-        }
-        .highlight-blue {
-            color: #2e86c1;
-            font-weight: bold;
-        }
+        .report-card {{
+            background-color: #f0f7ff; border-radius: 15px; padding: 25px;
+            border-left: 8px solid #2e86c1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin: 20px 0;
+        }}
+        .card-title {{ color: #1a5276; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; }}
+        .stat-row {{ display: flex; gap: 20px; margin-top: 15px; }}
+        .stat-item {{ background: white; padding: 10px 20px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #d4e6f1; }}
+        .stat-number {{ display: block; font-size: 1.8rem; font-weight: 800; color: #2e86c1; }}
+        .stat-label {{ font-size: 0.85rem; color: #566e7a; }}
+        .highlight-blue {{ color: #2e86c1; font-weight: bold; }}
         </style>
         
         <div class="report-card">
-            <div class="card-title">
-                🌊 Интеграция с системой «Таскын»
-            </div>
-            <div class="report-text" style="font-size: 1.1rem; line-height: 1.6;">
-                В <b>2025 году</b> усовершенствован долгосрочный прогноз с указанием 
-                <span class="highlight-blue">максимальных уровней и расходов воды</span>. 
-                Это обеспечило работу системы <b>«Таскын»</b> по моделированию возможных зон затопления.
+            <div class="card-title">{t['card_title']}</div>
+            <div class="report-text" style="font-size: 1.1rem; line-height: 1.6; background: none; border: none; padding: 0;">
+                {t['card_desc']}
             </div>
             <div class="stat-row">
                 <div class="stat-item">
                     <span class="stat-number">2025</span>
-                    <span class="stat-label">Год старта</span>
+                    <span class="stat-label">{t['stat_year_label']}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number">251</span>
-                    <span class="stat-label">Гидрологический пост</span>
+                    <span class="stat-label">{t['stat_post_label']}</span>
                 </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-    # Вызов функции
-    render_taskyn_info()
+    # Заголовок
+    st.markdown(f'<div class="predictor-header">{tt["header"]}</div>', unsafe_allow_html=True)
 
+    # Вызов функции с передачей текущего словаря
+    render_taskyn_info(tt)
 
-    # --- СТИЛИЗАЦИЯ ЗАГОЛОВКОВ ---
+    # --- ГЛОБАЛЬНЫЕ СТИЛИ (остаются без изменений, так как это CSS) ---
     st.markdown("""
     <style>
-        .predictor-header {
-            font-size: 20px;
-            font-weight: bold;
-            color: #0d47a1;
-            margin-top: 25px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #bbdefb;
-        }
-        .map-caption {
-            text-align: center;
-            font-size: 14px;
-            color: #555;
-            margin-top: -10px;
-            margin-bottom: 20px;
-        }
+        .predictor-header { font-size: 20px; font-weight: bold; color: #0d47a1; margin-top: 25px; padding-bottom: 5px; border-bottom: 1px solid #bbdefb; }
+        .report-text { font-size: 16px; line-height: 1.6; color: #333; text-align: justify; background-color: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; margin-top: 10px; }
+        .stage-card { background-color: #ffffff; border-left: 5px solid #0d47a1; padding: 10px 15px; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
     </style>
     """, unsafe_allow_html=True)
-    
-    st.markdown("""
-        <style>
-            .report-text {
-                font-size: 16px;
-                line-height: 1.6;
-                color: #333;
-                text-align: justify;
-                background-color: #f9f9f9;
-                padding: 15px;
-                border-radius: 8px;
-                border: 1px solid #e0e0e0;
-                margin-top: 10px;
-            }
-            .hydro-group-header {
-                font-size: 18px;
-                font-weight: bold;
-                color: #0d47a1;
-                margin-top: 20px;
-            }
-            .highlight-blue {
-                color: #1565c0;
-                font-weight: bold;
-            }
-            .stage-card {
-                background-color: #ffffff;
-                border-left: 5px solid #0d47a1;
-                padding: 10px 15px;
-                margin-bottom: 10px;
-                box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-            }
-        </style>
-    """, unsafe_allow_html=True)
+
 
 
     # --- РАЗДЕЛ: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
