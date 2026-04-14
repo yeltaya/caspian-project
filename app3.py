@@ -6509,42 +6509,48 @@ with tabs[5]:
                     sel_name = k
                     break
 
-        with col2:
-            # CSS для жирных метрик
-            st.markdown("<style>[data-testid='stMetricValue']{font-weight:800 !important; color:#1e3799;}</style>", unsafe_allow_html=True)
-            
+with col2:
             st.markdown(t["stats_h"])
-            # Перевод заголовка выбранного региона
+            
+            # Определяем заголовок (РК или конкретный бассейн)
             display_title = t['rk'] if sel_name == "Республика Казахстан" else sel_name
             st.success(f"📍 **{display_title}**")
             
             cur = VXB_STATS[sel_name]
+            
+            # 1. Норма (заголовок и единица измерения из словаря t)
             st.metric(t["norm"], f"{cur['норма']} {t['unit_y']}")
             
-            c1, c2 = st.columns(2)
-            c1.metric(t["local"], f"{cur['местные']} {t['unit']}")
-            c2.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
+            # 2. Местный сток и Приток
+            m_c1, m_c2 = st.columns(2)
+            m_c1.metric(t["local"], f"{cur['местные']} {t['unit']}")
+            m_c2.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
             
-            # Блок оттока (берем перевод из словаря внутри VXB_STATS)
+            # 3. Блок оттока
+            # Проверяем наличие данных об оттоке
             if cur.get('отток'):
-                outflow_val = cur['отток'][lang] if isinstance(cur['отток'], dict) else cur['отток']
+                # Если отток — это словарь с переводами, берем нужный язык
+                if isinstance(cur['отток'], dict):
+                    outflow_val = cur['отток'].get(lang, cur['отток']['ru'])
+                else:
+                    outflow_val = cur['отток']
+                
                 st.warning(f"{t['outflow_label']} **{outflow_val}**")
             else:
+                # Если оттока нет, выводим сообщение о его отсутствии на текущем языке
                 st.info(t["no_outflow"])
 
             st.markdown("---")
             if sel_name != "Республика Казахстан":
-                anchor_id = sel_name.replace(' ', '-').lower()
+                # Кнопка тоже на текущем языке
                 st.markdown(f"""
-                    <a href="#{anchor_id}" style="text-decoration: none;">
-                        <div style="background:linear-gradient(90deg, #1e3799, #009432); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
-                            {t['btn_text']}
-                        </div>
-                    </a>
+                    <div style="background:linear-gradient(90deg, #1e3799, #009432); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold;">
+                        {t['btn_text']}
+                    </div>
                 """, unsafe_allow_html=True)
             else:
                 st.caption(t["info_select"])
-                
+
       
         import streamlit as st
         import pandas as pd
