@@ -5013,6 +5013,7 @@ with tabs[2]:
         
     
     with st.container():
+    
         # 1. Словарь переводов для отраслей
         sector_translations = {
             "ru": {
@@ -5099,102 +5100,142 @@ with tabs[2]:
             
                 
 
+# --- Эту строку нужно перенести в самое начало файла app3.py! ---
+# st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
+
 with tabs[3]:
-    st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
+    # Определяем язык из сессии
+    current_lang = st.session_state.get('lang_code', 'ru')
 
+    # 1. Словарь переводов
+    agro_translations = {
+        "ru": {
+            "card_num": "10",
+            "card_text": "Наименований<br>прогнозов",
+            "info": "Прогнозы охватывают все ключевые зерносеющие регионы Казахстана.",
+            "app_title": "📲 Приложение AgroData",
+            "app_desc": "Доступ к фактическим данным для фермеров в режиме реального времени",
+            "app_btn": "Открыть портал",
+            "sub_header": "📅 График выпуска агрометеорологических прогнозов",
+            "data": [
+                ("💧 Прогноз запасов продуктивной влаги (ЗПВ)", "25 марта, 25 апреля"),
+                ("🌱 Оптимальные сроки сева яровых", "25 марта, 25 апреля"),
+                ("☀️ Прогноз засухи (на основе SPI)", "Май, Июнь, Июль, Август"),
+                ("🌾 Сроки созревания яровых зерновых", "15 июня, 15 июля"),
+                ("📈 Урожайность яровых зерновых", "15 июля, 15 августа"),
+                ("🏔️ Урожайность озимых (Алм. и Жамб. обл.)", "15 мая, 15 июня"),
+                ("🌽 Урожайность подсолнечника, свеклы и кукурузы", "15 июля, 15 августа"),
+                ("🚜 Условия уборки зерновых культур", "июль-август")
+            ]
+        },
+        "kz": {
+            "card_num": "10",
+            "card_text": "Болжамдардың<br>атаулары",
+            "info": "Болжамдар Қазақстанның барлық негізгі астық егетін аймақтарын қамтиды.",
+            "app_title": "📲 AgroData қосымшасы",
+            "app_desc": "Фермерлер үшін нақты уақыт режимінде нақты деректерге қол жеткізу",
+            "app_btn": "Порталды ашу",
+            "sub_header": "📅 Агрометеорологиялық болжамдарды шығару кестесі",
+            "data": [
+                ("💧 Өнімді ылғал қорын болжау (ӨЫҚ)", "25 наурыз, 25 сәуір"),
+                ("🌱 Жаздық егістіктің оңтайлы мерзімі", "25 наурыз, 25 сәуір"),
+                ("☀️ Қуаңшылық болжамы (SPI негізінде)", "Мамыр, Маусым, Шілде, Тамыз"),
+                ("🌾 Жаздық дәнді дақылдардың пісу мерзімі", "15 маусым, 15 шілде"),
+                ("📈 Жаздық дәнді дақылдардың өнімділігі", "15 шілде, 15 тамыз"),
+                ("🏔️ Күздік дақылдардың өнімділігі", "15 мамыр, 15 маусым"),
+                ("🌽 Күнбағыс, қызылша және жүгері өнімділігі", "15 шілде, 15 тамыз"),
+                ("🚜 Дәнді дақылдарды жинау шарттары", "шілде-тамыз")
+            ]
+        },
+        "en": {
+            "card_num": "10",
+            "card_text": "Forecast<br>Types",
+            "info": "Forecasts cover all key grain-growing regions of Kazakhstan.",
+            "app_title": "📲 AgroData App",
+            "app_desc": "Real-time access to actual data for farmers",
+            "app_btn": "Open Portal",
+            "sub_header": "📅 Agrometeorological Forecast Release Schedule",
+            "data": [
+                ("💧 Productive Soil Moisture Forecast", "March 25, April 25"),
+                ("🌱 Optimal Spring Sowing Dates", "March 25, April 25"),
+                ("☀️ Drought Forecast (SPI-based)", "May, June, July, August"),
+                ("🌾 Ripening Dates for Spring Grains", "June 15, July 15"),
+                ("📈 Yield Forecast for Spring Grains", "July 15, August 15"),
+                ("🏔️ Winter Crop Yield Forecast", "May 15, June 15"),
+                ("🌽 Sunflower, Sugar Beet, and Corn Yield", "July 15, August 15"),
+                ("🚜 Grain Harvesting Conditions", "July-August")
+            ]
+        }
+    }
 
-    # Добавляем стили для меток дат
+    at = agro_translations.get(current_lang, agro_translations["ru"])
+
+    # Стили
     st.markdown("""
     <style>
-        .forecast-item {
-            margin-bottom: 10px;
-            padding: 6px;
-            border-radius: 3px;
-            transition: 0.3s;
-        }
-        .forecast-item:hover {
-            background-color: #f0f2f6;
-        }
+        .forecast-item { margin-bottom: 10px; padding: 6px; border-radius: 3px; transition: 0.3s; }
+        .forecast-item:hover { background-color: #f0f2f6; }
         .date-tag {
             display: inline-block;
             background-color: #e1f5fe;
             color: #01579b;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             padding: 2px 8px;
             border-radius: 12px;
-            margin-left: 10px;
+            margin-top: 5px;
             font-weight: 600;
         }
         .agro-card {
             background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
             color: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .big-number {
-            font-size: 56px;
-            font-weight: 600;
-            line-height: 1;
-        }
+        .big-number { font-size: 48px; font-weight: 600; line-height: 1; }
     </style>
     """, unsafe_allow_html=True)
 
-    # Основной блок
     col1, col2 = st.columns([1, 2.5])
 
     with col1:
-        st.markdown("""
+        st.markdown(f"""
         <div class="agro-card">
-            <div class="big-number">10</div>
-            <div style="font-size: 1.1rem; margin-top: 10px;">Наименований<br>прогнозов</div>
+            <div class="big-number">{at['card_num']}</div>
+            <div style="font-size: 1rem; margin-top: 10px;">{at['card_text']}</div>
         </div>
         """, unsafe_allow_html=True)
         
-        st.info("Прогнозы охватывают все ключевые зерносеющие регионы Казахстана.")
-            
-        st.markdown("""
-                    <div style="background: #f1f8e9; padding: 20px; border-radius: 15px; border: 1px dashed #2e7d32; text-align: center;">
-                        <h5 style="color: #1b5e20; margin-bottom: 15px;">📲 Приложение AgroData</h5>
-                        <img src="https://img.icons8.com/ios/100/2e7d32/qr-code--v1.png" width="50">
-                        <p style="font-size: 0.5em; margin-top: 10px; color: #455a64;">Доступ к фактическим данным для фермеров в режиме реального времени</p>
-                        <a href="https://agrodata.kazhydromet.kz" target="_blank" style="text-decoration: none;">
-                            <button style="background: #2e7d32; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Открыть портал</button>
-                        </a>
-                    </div>
+        st.info(at['info'])
+        
+        st.markdown(f"""
+            <div style="background: #f1f8e9; padding: 15px; border-radius: 15px; border: 1px dashed #2e7d32; text-align: center;">
+                <h5 style="color: #1b5e20; margin-bottom: 10px;">{at['app_title']}</h5>
+                <img src="https://img.icons8.com/ios/100/2e7d32/qr-code--v1.png" width="40">
+                <p style="font-size: 0.8rem; margin-top: 10px; color: #455a64;">{at['app_desc']}</p>
+                <a href="https://agrodata.kazhydromet.kz" target="_blank" style="text-decoration: none;">
+                    <button style="background: #2e7d32; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">{at['app_btn']}</button>
+                </a>
+            </div>
         """, unsafe_allow_html=True)
-                
 
     with col2:
-        st.subheader("📅 График выпуска агрометеорологических прогнозов")
+        st.subheader(at['sub_header'])
         
-        # Структурируем данные
-        forecast_data = [
-            ("💧 Прогноз запасов продуктивной влаги (ЗПВ)", "25 марта, 25 апреля"),
-            ("🌱 Оптимальные сроки сева яровых", "25 марта, 25 апреля"),
-            ("☀️ Прогноз засухи (на основе SPI)", "Май, Июнь, Июль, Август"),
-            ("🌾 Сроки созревания яровых зерновых", "15 июня, 15 июля"),
-            ("📈 Урожайность яровых зерновых", "15 июля, 15 августа"),
-            ("🏔️ Урожайность озимых (Алм. и Жамб. обл.)", "15 мая, 15 июня"),
-            ("🌽 Урожайность подсолнечника, свеклы и кукурузы", "15 июля, 15 августа"),
-            ("🚜 Условия уборки зерновых культур", "июль-август")
-        ]
-        
-        # Вывод в две колонки внутри основной колонки
         sub_col1, sub_col2 = st.columns(2)
         
-        for i, (name, date) in enumerate(forecast_data):
+        for i, (name, date) in enumerate(at['data']):
             target_col = sub_col1 if i % 2 == 0 else sub_col2
             target_col.markdown(f"""
             <div class="forecast-item">
-                <strong>{name}</strong><br>
+                <div style="font-size: 0.9rem; font-weight: 600;">{name}</div>
                 <span class="date-tag">📅 {date}</span>
             </div>
             """, unsafe_allow_html=True)
 
     st.divider()
-
+    
 
     def show_enhanced_farmer_calendar():
         st.markdown("### 📅 Календарь фермера")
