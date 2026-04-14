@@ -5243,64 +5243,104 @@ with tabs[3]:
 
     st.divider()
     
-    def show_enhanced_farmer_calendar():
-        st.markdown("### 📅 Календарь фермера")
-        
-        # 1. Подготовка данных (теперь "культура" — это обычный столбец)
-        months = [
-            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", 
-            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-        ]
-        
+    def show_enhanced_farmer_calendar(lang_code="ru"):
+        # 1. Словари переводов
+        calendar_translations = {
+            "ru": {
+                "title": "📅 Календарь фермера",
+                "col_culture": "Культура",
+                "months": ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+                "crops": ["Озимая пшеница", "Яровая пшеница", "Кукуруза", "Рис", "Подсолнечник", "Сахарная свекла"],
+                "legend_p": "Посев",
+                "legend_v": "Вегетация",
+                "legend_u": "Уборка"
+            },
+            "kz": {
+                "title": "📅 Фермер күнтізбесі",
+                "col_culture": "Дақыл",
+                "months": ["Қаңтар", "Ақпан", "Наурыз", "Сәуір", "Мамыр", "Маусым", "Шілде", "Тамыз", "Қыркүйек", "Қазан", "Қараша", "Желтоқсан"],
+                "crops": ["Күздік бидай", "Жаздық бидай", "Жүгері", "Күріш", "Күнбағыс", "Қант қызылшасы"],
+                "legend_p": "Егу",
+                "legend_v": "Вегетация",
+                "legend_u": "Жиын-терин"
+            },
+            "en": {
+                "title": "📅 Farmer's Calendar",
+                "col_culture": "Crop",
+                "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                "crops": ["Winter Wheat", "Spring Wheat", "Corn", "Rice", "Sunflower", "Sugar Beet"],
+                "legend_p": "Sowing",
+                "legend_v": "Vegetation",
+                "legend_u": "Harvesting"
+            }
+        }
+
+        # Выбираем текущий перевод
+        ct = calendar_translations.get(lang_code, calendar_translations["ru"])
+
+        st.markdown(f"### {ct['title']}")
+
+        # 2. Подготовка данных
+        # Создаем данные, используя переведенные названия месяцев как ключи
         calendar_data = {
-            "культура": ["озимая.пшеница", "яровая.пшеница", "кукуруза", "рис", "подсолнечник", "сахарная свекла"],
-            "Январь": ["В", "", "", "", "", ""],
-            "Февраль": ["В", "", "", "", "", ""],
-            "Март": ["В", "", "", "", "", ""],
-            "Апрель": ["В", "", "", "", "", "П"],
-            "Май": ["В", "П", "П", "П", "П", "В"],
-            "Июнь": ["У", "В", "В", "В", "В", "В"],
-            "Июль": ["У", "В", "В", "В", "В", "В"],
-            "Август": ["", "В", "В", "В", "В", "В"],
-            "Сентябрь": ["", "У", "У", "У", "В", "У"],
-            "Октябрь": ["П", "", "", "", "У", ""],
-            "Ноябрь": ["В", "", "", "", "", ""],
-            "Декабрь": ["В", "", "", "", "", ""]
+            ct['col_culture']: ct['crops'],
+            ct['months'][0]:  ["В", "", "", "", "", ""],
+            ct['months'][1]:  ["В", "", "", "", "", ""],
+            ct['months'][2]:  ["В", "", "", "", "", ""],
+            ct['months'][3]:  ["В", "", "", "", "", "П"],
+            ct['months'][4]:  ["В", "П", "П", "П", "П", "В"],
+            ct['months'][5]:  ["У", "В", "В", "В", "В", "В"],
+            ct['months'][6]:  ["У", "В", "В", "В", "В", "В"],
+            ct['months'][7]:  ["", "В", "В", "В", "В", "В"],
+            ct['months'][8]:  ["", "У", "У", "У", "В", "У"],
+            ct['months'][9]:  ["П", "", "", "", "У", ""],
+            ct['months'][10]: ["В", "", "", "", "", ""],
+            ct['months'][11]: ["В", "", "", "", "", ""]
         }
         
         df = pd.DataFrame(calendar_data)
 
-        # 2. Функция для стилизации
+        # 3. Функция для стилизации
         def style_cells(val):
-            # Базовый стиль для всех заполненных ячеек: крупный черный шрифт
-            base_style = "color: black; font-weight: 900; font-size: 16px; text-align: center;"
-            
-            if val == "П": # Посев
+            base_style = "color: black; font-weight: 900; font-size: 14px; text-align: center;"
+            if val == "П":
                 return f"{base_style} background-color: #5d8a33;"
-            elif val == "В": # Вегетация
+            elif val == "В":
                 return f"{base_style} background-color: #bcd9ea;"
-            elif val == "У": # Уборка
+            elif val == "У":
                 return f"{base_style} background-color: #ffda66;"
             return ""
 
-        # Применяем стили ко всем столбцам, кроме первого ("культура")
-        styled_df = df.style.map(style_cells, subset=months)
+        # Применяем стили ко всем колонкам месяцев
+        styled_df = df.style.map(style_cells, subset=ct['months'])
 
-        # 3. Отображение
-        # Используем статичную таблицу или dataframe. 
-        # Для максимального контроля над шрифтом в заголовках лучше всего подходит st.table
+        # Отображение таблицы
         st.table(styled_df)
 
-        # 4. Легенда
-        st.markdown("""
-        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 10px;">
-            <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 20px; height: 20px; background: #5d8a33; border-radius: 4px;"></div><b>П</b> — Посев</div>
-            <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 20px; height: 20px; background: #bcd9ea; border-radius: 4px;"></div><b>В</b> — Вегетация</div>
-            <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 20px; height: 20px; background: #ffda66; border-radius: 4px;"></div><b>У</b> — Уборка</div>
+        # 4. Легенда (переведенная)
+        st.markdown(f"""
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 10px; font-size: 0.9rem;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 18px; height: 18px; background: #5d8a33; border-radius: 4px;"></div><b>П</b> — {ct['legend_p']}
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 18px; height: 18px; background: #bcd9ea; border-radius: 4px;"></div><b>В</b> — {ct['legend_v']}
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 18px; height: 18px; background: #ffda66; border-radius: 4px;"></div><b>У</b> — {ct['legend_u']}
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-    show_enhanced_farmer_calendar()
+    # --- ГАРАНТИРОВАННЫЙ ВЫЗОВ (по твоей рабочей схеме) ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
+
+    show_enhanced_farmer_calendar(current_l)
 
 
     # --- КОНФИГУРАЦИЯ СТРАНИЦЫ ---
