@@ -6667,71 +6667,87 @@ with tabs[5]:
 
 
     def show_water_resources_analysis():
-        # 1. Словарь переводов
-        translations = {
-            "RU": {
+        # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА (по вашему примеру) ---
+        if 'lang_code' in locals() or 'lang_code' in globals():
+            effective_lang = lang_code
+        elif 'lang_code' in st.session_state:
+            effective_lang = st.session_state['lang_code']
+        else:
+            effective_lang = st.session_state.get('language', 'ru')
+
+        # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+        water_translations = {
+            "ru": {
                 "subheader": "📊 Анализ суммарных водных ресурсов РК (1940–2024 гг.)",
                 "main_text": "Анализ графика суммарных водных ресурсов Республики Казахстан за **1940–2024 гг.** показывает постепенное плавное снижение объемов речного стока. Такая динамика линии тренда отражает естественную реакцию гидрологической системы на современные климатические изменения.",
                 "metric_label": "Тренд стока",
                 "metric_value": "Снижение",
                 "metric_delta": "- плавный",
                 "details": "Согласно данным, наблюдаемое уменьшение водных ресурсов связано с тем, что рост испаряемости и изменения в режиме осадков начинают преобладать над приточностью. Несмотря на то, что в отдельные годы мы видим значительные пики водности, общая тенденция указывает на постепенное сокращение среднемноголетнего стока.",
-                "key_factor": "**Ключевой фактор:** Перестройка структуры питания рек, где доля ледникового стока стабилизируется, а трансграничный приток испытывает влияние хозяйственной деятельности в верховьях.",
-                "conclusion": "**Вывод:** Нисходящая линия тренда — это важный индикатор, который призывает к более рациональному и бережному использованию имеющихся запасов воды в долгосрочной перспективе."
+                "key_factor_title": "Ключевой фактор:",
+                "key_factor_text": "Перестройка структуры питания рек, где доля ледникового стока стабилизируется, а трансграничный приток испытывает влияние хозяйственной деятельности в верховьях.",
+                "conclusion_title": "Вывод:",
+                "conclusion_text": "Нисходящая линия тренда — это важный индикатор, который призывает к более рациональному и бережному использованию имеющихся запасов воды в долгосрочной перспективе."
             },
-            "KZ": {
+            "kz": {
                 "subheader": "📊 ҚР жиынтық су ресурстарына талдау (1940–2024 жж.)",
                 "main_text": "**1940–2024 жж.** аралығындағы Қазақстан Республикасының жиынтық су ресурстары графигін талдау өзен ағыны көлемінің біртіндеп төмендегенін көрсетеді. Тренд сызығының мұндай динамикасы гидрологиялық жүйенің қазіргі климаттық өзгерістерге табиғи реакциясын көрсетеді.",
                 "metric_label": "Ағын тренді",
                 "metric_value": "Төмендеу",
                 "metric_delta": "- біртіндеп",
                 "details": "Мәліметтерге сәйкес, су ресурстарының азаюы буланудың артуымен және жауын-шашын режиміндегі өзгерістердің келу ағынынан басым бола бастауымен байланысты. Кейбір жылдары сулылықтың айтарлықтай шыңдарын көрсек те, жалпы тенденция орташа көпжылдық ағынның біртіндеп қысқаруын көрсетеді.",
-                "key_factor": "**Негізгі фактор:** Өзендердің қоректену құрылымының қайта құрылуы, мұнда мұздық ағынының үлесі тұрақтанады, ал трансшекаралық ағын жоғарғы ағыстағы шаруашылық қызметтің әсеріне ұшырайды.",
-                "conclusion": "**Қорытынды:** Төмендеу трендінің сызығы — бұл су қорларын ұзақ мерзімді перспективада ұтымды және ұқыпты пайдалануға шақыратын маңызды индикатор."
+                "key_factor_title": "Негізгі фактор:",
+                "key_factor_text": "Өзендердің қоректену құрылымының қайта құрылуы, мұнда мұздық ағынының үлесі тұрақтанады, ал трансшекаралық ағын жоғарғы ағыстағы шаруашылық қызметтің әсеріне ұшырайды.",
+                "conclusion_title": "Қорытынды:",
+                "conclusion_text": "Төмендеу трендінің сызығы — бұл су қорларын ұзақ мерзімді перспективада ұтымды және ұқыпты пайдалануға шақыратын маңызды индикатор."
             },
-            "EN": {
+            "en": {
                 "subheader": "📊 Analysis of Total Water Resources of the RK (1940–2024)",
                 "main_text": "Analysis of the total water resources graph of the Republic of Kazakhstan for **1940–2024** shows a gradual decline in river runoff volumes. This trend line dynamics reflects the natural response of the hydrological system to modern climate changes.",
                 "metric_label": "Runoff Trend",
                 "metric_value": "Decrease",
                 "metric_delta": "- gradual",
                 "details": "According to the data, the observed decrease in water resources is due to the fact that increasing evaporation and changes in precipitation patterns are beginning to prevail over inflow. Although we see significant peaks in water levels in certain years, the general trend points to a gradual reduction in the average long-term runoff.",
-                "key_factor": "**Key factor:** Restructuring of the river nourishment system, where the share of glacial runoff is stabilizing, while transboundary inflow is affected by economic activities upstream.",
-                "conclusion": "**Conclusion:** The downward trend line is an important indicator that calls for more rational and careful use of available water reserves in the long term."
+                "key_factor_title": "Key factor:",
+                "key_factor_text": "Restructuring of the river nourishment system, where the share of glacial runoff is stabilizing, while transboundary inflow is affected by economic activities upstream.",
+                "conclusion_title": "Conclusion:",
+                "conclusion_text": "The downward trend line is an important indicator that calls for more rational and careful use of available water reserves in the long term."
             }
         }
 
-        # 2. Выбор языка в сайдбаре
-        lang = st.sidebar.selectbox("Language / Тіл / Язык", ["RU", "KZ", "EN"])
-        t = translations[lang]
+        # Выбираем текущий перевод (по умолчанию ru)
+        wt = water_translations.get(effective_lang.lower(), water_translations["ru"])
 
-        # 3. Отображение контента с использованием выбранного перевода
-        st.subheader(t["subheader"])
+        # --- 3. ОТОБРАЖЕНИЕ БЛОКА ---
+        st.subheader(wt["subheader"])
         
         with st.container(border=True):
             col1, col2 = st.columns([3, 1])
             
             with col1:
-                st.markdown(t["main_text"])
+                st.markdown(wt["main_text"])
             
             with col2:
                 st.metric(
-                    label=t["metric_label"], 
-                    value=t["metric_value"], 
-                    delta=t["metric_delta"], 
+                    label=wt["metric_label"], 
+                    value=wt["metric_value"], 
+                    delta=wt["metric_delta"], 
                     delta_color="inverse"
                 )
 
             st.divider()
 
-            st.write(t["details"])
+            st.write(wt["details"])
 
-            st.info(t["key_factor"], icon="💧")
-            st.warning(t["conclusion"], icon="⚠️")
+            # Используем блок внимания для ключевого вывода
+            st.info(f"**{wt['key_factor_title']}** {wt['key_factor_text']}", icon="💧")
 
+            st.warning(f"**{wt['conclusion_title']}** {wt['conclusion_text']}", icon="⚠️")
+
+    # Вызов функции в основном приложении
     if __name__ == "__main__":
         show_water_resources_analysis()
-        
+    
     
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
         BASE_IMAGE_PATH = os.path.join(BASE_DIR)
