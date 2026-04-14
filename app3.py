@@ -5007,10 +5007,14 @@ with tabs[2]:
                 st.warning(f"File not found: {gif_path}")
                 
     if __name__ == "__main__":
-        # Если вы используете st.session_state для хранения языка:
+        # Проверяем, что именно сейчас в session_state
+        # st.write(f"Текущий язык в системе: {st.session_state.get('lang_code', 'не найден')}") 
+        
+        # Важно: убедитесь, что имя ключа 'lang_code' совпадает с тем, 
+        # которое используется в вашем селекторе языка
         current_lang = st.session_state.get('lang_code', 'ru') 
         show_forecast_process(current_lang)
-        
+    
 
  
    
