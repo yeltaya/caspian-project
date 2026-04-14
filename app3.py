@@ -6873,6 +6873,12 @@ with tabs[5]:
     
                 
     import base64
+    import os
+
+    # ПРОВЕРЬТЕ: определена ли эта переменная выше? 
+    # Если нет, создайте её, например:
+    if 'display_name' not in locals():
+        display_name = None 
 
     for name in vxb_list:
         details = VXB_FULL_DATA.get(name, {})
@@ -6880,11 +6886,12 @@ with tabs[5]:
             st.warning(f"Данные для {name} еще не внесены в справочник.")
             continue
 
-        item_stats = VXB_STATS[name]
+        # Важно: убедитесь, что VXB_STATS тоже определен
+        item_stats = VXB_STATS.get(name, {}) 
+        
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        # Формируем путь к фото
         photo_filename = details.get("photo", "")
         photo_path = os.path.join(BASE_IMAGE_PATH, photo_filename)
         
@@ -6892,9 +6899,8 @@ with tabs[5]:
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
-            
-            # Увеличиваем пропорцию колонки для изображения
             img_col, info_col = st.columns([2, 1])
+            
             
 
         import base64
