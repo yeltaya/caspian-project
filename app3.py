@@ -4865,14 +4865,6 @@ with tabs[2]:
     import os
     import base64
 
-    if __name__ == "__main__":
-        # Проверяем, что именно сейчас в session_state
-        # st.write(f"Текущий язык в системе: {st.session_state.get('lang_code', 'не найден')}") 
-        
-        # Важно: убедитесь, что имя ключа 'lang_code' совпадает с тем, 
-        # которое используется в вашем селекторе языка
-        current_lang = st.session_state.get('lang_code', 'ru') 
-        show_forecast_process(current_lang)
         
     # Базовая директория
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
