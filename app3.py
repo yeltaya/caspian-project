@@ -6246,12 +6246,13 @@ with tabs[4]:
         }
     }
 
-    st = sele_translations.get(current_l, sele_translations["ru"])
+    t = sele_translations.get(current_l, sele_translations["ru"])
 
     # --- 3. ФУНКЦИЯ РЕНДЕРИНГА ---
-    def render_selevidenie_section(t):
-        st.markdown(f'<div class="predictor-header">{t["header"]}</div>', unsafe_allow_html=True)
-
+    def render_selevidenie_section(t_dict):
+        # Используем t_dict (аргумент функции) для текстов
+        st.markdown(f'<div class="predictor-header">{t_dict["header"]}</div>', unsafe_allow_html=True)
+    
         # 1. Аналитический блок
         st.markdown(f"""
         <div style="background-color: #fff4e6; border-left: 5px solid #e67e22; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
@@ -6298,7 +6299,7 @@ with tabs[4]:
         st.divider()
 
     # Вызов функции
-    render_selevidenie_section(st)
+    render_selevidenie_section(t)
 
 
 
