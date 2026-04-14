@@ -8338,16 +8338,13 @@ with tabs[5]:
 # 1. Словарь со всеми текстами (можно вынести в начало файла)
 content = {
     "ru": {
-        "title": "🌊 Исследование Каспийского моря",
-        "description": "Анализ данных и мониторинг экосистемы."
+        "title": "🌊 Исследование Каспийского моря"
     },
     "kz": {
-        "title": "🌊 Каспий теңізін зерттеу",
-        "description": "Деректерді талдау және экожүйені бақылау."
+        "title": "🌊 Каспий теңізін зерттеу"
     },
     "en": {
-        "title": "🌊 Caspian Sea Exploration",
-        "description": "Data analysis and ecosystem monitoring."
+        "title": "🌊 Caspian Sea Exploration"
     }
 }
 
@@ -8363,12 +8360,33 @@ with tabs[6]:
     st.write(current_text["description"])
     
     
+# 1. Инициализация состояния (выполняется один раз)
     if 'selected_param' not in st.session_state:
         st.session_state.selected_param = "Уровень моря"
 
-    months = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
-    units = {"Уровень моря": "м БС", "Температура воздуха": "°C", "Температура воды": "°C","Соленость": "‰", "Лед": "см", "Ветер": "м/с", "Волнение": "м"}
+    # 2. Словари переводов
+    param_translations = {
+        "ru": ["Уровень моря", "Температура воздуха", "Температура воды", "Соленость", "Лед", "Ветер", "Волнение"],
+        "kz": ["Теңіз деңгейі", "Ауа температурасы", "Су температурасы", "Тұздылық", "Мұз", "Жел", "Толқын"],
+        "en": ["Sea Level", "Air Temperature", "Water Temperature", "Salinity", "Ice", "Wind", "Waves"]
+    }
 
+    units_map = {
+        "ru": {"Уровень моря": "м БС", "Температура воздуха": "°C", "Температура воды": "°C", "Соленость": "‰", "Лед": "см", "Ветер": "м/с", "Волнение": "м"},
+        "kz": {"Теңіз деңгейі": "м БС", "Ауа температурасы": "°C", "Су температурасы": "°C", "Тұздылық": "‰", "Мұз": "см", "Жел": "м/с", "Толқын": "м"},
+        "en": {"Sea Level": "m BS", "Air Temperature": "°C", "Water Temperature": "°C", "Salinity": "‰", "Ice": "cm", "Wind": "m/s", "Waves": "m"}
+    }
+
+    # Маппинг для данных (чтобы ключи в seasonal_data оставались константными)
+    data_keys = ["Уровень моря", "Температура воздуха", "Температура воды", "Соленость", "Лед", "Ветер", "Волнение"]
+    
+    # 3. Выбор текущего списка параметров по языку
+    current_params = param_translations.get(lang_code, param_translations["ru"])
+    current_units = units_map.get(lang_code, units_map["ru"])
+
+    months = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
+
+    # Данные оставляем с оригинальными ключами для внутренней логики
     seasonal_data = {
         "Уровень моря": [-29.40, -29.38, -29.35, -29.20, -29.10, -29.15, -29.25, -29.35, -29.40, -29.42, -29.45, -29.48],
         "Температура воздуха": [2, 1, 4, 11, 18, 24, 27, 26, 20, 13, 7, 3],
@@ -8379,50 +8397,75 @@ with tabs[6]:
         "Волнение": [1.2, 1.5, 1.8, 1.1, 0.7, 0.6, 0.5, 0.8, 1.2, 1.5, 1.9, 1.4]
     }
 
-    # ПОЛНЫЕ ДАННЫЕ ДЛЯ ГРАФИКА
+    # 4. Данные для графика
     raw_data = {
         "Год": list(range(1921, 2026)),
-        "КчКМ": [-26.19,-26.31,-26.36,-26.38,-26.46,-26.38,-26.17,-25.99,-25.93,-26.05,-26.17,-26.12,-26.14,-26.32,-26.57,-26.77,-26.97,-27.28,-27.54,-27.73,-27.77,-27.68,-27.68,-27.73,-27.88,-27.80,-27.70,-27.68,-27.79,-27.91,-28.09,-28.06,-28.12,-28.23,-28.33,-28.40,-28.32,-28.18,-28.16,-28.21,-28.37,-28.48,-28.44,-28.35,-28.38,-28.24,-28.30,-28.42,-28.49,-28.37,-28.41,-28.45,-28.53,-28.54,-28.66,-28.89,-28.97,-28.88,-28.61,-28.43,-28.24,-28.15,-28.07,-28.10,-27.97,-27.90,-27.83,-27.75,-27.82,-27.68,-27.26,-27.14,-26.91,-26.70,-26.59,-26.81,-27.05,-27.07,-27.07,-27.18,-27.20,-27.20,-27.11,-27.00,-26.98,-27.06,-27.08,-27.17,-27.21,-27.31,-27.50,-27.56,-27.61,-27.70,-27.92,-27.97,-27.94,-28.10,-28.29,-28.30,-28.50,-28.72,-29.02,-29.20,-29.35],
-        "КМ": [-26.28,-26.39,-26.44,-26.47,-26.56,-26.47,-26.27,-26.10,-25.93,-26.06,-26.19,-26.11,-26.12,-26.33,-26.54,-26.77,-26.99,-27.31,-27.61,-27.78,-27.85,-27.77,-27.75,-27.78,-27.96,-27.90,-27.78,-27.75,-27.83,-28.01,-28.16,-28.16,-28.26,-28.27,-28.36,-28.41,-28.33,-28.20,-28.17,-28.23,-28.41,-28.51,-28.44,-28.37,-28.43,-28.27,-28.34,-28.46,-28.47,-28.35,-28.42,-28.51,-28.56,-28.59,-28.69,-28.92,-29.00,-28.94,-28.60,-28.48,-28.32,-28.25,-28.08,-28.04,-27.95,-27.87,-27.76,-27.57,-27.57,-27.52,-27.15,-26.99,-26.95,-26.75,-26.61,-26.78,-26.98,-27.00,-27.02,-27.07,-27.17,-27.14,-27.09,-27.00,-26.91,-27.04,-27.06,-27.12,-27.15,-27.25,-27.50,-27.56,-27.61,-27.73,-27.98,-27.99,-27.98,-27.98,-28.20,-28.24,-28.42,-28.66,-28.86,-29.05,None]
-
+        "КчКМ": [-26.19, -26.31, -26.36, -26.38, -26.46, -26.38, -26.17, -25.99, -25.93, -26.05, -26.17, -26.12, -26.14, -26.32, -26.57, -26.77, -26.97, -27.28, -27.54, -27.73, -27.77, -27.68, -27.68, -27.73, -27.88, -27.80, -27.70, -27.68, -27.79, -27.91, -28.09, -28.06, -28.12, -28.23, -28.33, -28.40, -28.32, -28.18, -28.16, -28.21, -28.37, -28.48, -28.44, -28.35, -28.38, -28.24, -28.30, -28.42, -28.49, -28.37, -28.41, -28.45, -28.53, -28.54, -28.66, -28.89, -28.97, -28.88, -28.61, -28.43, -28.24, -28.15, -28.07, -28.10, -27.97, -27.90, -27.83, -27.75, -27.82, -27.68, -27.26, -27.14, -26.91, -26.70, -26.59, -26.81, -27.05, -27.07, -27.07, -27.18, -27.20, -27.20, -27.11, -27.00, -26.98, -27.06, -27.08, -27.17, -27.21, -27.31, -27.50, -27.56, -27.61, -27.70, -27.92, -27.97, -27.94, -28.10, -28.29, -28.30, -28.50, -28.72, -29.02, -29.20, -29.35],
+        "КМ": [-26.28, -26.39, -26.44, -26.47, -26.56, -26.47, -26.27, -26.10, -25.93, -26.06, -26.19, -26.11, -26.12, -26.33, -26.54, -26.77, -26.99, -27.31, -27.61, -27.78, -27.85, -27.77, -27.75, -27.78, -27.96, -27.90, -27.78, -27.75, -27.83, -28.01, -28.16, -28.16, -28.26, -28.27, -28.36, -28.41, -28.33, -28.20, -28.17, -28.23, -28.41, -28.51, -28.44, -28.37, -28.43, -28.27, -28.34, -28.46, -28.47, -28.35, -28.42, -28.51, -28.56, -28.59, -28.69, -28.92, -29.00, -28.94, -28.60, -28.48, -28.32, -28.25, -28.08, -28.04, -27.95, -27.87, -27.76, -27.57, -27.57, -27.52, -27.15, -26.99, -26.95, -26.75, -26.61, -26.78, -26.98, -27.00, -27.02, -27.07, -27.17, -27.14, -27.09, -27.00, -26.91, -27.04, -27.06, -27.12, -27.15, -27.25, -27.50, -27.56, -27.61, -27.73, -27.98, -27.99, -27.98, -27.98, -28.20, -28.24, -28.42, -28.66, -28.86, -29.05, None]
     }
     history_df = pd.DataFrame(raw_data)
+    
 
+# 1. Словарь контента для этого блока
+    ui_content = {
+        "ru": {
+            "network_title": "📡 Сеть",
+            "network_desc": "РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.",
+            "stats": "🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества",
+            "params_title": "🔎 Параметры",
+            "data_year": "📅 Оперативные данные за 2025 г.",
+            "chart_title": "📊 Сезонный ход"
+        },
+        "kz": {
+            "network_title": "📡 Желі",
+            "network_desc": "«Қазгидромет» РМК Каспий теңізінің қазақстандық секторында үздіксіз гидрометеорологиялық және экологиялық мониторинг жүргізеді.",
+            "stats": "🚢 <b>10</b> теңіз станциясы<br>🌦️ <b>28</b> метеостанция<br>💧 <b>4</b> гидробекет<br>🧪 <b>50</b> сапа нүктесі",
+            "params_title": "🔎 Параметрлер",
+            "data_year": "📅 2025 ж. жедел деректер",
+            "chart_title": "📊 Маусымдық барыс"
+        },
+        "en": {
+            "network_title": "📡 Network",
+            "network_desc": "RSE 'Kazhydromet' carries out continuous hydrometeorological and environmental monitoring of the Kazakh sector of the Caspian Sea.",
+            "stats": "🚢 <b>10</b> marine stations<br>🌦️ <b>28</b> weather stations<br>💧 <b>4</b> hydroposts<br>🧪 <b>50</b> quality points",
+            "params_title": "🔎 Parameters",
+            "data_year": "📅 Operational data for 2025",
+            "chart_title": "📊 Seasonal Variation"
+        }
+    }
 
-# 4. КОНТЕНТ
+    curr_ui = ui_content.get(lang_code, ui_content["ru"])
 
+    # 4. КОНТЕНТ
     t_col1, t_col2, t_col3 = st.columns([0.9, 1, 1.2])
 
     with t_col1:
-        # Увеличили font-size до 1.3rem для заголовка и 1.1rem для текста
-        st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 10px;">📡 Сеть</p></div>', unsafe_allow_html=True)
-        st.markdown('<div style="font-size: 1.4rem; line-height: 1.5; margin-bottom: 15px;">РГП «Казгидромет» осуществляет непрерывный гидрометеорологический и экологический мониторинг казахстанского сектора Каспийского моря.</div>', unsafe_allow_html=True)
-        st.markdown("""<div style="font-size: 1.2rem; line-height: 2.0;">🚢 <b>10</b> морских станций<br>🌦️ <b>28</b> метеостанций<br>💧 <b>4</b> гидропоста<br>🧪 <b>50</b> точек качества</div>""", unsafe_allow_html=True)
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 10px;">{curr_ui["network_title"]}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="font-size: 1.4rem; line-height: 1.5; margin-bottom: 15px;">{curr_ui["network_desc"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="font-size: 1.2rem; line-height: 2.0;">{curr_ui["stats"]}</div>', unsafe_allow_html=True)
 
     with t_col2:
-        st.markdown('<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">🔎 Параметры</p></div>', unsafe_allow_html=True)
-        
-        # Сделали приписку про 2025 год крупнее (1.0rem) и темнее
-        st.markdown('<div style="color: #1E293B; font-size: 1.0rem; margin-bottom: 10px; font-weight: 700;">📅 Оперативные данные за 2025 г.</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">{curr_ui["params_title"]}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="color: #1E293B; font-size: 1.0rem; margin-bottom: 10px; font-weight: 700;">{curr_ui["data_year"]}</div>', unsafe_allow_html=True)
         
         p_c1, p_c2 = st.columns(2)
-        params = [
-            ("🌊", "Уровень моря"), ("🌡️", "Температура воздуха"), 
-            ("💧", "Температура воды"), ("🧪", "Соленость"), 
-            ("❄️", "Лед"), ("🌬️", "Ветер"), ("〰️", "Волнение")
-        ]
         
-        for i, (emoji, name) in enumerate(params):
+        # Используем список параметров для текущего языка
+        # param_translations["ru"] используется как ключи для session_state, чтобы график не ломался
+        current_lang_params = param_translations[lang_code]
+        base_params = param_translations["ru"] 
+        emojis = ["🌊", "🌡️", "💧", "🧪", "❄️", "🌬️", "〰️"]
+
+        for i in range(len(base_params)):
             with [p_c1, p_c2][i % 2]:
-                # Кнопки в Streamlit нельзя увеличить напрямую через font-size без кастомного CSS, 
-                # но use_container_width=True делает их массивнее.
-                if st.button(f"{emoji} {name}", key=f"top_{name}", use_container_width=True):
-                    st.session_state.selected_param = name
-                
+                # Отображаем название на выбранном языке, но в state сохраняем RU ключ (для данных)
+                if st.button(f"{emojis[i]} {current_lang_params[i]}", key=f"top_{base_params[i]}", use_container_width=True):
+                    st.session_state.selected_param = base_params[i]
 
     with t_col3:
-        current_unit = units.get(st.session_state.selected_param, "")
-        st.markdown(f'<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">📊 Сезонный ход ({current_unit})</p></div>', unsafe_allow_html=True)
+        # Получаем единицы измерения (уже переведенные в units_map)
+        current_unit = units_map[lang_code].get(st.session_state.selected_param, "")
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">{curr_ui["chart_title"]} ({current_unit})</p></div>', unsafe_allow_html=True)
         
         display_data = seasonal_data.get(st.session_state.selected_param, [0]*12)
         
@@ -8430,32 +8473,29 @@ with tabs[6]:
         fig_s.add_trace(go.Scatter(
             x=months, y=display_data,
             mode='lines+markers', 
-            line=dict(color='#0072FF', width=4, shape='spline'), # Увеличили толщину линии до 4
-            marker=dict(size=10, color='white', line=dict(color='#0072FF', width=2)), # Увеличили маркер
-            name=st.session_state.selected_param
+            line=dict(color='#0072FF', width=4, shape='spline'),
+            marker=dict(size=10, color='white', line=dict(color='#0072FF', width=2)),
+            name=st.session_state.selected_param # Здесь можно подставить перевод, если нужно в легенде
         ))
         
         fig_s.update_layout(
-            height=300, # Увеличили высоту для лучшей видимости
-            margin=dict(l=50, r=10, t=30, b=50), # Увеличили l и b для подписей
+            height=300,
+            margin=dict(l=50, r=10, t=30, b=50),
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)',
             hovermode="x unified",
-            # Настройки шрифта для всего графика
             font=dict(color="black") 
         )
 
-        # Применяем ЧЕРНЫЙ цвет и КРУПНЫЙ шрифт к осям
         fig_s.update_xaxes(
             showgrid=False, 
-            tickfont=dict(size=14, color='black', family="Arial"), # Крупные черные месяцы
+            tickfont=dict(size=14, color='black', family="Arial"),
             linecolor='black'
         )
         fig_s.update_yaxes(
             showgrid=True, 
             gridcolor='#E2E8F0', 
-            tickfont=dict(size=14, color='black', family="Arial"), # Крупные черные значения
-            title_font=dict(size=16, color='black'),
+            tickfont=dict(size=14, color='black', family="Arial"),
             linecolor='black'
         )
         
@@ -8463,8 +8503,6 @@ with tabs[6]:
     
     st.divider()
     
-    # --- НИЖНИЙ БЛОК ---
-    b_col1, b_col2 = st.columns([1.8, 1])
     
        
             
