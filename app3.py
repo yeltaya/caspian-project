@@ -8550,7 +8550,11 @@ with tabs[6]:
     
     st.divider()
     
-    
+    st.divider()
+        
+        # 1. СНАЧАЛА создаем колонки (обязательно!)
+        b_col1, b_col2 = st.columns([1.8, 1])
+        
     with b_col1:
         # Заголовок
         st.markdown(f'<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 12px;">{curr_b["hist_title"]}</p></div>', unsafe_allow_html=True) 
