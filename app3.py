@@ -5104,8 +5104,14 @@ with tabs[2]:
 # st.set_page_config(layout="wide", page_title="Агрометеорологические прогнозы 2026")
 
 with tabs[3]:
-    # Определяем язык из сессии
-    current_lang = st.session_state.get('language', 'ru')
+    # --- СИНХРОНИЗАЦИЯ ЯЗЫКА (как в работающем коде) ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        effective_lang = lang_code
+    elif 'lang_code' in st.session_state:
+        effective_lang = st.session_state['lang_code']
+    else:
+        # Пытаемся взять 'language', если в сессии он под таким ключом
+        effective_lang = st.session_state.get('language', 'ru')
 
     # 1. Словарь переводов
     agro_translations = {
@@ -5168,7 +5174,8 @@ with tabs[3]:
         }
     }
 
-    at = agro_translations.get(current_lang, agro_translations["ru"])
+    # Используем effective_lang для выбора контента
+    at = agro_translations.get(effective_lang, agro_translations["ru"])
 
     # Стили
     st.markdown("""
@@ -5236,7 +5243,6 @@ with tabs[3]:
 
     st.divider()
     
-
     def show_enhanced_farmer_calendar():
         st.markdown("### 📅 Календарь фермера")
         
