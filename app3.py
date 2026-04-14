@@ -4933,37 +4933,36 @@ with tabs[2]:
         # Выбираем текущий перевод
         t = translations.get(lang_code, translations["ru"])
 
-        # 2. Отрисовка колонок
+    # 2. СТИЛИ
+        st.markdown("""
+            <style>
+            .big-climate-card {
+                background: #ffffff;
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 10px;
+                border: 1px solid #eef0f2;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            }
+            .section-title {
+                color: #1d4d2b;
+                font-weight: 800;
+                font-size: 1.3rem !important;
+                margin-bottom: 12px;
+                border-bottom: 2px solid #f1f3f5;
+            }
+            .info-item { font-size: 1.1rem !important; margin-bottom: 8px; line-height: 1.4; }
+            .val-bold { font-weight: 700; color: #2c3e50; }
+            </style>
+        """, unsafe_allow_html=True)
+
+        # 3. ОТРИСОВКА КОЛОНОК
         col_climat_data, col_viz1 = st.columns([1, 1], gap="medium")
 
         with col_climat_data:
-            # Заголовок блока
             st.markdown(f"<h4 style='color: #1d4d2b; margin-bottom: 15px;'>{t['header']}</h4>", unsafe_allow_html=True)
             
-            # Стили (теперь внутри колонки для надежности)
-            st.markdown("""
-                <style>
-                .big-climate-card {
-                    background: #ffffff;
-                    border-radius: 12px;
-                    padding: 15px;
-                    margin-bottom: 10px;
-                    border: 1px solid #eef0f2;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                }
-                .section-title {
-                    color: #1d4d2b;
-                    font-weight: 800;
-                    font-size: 1.2rem !important;
-                    margin-bottom: 8px;
-                    border-bottom: 2px solid #f1f3f5;
-                }
-                .info-item { font-size: 1.05rem !important; margin-bottom: 5px; }
-                .val-bold { font-weight: 700; color: #2c3e50; }
-                </style>
-            """, unsafe_allow_html=True)
-
-            # Контент карточек с использованием словаря 't'
+            # Используем переменные из словаря t внутри HTML
             st.markdown(f"""
                 <div style="display: flex; gap: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
@@ -4994,7 +4993,6 @@ with tabs[2]:
         with col_viz1:
             st.subheader(t['viz_title'])
             gif_path = os.path.join(BASE_DIR, "udpp1.gif")
-            
             if os.path.exists(gif_path):
                 with open(gif_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
@@ -5007,17 +5005,7 @@ with tabs[2]:
                 )
             else:
                 st.warning(f"File not found: {gif_path}")
-
-        st.divider()
-
-    # Пример запуска (вставьте это в основной блок вашего приложения)
-    # if 'lang_code' not in st.session_state: st.session_state.lang_code = 'ru'
-    # show_forecast_process(st.session_state.lang_code)
-    if __name__ == "__main__":
-        # Если язык хранится в сессии:
-        lang = st.session_state.get("lang_code", "ru") 
-        show_forecast_process(lang)
-        
+                
     
 
  
