@@ -8553,7 +8553,7 @@ with tabs[6]:
     st.divider()
         
         # 1. СНАЧАЛА создаем колонки (обязательно!)
-        b_col1, b_col2 = st.columns([1.8, 1])
+    b_col1, b_col2 = st.columns([1.8, 1])
         
     with b_col1:
         # Заголовок
