@@ -5012,92 +5012,94 @@ with tabs[2]:
         show_forecast_process("ru")
         
     
+
+ 
    
-         with st.container():
-            # 1. Словарь переводов для отраслей
-            sector_translations = {
-                "ru": {
-                    "main_header": "💼 Отраслевое применение прогнозов",
-                    "items": [
-                        {"title": "Строительство", "desc": "информация о продолжительности строительного сезона", "emoji": "🏗️"},
-                        {"title": "Лесная отрасль", "desc": "планирование мероприятий по охране лесов от пожаров.", "emoji": "🌲"},
-                        {"title": "Туризм", "desc": "информация о режиме осадков для планирования отдыха.", "emoji": "🗺️"},
-                        {"title": "Сельское хозяйство", "desc": "определение сроков сева, внесения удобрений и уборки урожая.", "emoji": "🌾"},
-                        {"title": "Водные ресурсы", "desc": "предотвращение наводнений и работы по ирригации.", "emoji": "💧"},
-                        {"title": "Энергетика", "desc": "прогноз потребления электроэнергии в зависимости от погоды.", "emoji": "⚡"}
-                    ]
-                },
-                "kz": {
-                    "main_header": "💼 Болжамдарды салалық қолдану",
-                    "items": [
-                        {"title": "Құрылыс", "desc": "құрылыс маусымының ұзақтығы туралы ақпарат", "emoji": "🏗️"},
-                        {"title": "Орман шаруашылығы", "desc": "ормандарды өрттен қорғау шараларын жоспарлау.", "emoji": "🌲"},
-                        {"title": "Туризм", "desc": "демалысты жоспарлау үшін жауын-шашын режимі туралы ақпарат.", "emoji": "🗺️"},
-                        {"title": "Ауыл шаруашылығы", "desc": "егу, тыңайтқыш енгізу және өнім жинау мерзімдерін анықтау.", "emoji": "🌾"},
-                        {"title": "Су ресурстары", "desc": "су тасқынының алдын алу және ирригациялық жұмыстар.", "emoji": "💧"},
-                        {"title": "Энергетика", "desc": "ауа райына байланысты электр энергиясын тұтыну болжамы.", "emoji": "⚡"}
-                    ]
-                },
-                "en": {
-                    "main_header": "💼 Sectoral Application of Forecasts",
-                    "items": [
-                        {"title": "Construction", "desc": "information on the duration of the construction season", "emoji": "🏗️"},
-                        {"title": "Forestry", "emoji": "🌲", "desc": "planning measures to protect forests from fires."},
-                        {"title": "Tourism", "desc": "precipitation regime information for holiday planning.", "emoji": "🗺️"},
-                        {"title": "Agriculture", "desc": "determining dates for sowing, fertilizing, and harvesting.", "emoji": "🌾"},
-                        {"title": "Water Resources", "desc": "flood prevention and irrigation works.", "emoji": "💧"},
-                        {"title": "Energy", "desc": "electricity consumption forecast based on weather conditions.", "emoji": "⚡"}
-                    ]
-                }
-            }
+ with st.container():
+    # 1. Словарь переводов для отраслей
+    sector_translations = {
+        "ru": {
+            "main_header": "💼 Отраслевое применение прогнозов",
+            "items": [
+                {"title": "Строительство", "desc": "информация о продолжительности строительного сезона", "emoji": "🏗️"},
+                {"title": "Лесная отрасль", "desc": "планирование мероприятий по охране лесов от пожаров.", "emoji": "🌲"},
+                {"title": "Туризм", "desc": "информация о режиме осадков для планирования отдыха.", "emoji": "🗺️"},
+                {"title": "Сельское хозяйство", "desc": "определение сроков сева, внесения удобрений и уборки урожая.", "emoji": "🌾"},
+                {"title": "Водные ресурсы", "desc": "предотвращение наводнений и работы по ирригации.", "emoji": "💧"},
+                {"title": "Энергетика", "desc": "прогноз потребления электроэнергии в зависимости от погоды.", "emoji": "⚡"}
+            ]
+        },
+        "kz": {
+            "main_header": "💼 Болжамдарды салалық қолдану",
+            "items": [
+                {"title": "Құрылыс", "desc": "құрылыс маусымының ұзақтығы туралы ақпарат", "emoji": "🏗️"},
+                {"title": "Орман шаруашылығы", "desc": "ормандарды өрттен қорғау шараларын жоспарлау.", "emoji": "🌲"},
+                {"title": "Туризм", "desc": "демалысты жоспарлау үшін жауын-шашын режимі туралы ақпарат.", "emoji": "🗺️"},
+                {"title": "Ауыл шаруашылығы", "desc": "егу, тыңайтқыш енгізу және өнім жинау мерзімдерін анықтау.", "emoji": "🌾"},
+                {"title": "Су ресурстары", "desc": "су тасқынының алдын алу және ирригациялық жұмыстар.", "emoji": "💧"},
+                {"title": "Энергетика", "desc": "ауа райына байланысты электр энергиясын тұтыну болжамы.", "emoji": "⚡"}
+            ]
+        },
+        "en": {
+            "main_header": "💼 Sectoral Application of Forecasts",
+            "items": [
+                {"title": "Construction", "desc": "information on the duration of the construction season", "emoji": "🏗️"},
+                {"title": "Forestry", "emoji": "🌲", "desc": "planning measures to protect forests from fires."},
+                {"title": "Tourism", "desc": "precipitation regime information for holiday planning.", "emoji": "🗺️"},
+                {"title": "Agriculture", "desc": "determining dates for sowing, fertilizing, and harvesting.", "emoji": "🌾"},
+                {"title": "Water Resources", "desc": "flood prevention and irrigation works.", "emoji": "💧"},
+                {"title": "Energy", "desc": "electricity consumption forecast based on weather conditions.", "emoji": "⚡"}
+            ]
+        }
+    }
 
-            # Выбираем текущий перевод (используем ту же переменную lang_code)
-            st_lang = sector_translations.get(lang_code, sector_translations["ru"])
+    # Выбираем текущий перевод (используем ту же переменную lang_code)
+    st_lang = sector_translations.get(lang_code, sector_translations["ru"])
 
-            st.markdown(f"<h3 style='color: #1d4d2b; text-align: center; margin-bottom: 20px;'>{st_lang['main_header']}</h3>", unsafe_allow_html=True)
-            
-            # Стили остаются прежними
-            st.markdown("""
-                <style>
-                .sector-no-img-card {
-                    background: #ffffff;
-                    border-radius: 12px;
-                    padding: 15px;
-                    border: 1px solid #eef0f2;
-                    text-align: center;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                    height: 260px; 
-                    display: flex;
-                    flex-direction: column;
-                    transition: transform 0.2s;
-                }
-                .sector-no-img-card:hover { transform: translateY(-5px); }
-                .no-img-icon { font-size: 2.2rem; margin-bottom: 10px; }
-                .no-img-header {
-                    color: #1d4d2b;
-                    font-weight: 800;
-                    font-size: 0.85rem;
-                    margin-bottom: 8px;
-                    text-transform: uppercase;
-                    min-height: 40px;
-                }
-                .no-img-body { font-size: 0.9rem; color: #444; line-height: 1.2; }
-                </style>
+    st.markdown(f"<h3 style='color: #1d4d2b; text-align: center; margin-bottom: 20px;'>{st_lang['main_header']}</h3>", unsafe_allow_html=True)
+    
+    # Стили остаются прежними
+    st.markdown("""
+        <style>
+        .sector-no-img-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #eef0f2;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            height: 260px; 
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+        .sector-no-img-card:hover { transform: translateY(-5px); }
+        .no-img-icon { font-size: 2.2rem; margin-bottom: 10px; }
+        .no-img-header {
+            color: #1d4d2b;
+            font-weight: 800;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            min-height: 40px;
+        }
+        .no-img-body { font-size: 0.9rem; color: #444; line-height: 1.2; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    cols = st.columns(6)
+
+    # Цикл по переведенным элементам
+    for i, sector in enumerate(st_lang['items']):
+        with cols[i]:
+            st.markdown(f"""
+                <div class="sector-no-img-card">
+                    <div class="no-img-icon">{sector['emoji']}</div>
+                    <div class="no-img-header">{sector['title']}</div>
+                    <div class="no-img-body">{sector['desc']}</div>
+                </div>
             """, unsafe_allow_html=True)
-
-            cols = st.columns(6)
-
-            # Цикл по переведенным элементам
-            for i, sector in enumerate(st_lang['items']):
-                with cols[i]:
-                    st.markdown(f"""
-                        <div class="sector-no-img-card">
-                            <div class="no-img-icon">{sector['emoji']}</div>
-                            <div class="no-img-header">{sector['title']}</div>
-                            <div class="no-img-body">{sector['desc']}</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
+            
             
 
 with tabs[3]:
