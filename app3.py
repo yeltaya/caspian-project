@@ -4827,7 +4827,7 @@ with tabs[2]:
     lc = long_forecast_content[lang_code]
 
         # 2. Отрисовка колонок
-        with col_tech:
+    with col_tech:
             st.markdown(f"<h1 class='kazakh-font' style='color: #1E3A8A;'>{lc['title']}</h1>", unsafe_allow_html=True)
             tab1, tab2, tab3, tab4 = st.tabs(lc['tabs'])
             
@@ -4851,11 +4851,11 @@ with tabs[2]:
                 st.error(lc['t4_info'])
                 st.markdown(lc['t4_desc'])
 
-        with col_viz:
+    with col_viz:
             st.subheader(lc['viz'])
             st.image(os.path.join(BASE_DIR, "udpp.gif"), use_container_width=True)
 
-        st.divider()
+    st.divider()
 
         
         
