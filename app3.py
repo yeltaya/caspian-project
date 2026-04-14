@@ -6509,7 +6509,7 @@ with tabs[5]:
                     sel_name = k
                     break
 
-with col2:
+        with col2:
             st.markdown(t["stats_h"])
             
             # Определяем заголовок (РК или конкретный бассейн)
