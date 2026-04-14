@@ -6382,240 +6382,247 @@ with tabs[5]:
     import os
     import pandas as pd
     import plotly.graph_objects as go
-    import numpy as np
-
-    # 1. ОПРЕДЕЛЕНИЕ ФУНКЦИИ ЗАГРУЗКИ
-    @st.cache_data
-    def load_geo_data(path):
-        all_gdf = []
-        rivers = None
-        if os.path.exists(path):
-            for file in os.listdir(path):
-                if file.endswith("_VXB.shp"):
-                    gdf = gpd.read_file(os.path.join(path, file))
-                    all_gdf.append(gdf.to_crs(epsg=4326))
-            rivers_path = os.path.join(path, "rivers_kz.shp")
-            if os.path.exists(rivers_path):
-                rivers = gpd.read_file(rivers_path).to_crs(epsg=4326)
-        basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
-        return basins, rivers
-
-    # 2. ПОЛУЧЕНИЕ ТЕКУЩЕГО ЯЗЫКА ИЗ СИСТЕМЫ
-    # Убедитесь, что ваш selectbox в sidebar имеет key="lang_code"
-    current_l = st.session_state.get('lang_code', 'ru')
-
-    # 3. ПОЛНЫЙ СЛОВАРЬ ПЕРЕВОДОВ (Проверьте наличие всех ключей!)
+     
+   
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
     ui_tr = {
         "ru": {
-            "main_title": "ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
-            "stats_h": "Характеристики",
-            "norm": "Норма бассейна (W)",
-            "local": "Местный сток",
-            "inflow": "Приток",
-            "outflow": "Отток:",
-            "no_outflow": "Трансграничный отток не зафиксирован",
-            "rk": "Республика Казахстан",
+            "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
+            "stats_h": "### 📊 Характеристики",
+            "norm": "💠 Норма бассейна (W)",
+            "local": "💧︎ Местный сток",
+            "inflow": "💧 Приток",
+            "outflow": "📤 **Отток:**",
+            "no_outflow": "🔄 Трансграничный отток не зафиксирован",
             "unit_y": "км³/год",
             "unit": "км³",
-            "graph_title": "Динамика водности",
-            "trend": "Тренд",
-            "year": "Год"
+            "btn_graph": "📈 Посмотреть гидрограф бассейна",
+            "info_prompt": "ℹ️ Выберите бассейн на карте для детального анализа",
+            "rk": "Республика Казахстан"
         },
         "kz": {
-            "main_title": "ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
-            "stats_h": "Сипаттамалары",
-            "norm": "Бассейн нормасы (W)",
-            "local": "Жергілікті ағын",
-            "inflow": "Келу ағыны",
-            "outflow": "Кету ағыны:",
-            "no_outflow": "Трансшекаралық кету ағыны тіркелген жоқ",
-            "rk": "Қазақстан Республикасы",
+            "title": "🌊 ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
+            "stats_h": "### 📊 Сипаттамалары",
+            "norm": "💠 Бассейн нормасы (W)",
+            "local": "💧︎ Жергілікті ағын",
+            "inflow": "💧 Келу ағыны",
+            "outflow": "📤 **Кету ағыны:**",
+            "no_outflow": "🔄 Трансшекаралық кету ағыны тіркелген жоқ",
             "unit_y": "км³/жыл",
             "unit": "км³",
-            "graph_title": "Сулылық динамикасы",
-            "trend": "Тренд",
-            "year": "Жыл"
+            "btn_graph": "📈 Бассейн гидрографын көру",
+            "info_prompt": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз",
+            "rk": "Қазақстан Республикасы"
         },
         "en": {
-            "main_title": "WATER RESOURCES OF KAZAKHSTAN",
-            "stats_h": "Characteristics",
-            "norm": "Basin Norm (W)",
-            "local": "Local Runoff",
-            "inflow": "Inflow",
-            "outflow": "Outflow:",
-            "no_outflow": "No transboundary outflow recorded",
-            "rk": "Republic of Kazakhstan",
+            "title": "🌊 WATER RESOURCES OF KAZAKHSTAN",
+            "stats_h": "### 📊 Characteristics",
+            "norm": "💠 Basin Norm (W)",
+            "local": "💧︎ Local Runoff",
+            "inflow": "💧 Inflow",
+            "outflow": "📤 **Outflow:**",
+            "no_outflow": "🔄 No transboundary outflow recorded",
             "unit_y": "km³/year",
             "unit": "km³",
-            "graph_title": "Water Yield Dynamics",
-            "trend": "Trend",
-            "year": "Year"
+            "btn_graph": "📈 View Basin Hydrograph",
+            "info_prompt": "ℹ️ Select a basin on the map for detailed analysis",
+            "rk": "Republic of Kazakhstan"
         }
     }
 
-    t = ui_tr.get(current_l, ui_tr["ru"])
+    # Определение текущего языка
+    lang = st.session_state.get('lang_code', 'ru')
+    t = ui_tr[lang]
 
-    # --- ОТОБРАЖЕНИЕ ЗАГОЛОВКА ---
-    st.markdown(f"## 🌊 {t['main_title']}")
-
-    # 4. ДАННЫЕ И КАРТА
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    FOLDER_PATH = os.path.join(base_path, "shp")
-    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
-
+    # --- 2. НАСТРОЙКИ ДАННЫХ С ПЕРЕВОДОМ ОТТОКА ---
     VXB_STATS = {
-        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": {"ru": "В Узбекистан", "kz": "Өзбекстанға", "en": "To Uzbekistan"}},
-        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, "отток": {"ru": "В КНР", "kz": "ҚХР-ға", "en": "To China"}},
-        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, "отток": {"ru": "В КНР и РФ", "kz": "ҚХР мен РФ-ға", "en": "To China and RF"}},
-        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, "отток": {"ru": "В РФ", "kz": "РФ-ға", "en": "To RF"}},
-        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, "отток": {"ru": "В РФ", "kz": "РФ-ға", "en": "To RF"}},
+        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": None},
+        "Балкаш-Алакольский ВХБ": {
+            "норма": 29.91, "местные": 17.20, "приток": 12.71, 
+            "отток": {"ru": "В КНР: 0.67", "kz": "ҚХР-ға: 0.67", "en": "To PRC: 0.67"}
+        },
+        "Ертисский ВХБ": {
+            "норма": 33.38, "местные": 26.36, "приток": 7.03, 
+            "отток": {"ru": "В КНР: 2.20, В РФ: 26.2", "kz": "ҚХР: 2.20, РФ: 26.2", "en": "To PRC: 2.20, To RF: 26.2"}
+        },
+        "Жайык-Каспийский ВХБ": {
+            "норма": 12.00, "местные": 3.36, "приток": 8.63, 
+            "отток": {"ru": "В РФ: 1.48", "kz": "РФ-ға: 1.48", "en": "To RF: 1.48"}
+        },
+        "Есильский ВХБ": {
+            "норма": 2.29, "местные": 2.29, "приток": 0, 
+            "отток": {"ru": "В РФ: 1.86", "kz": "РФ-ға: 1.86", "en": "To RF: 1.86"}
+        },
         "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0, "отток": None},
         "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84, "отток": None},
-        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, "отток": {"ru": "В РФ", "kz": "РФ-ға", "en": "To RF"}},
+        "Тобыл-Торгайский ВХБ": {
+            "норма": 1.67, "местные": 1.33, "приток": 0.34, 
+            "отток": {"ru": "В РФ: 0.46", "kz": "РФ-ға: 0.46", "en": "To RF: 0.46"}
+        },
         "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
     }
 
-    if data_basins is not None:
-        col_map, col_stat = st.columns([2, 1])
-        with col_map:
-            m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
-            folium.GeoJson(data_basins, tooltip=folium.GeoJsonTooltip(fields=['ВХБ_н_'])).add_to(m)
-            out = st_folium(m, width=None, height=450, use_container_width=True, key="map_v3")
+    # Отрисовка заголовока
+    st.title(t["title"])
 
-        # Определение выбранного региона
-        sel_reg = "Республика Казахстан"
-        if out and out.get("last_active_drawing"):
-            val = out["last_active_drawing"]["properties"].get('ВХБ_н_', "Республика Казахстан")
-            for k in VXB_STATS.keys():
-                if k.lower().split(' ')[0] in str(val).lower():
-                    sel_reg = k
+    # [Здесь ваша функция load_geo_data]
+    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
+
+    if data_basins is not None:
+        tooltip_col = 'ВХБ_н_'
+        col1, col2 = st.columns([2.2, 1])
+        
+        with col1:
+            m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
+            
+            # Геометрия
+            folium.GeoJson(
+                data_basins,
+                style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
+                highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
+                tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])
+            ).add_to(m)
+
+            # Реки
+            if data_rivers is not None:
+                folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
+            
+            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map")
+
+        # Определение выбранного бассейна
+        display_key = "Республика Казахстан"
+        if output and output.get("last_active_drawing"):
+            raw_name = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
+            clean_name = str(raw_name).replace('\n', ' ').strip().lower()
+            for key in VXB_STATS.keys():
+                main_word = key.lower().split('-')[0].split(' ')[0]
+                if main_word in clean_name:
+                    display_key = key
                     break
 
-        with col_stat:
-            st.subheader(f"📊 {t['stats_h']}")
-            # Показываем перевод для РК или само название бассейна
-            name_to_show = t['rk'] if sel_reg == "Республика Казахстан" else sel_reg
-            st.success(f"📍 **{name_to_show}**")
+        with col2:
+            st.markdown(f"""<style>[data-testid="stMetricValue"] {{ font-weight: 800 !important; color: #1e3799; }}</style>""", unsafe_allow_html=True)
+
+            st.markdown(t["stats_h"])
             
-            cur = VXB_STATS[sel_reg]
-            st.metric(t['norm'], f"{cur['норма']} {t['unit_y']}")
+            # Локализованное имя региона
+            region_label = t["rk"] if display_key == "Республика Казахстан" else display_key
+            st.success(f"📍 **{region_label}**")
             
-            if cur.get('отток'):
-                # Перевод текста оттока
-                txt_out = cur['отток'][current_l]
-                st.warning(f"📤 {t['outflow']} {txt_out}")
+            cur_stats = VXB_STATS[display_key]
+            
+            st.metric(t["norm"], f"{cur_stats['норма']} {t['unit_y']}")
+            
+            m_col1, m_col2 = st.columns(2)
+            with m_col1:
+                st.metric(t["local"], f"{cur_stats['местные']} {t['unit']}")
+            with m_col2:
+                st.metric(t["inflow"], f"{cur_stats['приток']} {t['unit']}")
+            
+            # Вывод оттока с учетом языка
+            if cur_stats.get('отток'):
+                outflow_val = cur_stats['отток'][lang] if isinstance(cur_stats['отток'], dict) else cur_stats['отток']
+                st.warning(f"{t['outflow']} **{outflow_val}**")
             else:
-                st.info(f"🔄 {t['no_outflow']}")
+                st.info(t["no_outflow"])
+
+            st.markdown("---") 
+            
+            if display_key != "Республика Казахстан":
+                anchor_id = display_key.replace(' ', '-').lower()
+                st.markdown(f"""
+                    <a href="#{anchor_id}" style="text-decoration: none;">
+                        <div style="background: linear-gradient(90deg, #1e3799, #009432); color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
+                            {t['btn_graph']}
+                        </div>
+                    </a>
+                """, unsafe_allow_html=True)
+            else:
+                st.caption(t["info_prompt"])
+            
+                
+      
+        import streamlit as st
+        import pandas as pd
+        import plotly.graph_objects as go
+        import numpy as np
+
+        # 1. Подготовка данных
+        data = {
+            "Год": list(range(1940, 2026)),
+            "Местный сток": [
+                45.93, 76.95, 71.69, 47.23, 39.70, 37.49, 78.82, 66.24, 66.82, 62.22, 50.53, 34.18, 64.30, 46.73, 67.23, 
+                47.32, 52.98, 55.30, 73.76, 63.77, 68.94, 53.32, 43.40, 43.52, 58.37, 39.76, 72.40, 42.05, 43.24, 75.23, 
+                65.19, 68.77, 61.34, 63.95, 36.44, 43.60, 46.75, 48.22, 48.94, 66.74, 50.83, 51.30, 38.95, 53.70, 48.42, 
+                62.49, 47.10, 65.61, 72.56, 50.36, 69.40, 49.43, 55.12, 83.03, 67.19, 51.71, 52.19, 52.53, 54.28, 46.72, 
+                50.22, 65.06, 75.78, 51.02, 59.62, 62.79, 49.59, 63.41, 43.68, 56.43, 73.31, 51.38, 42.27, 68.59, 60.78, 
+                65.09, 77.84, 75.29, 56.80, 58.40, 48.23, 45.69, 52.47, 60.47, 89.56, 58.34
+            ],
+            "Приток": [
+                42.65, 69.16, 70.34, 49.81, 42.05, 51.71, 72.44, 60.79, 59.50, 60.28, 45.96, 42.23, 67.31, 56.83, 63.48, 
+                50.14, 55.52, 57.02, 66.28, 66.41, 68.36, 44.54, 40.48, 50.45, 59.67, 36.88, 62.41, 33.95, 40.95, 88.63, 
+                66.16, 55.82, 43.27, 47.28, 28.48, 26.26, 29.58, 31.05, 34.74, 42.42, 39.17, 43.43, 35.22, 36.74, 35.77, 
+                40.93, 35.79, 49.80, 60.41, 39.37, 52.77, 45.06, 42.02, 64.87, 66.24, 40.77, 42.65, 39.81, 58.52, 50.33, 
+                50.46, 50.68, 62.43, 59.34, 52.80, 56.29, 45.44, 46.98, 37.86, 36.84, 59.84, 40.80, 40.01, 42.86, 41.56, 
+                39.47, 52.54, 58.58, 41.53, 36.47, 32.81, 28.13, 32.43, 38.03, 51.35, 35.72
+            ],
+            "ВХБ": [
+                88.58, 146.12, 142.03, 97.04, 81.75, 89.20, 151.26, 127.04, 126.31, 122.50, 96.48, 76.41, 131.60, 103.57, 130.70, 
+                97.46, 108.50, 112.32, 140.04, 130.18, 137.30, 97.86, 83.88, 93.96, 118.04, 76.64, 134.81, 76.00, 84.19, 163.86, 
+                131.35, 124.59, 104.60, 111.23, 64.92, 69.87, 76.33, 79.27, 83.69, 109.16, 90.00, 94.73, 74.17, 90.44, 84.18, 
+                103.42, 82.90, 115.41, 132.98, 89.73, 122.17, 94.49, 97.13, 147.90, 133.43, 92.49, 94.84, 92.34, 112.81, 97.04, 
+                100.68, 115.74, 138.20, 110.35, 112.41, 119.08, 95.03, 110.39, 81.54, 93.28, 133.15, 92.18, 82.28, 111.45, 102.34, 
+                104.57, 130.37, 133.87, 98.33, 94.87, 81.04, 73.82, 84.90, 98.50, 140.90, 94.06
+            ]
+        }
+
+        df = pd.DataFrame(data)
+
+        # 2. Расчет тренда
+        z = np.polyfit(df['Год'], df['ВХБ'], 1)
+        p = np.poly1d(z)
+        df['Тренд'] = p(df['Год'])
+
+        # 3. Создание графика
+        fig = go.Figure()
+
+        # Местный сток - Глубокий синий
+        fig.add_trace(go.Bar(
+            x=df['Год'], y=df['Местный сток'],
+            name='Местный сток',
+            marker_color='#1f77b4',  # Steel Blue
+            opacity=0.9
+        ))
+
+        # Приток - Светло-голубой
+        fig.add_trace(go.Bar(
+            x=df['Год'], y=df['Приток'],
+            name='Приток',
+            marker_color='#a6cee3',  # Light Blue
+            opacity=0.9
+        ))
 
 
-# --- ЭТОТ БЛОК ДАННЫХ НУЖНО РАЗМЕСТИТЬ ТУТ ---
-    # (Вставляем прямо перед графиком)
-    
-    data_raw = {
-        "Год": list(range(1940, 2026)),
-        "Местный сток": [
-            45.93, 76.95, 71.69, 47.23, 39.70, 37.49, 78.82, 66.24, 66.82, 62.22, 50.53, 34.18, 64.30, 46.73, 67.23, 
-            47.32, 52.98, 55.30, 73.76, 63.77, 68.94, 53.32, 43.40, 43.52, 58.37, 39.76, 72.40, 42.05, 43.24, 75.23, 
-            65.19, 68.77, 61.34, 63.95, 36.44, 43.60, 46.75, 48.22, 48.94, 66.74, 50.83, 51.30, 38.95, 53.70, 48.42, 
-            62.49, 47.10, 65.61, 72.56, 50.36, 69.40, 49.43, 55.12, 83.03, 67.19, 51.71, 52.19, 52.53, 54.28, 46.72, 
-            50.22, 65.06, 75.78, 51.02, 59.62, 62.79, 49.59, 63.41, 43.68, 56.43, 73.31, 51.38, 42.27, 68.59, 60.78, 
-            65.09, 77.84, 75.29, 56.80, 58.40, 48.23, 45.69, 52.47, 60.47, 89.56, 58.34
-        ],
-        "Приток": [
-            42.65, 69.16, 70.34, 49.81, 42.05, 51.71, 72.44, 60.79, 59.50, 60.28, 45.96, 42.23, 67.31, 56.83, 63.48, 
-            50.14, 55.52, 57.02, 66.28, 66.41, 68.36, 44.54, 40.48, 50.45, 59.67, 36.88, 62.41, 33.95, 40.95, 88.63, 
-            66.16, 55.82, 43.27, 47.28, 28.48, 26.26, 29.58, 31.05, 34.74, 42.42, 39.17, 43.43, 35.22, 36.74, 35.77, 
-            40.93, 35.79, 49.80, 60.41, 39.37, 52.77, 45.06, 42.02, 64.87, 66.24, 40.77, 42.65, 39.81, 58.52, 50.33, 
-            50.46, 50.68, 62.43, 59.34, 52.80, 56.29, 45.44, 46.98, 37.86, 36.84, 59.84, 40.80, 40.01, 42.86, 41.56, 
-            39.47, 52.54, 58.58, 41.53, 36.47, 32.81, 28.13, 32.43, 38.03, 51.35, 35.72
-        ],
-        "ВХБ": [
-            88.58, 146.12, 142.03, 97.04, 81.75, 89.20, 151.26, 127.04, 126.31, 122.50, 96.48, 76.41, 131.60, 103.57, 130.70, 
-            97.46, 108.50, 112.32, 140.04, 130.18, 137.30, 97.86, 83.88, 93.96, 118.04, 76.64, 134.81, 76.00, 84.19, 163.86, 
-            131.35, 124.59, 104.60, 111.23, 64.92, 69.87, 76.33, 79.27, 83.69, 109.16, 90.00, 94.73, 74.17, 90.44, 84.18, 
-            103.42, 82.90, 115.41, 132.98, 89.73, 122.17, 94.49, 97.13, 147.90, 133.43, 92.49, 94.84, 92.34, 112.81, 97.04, 
-            100.68, 115.74, 138.20, 110.35, 112.41, 119.08, 95.03, 110.39, 81.54, 93.28, 133.15, 92.18, 82.28, 111.45, 102.34, 
-            104.57, 130.37, 133.87, 98.33, 94.87, 81.04, 73.82, 84.90, 98.50, 140.90, 94.06
-        ]
-    }
-    df_plot = pd.DataFrame(data_raw)
-    
-    # Расчет тренда (обязательно!)
-    z = np.polyfit(df_plot['Год'], df_plot['ВХБ'], 1)
-    p = np.poly1d(z)
-    df_plot['Trend'] = p(df_plot['Год'])
+        # Настройка оформления
+        fig.update_layout(
+            title=dict(
+                text='Динамика водности Республики Казахстан (1940-2025)',
+                font=dict(color='#08306b', size=20)
+            ),
+            xaxis_title='Год',
+            yaxis_title='W, км³',
+            barmode='stack',
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            hovermode="x unified",
+            height=550,
+            template="plotly_white",
+            xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black')),
+            yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black'))
+            )
 
-    # --- ТЕПЕРЬ СТРОИМ ГРАФИК ---
-    st.markdown(f"### 📈 {t['graph_title']}") # Используем перевод заголовка
-    
-    fig = go.Figure()
-    
-    # Столбцы местного стока
-    fig.add_trace(go.Bar(
-        x=df_plot['Год'], 
-        y=df_plot['Местный сток'], 
-        name=t['local'], # Перевод легенды
-        marker_color='#1f77b4'
-    ))
-    
-    # Столбцы притока
-    fig.add_trace(go.Bar(
-        x=df_plot['Год'], 
-        y=df_plot['Приток'], 
-        name=t['inflow'], # Перевод легенды
-        marker_color='#a6cee3'
-    ))
-    
-    # Линия тренда
-    fig.add_trace(go.Scatter(
-        x=df_plot['Год'], 
-        y=df_plot['Trend'], 
-        name=t['trend'], # Перевод легенды
-        line=dict(color='red', dash='dash')
-    ))
+        # Отображение в Streamlit
+        st.plotly_chart(fig, use_container_width=True)
 
-    fig.update_layout(
-        xaxis_title=t['year'], 
-        yaxis_title=t['unit_y'],
-        template="plotly_white",
-        legend=dict(orientation="h", y=1.1, x=1)
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-    
-    
-    # --- ГРАФИК ---
-    st.markdown(f"### 📈 {t['graph_title']}")
-    
-    # Генерация данных (чтобы не было NameError)
-    df_plot = pd.DataFrame({
-        "Год": list(range(1940, 2026)),
-        "Местный сток": np.random.uniform(30, 80, 86),
-        "Приток": np.random.uniform(20, 70, 86)
-    })
-    df_plot['Total'] = df_plot['Местный сток'] + df_plot['Приток']
-    z = np.polyfit(df_plot['Год'], df_plot['Total'], 1)
-    p = np.poly1d(z)
-    df_plot['Trend'] = p(df_plot['Год'])
-
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=df_plot['Год'], y=df_plot['Местный сток'], name=t['local'], marker_color='#1f77b4'))
-    fig.add_trace(go.Bar(x=df_plot['Год'], y=df_plot['Приток'], name=t['inflow'], marker_color='#a6cee3'))
-    fig.add_trace(go.Scatter(x=df_plot['Год'], y=df_plot['Trend'], name=t['trend'], line=dict(color='red', dash='dash')))
-
-    fig.update_layout(
-        xaxis_title=t['year'], 
-        yaxis_title=t['unit'],
-        legend=dict(orientation="h", y=1.1, x=1),
-        margin=dict(l=0, r=0, t=30, b=0),
-        template="plotly_white"
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    
-    
-    
-    
-    
     def show_water_resources_analysis():
         st.subheader("📊 Анализ суммарных водных ресурсов РК (1940–2024 гг.)")
         
