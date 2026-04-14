@@ -6384,15 +6384,10 @@ with tabs[5]:
     import plotly.graph_objects as go
      
     
-    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
-    if 'lang_code' in locals() or 'lang_code' in globals():
-        current_l = lang_code
-    elif 'lang_code' in st.session_state:
-        current_l = st.session_state['lang_code']
-    else:
-        current_l = "ru"
+    # --- СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    current_l = st.session_state.get('lang_code', 'ru')
 
-    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    # --- СЛОВАРЬ ПЕРЕВОДОВ ---
     water_tr = {
         "ru": {
             "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
@@ -6440,75 +6435,208 @@ with tabs[5]:
 
     wt = water_tr.get(current_l, water_tr["ru"])
 
-    # Применяем заголовок
     st.title(wt["title"])
+    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
 
-    # --- 3. ИЗМЕНЕНИЕ ЛОГИКИ ОТОБРАЖЕНИЯ ---
-
-    # Определение выбранного бассейна
-    display_name = wt["rk"]
-    if output and output.get("last_active_drawing"):
-        raw_name = output["last_active_drawing"]["properties"].get(tooltip_col, wt["rk"])
-        clean_name = str(raw_name).replace('\n', ' ').strip().lower()
-        for key in VXB_STATS.keys():
-            main_word = key.lower().split('-')[0].split(' ')[0]
-            if main_word in clean_name:
-                display_name = key
-                break
-
-    with col2:
-        st.markdown("""
-            <style>
-            [data-testid="stMetricValue"] {
-                font-weight: 800 !important;
-                color: #1e3799;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
-        st.markdown(wt["header_stats"])
+    if data_basins is not None:
+        tooltip_col = 'ВХБ_н_'
+        col1, col2 = st.columns([2.2, 1])
         
-        # Перевод названия для отображения (если это РК)
-        show_name = wt["rk"] if display_name == "Республика Казахстан" else display_name
-        st.success(f"📍 **{show_name}**")
-        
-        cur_stats = VXB_STATS[display_name]
-        
-        st.metric(wt["norm_label"], f"{cur_stats['норма']} {wt['unit']}")
-        
-        m_col1, m_col2 = st.columns(2)
-        with m_col1:
-            st.metric(wt["local_label"], f"{cur_stats['местные']} {wt['unit_short']}")
-
-        with m_col2:
-            st.metric(wt["inflow_label"], f"{cur_stats['приток']} {wt['unit_short']}")
-        
-        if cur_stats.get('отток'):
-            # Примечание: значения оттока в словаре VXB_STATS (напр. "В КНР: 0.67") 
-            # лучше оставить как есть или также локализовать внутри словаря VXB_STATS
-            st.warning(f"{wt['outflow_label']} **{cur_stats['отток']}**")
-        else:
-            st.info(wt["no_outflow"])
-
-        st.markdown("---") 
-        
-        if display_name != "Республика Казахстан":
-            anchor_id = display_name.replace(' ', '-').lower()
-            st.markdown(f"""
-                <a href="#{anchor_id}" style="text-decoration: none;">
-                    <div style="
-                        background: linear-gradient(90deg, #1e3799, #009432);
-                        color: white; padding: 12px; border-radius: 8px; 
-                        text-align: center; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                    ">
-                        {wt['btn_graph']}
-                    </div>
-                </a>
-            """, unsafe_allow_html=True)
-        else:
-            st.caption(wt["select_prompt"])
+        with col1:
+            # Создание карты Folium (код остается прежним)
+            m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
             
+            # Добавление GeoJson и подписей
+            folium.GeoJson(
+                data_basins,
+                style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
+                highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
+                tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])
+            ).add_to(m)
+
+            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map")
+
+        # Определение выбора (сопоставляем с ключами VXB_STATS)
+        display_key = "Республика Казахстан"
+        if output and output.get("last_active_drawing"):
+            raw_name = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
+            clean_name = str(raw_name).replace('\n', ' ').strip().lower()
+            for key in VXB_STATS.keys():
+                main_word = key.lower().split('-')[0].split(' ')[0]
+                if main_word in clean_name:
+                    display_key = key
+                    break
+
+        with col2:
+            st.markdown("""
+                <style>
+                [data-testid="stMetricValue"] { font-weight: 800 !important; color: #1e3799; }
+                </style>
+            """, unsafe_allow_html=True)
+
+            st.markdown(wt["header_stats"])
+            
+            # Название для отображения: если РК - берем из словаря, если бассейн - оставляем ключ
+            show_name = wt["rk"] if display_key == "Республика Казахстан" else display_key
+            st.success(f"📍 **{show_name}**")
+            
+            cur_stats = VXB_STATS[display_key]
+            
+            # Метрики с локализованными единицами
+            st.metric(wt["norm_label"], f"{cur_stats['норма']} {wt['unit']}")
+            
+            m_col1, m_col2 = st.columns(2)
+            with m_col1:
+                st.metric(wt["local_label"], f"{cur_stats['местные']} {wt['unit_short']}")
+            with m_col2:
+                st.metric(wt["inflow_label"], f"{cur_stats['приток']} {wt['unit_short']}")
+            
+            # Блок оттока
+            if cur_stats.get('отток'):
+                st.warning(f"{wt['outflow_label']} **{cur_stats['отток']}**")
+            else:
+                st.info(wt["no_outflow"])
+
+            st.markdown("---") 
+            
+            if display_key != "Республика Казахстан":
+                anchor_id = display_key.replace(' ', '-').lower()
+                st.markdown(f"""
+                    <a href="#{anchor_id}" style="text-decoration: none;">
+                        <div style="background: linear-gradient(90deg, #1e3799, #009432); color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
+                            {wt['btn_graph']}
+                        </div>
+                    </a>
+                """, unsafe_allow_html=True)
+            else:
+                st.caption(wt["select_prompt"])
+            
+            
+
+
+
+
+    st.title("🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА")
+    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
+
+    if data_basins is not None:
+        tooltip_col = 'ВХБ_н_'
         
+        # --- ВЕРХНЯЯ ЧАСТЬ: КАРТА И ИНФО-ПАНЕЛЬ ---
+        col1, col2 = st.columns([2.2, 1])
+        
+        with col1:
+                    m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
+                    
+                    # 1. Основные полигоны ВХБ
+                    folium.GeoJson(
+                        data_basins,
+                        style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
+                        highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
+                        tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])
+                    ).add_to(m)
+
+                    # 2. ДОБАВЛЯЕМ НАЗВАНИЯ НА КАРТУ
+                    for _, row in data_basins.iterrows():
+                        # Вычисляем центр бассейна для размещения текста
+                        centroid = row.geometry.centroid
+                        name = row[tooltip_col]
+                        
+                        # Создаем текстовую метку
+                        folium.Marker(
+                            location=[centroid.y, centroid.x],
+                            icon=folium.DivIcon(
+                                html=f"""<div style="
+                                    font-family: sans-serif; 
+                                    color: #1d3557; 
+                                    font-size: 9pt; 
+                                    font-weight: bold; 
+                                    text-shadow: 1px 1px 2px white;
+                                    width: 150px;
+                                    text-align: center;
+                                    transform: translate(-50%, -50%);
+                                    pointer-events: none;
+                                ">{name}</div>"""
+                            )
+                        ).add_to(m)
+
+                    # 3. Реки
+                    if data_rivers is not None:
+                        folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
+                    
+                    output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map")
+                    
+
+        # Определение выбора
+        display_name = "Республика Казахстан"
+        if output and output.get("last_active_drawing"):
+            raw_name = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
+            clean_name = str(raw_name).replace('\n', ' ').strip().lower()
+            for key in VXB_STATS.keys():
+                main_word = key.lower().split('-')[0].split(' ')[0]
+                if main_word in clean_name:
+                    display_name = key
+                    break
+
+        with col2:
+                    # Внедряем CSS, чтобы сделать текст внутри метрик жирным
+                    st.markdown("""
+                        <style>
+                        [data-testid="stMetricValue"] {
+                            font-weight: 800 !important;
+                            color: #1e3799;
+                        }
+                        </style>
+                        """, unsafe_allow_html=True)
+
+                    st.markdown("### 📊 Характеристики")
+                    st.success(f"📍 **{display_name}**")
+                    
+                    cur_stats = VXB_STATS[display_name]
+                    
+                    # 1. Общая норма (жирный шрифт применится автоматически через CSS)
+                    st.metric("💠 Норма бассейна (W)", f"{cur_stats['норма']} км³/год")
+                    
+                    # Разделяем на Местный сток и Приток
+                    m_col1, m_col2 = st.columns(2)
+                    with m_col1:
+                    # Используем символ '💧' (U+1F4A7) с модификатором текста для затемнения
+                        st.metric("💧︎ Местный сток", f"{cur_stats['местные']} км³")
+    
+                    with m_col2:
+                        st.metric("💧 Приток", f"{cur_stats['приток']} км³")
+                    
+                    # 3. Блок оттока
+                    if cur_stats.get('отток'):
+                        # Внутри st.warning можно использовать стандартный жирный шрифт **
+                        st.warning(f"📤 **Отток:** **{cur_stats['отток']}**")
+                    else:
+                        st.info("🔄 Трансграничный отток не зафиксирован")
+
+                    st.markdown("---") 
+                    
+                    # 4. Стилизованная кнопка перехода
+                    if display_name != "Республика Казахстан":
+                        anchor_id = display_name.replace(' ', '-').lower()
+                        st.markdown(f"""
+                            <a href="#{anchor_id}" style="text-decoration: none;">
+                                <div style="
+                                    background: linear-gradient(90deg, #1e3799, #009432);
+                                    color: white; 
+                                    padding: 12px; 
+                                    border-radius: 8px; 
+                                    text-align: center;
+                                    font-weight: bold;
+                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                ">
+                                    📈 Посмотреть гидрограф бассейна
+                                </div>
+                            </a>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.caption("ℹ️ Выберите бассейн на карте для детального анализа")
+                
+      
         import streamlit as st
         import pandas as pd
         import plotly.graph_objects as go
