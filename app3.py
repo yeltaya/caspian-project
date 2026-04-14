@@ -6085,10 +6085,72 @@ with tabs[4]:
     import os
     import base64
 
-    def render_hydrology_models_section():
-        st.markdown('<div class="predictor-header">🌊 Гидрологическое моделирование: HBV и SWIM</div>', unsafe_allow_html=True)
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
+
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    model_translations = {
+        "ru": {
+            "header": "🌊 Гидрологическое моделирование: HBV и SWIM",
+            "tab_hbv": "📊 Модель HBV-light",
+            "tab_swim": "🌍 Модель SWIM",
+            "hbv_title": "### Концепция HBV",
+            "hbv_desc": "Шведская концептуальная модель для составления оперативных прогнозов стока, которая используется для не зарегулированных рек и моделирует суточный речной сток.",
+            "hbv_steps": "**Этапы работы:**\n1. **Калибровка:** подбор параметров на основе архива данных.\n2. **Метеоданные:** получение суточных прогнозов.\n3. **Моделирование:** запуск процесса и визуализация.",
+            "hbv_footer": "Модель адаптирована для 70 рек Казахстана и успешно применяется в оперативном прогнозировании стока рек.",
+            "hbv_cap": "Схема оперативного прогноза стока по модели HBV-light",
+            "swim_title": "### SWIM (Soil and Water Integrated Model)",
+            "swim_desc": "Эко-гидрологическая, полу-распределенная, непрерывная модель, впервые описана в 1989 г.",
+            "swim_features": "**Особенности SWIM:**\n* Разработана для комплексного моделирования на основе ГИС.\n* Основана на моделях SWAT и MATSALU.\n* Интегрирует гидрологическую, эрозионную и динамику питательных веществ.",
+            "swim_footer": "Модель адаптирована для 14 рек Казахстана и применяется при оперативном прогнозировании стока рек.",
+            "swim_cap": "Входные ГИС-данные (почвы FAO, Land 30, гидротопы)",
+            "err_img": "Изображение не найдено"
+        },
+        "kz": {
+            "header": "🌊 Гидрологиялық модельдеу: HBV және SWIM",
+            "tab_hbv": "📊 HBV-light моделі",
+            "tab_swim": "🌍 SWIM моделі",
+            "hbv_title": "### HBV тұжырымдамасы",
+            "hbv_desc": "Реттелмеген өзендер үшін жедел ағынды болжауға арналған шведтік тұжырымдамалық модель, өзеннің тәуліктік ағынын модельдейді.",
+            "hbv_steps": "**Жұмыс кезеңдері:**\n1. **Калибрлеу:** деректер архиві негізінде параметрлерді таңдау.\n2. **Метеодеректер:** тәуліктік болжамдарды алу.\n3. **Модельдеу:** процесті іске қосу және визуализация.",
+            "hbv_footer": "Модель Қазақстанның 70 өзеніне бейімделген және өзен ағынын жедел болжауда сәтті қолданылуда.",
+            "hbv_cap": "HBV-light моделі бойынша ағынды жедел болжау схемасы",
+            "swim_title": "### SWIM (Soil and Water Integrated Model)",
+            "swim_desc": "Эко-гидрологиялық, жартылай бөлінген, үздіксіз модель, алғаш рет 1989 жылы сипатталған.",
+            "swim_features": "**SWIM ерекшеліктері:**\n* ГАЖ негізіндегі кешенді модельдеуді қамтамасыз ету үшін жасалған.\n* SWAT және MATSALU модельдеріне негізделген.\n* Гидрологиялық, эрозиялық және қоректік заттар динамикасын біріктіреді.",
+            "swim_footer": "Модель Қазақстанның 14 өзеніне бейімделген және өзен ағынын жедел болжау кезінде қолданылады.",
+            "swim_cap": "Кіріс ГАЖ-деректері (FAO топырақтары, Land 30, гидротоптар)",
+            "err_img": "Сурет табылмады"
+        },
+        "en": {
+            "header": "🌊 Hydrological Modeling: HBV and SWIM",
+            "tab_hbv": "📊 HBV-light Model",
+            "tab_swim": "🌍 SWIM Model",
+            "hbv_title": "### HBV Concept",
+            "hbv_desc": "A Swedish conceptual model for operational runoff forecasting used for unregulated rivers, simulating daily river discharge.",
+            "hbv_steps": "**Workflow stages:**\n1. **Calibration:** parameter selection based on historical data.\n2. **Meteo-data:** obtaining daily forecasts.\n3. **Modeling:** process execution and visualization.",
+            "hbv_footer": "The model is adapted for 70 rivers in Kazakhstan and successfully used in operational runoff forecasting.",
+            "hbv_cap": "Operational runoff forecast scheme using the HBV-light model",
+            "swim_title": "### SWIM (Soil and Water Integrated Model)",
+            "swim_desc": "Eco-hydrological, semi-distributed, continuous model, first described in 1989.",
+            "swim_features": "**SWIM Features:**\n* Designed for integrated GIS-based modeling of hydrology and water quality.\n* Based on SWAT and MATSALU models.\n* Integrates hydrological, erosion, and nutrient dynamics at the catchment scale.",
+            "swim_footer": "The model is adapted for 14 rivers in Kazakhstan and applied in operational runoff forecasting.",
+            "swim_cap": "Input GIS data (FAO soils, Land 30, hydrotopes)",
+            "err_img": "Image not found"
+        }
+    }
+
+    mt = model_translations.get(current_l, model_translations["ru"])
+
+    # --- 3. ФУНКЦИЯ РАЗДЕЛА ---
+    def render_hydrology_models_section(t):
+        st.markdown(f'<div class="predictor-header">{t["header"]}</div>', unsafe_allow_html=True)
         
-        # Вспомогательная функция для отображения увеличенных картинок (115%)
         def display_big_image(img_name, caption_text):
             img_path = os.path.join(BASE_DIR, img_name)
             if os.path.exists(img_path):
@@ -6096,113 +6158,112 @@ with tabs[4]:
                     data = base64.b64encode(f.read()).decode("utf-8")
                 st.markdown(
                     f"""
-                    <div style="width: 100%; margin-top: 10px;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 80%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                        <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 5px;">{caption_text}</p>
+                    <div style="width: 100%; margin-top: 10px; text-align: center;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <p style="color: gray; font-size: 0.85rem; margin-top: 5px;">{caption_text}</p>
                     </div>
                     """, unsafe_allow_html=True
                 )
             else:
-                st.warning(f"Изображение {img_name} не найдено. Добавьте его в папку проекта.")
+                st.warning(f"{t['err_img']}: {img_name}")
 
-        # Создаем вкладки для двух моделей
-        tab_hbv, tab_swim = st.tabs(["📊 Модель HBV-light", "🌍 Модель SWIM"])
+        tab_hbv, tab_swim = st.tabs([t["tab_hbv"], t["tab_swim"]])
 
         with tab_hbv:
             col_hbv_text, col_hbv_img = st.columns([1, 1])
-            
             with col_hbv_text:
-                st.markdown("""
-                ### Концепция HBV
-                Шведская концептуальная модель для составления оперативных прогнозов стока, которая используется для не зарегулированных рек и моделирует суточный речной сток.
-                
-                **Этапы работы:**
-                1. **Калибровка:** подбор параметров на основе архива данных.
-                2. **Метеоданные:** получение суточных прогнозов.
-                3. **Моделирование:** запуск процесса и визуализация.
-                
-                Модель адаптирована для 70 рек Казахстана и успешно применяются в оперативном прогнозирований стока рек
-
-                """)
+                st.markdown(t["hbv_title"])
+                st.write(t["hbv_desc"])
+                st.markdown(t["hbv_steps"])
+                st.info(t["hbv_footer"])
             
             with col_hbv_img:
-                # Здесь укажите имя файла со схемой из презентации
-                display_big_image("hbv_scheme.png", "Схема оперативного прогноза стока по модели HBV-light")
+                display_big_image("hbv_scheme.png", t["hbv_cap"])
 
         with tab_swim:
-            st.markdown("### SWIM (Soil and water integrated model)")
-            
             col_swim_img, col_swim_text = st.columns([2, 1])
-            
             with col_swim_img:
-                # Путь к файлу с входными данными ГИС
-                img_swim = "swim_inputs.png"
-                img_path_swim = os.path.join(BASE_DIR, img_swim)
-                
-                if os.path.exists(img_path_swim):
-                    with open(img_path_swim, "rb") as f:
-                        data = base64.b64encode(f.read()).decode("utf-8")
-                    
-                    # Увеличиваем до 135% и сдвигаем влево на -17.5% для центровки
-                    st.markdown(
-                        f"""
-                        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                            <img src="data:image/png;base64,{data}" 
-                                 style="width: 100%; 
-                                        max-width: none; 
-                                        margin-left: 0%; 
-                                        border-radius: 8px; 
-                                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                            <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px; width: 100%; margin-left: -17.5%;">
-                                Входные ГИС-данные (почвы FAO, Land 30, гидротопы)
-                            </p>
-                        </div>
-                        """, 
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.error(f"Файл {img_swim} не найден. Проверьте путь в папке проекта.")
-                
+                display_big_image("swim_inputs.png", t["swim_cap"])
 
             with col_swim_text:
-                st.info("""
-                Эко-гидрологическая, полу-распределенная, непрерывная модель, впервые описана в 1989 г.
+                st.markdown(t["swim_title"])
+                st.write(t["swim_desc"])
+                st.info(t["swim_features"])
+                st.write(t["swim_footer"])
                 
-                **Особенности SWIM:**
-                * Разработана для обеспечения комплексного моделирования, основанного на ГИС, для моделирования гидрологического и водного качества.
-                * Основана на моделях SWAT и MATSALU.
-                * Интегрирует гидрологическую, эрозионную и динамику питательных веществ в масштабе водосбора.
-                
-                Модель адаптирована для 14 рек Казахстана и применяются при оперативном прогнозирований стока рек
-                """)
-                
-            st.divider()
+        st.divider()
 
-    # Вызов раздела в основном приложении
-    render_hydrology_models_section()
+    # Вызов
+    render_hydrology_models_section(mt)
 
 
     import streamlit as st
-    import pandas as pd
     import os
     import base64
 
-    def render_selevidenie_section():
-        st.markdown('<div class="predictor-header">🏔️ Мониторинг селевой опасности дождевого генезиса</div>', unsafe_allow_html=True)
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
-        # 1. Аналитический блок (Краткая информация)
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    sele_translations = {
+        "ru": {
+            "header": "🏔️ Мониторинг селевой опасности дождевого генезиса",
+            "geo_risk": "<strong>География риска:</strong> Селеопасные районы занимают около <b>13%</b> территории Казахстана (горы и предгория). Мониторинг дождевого генезиса ведется по <b>11 основным селеопасным районам</b>.",
+            "map_cap": "Карта селевой опасности территории РК",
+            "prod_title": "### 📋 Выпускаемая продукция",
+            "prod_list": ["📅 Ежегодный бюллетень", "🕒 Ежедневный бюллетень", "⚡ Прогнозы: краткосрочные и сверхкраткосрочные", "⚠️ Штормовые предупреждения"],
+            "districts_title": "#### 📍 Селеопасные районы:",
+            "districts": "• Иле Алатау<br>• Кунгей Алатау<br>• Терискей Алатау<br>• Жетысу Алатау<br>• Киргизский Алатау<br>• Таласский Алатау<br>• Угамский хребет<br>• горы Мангистау<br>• Тарбагатай<br>• Саур<br>• Алтай",
+            "consumers": "**Потребители:** Государственные органы управления и население РК.",
+            "placeholder": "🖼️ [Место для карты селевой опасности]"
+        },
+        "kz": {
+            "header": "🏔️ Жаңбырдан болатын сел қаупінің мониторингі",
+            "geo_risk": "<strong>Қауіп географиясы:</strong> Сел қаупі бар аймақтар Қазақстан аумағының шамамен <b>13%</b> құрайды (таулар мен тау бөктері). Жаңбырдан болатын сел мониторингі <b>11 негізгі сел қаупі бар ауданда</b> жүргізіледі.",
+            "map_cap": "ҚР аумағының сел қаупі картасы",
+            "prod_title": "### 📋 Шығарылатын өнімдер",
+            "prod_list": ["📅 Жылдық бюллетень", "🕒 Күнделікті бюллетень", "⚡ Болжамдар: қысқа мерзімді және тым қысқа мерзімді", "⚠️ Дауылды ескертулер"],
+            "districts_title": "#### 📍 Сел қаупі бар аудандар:",
+            "districts": "• Іле Алатауы<br>• Күнгей Алатауы<br>• Теріскей Алатауы<br>• Жетісу Алатауы<br>• Қырғыз Алатауы<br>• Талас Алатауы<br>• Өгем жотасы<br>• Маңғыстау таулары<br>• Тарбағатай<br>• Сауыр<br>• Алтай",
+            "consumers": "**Тұтынушылар:** Мемлекеттік басқару органдары және ҚР халқы.",
+            "placeholder": "🖼️ [Сел қаупі картасының орны]"
+        },
+        "en": {
+            "header": "🏔️ Monitoring of Rainfall-Induced Mudflow Hazards",
+            "geo_risk": "<strong>Geography of Risk:</strong> Mudflow-prone areas cover about <b>13%</b> of Kazakhstan (mountains and foothills). Rainfall-induced mudflow monitoring is conducted for <b>11 main hazardous regions</b>.",
+            "map_cap": "Mudflow Hazard Map of the Republic of Kazakhstan",
+            "prod_title": "### 📋 Output Products",
+            "prod_list": ["📅 Annual bulletin", "🕒 Daily bulletin", "⚡ Forecasts: short-term and very short-term", "⚠️ Storm warnings"],
+            "districts_title": "#### 📍 Hazardous Regions:",
+            "districts": "• Ile Alatau<br>• Kungey Alatau<br>• Teriskey Alatau<br>• Zhetisu Alatau<br>• Kyrgyz Alatau<br>• Talas Alatau<br>• Ugam Range<br>• Mangystau Mountains<br>• Tarbagatay<br>• Saur<br>• Altai",
+            "consumers": "**Consumers:** State authorities and the population of the RK.",
+            "placeholder": "🖼️ [Place for mudflow hazard map]"
+        }
+    }
+
+    st = sele_translations.get(current_l, sele_translations["ru"])
+
+    # --- 3. ФУНКЦИЯ РЕНДЕРИНГА ---
+    def render_selevidenie_section(t):
+        st.markdown(f'<div class="predictor-header">{t["header"]}</div>', unsafe_allow_html=True)
+
+        # 1. Аналитический блок
         st.markdown(f"""
         <div style="background-color: #fff4e6; border-left: 5px solid #e67e22; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-            <strong>География риска:</strong> Селеопасные районы занимают около <b>13%</b> территории Казахстана (горы и предгория). 
-            Мониторинг дождевого генезиса ведется по <b>11 основным селеопасным районам</b>.
+            {t['geo_risk']}
         </div>
         """, unsafe_allow_html=True)
 
-        # 2. Визуализация: Карта селевой опасности (Увеличенная)
+        # 2. Визуализация
         col_map_sele, col_info_sele = st.columns([2, 1])
 
         with col_map_sele:
-            img_name = "sele_map.jpg" # Укажите ваше имя файла Рис. 1
+            img_name = "sele_map.jpg"
             img_path = os.path.join(BASE_DIR, img_name)
             
             if os.path.exists(img_path):
@@ -6210,71 +6271,105 @@ with tabs[4]:
                     data = base64.b64encode(f.read()).decode("utf-8")
                 st.markdown(
                     f"""
-                    <div style="width: 80%;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 80%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                        <p style="color: gray; font-size: 0.85rem; text-align: center; margin-top: 10px;">Карта селевой опасности территории РК</p>
+                    <div style="width: 100%; text-align: center;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 90%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <p style="color: gray; font-size: 0.85rem; margin-top: 10px;">{t['map_cap']}</p>
                     </div>
                     """, unsafe_allow_html=True
                 )
             else:
-                st.info("🖼️ [Место для карты селевой опасности]")
+                st.info(t['placeholder'])
 
         with col_info_sele:
-            st.markdown("### 📋 Выпускаемая продукция")
-            st.markdown(f"""
-            * 📅 **Ежегодный бюллетень** 
-            * 🕒 **Ежедневный бюллетень**
-            * ⚡ **Прогнозы:** краткосрочные и сверхкраткосрочные
-            * ⚠️ **Штормовые предупреждения**
-            """)
+            st.markdown(t["prod_title"])
+            for item in t["prod_list"]:
+                st.markdown(f"* {item}")
             
-            # Новый блок: перечисление районов в два столбца
             st.markdown("---")
-            st.markdown("#### 📍 Селеопасные районы:")
-            st.markdown("""
-            <div style="column-count: 2; column-gap: 20px; font-size: 1.3rem; color: #333;">
-                • Иле Алатау<br>
-                • Кунгей Алатау<br>
-                • Терискей Алатау<br>
-                • Жетысу Алатау<br>
-                • Киргизский Алатау<br>
-                • Таласский Алатау<br>
-                • Угамский хребет<br>
-                • горы Мангистау<br>
-                • Тарбагатай<br>
-                • Саур<br>
-                • Казахстанский Алтай
+            st.markdown(t["districts_title"])
+            st.markdown(f"""
+            <div style="column-count: 2; column-gap: 20px; font-size: 1rem; color: #333;">
+                {t['districts']}
             </div>
             """, unsafe_allow_html=True)
             
-            st.success("**Потребители:** Государственные органы управления и население РК.")
-            
+            st.success(t["consumers"])
 
         st.divider()
 
-
-       # 4. Факторы формирования и критерии
-        col_fact1, col_fact2 = st.columns(2)
-        
-        with col_fact1:
-            st.warning("⚠️ **Генезис селей в РК:**")
-            st.markdown("""
-            1. Дождевой 🌧️
-            2. Гляциальный 🌋
-            3. Водоледяной 🌊
-            4. Сейсмический 🌋
-            4. Антропогенный 🚜
-            """)
-            
-        with col_fact2:
-            st.info("⚖️ **Критерии осадков (согласно Наставления 2005 г.):**")
-            st.markdown("""
-            * **Сильные:** 15−29 мм
-            * **Очень сильные:** ≥30 мм
-            """)
-
     # Вызов функции
-    render_selevidenie_section()
+    render_selevidenie_section(st)
+
+
+
+# --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
+
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    factors_translations = {
+        "ru": {
+            "genesis_title": "⚠️ **Генезис селей в РК:**",
+            "genesis_list": [
+                "1. Дождевой 🌧️",
+                "2. Гляциальный 🏔️",
+                "3. Водоледяной ❄️",
+                "4. Сейсмический 🌋",
+                "5. Антропогенный 🚜"
+            ],
+            "criteria_title": "⚖️ **Критерии осадков (согласно Наставления 2005 г.):**",
+            "heavy": "Сильные",
+            "v_heavy": "Очень сильные"
+        },
+        "kz": {
+            "genesis_title": "⚠️ **ҚР-дағы селдердің генезисі:**",
+            "genesis_list": [
+                "1. Жаңбырлы 🌧️",
+                "2. Гляциалды (мұздық) 🏔️",
+                "3. Су-мұзды ❄️",
+                "4. Сейсмикалық 🌋",
+                "5. Антропогендік 🚜"
+            ],
+            "criteria_title": "⚖️ **Жауын-шашын критерийлері (2005 ж. Нұсқаулыққа сәйкес):**",
+            "heavy": "Қатты",
+            "v_heavy": "Өте қатты"
+        },
+        "en": {
+            "genesis_title": "⚠️ **Genesis of Mudflows in the RK:**",
+            "genesis_list": [
+                "1. Rain-induced 🌧️",
+                "2. Glacial 🏔️",
+                "3. Water-ice ❄️",
+                "4. Seismic 🌋",
+                "5. Anthropogenic 🚜"
+            ],
+            "criteria_title": "⚖️ **Precipitation Criteria (acc. to 2005 Manual):**",
+            "heavy": "Heavy",
+            "v_heavy": "Very heavy"
+        }
+    }
+
+    ft = factors_translations.get(current_l, factors_translations["ru"])
+
+    # --- 3. ОТОБРАЖЕНИЕ ---
+    col_fact1, col_fact2 = st.columns(2)
+
+    with col_fact1:
+        st.warning(ft["genesis_title"])
+        # Объединяем список в строку с переносами
+        st.markdown("\n".join(ft["genesis_list"]))
+        
+    with col_fact2:
+        st.info(ft["criteria_title"])
+        st.markdown(f"""
+        * **{ft['heavy']}:** 15−29 мм
+        * **{ft['v_heavy']}:** ≥30 мм
+        """)
+        
       
 
   # ВОДНЫЕ РЕСУРСЫ
