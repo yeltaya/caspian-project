@@ -6381,179 +6381,166 @@ with tabs[5]:
     from streamlit_folium import st_folium
     import os
     import pandas as pd
-    import plotly.graph_objects as go
-    import numpy as np
 
-    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ИНТЕРФЕЙСА ---
-    ui_tr = {
+    # --- 1. ЯЗЫК И КОНФИГУРАЦИЯ ---
+    lang = st.session_state.get('lang_code', 'ru')
+
+    # Расширенный словарь с данными и интерфейсом
+    data_store = {
         "ru": {
             "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
             "stats_h": "### 📊 Характеристики",
-            "norm": "💠 Норма бассейна (W)",
-            "local": "💧︎ Местный сток",
-            "inflow": "💧 Приток",
-            "outflow_label": "📤 **Отток:**",
+            "norm_lbl": "💠 Норма бассейна (W)",
+            "local_lbl": "💧 Местный сток",
+            "inflow_lbl": "💧 Приток",
+            "outflow_lbl": "📤 Отток:",
             "no_outflow": "🔄 Трансграничный отток не зафиксирован",
             "unit_y": "км³/год", "unit": "км³", "rk": "Республика Казахстан",
             "btn_text": "📈 Посмотреть гидрограф бассейна",
-            "info_select": "ℹ️ Выберите бассейн на карте для детального анализа"
+            "info_select": "ℹ️ Выберите бассейн на карте для анализа",
+            "vxb_names": {
+                "Арало-Сырдарьинский ВХБ": "В Узбекистан",
+                "Балкаш-Алакольский ВХБ": "В КНР: 0.67",
+                "Ертисский ВХБ": "В КНР: 2.20, В РФ: 26.2",
+                "Жайык-Каспийский ВХБ": "В РФ: 1.48",
+                "Есильский ВХБ": "В РФ: 1.86",
+                "Тобыл-Торгайский ВХБ": "В РФ: 0.46"
+            }
         },
         "kz": {
             "title": "🌊 ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
             "stats_h": "### 📊 Сипаттамалары",
-            "norm": "💠 Бассейн нормасы (W)",
-            "local": "💧︎ Жергілікті ағын",
-            "inflow": "💧 Келу ағыны",
-            "outflow_label": "📤 **Кету ағыны:**",
+            "norm_lbl": "💠 Бассейн нормасы (W)",
+            "local_lbl": "💧 Жергілікті ағын",
+            "inflow_lbl": "💧 Келу ағыны",
+            "outflow_lbl": "📤 Кету ағыны:",
             "no_outflow": "🔄 Трансшекаралық кету ағыны тіркелген жоқ",
             "unit_y": "км³/жыл", "unit": "км³", "rk": "Қазақстан Республикасы",
             "btn_text": "📈 Бассейн гидрографын көру",
-            "info_select": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз"
+            "info_select": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз",
+            "vxb_names": {
+                "Арало-Сырдарьинский ВХБ": "Өзбекстанға",
+                "Балкаш-Алакольский ВХБ": "ҚХР-ға: 0.67",
+                "Ертисский ВХБ": "ҚХР-ға: 2.20, РФ-ға: 26.2",
+                "Жайык-Каспийский ВХБ": "РФ-ға: 1.48",
+                "Есильский ВХБ": "РФ-ға: 1.86",
+                "Тобыл-Торгайский ВХБ": "РФ-ға: 0.46"
+            }
         },
         "en": {
             "title": "🌊 WATER RESOURCES OF KAZAKHSTAN",
             "stats_h": "### 📊 Characteristics",
-            "norm": "💠 Basin Norm (W)",
-            "local": "💧︎ Local Runoff",
-            "inflow": "💧 Inflow",
-            "outflow_label": "📤 **Outflow:**",
-            "no_outflow": "🔄 No transboundary outflow recorded",
+            "norm_lbl": "Basin Norm (W)",
+            "local_lbl": "Local Runoff",
+            "inflow_lbl": "Inflow",
+            "outflow_lbl": "Outflow:",
+            "no_outflow": "No transboundary outflow recorded",
             "unit_y": "km³/year", "unit": "km³", "rk": "Republic of Kazakhstan",
-            "btn_text": "📈 View Basin Hydrograph",
-            "info_select": "ℹ️ Select a basin on the map for detailed analysis"
+            "btn_text": "View Basin Hydrograph",
+            "info_select": "Select a basin on the map",
+            "vxb_names": {
+                "Арало-Сырдарьинский ВХБ": "To Uzbekistan",
+                "Балкаш-Алакольский ВХБ": "To PRC: 0.67",
+                "Ертисский ВХБ": "To PRC: 2.20, To RF: 26.2",
+                "Жайык-Каспийский ВХБ": "To RF: 1.48",
+                "Есильский ВХБ": "To RF: 1.86",
+                "Тобыл-Торгайский ВХБ": "To RF: 0.46"
+            }
         }
     }
 
-    # Синхронизация языка
-    lang = st.session_state.get('lang_code', 'ru')
-    t = ui_tr[lang]
+    tr = data_store.get(lang, data_store["ru"])
 
-    # --- 2. ДАННЫЕ СТАТИСТИКИ (с мультиязычным оттоком) ---
-    VXB_STATS = {
-        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, 
-            "отток": {"ru": "В Узбекистан", "kz": "Өзбекстанға", "en": "To Uzbekistan"}},
-        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, 
-            "отток": {"ru": "В КНР: 0.67", "kz": "ҚХР-ға: 0.67", "en": "To PRC: 0.67"}},
-        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, 
-            "отток": {"ru": "В КНР: 2.20, В РФ: 26.2", "kz": "ҚХР-ға: 2.20, РФ-ға: 26.2", "en": "To PRC: 2.20, To RF: 26.2"}},
-        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, 
-            "отток": {"ru": "В РФ: 1.48", "kz": "РФ-ға: 1.48", "en": "To RF: 1.48"}},
-        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, 
-            "отток": {"ru": "В РФ: 1.86", "kz": "РФ-ға: 1.86", "en": "To RF: 1.86"}},
-        "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0, "отток": None},
-        "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84, "отток": None},
-        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, 
-            "отток": {"ru": "В РФ: 0.46", "kz": "РФ-ға: 0.46", "en": "To RF: 0.46"}},
-        "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
+    # Статистика (числа неизменны)
+    VXB_DATA = {
+        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21},
+        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71},
+        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03},
+        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63},
+        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0},
+        "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0},
+        "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84},
+        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34},
+        "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8}
     }
 
-    # --- 3. ЗАГРУЗКА ГЕОДАННЫХ ---
+    # --- 2. ЗАГРУЗКА ДАННЫХ ---
     @st.cache_data
-    def load_geo_data(path):
-        all_gdf = []
-        rivers = None
-        if os.path.exists(path):
-            for file in os.listdir(path):
-                if file.endswith("_VXB.shp"):
-                    gdf = gpd.read_file(os.path.join(path, file))
-                    all_gdf.append(gdf.to_crs(epsg=4326))
-            rivers_path = os.path.join(path, "rivers_kz.shp")
-            if os.path.exists(rivers_path):
-                rivers = gpd.read_file(rivers_path).to_crs(epsg=4326)
-        basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
-        return basins, rivers
-
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    FOLDER_PATH = os.path.join(base_path, "shp")
-    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
-
-    st.title(t["title"])
-
-    if data_basins is not None:
-        tooltip_col = 'ВХБ_н_' # Поле в .shp файле на русском
+    def get_geodata():
+        base = os.path.dirname(__file__)
+        shp_dir = os.path.join(base, "shp")
+        if not os.path.exists(shp_dir): return None, None
         
-        col1, col2 = st.columns([2.2, 1])
+        basins_list = []
+        for f in os.listdir(shp_dir):
+            if f.endswith("_VXB.shp"):
+                basins_list.append(gpd.read_file(os.path.join(shp_dir, f)).to_crs(epsg=4326))
         
-        with col1:
+        rivers_path = os.path.join(shp_dir, "rivers_kz.shp")
+        rivers = gpd.read_file(rivers_path).to_crs(epsg=4326) if os.path.exists(rivers_path) else None
+        return pd.concat(basins_list, ignore_index=True) if basins_list else None, rivers
+
+    basins_gdf, rivers_gdf = get_geodata()
+
+    # --- 3. ИНТЕРФЕЙС ---
+    st.title(tr["title"])
+
+    if basins_gdf is not None:
+        c1, c2 = st.columns([2.2, 1])
+        
+        with c1:
             m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
             
-            # Полигоны (названия в tooltip всегда на русском из SHP)
-            folium.GeoJson(
-                data_basins,
+            # Слой бассейнов
+            # tooltip_col оставляем как в SHP (обычно 'ВХБ_н_')
+            gj = folium.GeoJson(
+                basins_gdf,
                 style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
                 highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
-                tooltip=folium.GeoJsonTooltip(fields=[tooltip_col], labels=False)
+                tooltip=folium.GeoJsonTooltip(fields=['ВХБ_н_'], labels=False)
             ).add_to(m)
 
-            # Названия на самой карте (тоже оставляем RU для стабильности)
-            for _, row in data_basins.iterrows():
-                centroid = row.geometry.centroid
-                name = row[tooltip_col]
-                folium.Marker(
-                    location=[centroid.y, centroid.x],
-                    icon=folium.DivIcon(html=f"""<div style="font-family:sans-serif; color:#1d3557; font-size:8pt; font-weight:bold; text-align:center; width:100px; transform:translate(-50%,-50%); pointer-events:none;">{name}</div>""")
-                ).add_to(m)
+            if rivers_gdf is not None:
+                folium.GeoJson(rivers_gdf, style_function=lambda x: {'color': '#003399', 'weight': 1.0, 'opacity': 0.5}).add_to(m)
 
-            if data_rivers is not None:
-                folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
-            
-            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map_final")
+            map_data = st_folium(m, height=500, use_container_width=True, key="vxb_map")
 
-        # --- ЛОГИКА ОПРЕДЕЛЕНИЯ ВЫБОРА ---
-        sel_name = "Республика Казахстан"
-        if output and output.get("last_active_drawing"):
-            res = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
-            # Ищем ключ в VXB_STATS по частичному совпадению
-            for k in VXB_STATS.keys():
-                if k.lower().split(' ')[0] in str(res).lower():
-                    sel_name = k
+        # --- 4. ЛОГИКА ВЫБОРА ---
+        selected_vxb = "Республика Казахстан"
+        if map_data and map_data.get("last_active_drawing"):
+            raw_name = map_data["last_active_drawing"]["properties"].get('ВХБ_н_', "")
+            for key in VXB_DATA.keys():
+                if key.split('-')[0] in raw_name: # Сопоставление по первому слову
+                    selected_vxb = key
                     break
 
-        with col2:
-            # 1. Заголовок секции (теперь мультиязычный)
-            st.markdown(t["stats_h"]) 
+        with c2:
+            st.markdown(tr["stats_h"])
+            display_name = tr["rk"] if selected_vxb == "Республика Казахстан" else selected_vxb
+            st.success(f"📍 **{display_name}**")
             
-            # 2. Название выбранного региона
-            display_title = t['rk'] if sel_name == "Республика Казахстан" else sel_name
-            st.success(f"📍 **{display_title}**")
+            stats = VXB_DATA[selected_vxb]
+            st.metric(tr["norm_lbl"], f"{stats['норма']} {tr['unit_y']}")
             
-            cur = VXB_STATS[sel_name]
-            
-            # 3. Норма (название берется из t["norm"])
-            st.metric(t["norm"], f"{cur['норма']} {t['unit_y']}")
-            
-            # 4. Местный сток и Приток (названия из t["local"] и t["inflow"])
-            m_c1, m_c2 = st.columns(2)
-            with m_c1:
-                st.metric(t["local"], f"{cur['местные']} {t['unit']}")
-            with m_c2:
-                st.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
-            
-            # 5. Блок оттока
-            if cur.get('отток'):
-                # Если это словарь с переводами, берем текущий язык
-                if isinstance(cur['отток'], dict):
-                    outflow_val = cur['отток'].get(lang, cur['отток']['ru'])
-                else:
-                    outflow_val = cur['отток']
-                
-                # Заголовок "Отток:" тоже из словаря
-                st.warning(f"{t['outflow_label']} **{outflow_val}**")
-            else:
-                # Сообщение об отсутствии оттока на текущем языке
-                st.info(t["no_outflow"])
+            mc1, mc2 = st.columns(2)
+            mc1.metric(tr["local_lbl"], f"{stats['местные']} {tr['unit']}")
+            mc2.metric(tr["inflow_lbl"], f"{stats['приток']} {tr['unit']}")
 
-            st.markdown("---")
-            
-            # 6. Кнопка и подсказка
-            if sel_name != "Республика Казахстан":
-                st.markdown(f"""
-                    <div style="background:linear-gradient(90deg, #1e3799, #009432); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold;">
-                        {t['btn_text']}
-                    </div>
-                """, unsafe_allow_html=True)
+            # Отток
+            outflow_text = tr["vxb_names"].get(selected_vxb)
+            if outflow_text:
+                st.warning(f"**{tr['outflow_lbl']}** {outflow_text}")
             else:
-                st.caption(t["info_select"])
+                st.info(tr["no_outflow"])
+
+            st.divider()
+            if selected_vxb != "Республика Казахстан":
+                st.button(tr["btn_text"], use_container_width=True, type="primary")
+            else:
+                st.caption(tr["info_select"])
+    else:
+        st.error("Ошибка: Геоданные (SHP файлы) не найдены.")
+        
                 
                 
     # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ДЛЯ ГРАФИКА ---
