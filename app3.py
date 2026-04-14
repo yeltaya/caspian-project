@@ -5105,7 +5105,7 @@ with tabs[2]:
 
 with tabs[3]:
     # Определяем язык из сессии
-    current_lang = st.session_state.get('lang_code', 'ru')
+    current_lang = st.session_state.get('language', 'ru')
 
     # 1. Словарь переводов
     agro_translations = {
