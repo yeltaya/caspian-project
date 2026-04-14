@@ -4957,7 +4957,7 @@ with tabs[2]:
                     """,
                     unsafe_allow_html=True
                 )
-    else:
+            else:
                 # На случай, если файл не найден
                 st.error(f"⚠️ Файл 'udpp1.gif' не найден по пути: {gif_path}")
             
