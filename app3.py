@@ -4860,115 +4860,160 @@ with tabs[2]:
     st.divider()
 
         
-        
+            
+    import streamlit as st
+    import os
+    import base64
 
-            # --- ВАШ ЗАПРОС: КЛИМАТ И ПРОГНОЗ В ОДНУ СТРОКУ ---
-    col_climat_data, col_viz1 = st.columns([1, 1], gap="medium")
+    # Базовая директория
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-        # 1. Словарь локализации заголовка
-    climate_header_dict = {
-            "ru": "📜 Климатическая характеристика: Апрель",
-            "kz": "📜 Климаттық сипаттама: Сәуір",
-            "en": "📜 Climate Characteristics: April"
-    }
+    def show_forecast_process(lang_code="ru"):
+        # 1. Словарь со всеми переводами
+        translations = {
+            "ru": {
+                "header": "📜 Климатическая характеристика: Апрель",
+                "viz_title": "🗺️ Визуализация",
+                "temp_title": "🌡️ Температура",
+                "north": "🔹 Север:",
+                "south": "🔹 Юг:",
+                "extrema_title": "❄️ Экстремумы",
+                "heat": "🔴 Тепло:",
+                "cold": "🔵 Холод:",
+                "precip_title": "💧 Осадки",
+                "avg": "📅 В среднем:",
+                "type": "📅 Вид:",
+                "type_val": "смешанные",
+                "phenomena_title": "🌬️ Явления",
+                "fog": "🚩 Туман:",
+                "blizzard": "⚡ Метель:",
+                "days": "суток",
+                "up_to": "до"
+            },
+            "kz": {
+                "header": "📜 Климаттық сипаттама: Сәуір",
+                "viz_title": "🗺️ Визуализация",
+                "temp_title": "🌡️ Температура",
+                "north": "🔹 Солтүстік:",
+                "south": "🔹 Оңтүстік:",
+                "extrema_title": "❄️ Экстремумдар",
+                "heat": "🔴 Жылы:",
+                "cold": "🔵 Суық:",
+                "precip_title": "💧 Жауын-шашын",
+                "avg": "📅 Орташа:",
+                "type": "📅 Түрі:",
+                "type_val": "аралас",
+                "phenomena_title": "🌬️ Құбылыстар",
+                "fog": "🚩 Тұман:",
+                "blizzard": "⚡ Боран:",
+                "days": "тәулік",
+                "up_to": "дейін"
+            },
+            "en": {
+                "header": "📜 Climate Characteristics: April",
+                "viz_title": "🗺️ Visualization",
+                "temp_title": "🌡️ Temperature",
+                "north": "🔹 North:",
+                "south": "🔹 South:",
+                "extrema_title": "❄️ Extremes",
+                "heat": "🔴 Heat:",
+                "cold": "🔵 Cold:",
+                "precip_title": "💧 Precipitation",
+                "avg": "📅 Average:",
+                "type": "📅 Type:",
+                "type_val": "mixed",
+                "phenomena_title": "🌬️ Phenomena",
+                "fog": "🚩 Fog:",
+                "blizzard": "⚡ Blizzard:",
+                "days": "days",
+                "up_to": "up to"
+            }
+        }
 
-        # 2. Отрисовка блока
-    with col_climat_data:
-            st.markdown(f"""
-                <h4 class='kazakh-font' style='color: #1d4d2b; margin-bottom: 15px;'>
-                    {climate_header_dict[lang_code]}
-                </h4>
+        # Выбираем текущий перевод
+        t = translations.get(lang_code, translations["ru"])
+
+        # 2. Отрисовка колонок
+        col_climat_data, col_viz1 = st.columns([1, 1], gap="medium")
+
+        with col_climat_data:
+            # Заголовок блока
+            st.markdown(f"<h4 style='color: #1d4d2b; margin-bottom: 15px;'>{t['header']}</h4>", unsafe_allow_html=True)
+            
+            # Стили (теперь внутри колонки для надежности)
+            st.markdown("""
+                <style>
+                .big-climate-card {
+                    background: #ffffff;
+                    border-radius: 12px;
+                    padding: 15px;
+                    margin-bottom: 10px;
+                    border: 1px solid #eef0f2;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                }
+                .section-title {
+                    color: #1d4d2b;
+                    font-weight: 800;
+                    font-size: 1.2rem !important;
+                    margin-bottom: 8px;
+                    border-bottom: 2px solid #f1f3f5;
+                }
+                .info-item { font-size: 1.05rem !important; margin-bottom: 5px; }
+                .val-bold { font-weight: 700; color: #2c3e50; }
+                </style>
             """, unsafe_allow_html=True)
-        
-                # ВАЖНО: Обновляем стили для увеличения шрифта
-            st.markdown("""
-                    <style>
-                    .big-climate-card {
-                        background: #ffffff;
-                        border-radius: 12px;
-                        padding: 20px;
-                        margin-bottom: 10px;
-                        border: 1px solid #eef0f2;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                    }
-                    .section-title {
-                        color: #1d4d2b;
-                        font-weight: 800;
-                        font-size: 1.4rem !important; /* УВЕЛИЧЕНО с 1.1 до 1.4 */
-                        margin-bottom: 12px;
-                        border-bottom: 2px solid #f1f3f5;
-                    }
-                    .info-item { 
-                        font-size: 1.2rem !important; /* УВЕЛИЧЕНО с 0.95 до 1.2 */
-                        margin-bottom: 8px; 
-                        line-height: 1.5; 
-                    }
-                    .val-bold {
-                        font-weight: 700;
-                        color: #2c3e50;
-                    }
-                    </style>
-                """, unsafe_allow_html=True)
 
-                # Ряд из карточек
-            st.markdown("""
+            # Контент карточек с использованием словаря 't'
+            st.markdown(f"""
                 <div style="display: flex; gap: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
-                        <div class="section-title">🌡️ Температура</div>
-                        <div class="info-item">🔹 Север: <span class="val-bold">-1...+5°С</span></div>
-                        <div class="info-item">🔹 Юг: <span class="val-bold">+9...+16°С</span></div>
+                        <div class="section-title">{t['temp_title']}</div>
+                        <div class="info-item">{t['north']} <span class="val-bold">-1...+5°С</span></div>
+                        <div class="info-item">{t['south']} <span class="val-bold">+9...+16°С</span></div>
                     </div>
                     <div class="big-climate-card" style="flex: 1;">
-                        <div class="section-title">❄️ Экстремумы</div>
-                        <div class="info-item">🔴 Тепло: <span class="val-bold">до +39°С</span></div>
-                        <div class="info-item">🔵 Холод: <span class="val-bold">до -20°С</span></div>
+                        <div class="section-title">{t['extrema_title']}</div>
+                        <div class="info-item">{t['heat']} <span class="val-bold">{t['up_to']} +39°С</span></div>
+                        <div class="info-item">{t['cold']} <span class="val-bold">{t['up_to']} -20°С</span></div>
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
-                        <div class="section-title">💧 Осадки</div>
-                        <div class="info-item">📅 В среднем: <span class="val-bold">15-35 мм</span></div>
-                        <div class="info-item">📅 Вид: <span class="val-bold">смешанные</span></div>
+                        <div class="section-title">{t['precip_title']}</div>
+                        <div class="info-item">{t['avg']} <span class="val-bold">15-35 mm</span></div>
+                        <div class="info-item">{t['type']} <span class="val-bold">{t['type_val']}</span></div>
                     </div>
                     <div class="big-climate-card" style="flex: 1; border-left: 5px solid #f39c12;">
-                        <div class="section-title">🌬️ Явления</div>
-                        <div class="info-item">🚩 Туман: <span class="val-bold">2-5 суток</span></div>
-                        <div class="info-item">⚡ Метель: <span class="val-bold">5-7 суток</span></div>
+                        <div class="section-title">{t['phenomena_title']}</div>
+                        <div class="info-item">{t['fog']} <span class="val-bold">2-5 {t['days']}</span></div>
+                        <div class="info-item">{t['blizzard']} <span class="val-bold">5-7 {t['days']}</span></div>
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
-    with col_viz1:
-            st.subheader("🗺️ Визуализация")
-            
-            # 1. Формируем полный путь к GIF-файлу
+            """, unsafe_allow_html=True)
+
+        with col_viz1:
+            st.subheader(t['viz_title'])
             gif_path = os.path.join(BASE_DIR, "udpp1.gif")
             
-            # 2. Проверяем наличие файла и применяем CSS-хак
             if os.path.exists(gif_path):
-                # Кодируем GIF в Base64 для вставки в HTML
-                import base64 # Можно вынести в начало файла
                 with open(gif_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
-                
-                # Отображаем GIF через HTML/CSS, делая его шире колонки
                 st.markdown(
                     f"""
                     <div style="width: 100%; display: flex; justify-content: center;">
-                        <img src="data:image/gif;base64,{data}" style="width: 70%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <img src="data:image/gif;base64,{data}" style="width: 85%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     </div>
-                    """,
-                    unsafe_allow_html=True
+                    """, unsafe_allow_html=True
                 )
             else:
-                # На случай, если файл не найден
-                st.error(f"⚠️ Файл 'udpp1.gif' не найден по пути: {gif_path}")
-            
-            st.divider()
-            
-        
-               
-    if __name__ == "__main__":
-        show_forecast_process()
+                st.warning(f"File not found: {gif_path}")
+
+        st.divider()
+
+    # Пример запуска (вставьте это в основной блок вашего приложения)
+    # if 'lang_code' not in st.session_state: st.session_state.lang_code = 'ru'
+    # show_forecast_process(st.session_state.lang_code)
+
     
 
  
