@@ -6384,12 +6384,30 @@ with tabs[5]:
     import plotly.graph_objects as go
     import numpy as np
 
-    # --- 1. ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА (Если его нет в боковой панели) ---
-    # Если lang_code уже задан глобально, этот блок можно пропустить
-    if 'lang_code' not in st.session_state:
-        st.session_state['lang_code'] = 'ru'
+    # 1. ОБЯЗАТЕЛЬНО: ОПРЕДЕЛЕНИЕ ФУНКЦИИ ПЕРЕД ВЫЗОВОМ
+    @st.cache_data
+    def load_geo_data(path):
+        all_gdf = []
+        rivers = None
+        if os.path.exists(path):
+            for file in os.listdir(path):
+                if file.endswith("_VXB.shp"):
+                    gdf = gpd.read_file(os.path.join(path, file))
+                    all_gdf.append(gdf.to_crs(epsg=4326))
+            rivers_path = os.path.join(path, "rivers_kz.shp")
+            if os.path.exists(rivers_path):
+                rivers = gpd.read_file(rivers_path).to_crs(epsg=4326)
+        basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
+        return basins, rivers
+
+    # 2. НАСТРОЙКИ ПУТЕЙ И ЯЗЫКА
+    # Убедитесь, что BASE_DIR определен выше в вашем основном коде
+    FOLDER_PATH = os.path.join(base_path, "shp") 
     
-    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    # Синхронизация с вашим переключателем языка
+    current_l = st.session_state.get('lang_code', 'ru')
+
+    # 3. СЛОВАРЬ ПЕРЕВОДОВ
     ui_tr = {
         "ru": {
             "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
@@ -6399,14 +6417,8 @@ with tabs[5]:
             "inflow": "💧 Приток",
             "outflow": "📤 **Отток:**",
             "no_outflow": "🔄 Трансграничный отток не зафиксирован",
-            "btn_graph": "📈 Посмотреть гидрограф бассейна",
-            "prompt": "ℹ️ Выберите бассейн на карте",
-            "unit_y": "км³/год",
-            "unit": "км³",
             "rk": "Республика Казахстан",
-            "graph_main": "Динамика водности РК (1940-2025)",
-            "trend": "Тренд",
-            "year": "Год"
+            "unit_y": "км³/год", "unit": "км³", "year": "Год"
         },
         "kz": {
             "title": "🌊 ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
@@ -6416,14 +6428,8 @@ with tabs[5]:
             "inflow": "💧 Келу ағыны",
             "outflow": "📤 **Кету ағыны:**",
             "no_outflow": "🔄 Трансшекаралық кету ағыны жоқ",
-            "btn_graph": "📈 Бассейн гидрографын көру",
-            "prompt": "ℹ️ Картадан бассейнді таңдаңыз",
-            "unit_y": "км³/жыл",
-            "unit": "км³",
             "rk": "Қазақстан Республикасы",
-            "graph_main": "ҚР сулылық динамикасы (1940-2025)",
-            "trend": "Тренд",
-            "year": "Жыл"
+            "unit_y": "км³/жыл", "unit": "км³", "year": "Жыл"
         },
         "en": {
             "title": "🌊 WATER RESOURCES OF KAZAKHSTAN",
@@ -6433,23 +6439,18 @@ with tabs[5]:
             "inflow": "💧 Inflow",
             "outflow": "📤 **Outflow:**",
             "no_outflow": "🔄 No transboundary outflow",
-            "btn_graph": "📈 View Basin Hydrograph",
-            "prompt": "ℹ️ Select a basin on the map",
-            "unit_y": "km³/year",
-            "unit": "km³",
             "rk": "Republic of Kazakhstan",
-            "graph_main": "Water Yield Dynamics of RK (1940-2025)",
-            "trend": "Trend",
-            "year": "Year"
+            "unit_y": "km³/year", "unit": "km³", "year": "Year"
         }
     }
-
-    # ПРОВЕРКА: Получаем язык из session_state
-    current_l = st.session_state['lang_code']
+    
     t = ui_tr[current_l]
+    st.title(t["title"])
 
-    # --- 3. ДАННЫЕ ВХБ ---
-    # Локализация внутри данных (для динамических строк)
+    # 4. ВЫЗОВ ФУНКЦИИ (Теперь функция уже определена выше)
+    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
+
+    # 5. ДАННЫЕ СТАТИСТИКИ
     VXB_STATS = {
         "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": {"ru": "В Узбекистан", "kz": "Өзбекстанға", "en": "To Uzbekistan"}},
         "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, "отток": {"ru": "В КНР: 0.67", "kz": "ҚХР-ға: 0.67", "en": "To China: 0.67"}},
@@ -6462,46 +6463,39 @@ with tabs[5]:
         "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
     }
 
-    st.title(t["title"])
-
-    # --- 4. КАРТА И ЛОГИКА ---
-    # [Здесь ваш код загрузки данных load_geo_data]
-    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
-
     if data_basins is not None:
-        tooltip_col = 'ВХБ_н_'
-        col_m, col_i = st.columns([2.2, 1])
-        
-        with col_m:
+        col1, col2 = st.columns([2.2, 1])
+        with col1:
             m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
-            folium.GeoJson(data_basins, tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])).add_to(m)
-            out = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map_final")
+            # Отображение геометрии
+            folium.GeoJson(data_basins, tooltip=folium.GeoJsonTooltip(fields=['ВХБ_н_'])).add_to(m)
+            out = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map_new")
 
-        # Определение выбора
-        sel_key = "Республика Казахстан"
+        # Логика выбора региона
+        selected_name = "Республика Казахстан"
         if out and out.get("last_active_drawing"):
-            raw = out["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
+            res = out["last_active_drawing"]["properties"].get('ВХБ_н_', "Республика Казахстан")
             for k in VXB_STATS.keys():
-                if k.lower().split(' ')[0] in str(raw).lower():
-                    sel_key = k
+                if k.lower().split(' ')[0] in str(res).lower():
+                    selected_name = k
                     break
 
-        with col_i:
+        with col2:
             st.markdown(t["stats_h"])
-            st.success(f"📍 **{t['rk'] if sel_key == 'Республика Казахстан' else sel_key}**")
+            display_title = t["rk"] if selected_name == "Республика Казахстан" else selected_name
+            st.success(f"📍 **{display_title}**")
             
-            stats = VXB_STATS[sel_key]
-            st.metric(t["norm"], f"{stats['норма']} {t['unit_y']}")
+            cur = VXB_STATS[selected_name]
+            st.metric(t["norm"], f"{cur['норма']} {t['unit_y']}")
             
-            c1, c2 = st.columns(2)
-            c1.metric(t["local"], f"{stats['местные']} {t['unit']}")
-            c2.metric(t["inflow"], f"{stats['приток']} {t['unit']}")
-            
-            if stats.get('отток'):
-                txt = stats['отток'][current_l] # Динамический перевод оттока
-                st.warning(f"{t['outflow']} **{txt}**")
+            # Отток с переводом
+            if cur.get('отток'):
+                out_text = cur['отток'][current_l]
+                st.warning(f"{t['outflow']} {out_text}")
             else:
                 st.info(t["no_outflow"])
+                
+                
 
     # --- 5. ГРАФИК ---
     # [Здесь ваш расчет df_plot и тренда]
