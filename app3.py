@@ -6381,210 +6381,177 @@ with tabs[5]:
     from streamlit_folium import st_folium
     import os
     import pandas as pd
+    import plotly.graph_objects as go
+    import numpy as np
 
-    # --- 1. ЯЗЫК И КОНФИГУРАЦИЯ ---
-    lang = st.session_state.get('lang_code', 'ru')
-
-    # Расширенный словарь с данными и интерфейсом
-    data_store = {
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ИНТЕРФЕЙСА ---
+    ui_tr = {
         "ru": {
             "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
             "stats_h": "### 📊 Характеристики",
-            "norm_lbl": "💠 Норма бассейна (W)",
-            "local_lbl": "💧 Местный сток",
-            "inflow_lbl": "💧 Приток",
-            "outflow_lbl": "📤 Отток:",
+            "norm": "💠 Норма бассейна (W)",
+            "local": "💧︎ Местный сток",
+            "inflow": "💧 Приток",
+            "outflow_label": "📤 **Отток:**",
             "no_outflow": "🔄 Трансграничный отток не зафиксирован",
             "unit_y": "км³/год", "unit": "км³", "rk": "Республика Казахстан",
             "btn_text": "📈 Посмотреть гидрограф бассейна",
-            "info_select": "ℹ️ Выберите бассейн на карте для анализа",
-            "vxb_names": {
-                "Арало-Сырдарьинский ВХБ": "В Узбекистан",
-                "Балкаш-Алакольский ВХБ": "В КНР: 0.67",
-                "Ертисский ВХБ": "В КНР: 2.20, В РФ: 26.2",
-                "Жайык-Каспийский ВХБ": "В РФ: 1.48",
-                "Есильский ВХБ": "В РФ: 1.86",
-                "Тобыл-Торгайский ВХБ": "В РФ: 0.46"
-            }
+            "info_select": "ℹ️ Выберите бассейн на карте для детального анализа"
         },
         "kz": {
             "title": "🌊 ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
             "stats_h": "### 📊 Сипаттамалары",
-            "norm_lbl": "💠 Бассейн нормасы (W)",
-            "local_lbl": "💧 Жергілікті ағын",
-            "inflow_lbl": "💧 Келу ағыны",
-            "outflow_lbl": "📤 Кету ағыны:",
+            "norm": "💠 Бассейн нормасы (W)",
+            "local": "💧︎ Жергілікті ағын",
+            "inflow": "💧 Келу ағыны",
+            "outflow_label": "📤 **Кету ағыны:**",
             "no_outflow": "🔄 Трансшекаралық кету ағыны тіркелген жоқ",
             "unit_y": "км³/жыл", "unit": "км³", "rk": "Қазақстан Республикасы",
             "btn_text": "📈 Бассейн гидрографын көру",
-            "info_select": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз",
-            "vxb_names": {
-                "Арало-Сырдарьинский ВХБ": "Өзбекстанға",
-                "Балкаш-Алакольский ВХБ": "ҚХР-ға: 0.67",
-                "Ертисский ВХБ": "ҚХР-ға: 2.20, РФ-ға: 26.2",
-                "Жайык-Каспийский ВХБ": "РФ-ға: 1.48",
-                "Есильский ВХБ": "РФ-ға: 1.86",
-                "Тобыл-Торгайский ВХБ": "РФ-ға: 0.46"
-            }
+            "info_select": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз"
         },
         "en": {
             "title": "🌊 WATER RESOURCES OF KAZAKHSTAN",
             "stats_h": "### 📊 Characteristics",
-            "norm_lbl": "Basin Norm (W)",
-            "local_lbl": "Local Runoff",
-            "inflow_lbl": "Inflow",
-            "outflow_lbl": "Outflow:",
-            "no_outflow": "No transboundary outflow recorded",
+            "norm": "💠 Basin Norm (W)",
+            "local": "💧︎ Local Runoff",
+            "inflow": "💧 Inflow",
+            "outflow_label": "📤 **Outflow:**",
+            "no_outflow": "🔄 No transboundary outflow recorded",
             "unit_y": "km³/year", "unit": "km³", "rk": "Republic of Kazakhstan",
-            "btn_text": "View Basin Hydrograph",
-            "info_select": "Select a basin on the map",
-            "vxb_names": {
-                "Арало-Сырдарьинский ВХБ": "To Uzbekistan",
-                "Балкаш-Алакольский ВХБ": "To PRC: 0.67",
-                "Ертисский ВХБ": "To PRC: 2.20, To RF: 26.2",
-                "Жайык-Каспийский ВХБ": "To RF: 1.48",
-                "Есильский ВХБ": "To RF: 1.86",
-                "Тобыл-Торгайский ВХБ": "To RF: 0.46"
-            }
+            "btn_text": "📈 View Basin Hydrograph",
+            "info_select": "ℹ️ Select a basin on the map for detailed analysis"
         }
     }
 
-    tr = data_store.get(lang, data_store["ru"])
+    # Синхронизация языка
+    lang = st.session_state.get('lang_code', 'ru')
+    t = ui_tr[lang]
 
-    # Статистика (числа неизменны)
-    VXB_DATA = {
-        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21},
-        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71},
-        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03},
-        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63},
-        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0},
-        "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0},
-        "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84},
-        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34},
-        "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8}
+    # --- 2. ДАННЫЕ СТАТИСТИКИ (с мультиязычным оттоком) ---
+    VXB_STATS = {
+        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, 
+            "отток": {"ru": "В Узбекистан", "kz": "Өзбекстанға", "en": "To Uzbekistan"}},
+        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, 
+            "отток": {"ru": "В КНР: 0.67", "kz": "ҚХР-ға: 0.67", "en": "To PRC: 0.67"}},
+        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, 
+            "отток": {"ru": "В КНР: 2.20, В РФ: 26.2", "kz": "ҚХР-ға: 2.20, РФ-ға: 26.2", "en": "To PRC: 2.20, To RF: 26.2"}},
+        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, 
+            "отток": {"ru": "В РФ: 1.48", "kz": "РФ-ға: 1.48", "en": "To RF: 1.48"}},
+        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, 
+            "отток": {"ru": "В РФ: 1.86", "kz": "РФ-ға: 1.86", "en": "To RF: 1.86"}},
+        "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0, "отток": None},
+        "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84, "отток": None},
+        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, 
+            "отток": {"ru": "В РФ: 0.46", "kz": "РФ-ға: 0.46", "en": "To RF: 0.46"}},
+        "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
     }
 
-    # --- 2. ЗАГРУЗКА ДАННЫХ ---
+    # --- 3. ЗАГРУЗКА ГЕОДАННЫХ ---
     @st.cache_data
-    def get_geodata():
-        base = os.path.dirname(__file__)
-        shp_dir = os.path.join(base, "shp")
-        if not os.path.exists(shp_dir): return None, None
-        
-        basins_list = []
-        for f in os.listdir(shp_dir):
-            if f.endswith("_VXB.shp"):
-                basins_list.append(gpd.read_file(os.path.join(shp_dir, f)).to_crs(epsg=4326))
-        
-        rivers_path = os.path.join(shp_dir, "rivers_kz.shp")
-        rivers = gpd.read_file(rivers_path).to_crs(epsg=4326) if os.path.exists(rivers_path) else None
-        return pd.concat(basins_list, ignore_index=True) if basins_list else None, rivers
+    def load_geo_data(path):
+        all_gdf = []
+        rivers = None
+        if os.path.exists(path):
+            for file in os.listdir(path):
+                if file.endswith("_VXB.shp"):
+                    gdf = gpd.read_file(os.path.join(path, file))
+                    all_gdf.append(gdf.to_crs(epsg=4326))
+            rivers_path = os.path.join(path, "rivers_kz.shp")
+            if os.path.exists(rivers_path):
+                rivers = gpd.read_file(rivers_path).to_crs(epsg=4326)
+        basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
+        return basins, rivers
 
-    basins_gdf, rivers_gdf = get_geodata()
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    FOLDER_PATH = os.path.join(base_path, "shp")
+    data_basins, data_rivers = load_geo_data(FOLDER_PATH)
 
-    # --- 3. ИНТЕРФЕЙС ---
-    st.title(tr["title"])
+    st.title(t["title"])
 
-    if basins_gdf is not None:
-        c1, c2 = st.columns([2.2, 1])
+    if data_basins is not None:
+        tooltip_col = 'ВХБ_н_' # Поле в .shp файле на русском
         
-        with c1:
+        col1, col2 = st.columns([2.2, 1])
+        
+        with col1:
             m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
             
-            # Слой бассейнов
-            # tooltip_col оставляем как в SHP (обычно 'ВХБ_н_')
-            gj = folium.GeoJson(
-                basins_gdf,
+            # Полигоны (названия в tooltip всегда на русском из SHP)
+            folium.GeoJson(
+                data_basins,
                 style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
                 highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
-                tooltip=folium.GeoJsonTooltip(fields=['ВХБ_н_'], labels=False)
+                tooltip=folium.GeoJsonTooltip(fields=[tooltip_col], labels=False)
             ).add_to(m)
 
-            if rivers_gdf is not None:
-                folium.GeoJson(rivers_gdf, style_function=lambda x: {'color': '#003399', 'weight': 1.0, 'opacity': 0.5}).add_to(m)
+            # Названия на самой карте (тоже оставляем RU для стабильности)
+            for _, row in data_basins.iterrows():
+                centroid = row.geometry.centroid
+                name = row[tooltip_col]
+                folium.Marker(
+                    location=[centroid.y, centroid.x],
+                    icon=folium.DivIcon(html=f"""<div style="font-family:sans-serif; color:#1d3557; font-size:8pt; font-weight:bold; text-align:center; width:100px; transform:translate(-50%,-50%); pointer-events:none;">{name}</div>""")
+                ).add_to(m)
 
-            map_data = st_folium(m, height=500, use_container_width=True, key="vxb_map")
+            if data_rivers is not None:
+                folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
+            
+            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map_final")
 
-        # --- 4. ЛОГИКА ВЫБОРА ---
-        selected_vxb = "Республика Казахстан"
-        if map_data and map_data.get("last_active_drawing"):
-            raw_name = map_data["last_active_drawing"]["properties"].get('ВХБ_н_', "")
-            for key in VXB_DATA.keys():
-                if key.split('-')[0] in raw_name: # Сопоставление по первому слову
-                    selected_vxb = key
+        # --- ЛОГИКА ОПРЕДЕЛЕНИЯ ВЫБОРА ---
+        sel_name = "Республика Казахстан"
+        if output and output.get("last_active_drawing"):
+            res = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
+            # Ищем ключ в VXB_STATS по частичному совпадению
+            for k in VXB_STATS.keys():
+                if k.lower().split(' ')[0] in str(res).lower():
+                    sel_name = k
                     break
 
-        with c2:
-            st.markdown(tr["stats_h"])
-            display_name = tr["rk"] if selected_vxb == "Республика Казахстан" else selected_vxb
-            st.success(f"📍 **{display_name}**")
+        with col2:
+            # CSS для жирных метрик
+            st.markdown("<style>[data-testid='stMetricValue']{font-weight:800 !important; color:#1e3799;}</style>", unsafe_allow_html=True)
             
-            stats = VXB_DATA[selected_vxb]
-            st.metric(tr["norm_lbl"], f"{stats['норма']} {tr['unit_y']}")
+            st.markdown(t["stats_h"])
+            # Перевод заголовка выбранного региона
+            display_title = t['rk'] if sel_name == "Республика Казахстан" else sel_name
+            st.success(f"📍 **{display_title}**")
             
-            mc1, mc2 = st.columns(2)
-            mc1.metric(tr["local_lbl"], f"{stats['местные']} {tr['unit']}")
-            mc2.metric(tr["inflow_lbl"], f"{stats['приток']} {tr['unit']}")
-
-            # Отток
-            outflow_text = tr["vxb_names"].get(selected_vxb)
-            if outflow_text:
-                st.warning(f"**{tr['outflow_lbl']}** {outflow_text}")
+            cur = VXB_STATS[sel_name]
+            st.metric(t["norm"], f"{cur['норма']} {t['unit_y']}")
+            
+            c1, c2 = st.columns(2)
+            c1.metric(t["local"], f"{cur['местные']} {t['unit']}")
+            c2.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
+            
+            # Блок оттока (берем перевод из словаря внутри VXB_STATS)
+            if cur.get('отток'):
+                outflow_val = cur['отток'][lang] if isinstance(cur['отток'], dict) else cur['отток']
+                st.warning(f"{t['outflow_label']} **{outflow_val}**")
             else:
-                st.info(tr["no_outflow"])
+                st.info(t["no_outflow"])
 
-            st.divider()
-            if selected_vxb != "Республика Казахстан":
-                st.button(tr["btn_text"], use_container_width=True, type="primary")
+            st.markdown("---")
+            if sel_name != "Республика Казахстан":
+                anchor_id = sel_name.replace(' ', '-').lower()
+                st.markdown(f"""
+                    <a href="#{anchor_id}" style="text-decoration: none;">
+                        <div style="background:linear-gradient(90deg, #1e3799, #009432); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                            {t['btn_text']}
+                        </div>
+                    </a>
+                """, unsafe_allow_html=True)
             else:
-                st.caption(tr["info_select"])
-    else:
-        st.error("Ошибка: Геоданные (SHP файлы) не найдены.")
-        
+                st.caption(t["info_select"])
                 
-                
-    import streamlit as st
-    import pandas as pd
-    import numpy as np
-    import plotly.graph_objects as go
+      
+        import streamlit as st
+        import pandas as pd
+        import plotly.graph_objects as go
+        import numpy as np
 
-    def show_water_resources_chart():
-        # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
-        # Проверяем наличие lang_code в session_state, иначе ставим 'ru'
-        lang = st.session_state.get('lang_code', 'ru')
-
-        # Словарь интерфейса графика
-        graph_ui = {
-            "ru": {
-                "title": "Суммарные водные ресурсы РК (1940–2025 гг.)",
-                "local": "Местный сток",
-                "inflow": "Приток из сопредельных стран",
-                "trend": "Линия тренда (суммарная)",
-                "xtitle": "Годы",
-                "ytitle": "Объем, км³/год"
-            },
-            "kz": {
-                "title": "ҚР жиынтық су ресурстары (1940–2025 жж.)",
-                "local": "Жергілікті ағын",
-                "inflow": "Шекаралас елдерден келетін ағын",
-                "trend": "Тренд сызығы (жиынтық)",
-                "xtitle": "Жылдар",
-                "ytitle": "Көлемі, км³/жыл"
-            },
-            "en": {
-                "title": "Total Water Resources of the RK (1940–2025)",
-                "local": "Local runoff",
-                "inflow": "Inflow from neighboring countries",
-                "trend": "Trend line (total)",
-                "xtitle": "Years",
-                "ytitle": "Volume, km³/year"
-            }
-        }
-
-        # Безопасное получение перевода
-        gt = graph_ui.get(lang, graph_ui['ru'])
-
-        # --- 2. ПОДГОТОВКА ДАННЫХ ---
+        # 1. Подготовка данных
         data = {
             "Год": list(range(1940, 2026)),
             "Местный сток": [
@@ -6603,7 +6570,7 @@ with tabs[5]:
                 50.46, 50.68, 62.43, 59.34, 52.80, 56.29, 45.44, 46.98, 37.86, 36.84, 59.84, 40.80, 40.01, 42.86, 41.56, 
                 39.47, 52.54, 58.58, 41.53, 36.47, 32.81, 28.13, 32.43, 38.03, 51.35, 35.72
             ],
-            "Сумма": [
+            "ВХБ": [
                 88.58, 146.12, 142.03, 97.04, 81.75, 89.20, 151.26, 127.04, 126.31, 122.50, 96.48, 76.41, 131.60, 103.57, 130.70, 
                 97.46, 108.50, 112.32, 140.04, 130.18, 137.30, 97.86, 83.88, 93.96, 118.04, 76.64, 134.81, 76.00, 84.19, 163.86, 
                 131.35, 124.59, 104.60, 111.23, 64.92, 69.87, 76.33, 79.27, 83.69, 109.16, 90.00, 94.73, 74.17, 90.44, 84.18, 
@@ -6615,452 +6582,91 @@ with tabs[5]:
 
         df = pd.DataFrame(data)
 
-        # --- 3. РАСЧЕТ ТРЕНДА ---
-        z = np.polyfit(df['Год'], df['Сумма'], 1)
+        # 2. Расчет тренда
+        z = np.polyfit(df['Год'], df['ВХБ'], 1)
         p = np.poly1d(z)
         df['Тренд'] = p(df['Год'])
 
-        # --- 4. СОЗДАНИЕ ГРАФИКА ---
+        # 3. Создание графика
         fig = go.Figure()
 
         # Местный сток - Глубокий синий
         fig.add_trace(go.Bar(
             x=df['Год'], y=df['Местный сток'],
-            name=gt['local'],
-            marker_color='#1f77b4',
+            name='Местный сток',
+            marker_color='#1f77b4',  # Steel Blue
             opacity=0.9
         ))
 
         # Приток - Светло-голубой
         fig.add_trace(go.Bar(
             x=df['Год'], y=df['Приток'],
-            name=gt['inflow'],
-            marker_color='#a6cee3',
+            name='Приток',
+            marker_color='#a6cee3',  # Light Blue
             opacity=0.9
         ))
 
-        # Линия тренда
-        fig.add_trace(go.Scatter(
-            x=df['Год'], y=df['Тренд'],
-            name=gt['trend'],
-            line=dict(color='#d62728', width=3, dash='dash'),
-            mode='lines'
-        ))
 
-        # --- 5. НАСТРОЙКА ОФОРМЛЕНИЯ ---
+        # Настройка оформления
         fig.update_layout(
             title=dict(
-                text=gt['title'],
+                text='Динамика водности Республики Казахстан (1940-2025)',
                 font=dict(color='#08306b', size=20)
             ),
-            xaxis_title=gt['xtitle'],
-            yaxis_title=gt['ytitle'],
+            xaxis_title='Год',
+            yaxis_title='W, км³',
             barmode='stack',
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             hovermode="x unified",
             height=550,
             template="plotly_white",
-            xaxis=dict(
-                showgrid=True, gridcolor='lightgrey', 
-                linecolor='black', mirror=True, tickangle=-90,
-                dtick=5 
-            ),
-            yaxis=dict(
-                showgrid=True, gridcolor='lightgrey', 
-                linecolor='black', mirror=True, zeroline=False
+            xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black')),
+            yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=16, color='black'),tickfont=dict(size=14, color='black'))
             )
-        )
 
-        # Отображение
+        # Отображение в Streamlit
         st.plotly_chart(fig, use_container_width=True)
 
-    # Запуск
-    if __name__ == "__main__":
-        show_water_resources_chart()
-        
-
-
     def show_water_resources_analysis():
-        # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА (по вашему примеру) ---
-        if 'lang_code' in locals() or 'lang_code' in globals():
-            effective_lang = lang_code
-        elif 'lang_code' in st.session_state:
-            effective_lang = st.session_state['lang_code']
-        else:
-            effective_lang = st.session_state.get('language', 'ru')
-
-        # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
-        water_translations = {
-            "ru": {
-                "subheader": "📊 Анализ суммарных водных ресурсов РК (1940–2024 гг.)",
-                "main_text": "Анализ графика суммарных водных ресурсов Республики Казахстан за **1940–2024 гг.** показывает постепенное плавное снижение объемов речного стока. Такая динамика линии тренда отражает естественную реакцию гидрологической системы на современные климатические изменения.",
-                "metric_label": "Тренд стока",
-                "metric_value": "Снижение",
-                "metric_delta": "- плавный",
-                "details": "Согласно данным, наблюдаемое уменьшение водных ресурсов связано с тем, что рост испаряемости и изменения в режиме осадков начинают преобладать над приточностью. Несмотря на то, что в отдельные годы мы видим значительные пики водности, общая тенденция указывает на постепенное сокращение среднемноголетнего стока.",
-                "key_factor_title": "Ключевой фактор:",
-                "key_factor_text": "Перестройка структуры питания рек, где доля ледникового стока стабилизируется, а трансграничный приток испытывает влияние хозяйственной деятельности в верховьях.",
-                "conclusion_title": "Вывод:",
-                "conclusion_text": "Нисходящая линия тренда — это важный индикатор, который призывает к более рациональному и бережному использованию имеющихся запасов воды в долгосрочной перспективе."
-            },
-            "kz": {
-                "subheader": "📊 ҚР жиынтық су ресурстарына талдау (1940–2024 жж.)",
-                "main_text": "**1940–2024 жж.** аралығындағы Қазақстан Республикасының жиынтық су ресурстары графигін талдау өзен ағыны көлемінің біртіндеп төмендегенін көрсетеді. Тренд сызығының мұндай динамикасы гидрологиялық жүйенің қазіргі климаттық өзгерістерге табиғи реакциясын көрсетеді.",
-                "metric_label": "Ағын тренді",
-                "metric_value": "Төмендеу",
-                "metric_delta": "- біртіндеп",
-                "details": "Мәліметтерге сәйкес, су ресурстарының азаюы буланудың артуымен және жауын-шашын режиміндегі өзгерістердің келу ағынынан басым бола бастауымен байланысты. Кейбір жылдары сулылықтың айтарлықтай шыңдарын көрсек те, жалпы тенденция орташа көпжылдық ағынның біртіндеп қысқаруын көрсетеді.",
-                "key_factor_title": "Негізгі фактор:",
-                "key_factor_text": "Өзендердің қоректену құрылымының қайта құрылуы, мұнда мұздық ағынының үлесі тұрақтанады, ал трансшекаралық ағын жоғарғы ағыстағы шаруашылық қызметтің әсеріне ұшырайды.",
-                "conclusion_title": "Қорытынды:",
-                "conclusion_text": "Төмендеу трендінің сызығы — бұл су қорларын ұзақ мерзімді перспективада ұтымды және ұқыпты пайдалануға шақыратын маңызды индикатор."
-            },
-            "en": {
-                "subheader": "📊 Analysis of Total Water Resources of the RK (1940–2024)",
-                "main_text": "Analysis of the total water resources graph of the Republic of Kazakhstan for **1940–2024** shows a gradual decline in river runoff volumes. This trend line dynamics reflects the natural response of the hydrological system to modern climate changes.",
-                "metric_label": "Runoff Trend",
-                "metric_value": "Decrease",
-                "metric_delta": "- gradual",
-                "details": "According to the data, the observed decrease in water resources is due to the fact that increasing evaporation and changes in precipitation patterns are beginning to prevail over inflow. Although we see significant peaks in water levels in certain years, the general trend points to a gradual reduction in the average long-term runoff.",
-                "key_factor_title": "Key factor:",
-                "key_factor_text": "Restructuring of the river nourishment system, where the share of glacial runoff is stabilizing, while transboundary inflow is affected by economic activities upstream.",
-                "conclusion_title": "Conclusion:",
-                "conclusion_text": "The downward trend line is an important indicator that calls for more rational and careful use of available water reserves in the long term."
-            }
-        }
-
-        # Выбираем текущий перевод (по умолчанию ru)
-        wt = water_translations.get(effective_lang.lower(), water_translations["ru"])
-
-        # --- 3. ОТОБРАЖЕНИЕ БЛОКА ---
-        st.subheader(wt["subheader"])
+        st.subheader("📊 Анализ суммарных водных ресурсов РК (1940–2024 гг.)")
         
+        # Создаем контейнер для визуального выделения блока
         with st.container(border=True):
             col1, col2 = st.columns([3, 1])
             
             with col1:
-                st.markdown(wt["main_text"])
+                st.markdown("""
+                Анализ графика суммарных водных ресурсов Республики Казахстан за **1940–2024 гг.** показывает постепенное 
+                плавное снижение объемов речного стока. Такая динамика линии тренда отражает естественную реакцию 
+                гидрологической системы на современные климатические изменения.
+                """)
             
             with col2:
-                st.metric(
-                    label=wt["metric_label"], 
-                    value=wt["metric_value"], 
-                    delta=wt["metric_delta"], 
-                    delta_color="inverse"
-                )
+                # Маленький индикатор тренда для наглядности
+                st.metric(label="Тренд стока", value="Снижение", delta="- плавный", delta_color="inverse")
 
             st.divider()
 
-            st.write(wt["details"])
+            st.write("""
+            Согласно данным, наблюдаемое уменьшение водных ресурсов связано с тем, что рост испаряемости и изменения 
+            в режиме осадков начинают преобладать над приточностью. Несмотря на то, что в отдельные годы мы видим 
+            значительные пики водности, общая тенденция указывает на постепенное сокращение среднемноголетнего стока.
+            """)
 
             # Используем блок внимания для ключевого вывода
-            st.info(f"**{wt['key_factor_title']}** {wt['key_factor_text']}", icon="💧")
+            st.info("""
+            **Ключевой фактор:** Перестройка структуры питания рек, где доля ледникового стока стабилизируется, 
+            а трансграничный приток испытывает влияние хозяйственной деятельности в верховьях.
+            """, icon="💧")
 
-            st.warning(f"**{wt['conclusion_title']}** {wt['conclusion_text']}", icon="⚠️")
-
-    import streamlit as st
-    import pandas as pd
-    import plotly.express as px
-    import os
-
-    # 1. СЛОВАРЬ ПЕРЕВОДОВ
-    LANG_MAP = {
-        "Русский": {
-            "title": "Анализ водных ресурсов ВХБ Казахстана",
-            "select_basin": "Выберите ВХБ:",
-            "area": "Площадь",
-            "gauges": "Кол-во гидропостов",
-            "total_rivers": "Всего рек",
-            "artery": "Основная артерия",
-            "objects": "Водные объекты",
-            "local_flow_label": "Местный сток",
-            "inflow_label": "Приток",
-            "dynamics_title": "Многолетняя динамика стока (км³/год)",
-            "table_title": "Характеристики основных рек и створов",
-            "dynamics_col": "Динамика",
-            "norm_col": "Норма",
-            "peak_col": "Пик",
-            "min_col": "Мин",
-            "river_col": "Река / Створ"
-        },
-        "Қазақша": {
-            "title": "Қазақстанның СШБ су ресурстарын талдау",
-            "select_basin": "СШБ таңдаңыз:",
-            "area": "Ауданы",
-            "gauges": "Гидробекеттер саны",
-            "total_rivers": "Барлық өзендер",
-            "artery": "Негізгі артерия",
-            "objects": "Су нысандары",
-            "local_flow_label": "Жергілікті ағын",
-            "inflow_label": "Сыртқы ағын",
-            "dynamics_title": "Ағынның көпжылдық динамикасы (км³/жыл)",
-            "table_title": "Негізгі өзендер мен тұстамалардың сипаттамалары",
-            "dynamics_col": "Динамика",
-            "norm_col": "Норма",
-            "peak_col": "Пик",
-            "min_col": "Мин",
-            "river_col": "Өзен / Тұстама"
-        },
-        "English": {
-            "title": "Water Resources Analysis of Kazakhstan Basins",
-            "select_basin": "Select Basin:",
-            "area": "Area",
-            "gauges": "Gauging Stations",
-            "total_rivers": "Total Rivers",
-            "artery": "Main Artery",
-            "objects": "Water Objects",
-            "local_flow_label": "Local Flow",
-            "inflow_label": "Inflow",
-            "dynamics_title": "Long-term Flow Dynamics (km³/year)",
-            "table_title": "Characteristics of Main Rivers and Sections",
-            "dynamics_col": "Dynamics",
-            "norm_col": "Norm",
-            "peak_col": "Peak",
-            "min_col": "Min",
-            "river_col": "River / Section"
-        }
-    }
-
-    def show_water_resources_analysis():
-        # Настройка боковой панели для выбора языка
-        lang = st.sidebar.selectbox("Language / Тіл / Язык", ["Русский", "Қазақша", "English"])
-        t = LANG_MAP[lang]
-
-        st.title(t["title"])
-
-        # Данные ВХБ (сокращено для примера, используйте ваш полный словарь VXB_FULL_DATA)
-        # Примечание: В идеале текстовые описания ("артерия") также должны быть в словаре переводов
-        VXB_FULL_DATA = {
-            "Ертисский ВХБ": {
-                "photo": "Ертисский.tiff",
-                "площадь": "347 757 км²",
-                "гп_кол": "58",
-                "рек_всего": "13 201",
-                "артерия": "Река Ертис - крупнейшая по водности река Казахстана и основная транзитная водная артерия страны. Формирует значительную часть поверхностного стока восточного и северо-восточного Казахстана, обладает развитым каскадом водохранилищ и ГЭС. Играет ключевую роль в межбассейновом перераспределении водных ресурсов (в том числе через канал Иртыш–Караганда).",
-                "объекты": ">82 вдхр. и прудов",
-                "рек_инфо": "6 / Малых: 1195",
-                "местные_текст": "5 крупных рек (Калжыр, Куршим, Буктырма, Ульби, Оба) формируют ~70% стока.",
-                "приток_текст": "Поступает из КНР по реке Кара Ертис, створ с. Боран.",
-                "years": list(range(1940, 2024)),
-                "local_flow": [25.49, 33.64, 28.02, 25.26, 24.65, 19.6, 41.14, 37.13, 26.61, 28.29, 26.56, 15.32, 29.44, 19.89, 31.42, 20.18, 25.12, 27.11, 37.99, 25.85, 32.94, 28.71, 21.32, 18.68, 22.39, 21.29, 35.9, 21.66, 21.05, 35.08, 28.72, 31.42, 26.58, 31.4, 16.7, 24.76, 24.51, 25.69, 21.33, 33.19, 21.11, 19.46, 18.22, 24.69, 25.4, 28.48, 23.26, 27.19, 29.77, 25.01, 30.83, 20.56, 29.86, 31.49, 28.56, 26.83, 23.46, 22.99, 22.93, 22.1, 21.44, 33.15, 30.37, 18.74, 24.62, 23.41, 24.99, 27.52, 19.34, 31.04, 31.4, 21.57, 19.08, 42.49, 30.77, 32.48, 35.51, 26.86, 26.39, 25.45, 24.9, 22.22, 22.3, 25.4, 30.65],
-                "inflow": [8.17, 9.65, 10.75, 7.64, 6.46, 5.7, 10.59, 8.96, 5.83, 6.63, 7.22, 5.22, 9.88, 5.7, 7.85, 7.53, 8.88, 7.4, 10.75, 8.41, 8.86, 10.4, 6.9, 5.81, 6.97, 5.48, 11.31, 4.88, 7.67, 11.37, 9.57, 9.79, 7.34, 9.41, 3.17, 6.14, 5.17, 7.01, 4.33, 6.65, 5.68, 5.7, 3.29, 5.54, 9.44, 7.57, 5.21, 8.02, 9.72, 4.47, 6.41, 4.63, 6.64, 11.12, 9.29, 6.85, 5.51, 6.22, 6.55, 6.31, 5.89, 8.6, 7.5, 4.37, 5.67, 6.81, 5.83, 4.38, 3.63, 2.35, 7.23, 3.62, 2.85, 7.84, 5.64, 6.05, 8.5, 8.72, 7.2, 4.65, 5.31, 4.29, 3.28, 5.25, 6.98],
-                "river_table_data": [
-                    {"Река / Створ": "р. Калжыр – с. Калжыр", "Норма": 22.6, "Пик": "47.6 (2001)", "Мин": "7.8 (2012)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Куршим – с. Вознесенка", "Норма": 58.6, "Пик": "137.0 (2013)", "Мин": "26.4 (1951)", "Динамика": "↗ Рост"},
-                    {"Река / Створ": "р. Буктырма – с. Л. Пристань", "Норма": 208.0, "Пик": "404.0 (2013)", "Мин": "117.0 (1974)", "Динамика": "↗ Рост"},
-                    {"Река / Створ": "р. Ульби – с. Ульби Перевалочная", "Норма": 104.0, "Пик": "160.0 (1946)", "Мин": "49.3 (1951)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Оба – г. Шемонаиха", "Норма": 162.0, "Пик": "255.0 (1958)", "Мин": "85.8 (1951)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Кара Ертис – с. Боран", "Норма": 301.0, "Пик": "478.0 (1969)", "Мин": "134.0 (1982)", "Динамика": "↘ Снижение"}
-            ]
-        },
-            "Арало-Сырдарьинский ВХБ": {
-                "photo": "Арал-Сырдария.tiff",
-                "площадь": "345 000 км²",
-                "гп_кол": "41",
-                "рек_всего": "1500-2000",
-                "артерия": "Река Сырдарья - крупная трансграничная река аридной зоны Центральной Азии с ледниково-снеговым питанием в верховьях. В пределах Казахстана её сток существенно зарегулирован водохранилищами и используется преимущественно для ирригации. Является основным водотоком северной части Аральского бассейна.",
-                "объекты": "Свыше 33 водохранилищ и прудов",
-                "рек_инфо": "Общее количество рек: 1500 - 2000 / Большие и средние: 497",
-                "местные_текст": "Сток формируется реками Арыс, Шаян, Бугунь.",
-                "приток_текст": "Трансграничный приток из Узбекистана.",
-                "years": list(range(1940, 2024)),
-                "local_flow": [2.15, 3.24, 3.43, 2.70, 2.09, 2.33, 3.16, 2.35, 2.56, 4.93, 3.30, 2.40, 4.65, 3.73, 4.93, 3.39, 3.09, 3.00, 5.71, 5.36, 4.86, 2.19, 2.29, 2.91, 3.85, 2.36, 2.49, 2.79, 3.65, 8.33, 3.21, 2.57, 4.06, 3.41, 2.40, 2.97, 2.97, 2.61, 3.58, 5.29, 3.42, 3.50, 2.77, 2.27, 2.99, 3.51, 2.29, 4.35, 3.43, 2.71, 4.15, 2.52, 3.05, 3.93, 3.74, 2.40, 2.21, 2.31, 3.00, 2.66, 2.39, 2.40, 3.84, 3.16, 2.86, 4.36, 2.98, 3.31, 2.22, 2.72, 3.34, 2.06, 3.19, 3.15, 4.25, 2.96, 4.09, 4.96, 2.40, 2.86, 2.24, 2.92, 2.96, 2.69, 3.13], 
-                "inflow": [15.40, 21.41, 25.80, 22.42, 17.04, 24.16, 22.83, 16.87, 21.50, 28.79, 17.72, 18.67, 33.20, 27.88, 33.11, 22.96, 22.74, 14.07, 28.35, 28.92, 31.27, 14.00, 12.20, 19.02, 22.61, 11.48, 25.13, 11.61, 14.45, 50.46, 19.68, 14.03, 14.04, 16.90, 4.57, 4.16, 6.23, 7.22, 10.09, 14.13, 11.45, 11.38, 11.70, 9.05, 9.80, 9.90, 8.77, 12.84, 19.95, 12.87, 14.35, 14.00, 16.22, 21.44, 25.76, 14.44, 15.81, 14.13, 23.87, 18.54, 14.10, 13.53, 21.26, 27.28, 23.56, 22.26, 16.49, 17.98, 12.43, 14.60, 24.94, 13.37, 17.93, 13.56, 17.60, 14.63, 12.24, 22.39, 15.20, 13.94, 12.33, 9.40, 12.71, 14.66, 16.89],
-                "river_table_data": [
-                    {"Река / Створ": "р. Сырдарья – н.б. Шардаринского вдхр", "Норма": 728.0, "Пик": "1066 (1952)", "Мин": "167 (1975)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Сырдарья – ж.-д.ст. Томенарык", "Норма": 682.0, "Пик": "1023.0 (1952)", "Мин": "122.0 (1975)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Сырдарья – г. Казалы", "Норма": 492.0, "Пик": "670.0 (1954)", "Мин": "15.2 (1977)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р.Келес – устье", "Норма": 13.0, "Пик": "30.9 (2024)", "Мин": "1.5 (1987)", "Динамика": "↗ Рост"},
-                    {"Река / Створ": "р.Арысь – ж.-д.ст. Арысь", "Норма": 162.0, "Пик": "94.89 (1969)", "Мин": "5.79 (1986)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Аксу - с. Саркырама", "Норма": 47.5, "Пик": "19.2 (1969)", "Мин": "2.57 (1944)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Бадам - с. Караспан", "Норма": 5.39, "Пик": "26.7 (2010)", "Мин": "85.8 (1951)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Шаян - в 3,3 км ниже устья р. Акбет", "Норма": 2.27, "Пик": "4.98 (1969)", "Мин": "0.5 (1996)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Бугунь - с. Екпенды", "Норма": 4.28, "Пик": "13.3 (1969)", "Мин": "0.12 (1994)", "Динамика": "↔ Стабильно"}
-            ]                
-        },
-            "Балкаш-Алакольский ВХБ": {
-                "photo": "Балхаш-Алакольский ВХБ.tiff",
-                "площадь": "406 000 км²",
-                "гп_кол": "69",
-                "рек_всего": "Более 52000",
-                "артерия": "Река Иле - трансграничная река с истоками в горах Тянь-Шаня, характеризуется ледниково-снеговым типом питания. Обеспечивает основную часть притока в озеро Балхаш, определяя его гидрологический режим и минерализацию. Дельта реки представляет собой важный водно-болотный комплекс международного значения.",
-                "объекты": "Свыше 24300 озер и водоемов",
-                "рек_инфо": "более 52000 / Малых и средних: около 45000",
-                "местные_текст": "Сток формируется реками Шарын, Шилик, Иле, Каратал, Лепси.",
-                "приток_текст": "Трансграничный приток из КНР.",
-                "years": list(range(1940, 2024)),
-                "local_flow": [13.06, 19.48, 18.71, 9.84, 9.75, 10.15, 18.42, 14.89, 13.28, 15.49, 15.44, 12.78, 20.37, 16.57, 19.47, 17.71, 18.19, 11.28, 20.73, 21.07, 19.56, 14.70, 12.99, 14.66, 20.07, 11.19, 21.44, 15.07, 14.41, 23.97, 17.96, 19.55, 17.91, 18.93, 11.55, 12.15, 13.14, 13.76, 14.34, 16.57, 16.58, 18.02, 12.89, 13.18, 14.22, 16.41, 14.02, 22.39, 29.59, 16.62, 20.91, 15.58, 17.21, 24.02, 22.41, 13.48, 19.35, 16.35, 19.94, 17.23, 16.98, 22.50, 24.21, 23.55, 21.07, 20.65, 18.00, 19.17, 17.65, 19.25, 31.09, 21.20, 14.98, 17.23, 12.89, 17.38, 24.81, 23.17, 19.00, 20.76, 14.10, 14.59, 15.82, 13.72, 17.56], 
-                "inflow": [12.37, 15.33, 14.39, 10.75, 12.23, 11.97, 13.80, 12.29, 11.81, 12.42, 12.81, 11.43, 13.10, 12.48, 13.91, 13.14, 14.29, 10.50, 14.28, 15.85, 15.35, 11.83, 11.27, 12.22, 15.04, 10.95, 13.88, 11.39, 10.42, 15.84, 14.36, 13.72, 12.12, 13.82, 10.47, 10.15, 10.87, 11.21, 11.03, 12.24, 13.19, 13.18, 11.28, 10.97, 10.80, 12.41, 11.25, 13.89, 17.31, 11.65, 12.09, 12.04, 10.37, 13.56, 12.33, 9.49, 12.31, 10.75, 14.28, 15.08, 13.74, 14.14, 15.04, 13.16, 9.62, 11.98, 14.99, 12.90, 11.80, 13.42, 18.12, 14.01, 10.75, 10.49, 8.21, 11.71, 19.10, 14.22, 10.82, 11.84, 8.66, 9.01, 9.52, 9.76, 11.0],
-                "river_table_data": [
-                    {"Река / Створ": "р.Шарын - уроч Сарытогай", "Норма": 36.8, "Пик": "66.2 (2010)", "Мин": "22.6 (1944)", "Динамика": "↗ умеренное увеличение"},
-                    {"Река / Створ": "р. Шилик - с. Малыбай", "Норма": 32.3, "Пик": "50.6 (2002)", "Мин": "26.1 (1957)", "Динамика": "↗ слабо выраженное увеличение"},
-                    {"Река / Створ": "р. Каратал - с. Каратальское", "Норма": 24.9, "Пик": "55.6 (2016)", "Мин": "16.0 (1933)", "Динамика": "↔ существенных отклонений от нормы не выявлено"},
-                    {"Река / Створ": "р. Лепсы - аул Лепси", "Норма": 19.6, "Пик": "32.3 (2010)", "Мин": "10.8 (1933)", "Динамика": "↗ отмечается умеренный рост стока"},
-                    {"Река / Створ": "р. Тентек - аул Тонкерис", "Норма": 48.5, "Пик": "74.8 (2010)", "Мин": "23.2 (2020)", "Динамика": "↘ выраженное снижение среднегодовых расходов"},
-                    {"Река / Створ": "р. Коргас – в 11 км выше с. Баскуншы", "Норма": 17.9, "Пик": "24.3 (2016)", "Мин": "10.9 (1957)", "Динамика": "↗ умеренное увеличение"},
-                    {"Река / Створ": "р. Нарынкол – с. Нарынкол", "Норма": 1.50, "Пик": "2.32 (1942)", "Мин": "0.72 (2014)", "Динамика": "↔ близкая к стационарной"},
-                    {"Река / Створ": "р. Текес – с. Текес", "Норма": 8.98, "Пик": "15.9 (2010)", "Мин": "5.05 (1944)", "Динамика": "↗ умеренное увеличение водности"},
-                    {"Река / Створ": "р. Или – пр. Добын", "Норма": 423.0, "Пик": "642.0 (2016)", "Мин": "287.0 (2014)", "Динамика": "↗ слабо выраженная тенденция увеличения среднегодовых расходов воды"},
-                    {"Река / Створ": "р. Баянкол – с. Баянкол", "Норма": 10.98, "Пик": "15.6 (1953)", "Мин": "5.55 (1946)", "Динамика": "↗ слабо выраженная тенденция увеличения среднегодовых расходов воды"},
-                    {"Река / Створ": "р. Емель – пос. Кызылту", "Норма": 12.78, "Пик": "31.4 (2010)", "Мин": "2.51 (2023)", "Динамика": "↗ слабо выраженная тенденция увеличения среднегодовых расходов воды"}
-            ]                
-        },
-            "Жайык-Каспийский ВХБ": {
-                "photo": "Жайык-Каспий.tiff",
-                "площадь": "645 000 км²",
-                "гп_кол": "52",
-                "рек_всего": "200-240",
-                "артерия": "Река Жайык - трансграничная река бассейна Каспийского моря с преимущественно снеговым типом питания. Для реки характерен интенсивный весенний паводочный период, имеет высокую рыбохозяйственную значимость, включая нерестовые миграции осетровых. Географически служит естественной линией разграничения Европы и Азии.",
-                "объекты": "Около 30 водохранилищ",
-                "рек_инфо": "Больших и средних: 10 / Малых: 180-200 ",
-                "местные_текст": "Сток формируется реками Илек, Большая Кобда, Орь, Уил, Эмба.",
-                "приток_текст": "Трансграничный приток из России.",
-                "years": list(range(1940, 2024)),
-                "local_flow": [2.44, 8.12, 10.59, 3.36, 1.01, 2.16, 8.28, 2.86, 10.75, 4.52, 1.55, 1.03, 6.33, 1.61, 3.04, 1.35, 3.34, 7.63, 3.39, 4.56, 3.63, 1.90, 2.15, 3.91, 3.17, 1.27, 5.73, 0.20, 1.61, 2.09, 8.30, 5.54, 3.81, 3.43, 2.21, 1.56, 2.07, 1.85, 2.66, 5.22, 4.58, 4.32, 1.35, 4.23, 0.69, 5.60, 1.16, 3.42, 2.33, 1.63, 2.85, 3.88, 1.12, 9.85, 4.28, 1.65, 2.51, 4.73, 4.58, 2.02, 4.34, 1.55, 3.94, 1.31, 4.38, 6.08, 1.04, 4.96, 1.18, 0.75, 1.44, 2.26, 1.33, 0.56, 2.73, 3.03, 4.70, 3.64, 2.32, 0.50, 0.56, 0.72, 7.07, 12.83, 23.19], 
-                "inflow": [4.15, 18.72, 14.63, 5.82, 3.70, 6.69, 21.48, 18.80, 16.72, 8.90, 4.90, 3.93, 7.24, 6.88, 5.02, 3.07, 6.22, 21.41, 8.53, 9.38, 8.78, 5.37, 7.38, 10.38, 11.70, 6.44, 8.60, 2.90, 5.39, 5.92, 18.82, 14.95, 6.78, 4.93, 8.18, 3.77, 5.50, 4.02, 7.17, 7.06, 6.83, 10.59, 6.88, 8.84, 3.69, 8.56, 8.57, 11.89, 10.25, 7.76, 16.40, 11.92, 6.40, 15.46, 14.46, 7.26, 6.62, 6.67, 10.63, 6.98, 13.41, 11.75, 13.85, 9.86, 9.75, 10.46, 5.12, 8.66, 7.50, 3.67, 5.47, 6.27, 5.48, 7.78, 7.23, 4.18, 7.36, 7.99, 4.78, 3.19, 3.95, 3.33, 4.34, 5.84, 12.50],
-                "river_table_data": [
-                    {"Река / Створ": "р. Орь – с. Бугетсай", "Норма": 5.44, "Пик": "30.4 (2024)", "Мин": "0.12 (1967)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Илек – г. Актобе", "Норма": 16.3, "Пик": "59.3 (2024)", "Мин": "1.57 (1967)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Б.Кобда – с. Кобда", "Норма": 5.77, "Пик": "26 (2024)", "Мин": "1.00 (1944)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Уил – пос. Уил", "Норма": 7.87, "Пик": "74.7 (2024)", "Мин": "0.19 (2021)", "Динамика": "↗ Рост"},
-                    {"Река / Створ": "р. Эмба – с. Акмечеть", "Норма": 14.3, "Пик": "156 (2024)", "Мин": "0.06 (2021)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Жайык – пос. Январцево", "Норма": 343, "Пик": "793 (1957)", "Мин": "96 (1967)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Шаган – с. Чувашинское", "Норма": 8.71, "Пик": "29.8 (1946)", "Мин": "1.02 (2020)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Быковка – с. Чеботарево", "Норма": 0.40, "Пик": "1.24 (1946)", "Мин": "0.07 (2021)", "Динамика": "↘ Снижение"}
-            ]                
-        },
-            "Есильский ВХБ": {
-                "photo": "Есильский.tiff",
-                "площадь": "237 226 км²",
-                "гп_кол": "43",
-                "рек_всего": "2 000",
-                "артерия": "Река Есиль - равнинная река степной зоны с преимущественно снеговым питанием и продолжительным весенним половодьем. Отличается значительной межгодовой изменчивостью стока. Формирует водно-экологический каркас северных регионов и играет важную роль в водоснабжении населённых пунктов.",
-                "объекты": "Около 50 водохранилищ.",
-                "рек_инфо": " Большие и средние: 20-25/ Малые:более 1900",
-                "местные_текст": "Сток формируется реками Есиль, Калкутан, Жабай.",
-                "приток_текст": "",                
-                "years": list(range(1940, 2024)),
-                "local_flow": [1.05, 4.15, 4.06, 2.32, 0.68, 0.57, 3.36, 3.72, 6.06, 3.72, 0.95, 0.99, 0.57, 1.27, 3.76, 1.93, 0.73, 1.24, 1.58, 2.41, 2.97, 2.88, 1.52, 0.98, 4.02, 1.20, 2.31, 0.30, 0.46, 0.60, 2.32, 4.12, 4.49, 2.44, 1.19, 0.64, 1.45, 0.81, 3.15, 2.66, 2.46, 2.44, 1.49, 5.32, 2.48, 4.68, 2.90,3.79, 2.76, 1.30, 5.16, 3.02, 0.86, 5.63, 3.10, 3.44, 1.55, 2.91, 0.73, 0.42, 0.59, 2.08, 6.14, 1.08, 1.34, 3.10, 0.57,	3.79, 1.00, 0.71, 1.54, 1.16, 1.09, 1.81, 5.98, 2.83, 3.07, 8.88, 1.66, 4.41, 2.74, 2.11, 1.28, 3.10, 6.56],
-                "inflow": [None],
-                "river_table_data": [
-                    {"Река / Створ": "р. Есиль – с. Астана", "Норма": 4.73, "Пик": "22.1 (1948)", "Мин": "0.10 (1967)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Жабай – с. Атбасар", "Норма": 9.93, "Пик": "70.5 (2017)", "Мин": "0.97 (1937)", "Динамика": "↗ Рост"},
-                    {"Река / Створ": "р. Калкутан – с. Калкутан", "Норма": 7.24, "Пик": "33.3 (2002)", "Мин": "0.10 (1977)", "Динамика": "↘ Снижение"},
-            ]                
-        },
-            "Нура-Сарысуйский ВХБ": {
-                "photo": "Нура-Сарысу.tiff",
-                "площадь": "290 210 км²",
-                "гп_кол": "27",
-                "рек_всего": "15",
-                "артерия": "Река Нура - река центрального Казахстана с преимущественно снеговым питанием и ограниченным водным стоком. Впадает в бессточную систему озёр Тенгиз-Коргалжынской впадины. Имеет значимое экологическое значение в формировании водно-болотных угодий.",
-                "объекты": "около 400 водохранилищ, прудов и искусственных накопителей воды различного размера и назначения",
-                "рек_инфо": " Основные: 2 / Притоки: 13",
-                "местные_текст": "Сток формируется реками Нура, Сарысу, Каракенгир, Жиланды.",
-                "приток_текст": "",                   
-                "years": list(range(1940, 2024)),
-                "local_flow": [0.49, 2.10, 1.28, 1.51, 0.48, 1.33, 1.06, 0.99, 2.68, 2.98, 0.73, 0.55, 0.78, 0.90, 2.35, 0.93, 0.63, 0.69, 1.95, 1.57, 1.87, 1.19, 1.08, 0.42, 1.15, 0.72, 1.51, 0.27, 0.36, 0.96, 1.16, 1.48, 1.75, 1.33, 0.48, 0.22, 0.89, 1.87, 0.71, 1.04, 0.63, 0.85, 0.92, 0.97, 0.96, 0.91, 1.54, 1.23, 1.45, 0.78, 1.77, 1.84, 0.97, 2.37, 0.66, 1.16, 0.84, 1.42, 0.59, 0.32, 0.66, 1.16, 2.33, 0.74, 1.89, 0.80, 0.32, 1.36, 0.50, 0.37, 1.53, 0.71, 0.42, 1.36, 1.42, 3.80, 2.39, 3.81, 1.83, 2.24, 1.24, 0.78, 1.30, 0.75, 2.26], 
-                "inflow": [None],
-                "river_table_data": [
-                    {"Река / Створ": "р. Нура - ж.-д. ст. Балыкты", "Норма": 9.03, "Пик": "42.2 (2015)", "Мин": "0.36 (1936)", "Динамика": "↘ Рост"},
-                    {"Река / Створ": "р. Нура - с. Р. Кошкарбаева", "Норма": 22.6, "Пик": "108.5 (2017)", "Мин": "1.44 (1939)", "Динамика": "↗ Рост"},
-                    {"Река / Створ": "р. Шерубайнура - раз. Карамурын", "Норма": 5.81, "Пик": "20.9 (2017)", "Мин": "0.40 (1975)", "Динамика": "↗ Стабильно"},
-                    {"Река / Створ": "р. Сарысу - раз. № 189", "Норма": 3.02, "Пик": "29.3 (2015)", "Мин": "0.02 (2012)", "Динамика": "↘ Рост"},
-                    {"Река / Створ": "р. Каракенгир - 12 км выше устья р. Жиланды", "Норма": 4.08, "Пик": "19.4 (1949)", "Мин": "0.00 (1937)", "Динамика": "↔ Снижение"}
-            ]               
-        },
-            "Шу-Таласский ВХБ": {
-                "photo": "Шу-Таласс.tiff",
-                "площадь": "160 500 км²",
-                "гп_кол": "22",
-                "рек_всего": "850",
-                "артерия": "Река Шу - трансграничная река с истоками в горных районах Кыргызстана. В пределах Казахстана характеризуется снижением стока вследствие инфильтрации и водоотбора. Гидрологический режим определяется сочетанием снегового и ледникового питания. Река Талас - горная трансграничная река с выраженным весенне-летним максимумом стока. Значительная часть воды используется для орошения, что приводит к уменьшению водности в нижнем течении. Исторически играла роль в формировании оазисных систем региона.",
-                "объекты": "Свыше 21 водохранилищ и прудов",
-                "рек_инфо": "Большие и средние: 25-30 / Малых: 800",
-                "местные_текст": "Сток формируется реками Курагаты и Терис.",
-                "приток_текст": "Трансграничный приток из Кыргызстана фиксируется в створах 7 рек -  Шу, Талас, Ассы -  Карабалта, Аксу, Саргоу, Токташ.",
-                "years": list(range(1940, 2024)),
-                "local_flow": [0.63, 0.74, 1.02, 0.75, 0.82, 0.70, 0.78, 0.72, 1.00, 0.89, 0.86, 0.78, 1.10, 1.10, 1.00, 1.21, 1.03, 0.69, 1.36, 1.74, 1.61, 1.05, 0.95, 1.11, 1.33, 1.01, 1.51, 1.59, 1.45, 3.26, 1.60, 1.48, 1.61, 1.95, 1.00, 1.04, 1.08, 1.09, 1.47, 1.69, 1.25, 1.08, 0.93, 0.87, 1.02, 1.23, 0.83, 1.42, 1.60, 1.10, 1.56, 1.17, 1.29, 1.80, 2.08, 1.37, 1.45, 1.02, 1.42, 1.34, 1.05, 1.04, 2.02, 1.70, 1.60, 1.63, 1.47, 1.16, 1.00, 1.35, 1.46, 1.47, 1.38, 1.41, 1.71, 1.58, 2.05, 2.61, 1.85, 1.86, 1.69, 1.67, 0.94, 1.00, 1.08], 
-                "inflow": [2.37, 2.85, 3.74, 2.77, 2.45, 2.97, 3.12, 2.83, 2.79, 3.35, 2.93, 2.78, 3.63, 3.29, 3.47, 3.35, 3.20, 2.50, 4.20, 3.56, 3.55, 2.71, 2.55, 2.76, 3.08, 2.39, 3.21, 2.97, 2.83, 4.56, 2.98, 2.85, 2.71, 2.09, 1.85, 1.98, 1.66, 1.53, 1.82, 2.18, 1.89, 2.22, 1.95, 1.96, 1.86, 2.11, 1.92, 2.94, 2.93, 2.47, 2.76, 2.20, 2.26, 2.44, 3.39, 2.36, 2.26, 1.90, 2.98, 3.13, 2.52, 2.22, 4.14, 4.35, 3.90, 4.02, 2.82, 2.47, 1.98, 2.73, 3.85, 3.25, 2.66, 2.67, 2.55, 2.82, 5.08, 5.01, 3.32, 2.76, 2.41, 1.91, 2.52, 2.28, 3.06],
-                "river_table_data": [
-                    {"Река / Створ": "р. Терис – с. Нурлыкент", "Норма": 5.32, "Пик": "13.2 (1969)", "Мин": "2.19 (1957)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Курагаты – ж.-д. ст. Аспара", "Норма": 4.15, "Пик": "15.8 (1969)", "Мин": "0.31 (1945)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Шу – с. Кайнар", "Норма": 56.7, "Пик": "100.0 (1969)", "Мин": "28.7 (1977)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Талас – с. Жасоркен", "Норма": 24.5, "Пик": "44.7 (2016)", "Мин": "11.8 (2015)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Асса – ж.-д.ст. Маймак", "Норма": 10.5, "Пик": "24.9 (1969)", "Мин": "5.48 (1980)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Саргоу – Трансграничный", "Норма": 0.29, "Пик": "0.52 (2018)", "Мин": "0.088 (2021)", "Динамика": "↔ Стабильно"},
-                    {"Река / Створ": "р. Токташ – с. Жаугаш Батыра", "Норма": 1.26, "Пик": "2.23 (2016)", "Мин": "0.67 (2022)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Аксу – а. Аксу", "Норма": 15.3, "Пик": "32.0 (2016)", "Мин": "2.81 (2024)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Карабалта – а. Баласагун", "Норма": 1.40, "Пик": "4.0 (2016)", "Мин": "0.15 (2024)", "Динамика": "↔ Стабильно"}
-]
-        },
-            "Тобыл-Торгайский ВХБ": {
-                "photo": "Тобыл-Торгай.tiff",
-                "площадь": "347 680 км²",
-                "гп_кол": "25",
-                "рек_всего": "Свыше 350",
-                "артерия": "Река Тобыл - левобережный приток Ертиса, формирующийся в условиях лесостепной и степной зон. Отличается развитой озёрной системой в бассейне и значительным антропогенным регулированием стока. Входит в трансграничную водную систему бассейна Оби.",
-                "объекты": "Свыше 180-190 водохранилищ и прудов.",
-                "рек_инфо": "2 / Большие и средные: 21",
-                "местные_текст": "Для оценки водных ресурсов, формирующихся в Тобыл-Торгайском ВХБ выбраны постоянно действующие 4 реки бассейна с наибольшей водностью таких как: Тобыл, Аят, Кара Торгай, Иргиз, определяющих в основном поверхностные водные ресурсы, которые в сумме составляют около 76 % всех местных водных ресурсов.",
-                "приток_текст": "Приток, поступающий в пределы Тобыл-Торгайского водохозяйственного бассейна из РФ по реке Тобыл и Тогызак.",
-                "years": list(range(1940, 2025)),
-                "local_flow": [0.62, 5.48, 4.59, 1.50, 0.21, 0.65, 2.61, 3.59, 3.88, 1.39, 1.14, 0.35, 1.07, 1.67, 1.26, 0.62, 0.85, 3.66, 1.05, 1.22, 1.50, 0.71, 1.09, 0.84, 2.38, 0.71, 1.51, 0.17, 0.24, 0.94, 1.93, 2.61, 1.12, 1.05, 0.91, 0.26, 0.65, 0.55, 1.71, 1.08, 0.80, 1.64, 0.38, 2.16, 0.66, 1.68, 1.11, 1.83, 1.65, 1.21, 2.17, 0.86, 0.76, 3.94, 2.35, 1.40, 0.81, 0.80, 1.09, 0.64, 2.77, 1.18, 2.93, 0.74, 1.86, 2.76, 0.21, 2.14, 0.79, 0.25, 1.51, 0.94, 0.80, 0.57, 1.03, 1.03, 1.22, 1.36, 1.34, 0.33, 0.74, 0.66, 0.81, 0.98, 5.13, 0.71], 
-                "inflow": [0.19, 1.19, 1.03, 0.42, 0.15, 0.23, 0.62, 1.04, 0.84, 0.18, 0.37, 0.21, 0.26, 0.61, 0.12, 0.09, 0.19, 1.16, 0.17, 0.29, 0.54, 0.22, 0.19, 0.26, 0.27, 0.14, 0.27, 0.21, 0.19, 0.49, 0.74, 0.47, 0.27, 0.14, 0.23, 0.07, 0.15, 0.06, 0.31, 0.17, 0.11, 0.35, 0.13, 0.38, 0.17, 0.38, 0.08, 0.23, 0.25, 0.14, 0.76, 0.27, 0.12, 0.84, 1.01, 0.37, 0.13, 0.13, 0.21, 0.29, 0.80, 0.44, 0.65, 0.31, 0.30, 0.76, 0.19, 0.59, 0.52, 0.08, 0.22, 0.28, 0.34, 0.52, 0.33, 0.08, 0.25, 0.24, 0.21, 0.08, 0.15, 0.19, 0.07, 0.23, 0.93, 0.28],
-                "river_table_data": [
-                    {"Река / Створ": "р. Тобыл – с. Гришенка", "Норма": 7.95, "Пик": "38.7 (1941)", "Мин": "0.12 (1991)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Тобыл – г. Костанай", "Норма": 13.06, "Пик": "64.5 (1942)", "Мин": "0.93 (1979)", "Динамика": "↗ Снижение"},
-                    {"Река / Створ": "р. Аят – с. Варваринка", "Норма": 6.47, "Пик": "23.9 (1941)", "Мин": "0.81 (2015)", "Динамика": "↗ Снижение"},
-                    {"Река / Створ": "р. Тогызак – с. Тогузак", "Норма": 2.97, "Пик": "10.7 (1947)", "Мин": "0.26 (1936)", "Динамика": "↘ Снижение"},
-                    {"Река / Створ": "р. Кара-Торгай – г. Урпек", "Норма": 10.49, "Пик": "26.3 (1948)", "Мин": "0.74 (1968)", "Динамика": "↔ Снижение"},
-                    {"Река / Створ": "р. Иргиз – с. Шенбертал", "Норма": 9.28, "Пик": "41.5 (1941)", "Мин": "0.095 (2019)", "Динамика": "↘ Снижение"}
-            ]                
-        }
-            # Добавьте сюда остальные ВХБ по аналогии
-    }
-    
-
-        basin_name = st.selectbox(t["select_basin"], list(VXB_FULL_DATA.keys()))
-        data = VXB_FULL_DATA[basin_name]
-
-        # Отображение карточек с инфо
-        col1, col2, col3 = st.columns(3)
-        col1.metric(t["area"], data["площадь"])
-        col2.metric(t["gauges"], data["гп_кол"])
-        col3.metric(t["total_rivers"], data["рек_всего"])
-
-        st.subheader(t["dynamics_title"])
-        
-        # Построение графика
-        df_chart = pd.DataFrame({
-            "Year": data["years"][:len(data["local_flow"])],
-            t["local_flow_label"]: data["local_flow"],
-            t["inflow_label"]: data["inflow"] if data["inflow"][0] is not None else [0]*len(data["local_flow"])
-        })
-        
-        fig = px.line(df_chart, x="Year", y=[t["local_flow_label"], t["inflow_label"]], 
-                      markers=True, template="plotly_white")
-        st.plotly_chart(fig, use_container_width=True)
-
-        # Таблица с характеристиками
-        st.subheader(t["table_title"])
-        df_rivers = pd.DataFrame(data["river_table_data"])
-        
-        # Переименование колонок таблицы под выбранный язык
-        df_rivers.columns = [t["river_col"], t["norm_col"], t["peak_col"], t["min_col"], t["dynamics_col"]]
-        st.table(df_rivers)
-
-    if __name__ == "__main__":
-        st.set_page_config(page_title="KazWater Analysis", layout="wide")
-        show_water_resources_analysis()
-
-
-
+            st.warning("""
+            **Вывод:** Нисходящая линия тренда — это важный индикатор, который призывает к более 
+            рациональному и бережному использованию имеющихся запасов воды в долгосрочной перспективе.
+            """, icon="⚠️")
 
     # Вызов функции в основном приложении
     if __name__ == "__main__":
         show_water_resources_analysis()
-    
     
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
         BASE_IMAGE_PATH = os.path.join(BASE_DIR)
