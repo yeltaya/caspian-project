@@ -5343,7 +5343,11 @@ with tabs[3]:
     show_enhanced_farmer_calendar(current_l)
 
 
-    # --- 1. ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
+    import streamlit as st
+    import base64
+    import os
+
+    # --- 0. ОПРЕДЕЛЕНИЕ ЯЗЫКА (Синхронизация с вашим приложением) ---
     if 'lang_code' in locals() or 'lang_code' in globals():
         current_l = lang_code
     elif 'lang_code' in st.session_state:
@@ -5351,104 +5355,120 @@ with tabs[3]:
     else:
         current_l = "ru"
 
-    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
-    map_translations = {
+    # --- 1. СЛОВАРЬ КОНТЕНТА ---
+    content = {
         "ru": {
+            "page_title": "Агрометеорологические прогнозы 2026",
             "main_title": "Агрометеорологические прогнозы перед началом весенне-полевых работ 2026 года",
-            "map1_caption": "Оптимальные сроки сева зерновых культур",
-            "map2_caption": "Прогноз запасов продуктивной влаги",
-            "error": "не найден"
+            "map1_cap": "Оптимальные сроки сева зерновых культур",
+            "map2_cap": "Прогноз запасов продуктивной влаги",
+            "section_method": "📑 Методология и содержание прогнозов",
+            "m1_title": "Прогноз урожайности яровой и озимой пшеницы",
+            "m1_text": "Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой и CGMS. Расчёты выполняются на основе агрометеорологических, статистических и климатических данных. Прогноз содержит сведения об ожидаемой урожайности яровых зерновых культур в разрезе районов по пунктам наблюдения.",
+            "m2_title": "Прогноз урожайности подсолнечника, кукурузы и свеклы",
+            "m2_text": "Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой. Расчёты выполняются на основе агрометеорологических, статистических и климатических данных. Прогноз содержит сведения об ожидаемой урожайности в разрезе районов по пунктам наблюдения.",
+            "m3_title": "Прогноз сроков созревания",
+            "m3_text": "Рассчитывается по методике А.А Шиголева. Прогноз содержит сведения о наступлении фаз «колошения» и «восковой спелости» яровых зерновых культур в разрезе районов по пунктам наблюдения.",
+            "m4_title": "Прогноз запасов влаги в почве",
+            "m4_text": "Рассчитывается по методике Л.А.Разумовой. Прогноз содержит сведения об ожидаемых запасах влаги в почве к началу весны по территории Казахстана (категории: недостаточное, удовлетворительное и оптимальное) в разрезе районов.",
+            "err": "не найден"
         },
         "kz": {
+            "page_title": "Агрометеорологиялық болжамдар 2026",
             "main_title": "2026 жылғы көктемгі егіс жұмыстары алдындағы агрометеорологиялық болжамдар",
-            "map1_caption": "Дән дақылдарын егудің оңтайлы мерзімдері",
-            "map2_caption": "Өнімді ылғал қорының болжамы",
-            "error": "табылмады"
+            "map1_cap": "Дән дақылдарын егудің оңтайлы мерзімдері",
+            "map2_cap": "Өнімді ылғал қорының болжамы",
+            "section_method": "📑 Болжамдардың әдістемесі мен мазмұны",
+            "m1_title": "Жаздық және күздік бидай өнімділігінің болжамы",
+            "m1_text": "А.Н. Полевой мен CGMS кешенді динамикалық-статистикалық модельдерін қолдану арқылы есептеледі. Есептеулер агрометеорологиялық, статистикалық және климаттық деректер негізінде орындалады. Болжам бақылау пункттері бойынша аудандар бөлінісінде жаздық дәнді дақылдардың күтілетін өнімділігі туралы мәліметтерді қамтиды.",
+            "m2_title": "Күнбағыс, жүгері және қант қызылшасы өнімділігінің болжамы",
+            "m2_text": "А.Н. Полевойдың кешенді динамикалық-статистикалық модельдерін қолдану арқылы есептеледі. Есептеулер агрометеорологиялық, статистикалық және климаттық деректер негізінде орындалады. Болжам бақылау пункттері бойынша аудандар бөлінісінде күтілетін өнімділік туралы мәліметтерді қамтиды.",
+            "m3_title": "Пісу мерзімдерінің болжамы",
+            "m3_text": "А.А. Шиголев әдістемесі бойынша есептеледі. Болжам бақылау пункттері бойынша аудандар бөлінісінде жаздық дәнді дақылдардың «масақтану» және «балауыз пісу» фазаларының басталуы туралы мәліметтерді қамтиды.",
+            "m4_title": "Топырақтағы ылғал қорының болжамы",
+            "m4_text": "Л.А. Разумова әдістемесі бойынша есептеледі. Болжам Қазақстан аумағы бойынша көктемнің басына қарай топырақтағы күтілетін ылғал қоры туралы мәліметтерді қамтиды (ылғалдылық санаттары: жеткіліксіз, қанағаттанарлық және оңтайлы).",
+            "err": "табылмады"
         },
         "en": {
+            "page_title": "Agrometeorological Forecasts 2026",
             "main_title": "Agrometeorological forecasts before the start of spring field works in 2026",
-            "map1_caption": "Optimal sowing dates for grain crops",
-            "map2_caption": "Productive moisture reserves forecast",
-            "error": "not found"
+            "map1_cap": "Optimal sowing dates for grain crops",
+            "map2_cap": "Productive moisture reserves forecast",
+            "section_method": "📑 Methodology and content of forecasts",
+            "m1_title": "Spring and winter wheat yield forecast",
+            "m1_text": "Calculated using integrated dynamic-statistical models of A.N. Polevoy and CGMS. Calculations are based on agrometeorological, statistical, and climatic data. The forecast contains information on the expected yield of spring grain crops by districts at observation points.",
+            "m2_title": "Sunflower, maize and sugar beet yield forecast",
+            "m2_text": "Calculated using integrated dynamic-statistical models of A.N. Polevoy. Calculations are based on agrometeorological, statistical, and climatic data. The forecast contains information on the expected yield by districts at observation points.",
+            "m3_title": "Ripening dates forecast",
+            "m3_text": "Calculated according to the methodology of A.A. Shigolev. The forecast contains information on the onset of 'heading' and 'waxy ripeness' phases of spring grain crops by districts.",
+            "m4_title": "Soil moisture reserves forecast",
+            "m4_text": "Calculated according to the methodology of L.A. Razumova. The forecast contains information on expected soil moisture reserves by the beginning of spring in Kazakhstan (categories: insufficient, satisfactory, and optimal).",
+            "err": "not found"
         }
     }
 
-    mt = map_translations.get(current_l, map_translations["ru"])
+    t = content.get(current_l, content["ru"])
 
-    # --- 3. ЗАГОЛОВОК И КАРТЫ ---
-    st.markdown(f'<div class="main-title">{mt["main_title"]}</div>', unsafe_allow_html=True)
+    # --- 2. КОНФИГУРАЦИЯ СТРАНИЦЫ ---
+    # st.set_page_config(layout="wide", page_title=t["page_title"]) # Если вызывается отдельно
 
-    import base64
-    import os
+    # --- 3. КАСТОМНЫЙ CSS ---
+    st.markdown("""
+    <style>
+        .main-title { font-size: 24px; font-weight: bold; text-align: center; color: #1b5e20; margin-bottom: 25px; }
+        .section-header-new { font-size: 20px; font-weight: bold; color: #2e7d32; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .description-card { background-color: #f8f9fa; padding: 15px; border-left: 5px solid #2e7d32; border-radius: 5px; height: 100%; }
+        .desc-title { font-weight: bold; color: #1b5e20; margin-bottom: 8px; display: block; }
+        .desc-text { font-size: 14px; color: #333; line-height: 1.4; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # --- 4. ЗАГОЛОВОК И КАРТЫ ---
+    st.markdown(f'<div class="main-title">{t["main_title"]}</div>', unsafe_allow_html=True)
 
     col_map1, col_map2 = st.columns(2)
 
     def get_base64_img(img_name):
-        # Убедитесь, что BASE_DIR определена в начале вашего скрипта
         img_path = os.path.join(BASE_DIR, img_name)
         if os.path.exists(img_path):
             with open(img_path, "rb") as f:
                 return base64.b64encode(f.read()).decode("utf-8")
         return None
 
-    with col_map1:
-        data1 = get_base64_img("Рисунок1.jpg")
-        if data1:
-            st.markdown(
-                f"""
-                <div style="width: 100%; margin-bottom: 20px;">
-                    <img src="data:image/jpeg;base64,{data1}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">{mt['map1_caption']}</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        else:
-            st.error(f"Рисунок1.jpg {mt['error']}")
+    def draw_map(col, img_name, caption):
+        data = get_base64_img(img_name)
+        with col:
+            if data:
+                st.markdown(f"""
+                    <div style="width: 100%; margin-bottom: 20px;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">{caption}</p>
+                    </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.error(f"{img_name} {t['err']}")
 
-    with col_map2:
-        data2 = get_base64_img("Рисунок2.jpg")
-        if data2:
-            st.markdown(
-                f"""
-                <div style="width: 100%; margin-bottom: 20px;">
-                    <img src="data:image/jpeg;base64,{data2}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <p style="text-align: center; color: gray; font-size: 0.8rem; margin-top: 5px;">{mt['map2_caption']}</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        else:
-            st.error(f"Рисунок2.jpg {mt['error']}")
+    draw_map(col_map1, "Рисунок1.jpg", t["map1_cap"])
+    draw_map(col_map2, "Рисунок2.jpg", t["map2_cap"])
+
+    # --- 5. МЕТОДОЛОГИЯ ---
+    st.markdown(f'<div class="section-header-new">{t["section_method"]}</div>', unsafe_allow_html=True)
+
+    m_cols = st.columns(4)
+    methods = [
+        (t["m1_title"], t["m1_text"]),
+        (t["m2_title"], t["m2_text"]),
+        (t["m3_title"], t["m3_text"]),
+        (t["m4_title"], t["m4_text"])
+    ]
+
+    for col, (title, text) in zip(m_cols, methods):
+        with col:
+            st.markdown(f"""<div class="description-card">
+                <span class="desc-title">{title}</span>
+                <p class="desc-text">{text}</p>
+            </div>""", unsafe_allow_html=True)
         
-            
-
-    # --- 2. МЕТОДОЛОГИЯ ---
-    st.markdown('<div class="section-header-new">📑 Методология и содержание прогнозов</div>', unsafe_allow_html=True)
-
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.markdown("""<div class="description-card">
-            <span class="desc-title">Прогноз урожайности яровой и озимой пшеницы </span>
-            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой и CGMS. Расчёты выполняются на основе агрометеорологических, статистических и климатических данных. Прогноз содержит сведения об ожидаемой урожайности яровых зерновых культур в разрезе районов по пунктам наблюдения.</p>
-        </div>""", unsafe_allow_html=True)
-    with m2:
-        st.markdown("""<div class="description-card">
-            <span class="desc-title">Прогноз урожайности подсолнечника, кукурузы на зерно и сахарной свеклы</span>
-            <p class="desc-text">Рассчитывается с использованием комплексных динамико-статистических моделей А.Н. Полевой. Расчёты выполняются на основе агрометеорологических, статистических и климатических данных. Прогноз содержит сведения об ожидаемой урожайности в разрезе районов по пунктам наблюдения.</p>
-        </div>""", unsafe_allow_html=True)
-    with m3:
-        st.markdown("""<div class="description-card">
-            <span class="desc-title">Прогноз сроков созревания</span>
-            <p class="desc-text">Рассчитывается по методике А.А Шиголева. Прогноз содержит сведения о наступлении фаз «колошения» и «восковой спелости» яровых зерновых культур в разрезе районов по пунктам наблюдения.
-    </p>
-            </div>""", unsafe_allow_html=True)
-        with m4:
-            st.markdown("""<div class="description-card">
-                <span class="desc-title">Прогноз запасов влаги в почве </span>
-                <p class="desc-text">Рассчитывается  по методике Л.А.Разумовой. Прогноз содержит сведения об ожидаемых запасах влаги в почве к началу весны по территории Казахстана (влажность почвы оценивается по категории: недостаточное, удовлетворительное и оптимальное) в разрезе районов по пунктам наблюдения.
-    </p>
-            </div>""", unsafe_allow_html=True)
 
 
 
