@@ -5006,7 +5006,11 @@ with tabs[2]:
             else:
                 st.warning(f"File not found: {gif_path}")
                 
-    
+    if __name__ == "__main__":
+        # Если вы используете st.session_state для хранения языка:
+        current_lang = st.session_state.get('lang_code', 'ru') 
+        show_forecast_process(current_lang)
+        
 
  
    
