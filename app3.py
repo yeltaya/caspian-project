@@ -8732,7 +8732,7 @@ with tabs[6]:
             }
         }
 
-        curr_s = stats_ui.get(lang_code, stats_ui["ru"])
+    curr_s = stats_ui.get(lang_code, stats_ui["ru"])
         
 # Создаем две колонки с равной шириной
     col1, col2 = st.columns(2)
