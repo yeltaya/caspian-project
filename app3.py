@@ -4731,7 +4731,7 @@ with tabs[2]:
 #ДОЛГОСРОЧНЫЕ ПРОГНОЗЫ
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     
-    def show_forecast_process():
+    def show_forecast_process(lang_code="ru"):
         st.markdown("""
                 <style>
                 .big-climate-card {
@@ -4767,7 +4767,7 @@ with tabs[2]:
             """, unsafe_allow_html=True)
 
             # --- ВЕРХНИЙ БЛОК (ТЕХНОЛОГИИ И ГИФКА) ---
-        col_tech, col_viz = st.columns([1.5, 1], gap="large")
+
             
      # 1. Словарь контента для долгосрочных прогнозов
     long_forecast_content = {
@@ -4825,7 +4825,9 @@ with tabs[2]:
     }
 
     lc = long_forecast_content[lang_code]
-
+    
+    col_tech, col_viz = st.columns([1.5, 1], gap="large")
+        
         # 2. Отрисовка колонок
     with col_tech:
             st.markdown(f"<h1 class='kazakh-font' style='color: #1E3A8A;'>{lc['title']}</h1>", unsafe_allow_html=True)
