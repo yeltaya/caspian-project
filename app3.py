@@ -8337,8 +8337,33 @@ with tabs[5]:
 
 # --- Твой основной контент по Каспию идет во вкладку №5 (индекс 5) ---
 with tabs[6]:
-    st.markdown('<h1 class="main-title">🌊 Исследование Каспийского моря</h1>', unsafe_allow_html=True)
-    # ВСЕ СТРОКИ НИЖЕ ДОЛЖНЫ ИМЕТЬ ОТСТУП (4 ПРОБЕЛА)
+
+    # 1. Определяем переводы
+    translations = {
+        "RU": {
+            "title": "🌊 Исследование Каспийского моря",
+            "sidebar_lang": "Выберите язык"
+        },
+        "KZ": {
+            "title": "🌊 Каспий теңізін зерттеу",
+            "sidebar_lang": "Тілді таңдаңыз"
+        },
+        "EN": {
+            "title": "🌊 Caspian Sea Exploration",
+            "sidebar_lang": "Select Language"
+        }
+    }
+
+    # 2. Выбор языка в боковой панели
+    lang = st.sidebar.selectbox("Language / Тіл / Язык", ["RU", "KZ", "EN"])
+
+    # 3. Применение в коде
+    with tabs[6]:
+        # Используем f-строку для подстановки заголовка в зависимости от выбранного языка
+        st.markdown(f'<h1 class="main-title">{translations[lang]["title"]}</h1>', unsafe_allow_html=True)
+        
+        # Все последующие строки также должны использовать переводы:
+        # st.write(translations[lang]["your_key"])
         
     
     if 'selected_param' not in st.session_state:
