@@ -5013,7 +5013,11 @@ with tabs[2]:
     # Пример запуска (вставьте это в основной блок вашего приложения)
     # if 'lang_code' not in st.session_state: st.session_state.lang_code = 'ru'
     # show_forecast_process(st.session_state.lang_code)
-
+    if __name__ == "__main__":
+        # Если язык хранится в сессии:
+        lang = st.session_state.get("lang_code", "ru") 
+        show_forecast_process(lang)
+        
     
 
  
