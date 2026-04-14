@@ -8436,6 +8436,51 @@ with tabs[6]:
         }
     }
 
+    bottom_content = {
+        "ru": {
+            "hist_title": "📉 Динамика уровня Каспийского моря",
+            "hist_main": "Уровень Каспийского моря подвержен значительным колебаниям",
+            "hist_desc": 'В 2025 г. уровень моря в его казахстанской части достиг отметки <span style="color: #E11D48; font-weight: bold;">минус 29,35 м БС</span>. Это один из самых низких показателей за последние 100 лет.',
+            "trace1": "Казахстанская часть (КчКМ)",
+            "trace2": "Общий уровень (КМ)",
+            "expander_title": "🔍 Почему уровень моря постоянно меняется? (Научный контекст)",
+            "science_intro": "Каспийское море — это замкнутый водоем, его уровень работает как <b>климатический индикатор</b>. Исторически выделяются три фазы:",
+            "phase1": "<b>Резкое падение</b><br>Обусловлено строительством ГЭС и засухой.",
+            "phase2": "<b>Аномальный подъем</b><br>Увеличение стока рек и изменение циркуляции.",
+            "phase3": "<b>Текущий спад</b><br>Снижение притока и рост испарения.",
+            "expert_opinion": "<b>💡 Мнение ученых:</b> Каспий живет циклами. Нынешнее состояние — это вызов для экономики, но море неоднократно проходило через подобные минимумы."
+        },
+        "kz": {
+            "hist_title": "📉 Каспий теңізі деңгейінің динамикасы",
+            "hist_main": "Каспий теңізінің деңгейі айтарлықтай ауытқуларға ұшырайды",
+            "hist_desc": '2025 жылы теңіз деңгейі қазақстандық бөлігінде <span style="color: #E11D48; font-weight: bold;">минус 29,35 м БС</span> белгісіне жетті. Бұл соңғы 100 жылдағы ең төменгі көрсеткіштердің бірі.',
+            "trace1": "Қазақстандық бөлігі (КчКМ)",
+            "trace2": "Жалпы деңгей (КМ)",
+            "expander_title": "🔍 Теңіз деңгейі неге үнемі өзгеріп отырады? (Ғылыми мәнмәтін)",
+            "science_intro": "Каспий теңізі — тұйық су айдыны, оның деңгейі <b>климаттық индикатор</b> ретінде жұмыс істейді. Үш негізгі фазаны бөліп көрсетуге болады:",
+            "phase1": "<b>Күрт төмендеу</b><br>Еділдегі ГЭС құрылысы мен ұзақ қуаңшылыққа байланысты.",
+            "phase2": "<b>Аномальді көтерілу</b><br>Өзен ағынының артуы және атмосфералық циркуляцияның өзгеруі.",
+            "phase3": "<b>Қазіргі құлдырау</b><br>Жаһандық жылынуға байланысты буланудың артуы және ағынның азаюы.",
+            "expert_opinion": "<b>💡 Ғалымдардың пікірі:</b> Каспий циклдармен өмір сүреді. Қазіргі жағдай экономика үшін сын-қатер, бірақ геология тұрғысынан теңіз мұндай минимумдардан бірнеше рет өткен."
+        },
+        "en": {
+            "hist_title": "📉 Caspian Sea Level Dynamics",
+            "hist_main": "The Caspian Sea level is subject to significant fluctuations",
+            "hist_desc": 'In 2025, the sea level in its Kazakh part reached <span style="color: #E11D48; font-weight: bold;">minus 29.35 m BS</span>. This is one of the lowest levels in the last 100 years.',
+            "trace1": "Kazakh part (KchKM)",
+            "trace2": "Total level (KM)",
+            "expander_title": "🔍 Why does the sea level keep changing? (Scientific Context)",
+            "science_intro": "The Caspian Sea is a closed body of water; its level acts as a <b>climate indicator</b>. Historically, three phases are distinguished:",
+            "phase1": "<b>Sharp Decline</b><br>Due to dam construction on the Volga and prolonged drought.",
+            "phase2": "<b>Anomalous Rise</b><br>Sudden increase in river discharge and atmospheric changes.",
+            "phase3": "<b>Current Decline</b><br>Decreased inflow and increased evaporation due to global warming.",
+            "expert_opinion": "<b>💡 Experts' Opinion:</b> The Caspian lives in cycles. The current state is a challenge for the economy, but geologically the sea has passed through similar or even deeper lows."
+        }
+    }
+
+    curr_b = bottom_content.get(lang_code, bottom_content["ru"])
+    
+    
     curr_ui = ui_content.get(lang_code, ui_content["ru"])
 
     # 4. КОНТЕНТ
@@ -8506,60 +8551,66 @@ with tabs[6]:
     st.divider()
     
     
-       
-            
     with b_col1:
-        # Увеличили заголовок до 1.3rem и сделали его жирным
-        st.markdown('<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 12px;">📉 Динамика уровня Каспийского моря</p></div>', unsafe_allow_html=True) 
+        # Заголовок
+        st.markdown(f'<div class="white-label-header"><p style="font-size: 3.0rem; font-weight: bold; margin-bottom: 12px;">{curr_b["hist_title"]}</p></div>', unsafe_allow_html=True) 
         
-        # Главный тезис: увеличили до 1.2rem и добавили насыщенный черный цвет
-        st.markdown('<div style="font-size: 1.2rem; font-weight: 700; color: #1E293B; margin-bottom: 10px; line-height: 1.4;">Уровень Каспийского моря подвержен значительным колебаниям</div>', unsafe_allow_html=True)
+        # Тезис
+        st.markdown(f'<div style="font-size: 1.2rem; font-weight: 700; color: #1E293B; margin-bottom: 10px; line-height: 1.4;">{curr_b["hist_main"]}</div>', unsafe_allow_html=True)
         
-        # Основное описание: увеличили до 1.1rem, сделали межстрочный интервал шире для легкости чтения
-        st.markdown('<div style="font-size: 1.1rem; color: #334155; line-height: 1.6; text-align: justify;">В 2025 г. уровень моря в его казахстанской части достиг отметки <span style="color: #E11D48; font-weight: bold;">минус 29,35 м БС</span>. Это один из самых низких показателей за последние 100 лет в казахстанской части Каспийского моря.</div>', unsafe_allow_html=True)
+        # Описание
+        st.markdown(f'<div style="font-size: 1.1rem; color: #334155; line-height: 1.6; text-align: justify;">{curr_b["hist_desc"]}</div>', unsafe_allow_html=True)
         
-        # ТЕПЕРЬ ГРАФИК ВНУТРИ КОЛОНКИ (ПРАВИЛЬНЫЙ ОТСТУП)
+        # График
         fig_hist = go.Figure()
         fig_hist.add_trace(go.Scatter(
             x=history_df["Год"], y=history_df["КчКМ"],
-            name="Казахстанская часть (КчКМ)",
+            name=curr_b["trace1"], # Переведенное название
             line=dict(color='#0072FF', width=3),
-            hovertemplate="Год: %{x}<br>Уровень: %{y} м БС<extra></extra>"
+            hovertemplate="Year: %{x}<br>Level: %{y} m BS<extra></extra>" if lang_code == "en" else "Год: %{x}<br>Уровень: %{y} м БС<extra></extra>"
         ))
         fig_hist.add_trace(go.Scatter(
             x=history_df["Год"], y=history_df["КМ"],
-            name="Общий уровень (КМ)",
+            name=curr_b["trace2"], # Переведенное название
             line=dict(color='#94A3B8', width=2, dash='dash'),
-            hovertemplate="Год: %{x}<br>Уровень: %{y} м БС<extra></extra>"
+            hovertemplate="Year: %{x}<br>Level: %{y} m BS<extra></extra>" if lang_code == "en" else "Год: %{x}<br>Уровень: %{y} м БС<extra></extra>"
         ))
+        
+        # Настройки осей (черный цвет, крупные шрифты)
         fig_hist.update_layout(
             height=400, margin=dict(l=0, r=0, t=20, b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             hovermode="x unified"
         )
-# Увеличиваем шрифты и меняем цвета на черные
-        fig_hist.update_xaxes(
-            showgrid=False, 
-            linecolor='black',       # Сделали линию оси черной
-            linewidth=1,             # Сделали линию чуть толще
-            range=[1920, 2026],
-            tickfont=dict(size=14, color='black', family="Arial"), # Крупные цифры годов
-            title_font=dict(size=16, color='black')               # Крупный заголовок (если есть)
-        )
-        
-        fig_hist.update_yaxes(
-            showgrid=True, 
-            gridcolor='#E2E8F0', 
-            linecolor='black',       # Сделали линию оси черной
-            linewidth=1,
-            zeroline=False,
-            tickfont=dict(size=14, color='black', family="Arial"), # Крупные значения уровня
-            title_font=dict(size=16, color='black')               # Крупный заголовок "м БС"
-        )
+        fig_hist.update_xaxes(showgrid=False, linecolor='black', linewidth=1, range=[1920, 2026],
+                             tickfont=dict(size=14, color='black', family="Arial"))
+        fig_hist.update_yaxes(showgrid=True, gridcolor='#E2E8F0', linecolor='black', linewidth=1, zeroline=False,
+                             tickfont=dict(size=14, color='black', family="Arial"))
 
         st.plotly_chart(fig_hist, use_container_width=True, config={'displayModeBar': False})
-        
+
+    # --- БЛОК: НАУЧНЫЙ КОНТЕКСТ ---
+    with b_col1:
+        st.markdown("<br>", unsafe_allow_html=True)
+        with st.expander(curr_b["expander_title"]):
+            st.markdown(f'<div style="padding: 10px; line-height: 1.6; color: #334155;">{curr_b["science_intro"]}</div>', unsafe_allow_html=True)
+            
+            c_phase1, c_phase2, c_phase3 = st.columns(3)
+            
+            with c_phase1:
+                st.markdown(f'<div style="border-left: 3px solid #64748B; padding-left: 15px;"><span style="color: #64748B; font-weight: 800;">1930 — 1977</span><br>{curr_b["phase1"]}</div>', unsafe_allow_html=True)
+                
+            with c_phase2:
+                st.markdown(f'<div style="border-left: 3px solid #0072FF; padding-left: 15px;"><span style="color: #0072FF; font-weight: 800;">1978 — 1995</span><br>{curr_b["phase2"]}</div>', unsafe_allow_html=True)
+                
+            with c_phase3:
+                st.markdown(f'<div style="border-left: 3px solid #D32F2F; padding-left: 15px;"><span style="color: #D32F2F; font-weight: 800;">2005 — { "now" if lang_code=="en" else "н.в."}</span><br>{curr_b["phase3"]}</div>', unsafe_allow_html=True)
+            
+            st.markdown(f'<div style="background: #F8FAFC; border-radius: 10px; padding: 15px; margin-top: 20px; border: 1px dashed #CBD5E1; font-size: 0.95rem;">{curr_b["expert_opinion"]}</div>', unsafe_allow_html=True)
+
+            
+ 
 
     # --- БЛОК: НАУЧНЫЙ КОНТЕКСТ (ЦИКЛИЧНОСТЬ) ---
     with b_col1: # Размещаем под графиком динамики
