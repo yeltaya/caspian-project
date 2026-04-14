@@ -5489,7 +5489,7 @@ with tabs[3]:
             "err_not_found": "не найден"
         },
         "kz": {
-            "section_title": "📊 Өңірлер бойынша болжамдардың орындалуы",
+            "section_title": "📊 Өңірлер бойынша болжамдардың ақталуы",
             "cap_grains": "Дән дақылдары",
             "cap_moisture": "Топырақтағы ылғал қоры",
             "cap_crops": "Ауылшаруашылық дақылдары",
@@ -5535,63 +5535,93 @@ with tabs[3]:
                 
                 
 with tabs[4]:
-    st.title("Гидрологические прогнозы")
-    
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
-    import streamlit as st
-    import plotly.graph_objects as go
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    hydro_content = {
+        "ru": {
+            "title": "Гидрологические прогнозы",
+            "desc_main": """Гидрологические прогнозы составляются на основании различных факторов, таких как <b>осеннее увлажнение почвы, запаса воды в снеге, сумма осадков за зиму и глубина промерзания почвы</b>. 
+                           Гидропрогнозисты также используют сезонные и месячные синоптические прогнозы, основанные на методе подбора года-аналога, включая прогноз суммы осадков и средней температуры воздуха.""",
+            "methods_title": "При составлении гидрологических прогнозов применяются следующие методики:",
+            "methods_list": ["Множественная регрессия;", "Численные модели HBV и SWIM."],
+            "calendar_title": "📅 График выпуска прогнозов:",
+            "cal_prelim": "<b>Предварительный прогноз:</b> выпускается к 5 февраля (по состоянию на 1 февраля).",
+            "cal_main": "<b>Основной прогноз:</b> выпускается к 5 марта (по состоянию на 1 марта).",
+            "cal_footer": "В дальнейшем прогнозы по равнинной территории обновляются еженедельно."
+        },
+        "kz": {
+            "title": "Гидрологиялық болжамдар",
+            "desc_main": """Гидрологиялық болжамдар <b>топырақтың күзгі ылғалдануы, қардағы су қоры, қысқы жауын-шашын мөлшері және топырақтың қату тереңдігі</b> сияқты әртүрлі факторлар негізінде жасалады. 
+                           Гидроболжаушылар сонымен қатар жауын-шашын мөлшері мен ауаның орташа температурасының болжамын қоса алғанда, ұқсас жылды таңдау әдісіне негізделген маусымдық және айлық синоптикалық болжамдарды пайдаланады.""",
+            "methods_title": "Гидрологиялық болжамдарды жасау кезінде келесі әдістемелер қолданылады:",
+            "methods_list": ["Көптік регрессия;", "HBV және SWIM сандық модельдері."],
+            "calendar_title": "📅 Болжамдарды шығару кестесі:",
+            "cal_prelim": "<b>Алдын ала болжам:</b> 5 ақпанға қарай шығарылады (1 ақпандағы жағдай бойынша).",
+            "cal_main": "<b>Негізгі болжам:</b> 5 наурызға қарай шығарылады (1 наурыздағы жағдай бойынша).",
+            "cal_footer": "Болашақта жазық аймақтар бойынша болжамдар апта сайын жаңартылып отырады."
+        },
+        "en": {
+            "title": "Hydrological Forecasts",
+            "desc_main": """Hydrological forecasts are based on various factors such as <b>autumn soil moisture, snow water equivalent, total winter precipitation, and soil frost depth</b>. 
+                           Forecasters also use seasonal and monthly synoptic forecasts based on the analogue year method, including forecasts for total precipitation and average air temperature.""",
+            "methods_title": "The following methodologies are used in preparing hydrological forecasts:",
+            "methods_list": ["Multiple regression;", "Numerical models HBV and SWIM."],
+            "calendar_title": "📅 Forecast Release Schedule:",
+            "cal_prelim": "<b>Preliminary forecast:</b> released by February 5 (as of February 1).",
+            "cal_main": "<b>Main forecast:</b> released by March 5 (as of March 1).",
+            "cal_footer": "Subsequently, forecasts for lowland areas are updated weekly."
+        }
+    }
+
+    hc = hydro_content.get(current_l, hydro_content["ru"])
+
+    # Заголовок вкладки
+    st.title(hc["title"])
 
     # --- СТИЛИЗАЦИЯ ---
     st.markdown("""
     <style>
         .section-header-hydro {
-            font-size: 22px;
-            font-weight: bold;
-            color: #01579b;
-            margin-top: 30px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #01579b;
-            padding-bottom: 5px;
+            font-size: 22px; font-weight: bold; color: #01579b;
+            margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #01579b; padding-bottom: 5px;
         }
         .methodology-box {
-            background-color: #f0f7f9;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #b3e5fc;
-            line-height: 1.6;
-            color: #333;
-            margin-bottom: 25px;
-        }
-        .methodology-box ul {
-            margin-bottom: 10px;
+            background-color: #f0f7f9; padding: 20px; border-radius: 10px;
+            border: 1px solid #b3e5fc; line-height: 1.6; color: #333; margin-bottom: 25px;
         }
         .calendar-box {
-            background-color: #e1f5fe;
-            padding: 15px;
-            border-left: 5px solid #0288d1;
-            margin-top: 10px;
+            background-color: #e1f5fe; padding: 15px; border-left: 5px solid #0288d1; margin-top: 15px;
         }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
+    # --- КОНТЕНТ ---
+    st.markdown(f"""
     <div class="methodology-box">
-        Гидрологические прогнозы составляются на основании различных факторов, таких как <b>осеннее увлажнение почвы, запаса воды в снеге, сумма осадков за зиму и глубина промерзания почвы</b>. 
-        Гидропрогнозисты также используют сезонные и месячные синоптические прогнозы, основанные на методе подбора года-аналога, включая прогноз суммы осадков и средней температуры воздуха. 
+        {hc['desc_main']}
         <br><br>
-        <b>При составлении гидрологических прогнозов применяются следующие методики:</b>
+        <b>{hc['methods_title']}</b>
         <ul>
-            <li>Множественная регрессия;</li>
-            <li>Численные модели HBV и SWIM.</li>
+            <li>{hc['methods_list'][0]}</li>
+            <li>{hc['methods_list'][1]}</li>
         </ul>
         <div class="calendar-box">
-            <b>📅 График выпуска прогнозов:</b><br>
-            • <b>Предварительный прогноз:</b> выпускается к 5 февраля (по состоянию на 1 февраля).<br>
-            • <b>Основной прогноз:</b> выпускается к 5 марта (по состоянию на 1 марта).<br>
-            <i>В дальнейшем прогнозы по равнинной территории обновляются еженедельно.</i>
+            <b>{hc['calendar_title']}</b><br>
+            • {hc['cal_prelim']}<br>
+            • {hc['cal_main']}<br>
+            <i>{hc['cal_footer']}</i>
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
+    
     
     # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ РЯДОМ) ---
     st.markdown('<div class="predictor-header">📊 Особенности гидрологического режима рек Казахстана</div>', unsafe_allow_html=True)
@@ -6059,13 +6089,13 @@ with tabs[4]:
     import base64
 
     def render_selevidenie_section():
-        st.markdown('<div class="predictor-header">🏔️ Мониторинг селевой опасности</div>', unsafe_allow_html=True)
+        st.markdown('<div class="predictor-header">🏔️ Мониторинг селевой опасности дождевого генезиса</div>', unsafe_allow_html=True)
 
         # 1. Аналитический блок (Краткая информация)
         st.markdown(f"""
         <div style="background-color: #fff4e6; border-left: 5px solid #e67e22; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
             <strong>География риска:</strong> Селеопасные районы занимают около <b>13%</b> территории Казахстана (горы и предгория). 
-            Мониторинг дождевого генезиса ведется по <b>11 основным районам</b>.
+            Мониторинг дождевого генезиса ведется по <b>11 основным селеопасным районам</b>.
         </div>
         """, unsafe_allow_html=True)
 
@@ -6093,7 +6123,7 @@ with tabs[4]:
         with col_info_sele:
             st.markdown("### 📋 Выпускаемая продукция")
             st.markdown(f"""
-            * 📅 **Ежегодный бюллетень** (дождевой генезис)
+            * 📅 **Ежегодный бюллетень** 
             * 🕒 **Ежедневный бюллетень**
             * ⚡ **Прогнозы:** краткосрочные и сверхкраткосрочные
             * ⚠️ **Штормовые предупреждения**
@@ -6103,7 +6133,7 @@ with tabs[4]:
             st.markdown("---")
             st.markdown("#### 📍 Селеопасные районы:")
             st.markdown("""
-            <div style="column-count: 2; column-gap: 20px; font-size: 0.9rem; color: #333;">
+            <div style="column-count: 2; column-gap: 20px; font-size: 1.3rem; color: #333;">
                 • Иле Алатау<br>
                 • Кунгей Алатау<br>
                 • Терискей Алатау<br>
@@ -6114,11 +6144,11 @@ with tabs[4]:
                 • горы Мангистау<br>
                 • Тарбагатай<br>
                 • Саур<br>
-                • Каз. Алтай
+                • Казахстанский Алтай
             </div>
             """, unsafe_allow_html=True)
             
-            st.success("**Потребители:** Госорганы управления и население РК.")
+            st.success("**Потребители:** Государственные органы управления и население РК.")
             
 
         st.divider()
@@ -6130,26 +6160,19 @@ with tabs[4]:
         with col_fact1:
             st.warning("⚠️ **Генезис селей в РК:**")
             st.markdown("""
-            1. Интенсивные дожди 🌧️
-            2. Прорыв моренных озер 🌊
-            3. Землетрясения и оползни 🌋
-            4. Антропогенный фактор 🚜
+            1. Дождевой 🌧️
+            2. Гляциальный 🌋
+            3. Водоледяной 🌊
+            4. Сейсмический 🌋
+            4. Антропогенный 🚜
             """)
             
         with col_fact2:
-            st.info("⚖️ **Критерии осадков:**")
+            st.info("⚖️ **Критерии осадков (согласно Наставления 2005 г.):**")
             st.markdown("""
             * **Сильные:** 15−29 мм
             * **Очень сильные:** ≥30 мм
-            *(согласно Наставлению 2005 г.)*
             """)
-
-        # Итоговый вывод
-        st.markdown("""
-        <div style="text-align: center; color: #555; font-style: italic; margin-top: 20px;">
-            Наибольшая активность в 2023 году зафиксирована в августе, преимущественно в Иле Алатау.
-        </div>
-        """, unsafe_allow_html=True)
 
     # Вызов функции
     render_selevidenie_section()
