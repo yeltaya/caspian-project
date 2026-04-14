@@ -5623,46 +5623,107 @@ with tabs[4]:
     
     
     
-    # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ РЯДОМ) ---
-    st.markdown('<div class="predictor-header">📊 Особенности гидрологического режима рек Казахстана</div>', unsafe_allow_html=True)
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
-    # Создаем две колонки для отображения блоков рядом
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    regime_translations = {
+        "ru": {
+            "header": "📊 Особенности гидрологического режима рек Казахстана",
+            "plain_title": "🌾 Равнинные реки",
+            "plain_desc": "Поверхностный сток формируется <b>исключительно за счет талых снеговых вод</b>. Основной фактор — накопленные осадки за холодный период.",
+            "plain_dates_label": "📅 Сроки половодья:",
+            "plain_dates_val": "3-я декада марта — 3-я декада апреля.",
+            "plain_note": "Дружного таяния снега в феврале исторически не наблюдалось.",
+            "mountain_title": "🏔️ Горные реки",
+            "stage_1": "I этап: Низкогорье",
+            "stage_1_dates": "Конец марта — конец апреля.",
+            "stage_1_warn": "Высокий риск затопления.",
+            "stage_2": "II этап: Среднегорье",
+            "stage_2_dates": "Начало мая — начало июля.",
+            "stage_3": "III этап: Высокогорье",
+            "stage_3_dates": "Середина июля — начало сентября."
+        },
+        "kz": {
+            "header": "📊 Қазақстан өзендерінің гидрологиялық режимінің ерекшеліктері",
+            "plain_title": "🌾 Жазық өзендері",
+            "plain_desc": "Беткі ағын <b>тек қана еріген қар суы есебінен</b> қалыптасады. Негізгі фактор — суық кезеңде жиналған жауын-шашын мөлшері.",
+            "plain_dates_label": "📅 Су тасқынының мерзімі:",
+            "plain_dates_val": "наурыздың 3-ші онкүндігі — сәуірдің 3-ші онкүндігі.",
+            "plain_note": "Тарихи тұрғыда ақпан айында қардың қарқынды еруі байқалған жоқ.",
+            "mountain_title": "🏔️ Таулы өзендер",
+            "stage_1": "I кезең: Төмен таулы аймақ",
+            "stage_1_dates": "Наурыздың соңы — сәуірдің соңы.",
+            "stage_1_warn": "Су басу қаупі жоғары.",
+            "stage_2": "II кезең: Орта таулы аймақ",
+            "stage_2_dates": "Мамырдың басы — шілденің басы.",
+            "stage_3": "III кезең: Биік таулы аймақ",
+            "stage_3_dates": "Шілденің ортасы — қыркүйектің басы."
+        },
+        "en": {
+            "header": "📊 Hydrological Regime Features of Kazakhstan Rivers",
+            "plain_title": "🌾 Plain Rivers",
+            "plain_desc": "Surface runoff is formed <b>exclusively from snowmelt</b>. The main factor is accumulated precipitation during the cold period.",
+            "plain_dates_label": "📅 Flood periods:",
+            "plain_dates_val": "3rd decade of March — 3rd decade of April.",
+            "plain_note": "Historically, rapid snowmelt in February has not been observed.",
+            "mountain_title": "🏔️ Mountain Rivers",
+            "stage_1": "Stage I: Low Mountains (H ≤ 1000 m)",
+            "stage_1_dates": "Late March — late April.",
+            "stage_1_warn": "High flooding risk.",
+            "stage_2": "Stage II: Middle Mountains (H 1000-2000 m)",
+            "stage_2_dates": "Early May — early July.",
+            "stage_3": "Stage III: High Mountains (H ≥ 2000 m)",
+            "stage_3_dates": "Mid-July — early September."
+        }
+    }
+
+    rt = regime_translations.get(current_l, regime_translations["ru"])
+
+    # --- 3. ОТОБРАЖЕНИЕ ---
+    st.markdown(f'<div class="predictor-header">{rt["header"]}</div>', unsafe_allow_html=True)
+
     col_plain, col_mountain = st.columns(2)
 
     with col_plain:
-        st.markdown("### 🌾 Равнинные реки")
-        st.markdown("""
-        <div class="report-text" style="height: 100%; border-top: 5px solid #fbc02d;">
-            Поверхностный сток формируется <b>исключительно за счет талых снеговых вод</b>. 
-            Основной фактор — накопленные осадки за холодный период.
+        st.markdown(f"### {rt['plain_title']}")
+        st.markdown(f"""
+        <div class="report-text" style="height: 100%; border-top: 5px solid #fbc02d; padding: 15px; background: #fffde7; border-radius: 8px;">
+            {rt['plain_desc']}
             <br><br>
-            📅 <b>Сроки половодья:</b><br>
-            <b>3-я декада марта — 3-я декада апреля.</b>
-            <br><i>Дружного таяния снега в феврале исторически не наблюдалось.</i>
+            📅 <b>{rt['plain_dates_label']}</b><br>
+            <b>{rt['plain_dates_val']}</b>
+            <br><i>{rt['plain_note']}</i>
         </div>
         """, unsafe_allow_html=True)
 
     with col_mountain:
-        st.markdown("### 🏔️ Горные реки")
-        st.markdown("""
+        st.markdown(f"### {rt['mountain_title']}")
+        st.markdown(f"""
         <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #e0e0e0; border-top: 5px solid #0d47a1;">
-            <div class="stage-card" style="margin-bottom: 8px; padding: 8px;">
-                <b>I этап: Низкогорье (Н ≤ 1000 м)</b><br>
-                ⏱ <i>Конец марта — конец апреля.</i><br>
-                ⚠️ <span style="color: #d32f2f; font-weight: bold;">Высокий риск затопления.</span>
+            <div class="stage-card" style="margin-bottom: 8px; padding: 8px; background: white; border-radius: 5px;">
+                <b>{rt['stage_1']}</b><br>
+                ⏱ <i>{rt['stage_1_dates']}</i><br>
+                ⚠️ <span style="color: #d32f2f; font-weight: bold;">{rt['stage_1_warn']}</span>
             </div>
-            <div class="stage-card" style="margin-bottom: 8px; padding: 8px;">
-                <b>II этап: Среднегорье (Н 1000-2000 м)</b><br>
-                ⏱ <i>Начало мая — начало июля.</i>
+            <div class="stage-card" style="margin-bottom: 8px; padding: 8px; background: white; border-radius: 5px;">
+                <b>{rt['stage_2']}</b><br>
+                ⏱ <i>{rt['stage_2_dates']}</i>
             </div>
-            <div class="stage-card" style="margin-bottom: 0px; padding: 8px;">
-                <b>III этап: Высокогорье (Н ≥ 2000 м)</b><br>
-                ⏱ <i>Середина июля — начало сентября.</i>
+            <div class="stage-card" style="margin-bottom: 0px; padding: 8px; background: white; border-radius: 5px;">
+                <b>{rt['stage_3']}</b><br>
+                ⏱ <i>{rt['stage_3_dates']}</i>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
     st.divider()
+
         
     # --- ГИДРОЛОГИЧЕСКИЙ РЕЖИМ (ГОРНЫЕ И РАВНИННЫЕ РЯДОМ) ---
     st.markdown('<div class="predictor-header">📊 Гидрологические прогнозы на 2026 г.</div>', unsafe_allow_html=True)
