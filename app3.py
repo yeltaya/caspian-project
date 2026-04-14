@@ -8614,164 +8614,93 @@ with tabs[6]:
             st.markdown(f'<div style="background: #F8FAFC; border-radius: 10px; padding: 15px; margin-top: 20px; border: 1px dashed #CBD5E1; font-size: 0.95rem;">{curr_b["expert_opinion"]}</div>', unsafe_allow_html=True)
 
             
- 
+ # Словарь для карточек истории
+    history_ui = {
+        "ru": {
+            "title": "⏳ Исторические минимумы и максимумы",
+            "year_suffix": "год",
+            "labels": ["Максимум", "Минимум XX в.", "Пик подъема", "Текущий спад"]
+        },
+        "kz": {
+            "title": "⏳ Тарихи минимумдар мен максимумдар",
+            "year_suffix": "жыл",
+            "labels": ["Максимум", "XX ғ. минимумы", "Көтерілу шыңы", "Қазіргі құлдырау"]
+        },
+        "en": {
+            "title": "⏳ Historical Highs and Lows",
+            "year_suffix": "year",
+            "labels": ["Maximum", "20th Century Low", "Peak Rise", "Current Decline"]
+        }
+    }
 
-    # --- БЛОК: НАУЧНЫЙ КОНТЕКСТ (ЦИКЛИЧНОСТЬ) ---
-    with b_col1: # Размещаем под графиком динамики
-        st.markdown("<br>", unsafe_allow_html=True)
-        with st.expander("🔍 Почему уровень моря постоянно меняется? (Научный контекст)"):
-            st.markdown("""
-                <div style="padding: 10px; line-height: 1.6; color: #334155;">
-                    Каспийское море — это замкнутый водоем, его уровень работает как <b> климатический индикатор</b>. 
-                    Исторически выделяются три ключевые фазы в новейшей истории:
-                </div>
-            """, unsafe_allow_html=True)
-            
-            c_phase1, c_phase2, c_phase3 = st.columns(3)
-            
-            with c_phase1:
-                st.markdown("""
-                    <div style="border-left: 3px solid #64748B; padding-left: 15px;">
-                        <span style="color: #64748B; font-weight: 800;">1930 — 1977</span><br>
-                        <b>Резкое падение</b><br>
-                        <span style="font-size: 1.0rem;">Обусловлено активным строительством ГЭС на Волге и длительным периодом засухи.</span>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-            with c_phase2:
-                st.markdown("""
-                    <div style="border-left: 3px solid #0072FF; padding-left: 15px;">
-                        <span style="color: #0072FF; font-weight: 800;">1978 — 1995</span><br>
-                        <b>Аномальный подъем</b><br>
-                        <span style="font-size: 1.0rem;">Внезапное увеличение стока рек и изменение атмосферной циркуляции. Уровень вырос на 2.5 метра.</span>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-            with c_phase3:
-                st.markdown("""
-                    <div style="border-left: 3px solid #D32F2F; padding-left: 15px;">
-                        <span style="color: #D32F2F; font-weight: 800;">2005 — н.в.</span><br>
-                        <b>Текущий спад</b><br>
-                        <span style="font-size: 1.0rem;">Снижение притока и рост испарения из-за глобального потепления. Фаза, требующая адаптации.</span>
-                    </div>
-                """, unsafe_allow_html=True)
-            
-            st.markdown(f"""
-                <div style="background: #F8FAFC; border-radius: 10px; padding: 15px; margin-top: 20px; border: 1px dashed #CBD5E1; font-size: 0.95rem;">
-                    <b>💡 Мнение ученых:</b> Каспий живет циклами. Нынешнее состояние — это вызов для экономики, но с точки зрения геологии море неоднократно проходило через подобные и даже более глубокие минимумы.
-                </div>
-            """, unsafe_allow_html=True)
-
-    # --- КОНЕЦ БЛОКА ЦИКЛИЧНОСТИ ---
-
+    curr_h = history_ui.get(lang_code, history_ui["ru"])
+    
     with b_col2:
-        # 1. Заголовок
-        st.markdown('<div class="white-label-header"><p class="section-header-text">⏳ Исторические минимумы и максимумы</p></div>', unsafe_allow_html=True)
-        
-        st.markdown("""
-        <style>
-            .metric-card {
-                background: linear-gradient(145deg, #ffffff, #f0f7ff);
-                padding: 30px 15px;
-                border-radius: 20px;
-                border: 2px solid #3498db;
-                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
-                text-align: center;
-                margin-bottom: 20px;
-                min-height: 150px; /* Немного увеличили высоту для иконок */
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                transition: 0.3s;
-            }
-            .metric-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 35px rgba(52, 152, 219, 0.3);
-            }
+            # 1. Заголовок (динамический)
+            st.markdown(f'<div class="white-label-header"><p class="section-header-text">{curr_h["title"]}</p></div>', unsafe_allow_html=True)
             
-            /* Год - Крупный синий */
-            .metric-year { 
-                color: #3498db; 
-                font-size: 1.6rem; 
-                font-weight: 800; 
-                margin: 0; 
-                text-transform: uppercase; 
-            }
-            
-            /* ГЛАВНОЕ ЗНАЧЕНИЕ - Сделали гигантским */
-            .metric-value { 
-                color: black; /* По умолчанию черный */
-                font-size: 3.8rem; /* Очень крупно */
-                font-weight: 900; 
-                margin: 15px 0; 
-                line-height: 1; 
-            }
-            
-            /* Красный цвет для отрицательных значений */
-            .metric-value-red { 
-                color: #e74c3c; 
-                font-size: 3.8rem; 
-                font-weight: 900; 
-                margin: 15px 0; 
-                line-height: 1; 
-            }
-            
-            /* Иконка - Крупная */
-            .metric-icon { 
-                font-size: 3rem; 
-                margin-top: 10px; 
-            }
-            
-            /* Подпись - Четкая */
-            .metric-label { 
-                color: #475569; 
-                font-size: 1.3rem; 
-                font-weight: 600; 
-                margin: 0; 
-                margin-top: 5px;
-            }
-        </style>
-        """, unsafe_allow_html=True)
+            # Стиль CSS (оставляем без изменений)
+            st.markdown("""
+            <style>
+                .metric-card {
+                    background: linear-gradient(145deg, #ffffff, #f0f7ff);
+                    padding: 30px 15px;
+                    border-radius: 20px;
+                    border: 2px solid #3498db;
+                    box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
+                    text-align: center;
+                    margin-bottom: 20px;
+                    min-height: 150px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    transition: 0.3s;
+                }
+                .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(52, 152, 219, 0.3); }
+                .metric-year { color: #3498db; font-size: 1.6rem; font-weight: 800; margin: 0; text-transform: uppercase; }
+                .metric-value, .metric-value-red { font-size: 3.8rem; font-weight: 900; margin: 15px 0; line-height: 1; }
+                .metric-value { color: black; }
+                .metric-value-red { color: #e74c3c; }
+                .metric-icon { font-size: 3rem; margin-top: 10px; }
+                .metric-label { color: #475569; font-size: 1.3rem; font-weight: 600; margin: 0; margin-top: 5px; }
+            </style>
+            """, unsafe_allow_html=True)
 
+            # 3. Данные с переведенными метками
+            # Единицы измерения (m BS / м БС) берем из ранее созданного units_map
+            u_sea = units_map[lang_code].get("Уровень моря", "м")
+            
+            history_data = [
+                {"year": "1903", "val": f"-25,74 {u_sea}", "label": curr_h["labels"][0], "icon": "🌊"},
+                {"year": "1977", "val": f"-29,01 {u_sea}", "label": curr_h["labels"][1], "icon": "📉"},
+                {"year": "1995", "val": f"-26,62 {u_sea}", "label": curr_h["labels"][2], "icon": "📈"},
+                {"year": "2024", "val": f"-29,05 {u_sea}", "label": curr_h["labels"][3], "icon": "📉"},
+            ]
 
-        # 3. Данные (без привязки к колонкам)
-        history_data = [
-            # Максимум 1903 г. - ставим нейтральную или волну
-            {"year": "1903", "val": "-25,74 м", "label": "Максимум", "icon": "🌊"},
-            # Минимум XX в. - стрелка вниз
-            {"year": "1977", "val": "-29,01 м", "label": "Минимум XX в.", "icon": "📉"},
-            # Пик подъема 1995 г. - стрелка вверх
-            {"year": "1995", "val": "-26,62 м", "label": "Пик подъема", "icon": "📈"},
-            # Текущий спад 2024 г. - стрелка вниз
-            {"year": "2024", "val": "-29,05 м", "label": "Текущий спад", "icon": "📉"},
-        ]
-
-
-        # 4. Динамическое создание сетки (по 2 карточки в ряд)
-# Используем автоматическое распределение по 2 колонки
-        for i in range(0, len(history_data), 2):
-            cols = st.columns(2)
-            for j in range(2):
-                if i + j < len(history_data):
-                    card = history_data[i + j]
-                    
-                    # ЛОГИКА: Если в значении есть минус, используем красный класс
-                    if "-" in str(card['val']):
-                        value_class = "metric-value-red"
-                    else:
-                        value_class = "metric-value"
+            # 4. Создание сетки
+            for i in range(0, len(history_data), 2):
+                cols = st.columns(2)
+                for j in range(2):
+                    if i + j < len(history_data):
+                        card = history_data[i + j]
                         
-                    with cols[j]:
-                        st.markdown(f"""
-                            <div class="metric-card">
-                                <p class="metric-year">{card['year']} год</p>
-                                <p class="{value_class}">{card['val']}</p>
-                                <div class="metric-icon">{card['icon']}</div>
-                                <p class="metric-label">{card['label']}</p>
-                            </div>
-                        """, unsafe_allow_html=True)
-                        
+                        # Логика цвета (красный для минуса)
+                        value_class = "metric-value-red" if "-" in str(card['val']) else "metric-value"
+                            
+                        with cols[j]:
+                            st.markdown(f"""
+                                <div class="metric-card">
+                                    <p class="metric-year">{card['year']} {curr_h['year_suffix']}</p>
+                                    <p class="{value_class}">{card['val']}</p>
+                                    <div class="metric-icon">{card['icon']}</div>
+                                    <p class="metric-label">{card['label']}</p>
+                                </div>
+                            """, unsafe_allow_html=True)
 
+                        
+    
+    
+    
 
     # Создаем две колонки с равной шириной
     col1, col2 = st.columns(2)
