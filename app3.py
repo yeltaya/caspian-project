@@ -5186,7 +5186,7 @@ with tabs[3]:
             display: inline-block;
             background-color: #e1f5fe;
             color: #01579b;
-            font-size: 0.75rem;
+            font-size: 1.5rem;
             padding: 2px 8px;
             border-radius: 12px;
             margin-top: 5px;
@@ -5470,35 +5470,69 @@ with tabs[3]:
             </div>""", unsafe_allow_html=True)
         
 
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    acc_translations = {
+        "ru": {
+            "section_title": "📊 Оправдываемость прогнозов по регионам",
+            "cap_grains": "Зерновые культуры",
+            "cap_moisture": "Запасы влаги в почве",
+            "cap_crops": "с/х культуры",
+            "cap_ripening": "Сроки созревания",
+            "err_not_found": "не найден"
+        },
+        "kz": {
+            "section_title": "📊 Өңірлер бойынша болжамдардың орындалуы",
+            "cap_grains": "Дән дақылдары",
+            "cap_moisture": "Топырақтағы ылғал қоры",
+            "cap_crops": "Ауылшаруашылық дақылдары",
+            "cap_ripening": "Пісу мерзімдері",
+            "err_not_found": "табылмады"
+        },
+        "en": {
+            "section_title": "📊 Forecast Accuracy by Regions",
+            "cap_grains": "Grain Crops",
+            "cap_moisture": "Soil Moisture Reserves",
+            "cap_crops": "Agricultural Crops",
+            "cap_ripening": "Ripening Dates",
+            "err_not_found": "not found"
+        }
+    }
 
-    # --- 4. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ (КАК РИСУНКИ В 2 РЯДА) ---
-    st.markdown('<div class="section-header-new">📊 Оправдываемость прогнозов по регионам</div>', unsafe_allow_html=True)
+    at = acc_translations.get(current_l, acc_translations["ru"])
 
-    # 1. Получаем путь к папке скрипта
+    # --- 3. ОПРАВДЫВАЕМОСТЬ ПРОГНОЗОВ ---
+    st.markdown(f'<div class="section-header-new">{at["section_title"]}</div>', unsafe_allow_html=True)
+
+    # Получаем путь к папке скрипта
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # 2. Формируем список путей и заголовков
+    # Формируем список путей и ПЕРЕВЕДЕННЫХ заголовков
     images_data = [
-        {"path": os.path.join(current_dir, "image_1.png"), "caption": "Зерновые культуры"},
-        {"path": os.path.join(current_dir, "image_2.png"), "caption": "Запасы влаги в почве"},
-        {"path": os.path.join(current_dir, "image_3.png"), "caption": "с/х культуры"},
-        {"path": os.path.join(current_dir, "image_4.png"), "caption": "Сроки созревания"}
+        {"path": os.path.join(current_dir, "image_1.png"), "caption": at["cap_grains"]},
+        {"path": os.path.join(current_dir, "image_2.png"), "caption": at["cap_moisture"]},
+        {"path": os.path.join(current_dir, "image_3.png"), "caption": at["cap_crops"]},
+        {"path": os.path.join(current_dir, "image_4.png"), "caption": at["cap_ripening"]}
     ]
 
-    # 3. Вывод в два ряда по две колонки
-    # Первый ряд
-    row1_col1, row1_col2, row1_col3, row1_col4  = st.columns(4)
-
-    # Собираем колонки в список для удобного обхода в цикле
-    cols = [row1_col1, row1_col2, row1_col3, row1_col4]
+    # Вывод в ряд (4 колонки)
+    cols = st.columns(4)
 
     for i, item in enumerate(images_data):
         with cols[i]:
             if os.path.exists(item["path"]):
                 st.image(item["path"], caption=item["caption"], use_container_width=True)
             else:
-                st.warning(f"Файл {os.path.basename(item['path'])} не найден")
+                file_name = os.path.basename(item['path'])
+                st.warning(f"Файл {file_name} {at['err_not_found']}")
+                
                 
 with tabs[4]:
     st.title("Гидрологические прогнозы")
