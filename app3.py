@@ -8352,13 +8352,15 @@ content = {
 with tabs[6]:
     # Выбор языка (уже есть в вашем коде выше)
     # Используем lang_code для динамического вывода текста
-    current_text = content[lang_code]
-    
+    current_text = content.get(lang_code, content["ru"])
+
     st.markdown(f'<h1 class="main-title">{current_text["title"]}</h1>', unsafe_allow_html=True)
     
     # Пример вывода другого текста с сохранением отступа в 4 пробела
-    st.write(current_text["description"])
-    
+    description = current_text.get("description", "")
+    if description:
+        st.write(description)
+        
     
 # 1. Инициализация состояния (выполняется один раз)
     if 'selected_param' not in st.session_state:
