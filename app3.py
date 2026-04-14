@@ -4865,12 +4865,12 @@ with tabs[2]:
     import os
     import base64
 
-        
-    # Базовая директория
+    # 1. BASE_DIR должен быть в начале файла
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     def show_forecast_process(lang_code="ru"):
-        # 1. Словарь со всеми переводами
+        # --- ВСЕ ЧТО НИЖЕ, ДОЛЖНО ИМЕТЬ ОДИНАКОВЫЙ ОТСТУП ВНУТРИ ФУНКЦИИ ---
+        
         translations = {
             "ru": {
                 "header": "📜 Климатическая характеристика: Апрель",
@@ -4931,10 +4931,8 @@ with tabs[2]:
             }
         }
 
-        # Выбираем текущий перевод
         t = translations.get(lang_code, translations["ru"])
 
-    # 2. СТИЛИ
         st.markdown("""
             <style>
             .big-climate-card {
@@ -4957,13 +4955,10 @@ with tabs[2]:
             </style>
         """, unsafe_allow_html=True)
 
-        # 3. ОТРИСОВКА КОЛОНОК
         col_climat_data, col_viz1 = st.columns([1, 1], gap="medium")
 
         with col_climat_data:
             st.markdown(f"<h4 style='color: #1d4d2b; margin-bottom: 15px;'>{t['header']}</h4>", unsafe_allow_html=True)
-            
-            # Используем переменные из словаря t внутри HTML
             st.markdown(f"""
                 <div style="display: flex; gap: 10px;">
                     <div class="big-climate-card" style="flex: 1;">
@@ -4997,18 +4992,18 @@ with tabs[2]:
             if os.path.exists(gif_path):
                 with open(gif_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
-                st.markdown(
-                    f"""
+                st.markdown(f"""
                     <div style="width: 100%; display: flex; justify-content: center;">
                         <img src="data:image/gif;base64,{data}" style="width: 85%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     </div>
-                    """, unsafe_allow_html=True
-                )
+                """, unsafe_allow_html=True)
             else:
                 st.warning(f"File not found: {gif_path}")
-                
 
-    
+    # 3. ВЫЗОВ ФУНКЦИИ (без этого ничего не отобразится)
+    # Если у тебя язык лежит в session_state:
+    lang = st.session_state.get('lang_code', 'ru')
+    show_forecast_process(lang)
 
  
    
