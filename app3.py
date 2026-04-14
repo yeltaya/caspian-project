@@ -9063,14 +9063,49 @@ with tabs[6]:
         
         
 
-    
-    
-    
-    # --- БЛОК: ГЛОБАЛЬНЫЕ ПОСЛЕДСТВИЯ ---
-    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">⚠️ Комплексное влияние на регион</p></div>', unsafe_allow_html=True)
+    impact_ui = {
+        "ru": {
+            "header": "⚠️ Комплексное влияние на регион",
+            "items": [
+                {"title": "Логистика", "desc": "<b>Снижение перевозок:</b> Падение глубин в портах Актау и Курык требует дноуглубления и ограничивает тоннаж судов."},
+                {"title": "Гидрология", "desc": "<b>Обмеление протоков:</b> Нарушение водообмена в дельтах, дефицит пресной воды в прибрежных поселках."},
+                {"title": "Биоресурсы", "desc": "<b>Сокращение нерестилищ:</b> Исчезновение мелководных зон размножения осетровых и ценных видов рыб."},
+                {"title": "Климат", "desc": "<b>Ледовый покров:</b> Сокращение площади льда меняет критические условия жизни каспийского тюленя."},
+                {"title": "География", "desc": "<b>Береговая линия:</b> Смещение границы воды на километры делает причалы и порты неэффективными."},
+                {"title": "Экосистемы", "desc": "<b>Флора и фауна:</b> Деградация уникальной растительности и прибрежных водно-болотных угодий."}
+            ]
+        },
+        "kz": {
+            "header": "⚠️ Аймаққа кешенді әсері",
+            "items": [
+                {"title": "Логистика", "desc": "<b>Тасымалдың төмендеуі:</b> Ақтау және Құрық порттарындағы тереңдіктің азаюы түбін тереңдетуді талап етеді және кемелердің тоннажын шектейді."},
+                {"title": "Гидрология", "desc": "<b>Арналардың таяздануы:</b> Дельталардағы су алмасудың бұзылуы, жағалаудағы ауылдарда тұщы судың тапшылығы."},
+                {"title": "Биоресурстар", "desc": "<b>Уылдырық шашу орындарының азаюы:</b> Бекіре тұқымдас және құнды балық түрлерінің таяз судағы көбею аймақтарының жойылуы."},
+                {"title": "Климат", "desc": "<b>Мұз жамылғысы:</b> Мұз айдынының қысқаруы Каспий итбалығының өмір сүруінің маңызды жағдайларын өзгертеді."},
+                {"title": "География", "desc": "<b>Жағалау сызығы:</b> Су шекарасының шақырымдарға жылжуы айлақтар мен порттардың тиімділігін жояды."},
+                {"title": "Экожүйелер", "desc": "<b>Флора мен фауна:</b> Бірегей өсімдіктердің және жағалаудағы сулы-батпақты алқаптардың деградациясы."}
+            ]
+        },
+        "en": {
+            "header": "⚠️ Complex Impact on the Region",
+            "items": [
+                {"title": "Logistics", "desc": "<b>Shipping decline:</b> Dropping depths in Aktau and Kuryk ports requires dredging and limits vessel tonnage."},
+                {"title": "Hydrology", "desc": "<b>Shallowing of channels:</b> Disruption of water exchange in deltas, fresh water shortage in coastal villages."},
+                {"title": "Bio-resources", "desc": "<b>Spawning grounds reduction:</b> Disappearance of shallow-water breeding zones for sturgeon and valuable fish species."},
+                {"title": "Climate", "desc": "<b>Ice cover:</b> Reduction in ice area changes the critical living conditions of the Caspian seal."},
+                {"title": "Geography", "desc": "<b>Coastline:</b> Water boundary shifting by kilometers makes piers and ports ineffective."},
+                {"title": "Ecosystems", "desc": "<b>Flora and fauna:</b> Degradation of unique vegetation and coastal wetlands."}
+            ]
+        }
+    }
 
-    # 1. Добавляем CSS стили для анимации
+    curr_i = impact_ui.get(lang_code, impact_ui["ru"])
+    
+ # --- БЛОК: ГЛОБАЛЬНЫЕ ПОСЛЕДСТВИЯ ---
+    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown(f'<div class="white-label-header"><p class="section-header-text">{curr_i["header"]}</p></div>', unsafe_allow_html=True)
+
+    # CSS стили остаются без изменений
     st.markdown("""
     <style>
         .impact-card {
@@ -9078,60 +9113,36 @@ with tabs[6]:
             cursor: default;
             border: 1px solid rgba(0,0,0,0.05);
         }
-        
         .impact-card:hover {
-            transform: translateY(-5px) scale(1.02); /* Увеличение и подъем */
-            box-shadow: 0 12px 20px rgba(0,0,0,0.1) !important; /* Свечение/Тень */
-            filter: brightness(1.02); /* Легкое осветление */
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1) !important;
+            filter: brightness(1.02);
             border: 1px solid rgba(0,0,0,0.1);
         }
     </style>
     """, unsafe_allow_html=True)
 
-    impact_items = [
-        {
-            "icon": "🚢", "title": "Логистика", 
-            "desc": "<b>Снижение перевозок:</b> Падение глубин в портах Актау и Курык требует дноуглубления и ограничивает тоннаж судов.",
-            "bg": "#E0F2FE", "text": "#0369A1"
-        },
-        {
-            "icon": "💧", "title": "Гидрология", 
-            "desc": "<b>Обмеление протоков:</b> Нарушение водообмена в дельтах, дефицит пресной воды в прибрежных поселках.",
-            "bg": "#DBEAFE", "text": "#1E40AF"
-        },
-        {
-            "icon": "🐟", "title": "Биоресурсы", 
-            "desc": "<b>Сокращение нерестилищ:</b> Исчезновение мелководных зон размножения осетровых и ценных видов рыб.",
-            "bg": "#DCFCE7", "text": "#166534"
-        },
-        {
-            "icon": "❄️", "title": "Климат", 
-            "desc": "<b>Ледовый покров:</b> Сокращение площади льда меняет критические условия жизни каспийского тюленя.",
-            "bg": "#F1F5F9", "text": "#475569"
-        },
-        {
-            "icon": "🗺️", "title": "География", 
-            "desc": "<b>Береговая линия:</b> Смещение границы воды на километры делает причалы и порты неэффективными.",
-            "bg": "#FEF9C3", "text": "#854D0E"
-        },
-        {
-            "icon": "🌿", "title": "Экосистемы", 
-            "desc": "<b>Флора и фауна:</b> Деградация уникальной растительности и прибрежных водно-болотных угодий.",
-            "bg": "#F0FDF4", "text": "#166534"
-        }
+    # Статичные настройки оформления
+    visual_styles = [
+        {"icon": "🚢", "bg": "#E0F2FE", "text": "#0369A1"},
+        {"icon": "💧", "bg": "#DBEAFE", "text": "#1E40AF"},
+        {"icon": "🐟", "bg": "#DCFCE7", "text": "#166534"},
+        {"icon": "❄️", "bg": "#F1F5F9", "text": "#475569"},
+        {"icon": "🗺️", "bg": "#FEF9C3", "text": "#854D0E"},
+        {"icon": "🌿", "bg": "#F0FDF4", "text": "#166534"}
     ]
 
-    # Создаем сетку 3 колонки x 2 ряда
-    for i in range(0, len(impact_items), 3):
+    # Рендерим сетку
+    for i in range(0, len(curr_i["items"]), 3):
         cols = st.columns(3)
         for j in range(3):
-            if i + j < len(impact_items):
-                item = impact_items[i + j]
+            if i + j < len(curr_i["items"]):
+                item_text = curr_i["items"][i + j]
+                style = visual_styles[i + j]
                 with cols[j]:
-                    # Добавляем класс impact-card в div
                     st.markdown(f"""
                         <div class="impact-card" style="
-                            background: {item['bg']}; 
+                            background: {style['bg']}; 
                             padding: 25px; 
                             border-radius: 20px; 
                             min-height: 220px; 
@@ -9141,18 +9152,19 @@ with tabs[6]:
                             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
                         ">
                             <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                                <span style="font-size: 2rem; margin-right: 15px;">{item['icon']}</span>
-                                <span style="color: {item['text']}; font-weight: 800; font-size: 1.2rem; text-transform: uppercase;">{item['title']}</span>
+                                <span style="font-size: 2rem; margin-right: 15px;">{style['icon']}</span>
+                                <span style="color: {style['text']}; font-weight: 800; font-size: 1.2rem; text-transform: uppercase;">{item_text['title']}</span>
                             </div>
                             <div style="color: #334155; font-size: 0.95rem; line-height: 1.5;">
-                                {item['desc']}
+                                {item_text['desc']}
                             </div>
                         </div>
                     """, unsafe_allow_html=True)
 
-    # --- КОНЕЦ БЛОКА ---
-
     st.divider()
+
+    
+    
     
     # --- БЛОК: ПРОГНОЗЫ И ПРОДУКЦИЯ С ЭФФЕКТОМ НАЖАТИЯ ---
     st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
