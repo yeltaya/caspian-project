@@ -6297,10 +6297,6 @@ with tabs[4]:
 
         st.divider()
 
-    # Вызов функции
-    render_selevidenie_section(st)
-
-
 
 # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
     if 'lang_code' in locals() or 'lang_code' in globals():
