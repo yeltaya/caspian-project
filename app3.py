@@ -5811,15 +5811,64 @@ with tabs[4]:
 
 
 
-    # --- РАЗДЕЛ: ОСЕННЕЕ УВЛАЖНЕНИЕ ---
-    st.markdown('<div class="predictor-header">🍂 Осеннее увлажнение (сентябрь–октябрь)</div>', unsafe_allow_html=True)
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
+
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    moisture_translations = {
+        "ru": {
+            "header": "🍂 Осеннее увлажнение (сентябрь–октябрь)",
+            "map1_cap": "1) Суммы осадков за осенний период, мм",
+            "map2_cap": "2) Отклонение от нормы, %",
+            "desc1": """В ряде западных и восточных областей (преимущественно в <b>Западно-Казахстанской, Мангыстауской, Павлодарской, 
+                        Восточно-Казахстанской областях, области Абай, на востоке Карагандинской и севере области Жетісу</b>) наблюдаются 
+                        показатели выше нормы. В отдельных точках зафиксированы значения <span class="highlight-blue">более 150 мм</span>.""",
+            "desc2": """На севере, центре и юге (<b>Актюбинская, Улытауская, Жамбылская, Туркестанская, Кызылординская области</b>, 
+                        а также большая часть <b>Атырауской, Костанайской, Акмолинской, СКО, Алматинской</b>) преобладают уровни влаги ниже нормы – 
+                        с минимальными значениями <span class="highlight-blue">< 25 мм</span>.""",
+            "err": "не найден"
+        },
+        "kz": {
+            "header": "🍂 Күзгі ылғалдану (қыркүйек–қазан)",
+            "map1_cap": "1) Күзгі кезеңдегі жауын-шашын мөлшері, мм",
+            "map2_cap": "2) Қалыпты жағдайдан ауытқу, %",
+            "desc1": """Бірқатар батыс және шығыс облыстарда (негізінен <b>Батыс Қазақстан, Маңғыстау, Павлодар, Шығыс Қазақстан, Абай облыстарында, 
+                        Қарағандының шығысында және Жетісу облысының солтүстігінде</b>) күзгі ылғалдылық қалыпты деңгейден жоғары. 
+                        Кейбір жерлерде <span class="highlight-blue">150 мм-ден астам</span> көрсеткіштер тіркелді.""",
+            "desc2": """Солтүстік, орталық және оңтүстік аймақтарда (<b>Ақтөбе, Ұлытау, Жамбыл, Түркістан, Қызылорда облыстары</b>, сондай-ақ 
+                        <b>Атырау, Қостанай, Ақмола, СҚО, Алматы</b> облыстарының басым бөлігінде) ылғал деңгейі қалыптыдан төмен – 
+                        минималды мәндері <span class="highlight-blue">< 25 мм</span>.""",
+            "err": "табылмады"
+        },
+        "en": {
+            "header": "🍂 Autumn Soil Moisture (September–October)",
+            "map1_cap": "1) Autumn precipitation totals, mm",
+            "map2_cap": "2) Deviation from the norm, %",
+            "desc1": """In several western and eastern regions (mainly <b>West Kazakhstan, Mangystau, Pavlodar, East Kazakhstan, Abai regions, 
+                        eastern Karaganda, and northern Zhetisu</b>), moisture levels are above normal. In some areas, values <span class="highlight-blue">> 150 mm</span> 
+                        have been recorded, indicating significant wetting.""",
+            "desc2": """In the north, center, and south (<b>Aktobe, Ulytau, Zhambyl, Turkestan, Kyzylorda regions</b>, as well as most of 
+                        <b>Atyrau, Kostanay, Akmola, North Kazakhstan, and Almaty</b>), moisture levels are below normal or moderate – 
+                        with minimum values <span class="highlight-blue">< 25 mm</span>.""",
+            "err": "not found"
+        }
+    }
+
+    mt = moisture_translations.get(current_l, moisture_translations["ru"])
+
+    # --- 3. ОТОБРАЖЕНИЕ РАЗДЕЛА ---
+    st.markdown(f'<div class="predictor-header">{mt["header"]}</div>', unsafe_allow_html=True)
 
     import base64
     import os
 
-    # Вспомогательная функция для обработки изображений
     def get_img_as_base64(file_name):
-        # Используем BASE_DIR, который у вас определен глобально
+        # BASE_DIR должен быть определен заранее
         path = os.path.join(BASE_DIR, file_name)
         if os.path.exists(path):
             with open(path, "rb") as f:
@@ -5829,53 +5878,36 @@ with tabs[4]:
     col1, col2 = st.columns(2)
 
     with col1:
-            data1 = get_img_as_base64("Без названия (1).jpeg")
-            if data1:
-                st.markdown(
-                    f"""
-                    <div style="width: 100%; margin-bottom: 10px;">
-                        <img src="data:image/jpeg;base64,{data1}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
-            
-            st.markdown('<div class="map-caption">1) Суммы осадков за осенний период, мм</div>', unsafe_allow_html=True)
-            
-            st.markdown("""
-            <div class="report-text">
-                В ряде западных и восточных областей (преимущественно в <b>Западно-Казахстанской, Мангыстауской, Павлодарской, 
-                Восточно-Казахстанской областях, области Абай, на востоке Карагандинской и севере области Жетісу</b>) наблюдаются 
-                показатели осеннего увлажнения выше нормы. В отдельных точках (особенно в высокогорных зонах) зафиксированы 
-                значения <span class="highlight-blue">более 150 мм</span>, указывающие на существенное переувлажнение.
-            </div>
-            """, unsafe_allow_html=True)
+        data1 = get_img_as_base64("Без названия (1).jpeg")
+        if data1:
+            st.markdown(f"""
+                <div style="width: 100%; margin-bottom: 10px;">
+                    <img src="data:image/jpeg;base64,{data1}" style="width: 100%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.error(f"File 1 {mt['err']}")
+        
+        st.markdown(f'<div class="map-caption">{mt["map1_cap"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="report-text">{mt["desc1"]}</div>', unsafe_allow_html=True)
 
     with col2:
-            data2 = get_img_as_base64("Без названия (2).jpeg")
-            if data2:
-                st.markdown(
-                    f"""
-                    <div style="width: 100%; margin-bottom: 10px;">
-                        <img src="data:image/jpeg;base64,{data2}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
+        data2 = get_img_as_base64("Без названия (2).jpeg")
+        if data2:
+            st.markdown(f"""
+                <div style="width: 100%; margin-bottom: 10px;">
+                    <img src="data:image/jpeg;base64,{data2}" style="width: 100%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.error(f"File 2 {mt['err']}")
 
-            st.markdown('<div class="map-caption">2) Отклонение от нормы, %</div>', unsafe_allow_html=True)
-            
-            st.markdown("""
-            <div class="report-text">
-                В то же время на севере, центре, юге (<b>Актюбинская, Улытауская, Жамбылская, Туркестанская, Кызылординская 
-                области</b>, а также большая часть <b>Атырауской, Костанайской, Акмолинской, Северо-Казахстанской, Алматинской</b> и 
-                восточной части Карагандинской областей) преобладают ниже норм или умеренные уровни влаги – с минимальными 
-                значениям <span class="highlight-blue"><25 мм</span>.
-            </div>
-            """, unsafe_allow_html=True)
-        
+        st.markdown(f'<div class="map-caption">{mt["map2_cap"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="report-text">{mt["desc2"]}</div>', unsafe_allow_html=True)
 
-    st.markdown("---") # Разделитель
+    st.markdown("---")
+
+
 
     import base64
     import os
