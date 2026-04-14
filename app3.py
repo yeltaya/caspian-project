@@ -8799,117 +8799,184 @@ with tabs[6]:
 
         
     
-    # 1. Уменьшаем отступы у линии (с 80px до 30px например)
+    factors_ui = {
+        "ru": {
+            "main_title": "🔍 Основные факторы, влияющие на изменение уровня",
+            "main_sub": "Изменения элементов водного баланса, обусловленные антропогенным воздействием и природными циклами.",
+            "river_title": "🌊 Речной сток и вклад Волги",
+            "river_desc": "Волга обеспечивает около 80% всего речного притока. Критические минимумы стока напрямую коррелируют с падением уровня моря.",
+            "river_unit": "км³/год",
+            "year_lbl": "год",
+            "stats_labels": [
+                "Мин. сток всех рек<br>(1973 г.), км³", "Средний сток<br>всех рек, км³", "Макс. сток всех рек<br>(1990 г.), км³",
+                "Мин. сток Волги<br>(1975 г.), км³", "Средний сток<br>Волги, км³", "Макс. сток Волги<br>(1994 г.), км³"
+            ],
+            "trace_all": "Сток всех рек",
+            "trace_volga": "Сток Волги"
+        },
+        "kz": {
+            "main_title": "🔍 Деңгейдің өзгеруіне әсер ететін негізгі факторлар",
+            "main_sub": "Антропогендік әсер мен табиғи циклдардан туындаған су теңгерімі элементтерінің өзгеруі.",
+            "river_title": "🌊 Өзен ағыны және Еділдің үлесі",
+            "river_desc": "Еділ (Волга) барлық өзен ағынының шамамен 80%-ын қамтамасыз етеді. Ағынның критикалық минимумдары теңіз деңгейінің төмендеуімен тікелей байланысты.",
+            "river_unit": "км³/жыл",
+            "year_lbl": "жыл",
+            "stats_labels": [
+                "Барлық өзендердің мин. ағыны<br>(1973 ж.), км³", "Барлық өзендердің<br>орташа ағыны, км³", "Барлық өзендердің макс. ағыны<br>(1990 ж.), км³",
+                "Еділдің мин. ағыны<br>(1975 ж.), км³", "Еділдің орташа<br>ағыны, км³", "Еділдің макс. ағыны<br>(1994 ж.), км³"
+            ],
+            "trace_all": "Барлық өзендер ағыны",
+            "trace_volga": "Еділ ағыны"
+        },
+        "en": {
+            "main_title": "🔍 Main Factors Affecting Level Changes",
+            "main_sub": "Changes in water balance elements due to anthropogenic impact and natural cycles.",
+            "river_title": "🌊 River Discharge and Volga's Contribution",
+            "river_desc": "The Volga provides about 80% of all river inflow. Critical discharge minimums directly correlate with the sea level drop.",
+            "river_unit": "km³/year",
+            "year_lbl": "year",
+            "stats_labels": [
+                "Min total discharge<br>(1973), km³", "Average total<br>discharge, km³", "Max total discharge<br>(1990), km³",
+                "Min Volga discharge<br>(1975), km³", "Average Volga<br>discharge, km³", "Max Volga discharge<br>(1994), km³"
+            ],
+            "trace_all": "Total river discharge",
+            "trace_volga": "Volga discharge"
+        }
+    }
+
+    curr_f = factors_ui.get(lang_code, factors_ui["ru"])
+    
+# 1. Линия и заголовок
     st.markdown("<hr style='margin: 30px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown(f'<div class="white-label-header"><p style="font-size: 3.5rem; font-weight: bold; margin-bottom: 0px;">{curr_f["main_title"]}</p></div>', unsafe_allow_html=True) 
 
-    # 2. Уменьшаем размер шрифта заголовка (5.0rem — это очень много, обычно 2.0-2.5 достаточно)
-    # И убираем margin-bottom, если он не нужен
-    st.markdown('<div class="white-label-header"><p style="font-size: 3.5rem; font-weight: bold; margin-bottom: 0px;">🔍 Основные факторы, влияющие на изменение уровня</p></div>', unsafe_allow_html=True) 
-
-    # 3. Убираем лишний margin-bottom у подзаголовка
-    st.markdown("""
+    # 3. Подзаголовок
+    st.markdown(f"""
         <div style="margin-bottom: 10px; text-align: center;">
             <p style="font-style: italic; color: #64748B; font-size: 1.1rem; max-width: 800px; margin: 0 auto;">
-                Изменения элементов водного баланса, обусловленные антропогенным воздействием и природными циклами.
+                {curr_f["main_sub"]}
             </p>
         </div>
     """, unsafe_allow_html=True)
 
     f_col1, f_col2 = st.columns(2)
 
-    # --- ЛЕВЫЙ БЛОК: РЕЧНОЙ СТОК ---
     with f_col1:
-        st.markdown('<div class="promo-bold">🌊 Речной сток и вклад Волги</div>', unsafe_allow_html=True)
-        # Фиксируем высоту контейнера описания (80px), чтобы плашки ниже начались на одном уровне
-        st.markdown("""
+        st.markdown(f'<div class="promo-bold">{curr_f["river_title"]}</div>', unsafe_allow_html=True)
+        st.markdown(f"""
             <div style="height: 80px;">
                 <p class="promo-sub" style="font-style: italic; border-left: 4px solid #0072FF; padding-left: 15px; margin: 0;">
-                    Волга обеспечивает около 80% всего речного притока. Критические минимумы стока напрямую коррелируют с падением уровня моря.
+                    {curr_f["river_desc"]}
                 </p>
             </div>
         """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-    # Данные распределены по двум категориям: Бассейн (все реки) и Волга
+        # Обновленные данные плашек (подтягиваем лейблы из словаря)
         river_stats = [
-            # ПЕРВЫЙ РЯД: Все реки
-            {"val": "210,2", "lbl": "Мин. сток всех рек<br>(1973 г.), км³", "bg": "#475569"},
-            {"val": "290,3", "lbl": "Средний сток<br>всех рек, км³", "bg": "#334155"},
-            {"val": "393,4", "lbl": "Макс. сток всех рек<br>(1990 г.), км³", "bg": "#1E293B"},
-            # ВТОРОЙ РЯД: Волга
-            {"val": "166,0", "lbl": "Мин. сток Волги<br>(1975 г.), км³", "bg": "#337AB7"},
-            {"val": "236,2", "lbl": "Средний сток<br>Волги, км³", "bg": "#2A6091"},
-            {"val": "333,2", "lbl": "Макс. сток Волги<br>(1994 г.), км³", "bg": "#1D4E77"}
+            {"val": "210,2", "lbl": curr_f["stats_labels"][0], "bg": "#475569"},
+            {"val": "290,3", "lbl": curr_f["stats_labels"][1], "bg": "#334155"},
+            {"val": "393,4", "lbl": curr_f["stats_labels"][2], "bg": "#1E293B"},
+            {"val": "166,0", "lbl": curr_f["stats_labels"][3], "bg": "#337AB7"},
+            {"val": "236,2", "lbl": curr_f["stats_labels"][4], "bg": "#2A6091"},
+            {"val": "333,2", "lbl": curr_f["stats_labels"][5], "bg": "#1D4E77"}
         ]
 
-        # Стили для анимации плашек (если еще не добавлены ранее)
-        st.markdown("""
-        <style>
-            .river-card {
-                transition: all 0.3s ease !important;
-            }
-            .river-card:hover {
-                transform: scale(1.03);
-                box-shadow: 0 10px 15px rgba(0,0,0,0.1) !important;
-                filter: brightness(1.1);
-            }
-        </style>
-        """, unsafe_allow_html=True)
-
-        # Рендерим первый ряд (Все реки)
+        # Рендеринг карточек (циклы остаются прежними)
         r_row1 = st.columns(3)
         for i in range(3):
             with r_row1[i]:
                 st.markdown(f"""
                     <div class="river-card" style="background: {river_stats[i]['bg']}; padding: 15px; border-radius: 20px; text-align: center; 
-                                min-height: 140px; display: flex; flex-direction: column; justify-content: center; 
-                                box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: white; margin-bottom: 10px;">
-                        <div style="font-size: 1.5rem; font-weight: 900; font-family: 'Exo 2', sans-serif;">{river_stats[i]['val']}</div>
+                                 min-height: 140px; display: flex; flex-direction: column; justify-content: center; 
+                                 box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: white; margin-bottom: 10px;">
+                        <div style="font-size: 1.5rem; font-weight: 900;">{river_stats[i]['val']}</div>
                         <div style="font-size: 0.7rem; margin-top: 8px; opacity: 0.9; font-weight: 600; text-transform: uppercase; line-height: 1.2;">{river_stats[i]['lbl']}</div>
                     </div>
                 """, unsafe_allow_html=True)
 
-        # Рендерим второй ряд (Волга)
         r_row2 = st.columns(3)
         for i in range(3, 6):
             with r_row2[i-3]:
                 st.markdown(f"""
                     <div class="river-card" style="background: {river_stats[i]['bg']}; padding: 15px; border-radius: 20px; text-align: center; 
-                                min-height: 140px; display: flex; flex-direction: column; justify-content: center; 
-                                box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: white; margin-bottom: 20px;">
-                        <div style="font-size: 1.5rem; font-weight: 900; font-family: 'Exo 2', sans-serif;">{river_stats[i]['val']}</div>
+                                 min-height: 140px; display: flex; flex-direction: column; justify-content: center; 
+                                 box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: white; margin-bottom: 20px;">
+                        <div style="font-size: 1.5rem; font-weight: 900;">{river_stats[i]['val']}</div>
                         <div style="font-size: 0.7rem; margin-top: 8px; opacity: 0.9; font-weight: 600; text-transform: uppercase; line-height: 1.2;">{river_stats[i]['lbl']}</div>
                     </div>
                 """, unsafe_allow_html=True)
 
-        # Данные для графика (оставляем как были)
-        river_data = {
-            "Год": [1936, 1937, 1938, 1939, 1940, 1941, 1942, 1943, 1944, 1945, 1946, 1947, 1948, 1949, 1950, 1951, 1952, 1953, 1954, 1955, 1956, 1957, 1958, 1959, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023],
-            "Бассейн": [247.5, 215.7, 219.7, 232.5, 254.0, 315.1, 340.0, 293.1, 307.6, 259.2, 349.8, 384.0, 347.4, 274.0, 299.6, 279.9, 294.9, 318.6, 259.6, 341.3, 255.6, 350.7, 360.1, 278.0, 255.0, 268.9, 282.6, 327.2, 276.6, 266.2, 334.1, 229.3, 269.8, 268.8, 313.7, 268.9, 263.9, 210.2, 312.0, 207.1, 223.3, 223.3, 319.4, 364.6, 286.1, 350.1, 270.3, 274.4, 273.3, 335.9, 333.7, 329.8, 297.7, 268.1, 393.4, 369.8, 302.9, 348.4, 392.2, 324.9, 250.8, 276.67, 320.7, 320.9, 293.24, 306.73, 306.7, 294.78, 310.41, 334.8, 241.42, 319.81, 266.55, 266.9, 248.9, 223.2, 266.8, 297.0, 249.6, 216.5, 304.6, 313.2, 280.5, 279.0, 305.1, 236.6, 239.2, 214.2],
-            "Волга": [None, None, 181.8, 174.2, 190.3, 232.1, 262.5, 238.7, 233.8, 202.0, 256.5, 306.6, None, 217.9, 222.8, 217.4, 217.4, 251.6, 214.9, 272.1, 210.2, None, 275.3, 212.8, 206.2, 229.1, 233.6, 260.1, 213.6, 211.9, 275.5, 180.0, 209.4, 212.2, 258.3, 221.6, 201.5, None, 238.4, 166.0, 187.1, 195.3, 273.5, 303.5, 252.6, 288.1, 218.8, 225.6, 224.3, 282.5, 288.7, 273.2, 225.4, 221.5, 308.3, 302.6, 239.4, 275.6, 333.2, 273.6, 176.0, 236.2, 277.0, 283.3, 241.5, 272.3, 254.2, 244.1, 255.3, 279.9, 201.8, 275.8, 229.5, 228.6, 196.6, 189.0, 229.6, 257.3, 212.2, 181.6, 261.2, 272.1, 244.9, 205.2, 279.9, 208.3, 211.6, 207.0]
-        }
-
+        # График
         fig_river = go.Figure()
-        fig_river.add_trace(go.Scatter(x=river_data["Год"], y=river_data["Бассейн"], name="Сток всех рек", mode='lines', line=dict(color='#94A3B8', width=1.5, dash='dot')))
-        fig_river.add_trace(go.Scatter(x=river_data["Год"], y=river_data["Волга"], name="Сток Волги", mode='lines', line=dict(color='#0072FF', width=3)))
+        fig_river.add_trace(go.Scatter(x=river_data["Год"], y=river_data["Бассейн"], name=curr_f["trace_all"], mode='lines', line=dict(color='#94A3B8', width=1.5, dash='dot')))
+        fig_river.add_trace(go.Scatter(x=river_data["Год"], y=river_data["Волга"], name=curr_f["trace_volga"], mode='lines', line=dict(color='#0072FF', width=3)))
 
         fig_river.update_layout(
             height=300, margin=dict(l=10,r=10,t=20,b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             legend=dict(orientation="h", y=-0.3, xanchor="center", x=0.5),
-            yaxis_title="км³/год", xaxis_title="год"
+            yaxis_title=curr_f["river_unit"], xaxis_title=curr_f["year_lbl"]
         )
         st.plotly_chart(fig_river, use_container_width=True, config={'displayModeBar': False})
 
-    # --- ПРАВЫЙ БЛОК: КЛИМАТ ---
+        
+    
+
+    climate_ui = {
+        "ru": {
+            "title": "🌡️ Изменения климата",
+            "desc": "Рост температуры воздуха и испарения с поверхности моря относительно базового периода 1991-2020 гг.",
+            "ten_years": "каждые 10 лет",
+            "regions": ["Земной шар", "Казахстан", "Каспийский регион"],
+            "chart_labels": {
+                "range": "Разброс станций",
+                "anomaly": "Аномалия T°C",
+                "level": "Уровень моря",
+                "y1_title": "Аномалия воздуха, °C",
+                "y2_title": "Уровень моря, м БС",
+                "now": "СЕЙЧАС"
+            }
+        },
+        "kz": {
+            "title": "🌡️ Климаттың өзгеруі",
+            "desc": "1991-2020 жж. базалық кезеңімен салыстырғанда ауа температурасының көтерілуі және теңіз бетінен булану.",
+            "ten_years": "әр 10 жыл сайын",
+            "regions": ["Жер шары", "Қазақстан", "Каспий аймағы"],
+            "chart_labels": {
+                "range": "Станциялар ауқымы",
+                "anomaly": "T°C аномалиясы",
+                "level": "Теңіз деңгейі",
+                "y1_title": "Ауа аномалиясы, °C",
+                "y2_title": "Теңіз деңгейі, м БС",
+                "now": "ҚАЗІР"
+            }
+        },
+        "en": {
+            "title": "🌡️ Climate Change",
+            "desc": "Air temperature rise and sea surface evaporation relative to the 1991-2020 base period.",
+            "ten_years": "every 10 years",
+            "regions": ["Global", "Kazakhstan", "Caspian Region"],
+            "chart_labels": {
+                "range": "Station variance",
+                "anomaly": "T°C Anomaly",
+                "level": "Sea Level",
+                "y1_title": "Air Anomaly, °C",
+                "y2_title": "Sea Level, m BS",
+                "now": "NOW"
+            }
+        }
+    }
+
+    curr_c = climate_ui.get(lang_code, climate_ui["ru"])
+    
     with f_col2:
-        st.markdown('<div class="promo-bold">🌡️ Изменения климата</div>', unsafe_allow_html=True)
-        # Те же 80px высоты для выравнивания
-        st.markdown("""
+        st.markdown(f'<div class="promo-bold">{curr_c["title"]}</div>', unsafe_allow_html=True)
+        st.markdown(f"""
             <div style="height: 80px;">
                 <p class="promo-sub" style="font-style: italic; border-left: 4px solid #CC661D; padding-left: 15px; margin: 0;">
-                    Рост температуры воздуха и испарения с поверхности моря относительно базового периода 1991-2020 гг.
+                    {curr_c["desc"]}
                 </p>
             </div>
         """, unsafe_allow_html=True)
@@ -8918,78 +8985,69 @@ with tabs[6]:
         c1, c2, c3 = st.columns(3)
         
         speed_data = [
-            {"label": "Земной шар", "val": "0,19°C", "bg": "#FFF1C1", "text": "#003366"},
-            {"label": "Казахстан", "val": "0,36°C", "bg": "#FFE082", "text": "#003366"},
-            {"label": "Каспийский регион", "val": "0,51°C", "bg": "#CC661D", "text": "#FFFFFF"} # Белый текст для темного фона
+            {"label": curr_c["regions"][0], "val": "0,19°C", "bg": "#FFF1C1", "text": "#003366"},
+            {"label": curr_c["regions"][1], "val": "0,36°C", "bg": "#FFE082", "text": "#003366"},
+            {"label": curr_c["regions"][2], "val": "0,51°C", "bg": "#CC661D", "text": "#FFFFFF"}
         ]
 
         for i, col in enumerate([c1, c2, c3]):
             with col:
                 st.markdown(f"""
                     <div style="background: {speed_data[i]['bg']}; padding: 15px; border-radius: 20px; text-align: center; min-height: 160px; 
-                                display: flex; flex-direction: column; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                        <div style="color: {'red' if i < 2 else 'white'}; font-size: 1.6rem; font-weight: 900; font-family: 'Exo 2', sans-serif; line-height: 1;">{speed_data[i]['val']}</div>
-                        <div style="color: {'#475569' if i < 2 else 'white'}; font-size: 0.75rem; margin: 8px 0; opacity: 0.8;">каждые 10 лет</div>
+                                 display: flex; flex-direction: column; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="color: {'#D32F2F' if i < 2 else 'white'}; font-size: 1.6rem; font-weight: 900; line-height: 1;">{speed_data[i]['val']}</div>
+                        <div style="color: {'#475569' if i < 2 else 'white'}; font-size: 0.75rem; margin: 8px 0; opacity: 0.8;">{curr_c["ten_years"]}</div>
                         <div style="color: {speed_data[i]['text']}; font-size: 0.9rem; font-weight: 700; line-height: 1.1;">{speed_data[i]['label']}</div>
                     </div>
                 """, unsafe_allow_html=True)
 
-        
-        # --- КОНЕЦ ПЛАШЕК ---
-
-        # Данные для графика аномалий
-        climate_years = [1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
-        avg_anomaly = [-2.3, -1.1, -1.3, 0.1, -1.5, 0.0, -1.7, 0.0, -1.4, -1.5, -0.7, -1.9, -0.8, 0.1, -0.4, -0.2, -1.0, -2.3, -1.6, 0.9, -0.8, -0.7, -0.5, 0.5, 0.3, 0.2, -0.1, -0.8, 1.0, 0.6, -0.2, 0.7, -0.4, -0.1, 1.1, -0.8, -0.1, 0.8, -0.1, 0.5, 0.7, 0.6, 0.2, 0.8, 0.9, 1.4, 1.2, 1.7, 1.2, 1.4]
-        min_anomaly = [-2.5, -1.6, -1.5, -0.2, -1.8, -0.5, -2.0, -0.8, -1.9, -1.9, -1.1, -2.6, -1.1, -0.2, -0.7, -0.4, -1.2, -2.5, -2.4, 0.4, -1.2, -1.1, -1.0, 0.3, 0.1, 0.0, -0.4, -1.1, 0.8, 0.2, -0.6, 0.5, -0.7, -0.4, 0.9, -1.1, -0.3, 0.6, -0.6, 0.1, 0.3, 0.3, -0.4, 0.4, 0.5, 0.9, 0.7, 1.2, 0.5, 0.8]
-        max_anomaly = [-2.0, -0.7, -1.1, 0.3, -1.2, 0.5, -1.5, 0.6, -1.1, -1.1, -0.4, -1.2, -0.6, 0.4, 0.0, 0.3, -0.7, -1.9, -1.2, 1.4, -0.4, -0.4, -0.2, 0.8, 0.6, 0.4, 0.1, -0.3, 1.3, 1.0, 0.0, 0.8, -0.2, 0.1, 1.5, -0.6, 0.3, 1.2, 0.3, 0.6, 1.0, 0.9, 0.7, 1.1, 1.6, 2.0, 1.5, 2.3, 1.4, 2.1]
-        sea_level = [-28.45, -28.53, -28.54, -28.66, -28.89, -28.97, -28.88, -28.61, -28.43, -28.24, -28.15, -28.07, -28.10, -27.97, -27.90, -27.83, -27.75, -27.82, -27.68, -27.26, -27.14, -26.91, -26.70, -26.59, -26.81, -27.05, -27.07, -27.07, -27.18, -27.20, -27.20, -27.11, -27.00, -26.98, -27.06, -27.08, -27.17, -27.21, -27.31, -27.50, -27.56, -27.61, -27.70, -27.92, -27.97, -27.94, -28.10, -28.29, -29.05, -29.35]
-
+        # График аномалий
         fig_climate = go.Figure()
         
         # Слой с разбросом
-        fig_climate.add_trace(go.Scatter(x=climate_years+climate_years[::-1], y=max_anomaly+min_anomaly[::-1], fill='toself', fillcolor='rgba(200, 200, 200, 0.3)', line=dict(color='rgba(255,255,255,0)'), name='Разброс станций'))
+        fig_climate.add_trace(go.Scatter(x=climate_years+climate_years[::-1], y=max_anomaly+min_anomaly[::-1], fill='toself', fillcolor='rgba(200, 200, 200, 0.3)', line=dict(color='rgba(255,255,255,0)'), name=curr_c["chart_labels"]["range"]))
         
         # Линии данных
-        fig_climate.add_trace(go.Scatter(x=climate_years, y=avg_anomaly, name="Аномалия T°C", line=dict(color='#D32F2F', width=2.5)))
-        fig_climate.add_trace(go.Scatter(x=climate_years, y=sea_level, name="Уровень моря", line=dict(color='#003366', width=2), yaxis="y2"))
+        fig_climate.add_trace(go.Scatter(x=climate_years, y=avg_anomaly, name=curr_c["chart_labels"]["anomaly"], line=dict(color='#D32F2F', width=2.5)))
+        fig_climate.add_trace(go.Scatter(x=climate_years, y=sea_level, name=curr_c["chart_labels"]["level"], line=dict(color='#003366', width=2), yaxis="y2"))
 
-        # --- ЛИНИЯ ТЕКУЩЕГО МОМЕНТА ---
         fig_climate.add_vline(x=2025, line_width=2, line_dash="dash", line_color="#D32F2F")
 
-        # --- АННОТАЦИИ ---
-        
+        # --- АННОТАЦИИ (ЛОКАЛИЗОВАННЫЕ) ---
         # 1. Минимум 1977
         fig_climate.add_annotation(
             x=1977, y=-29.01, yref="y2",
-            text="<b>-29.01 м</b><br>(1977 г.)",
+            text=f"<b>-29.01 {u_sea}</b><br>(1977)",
             showarrow=True, arrowhead=2, ax=0, ay=40, bgcolor="white"
         )
 
         # 2. Пик 1995
         fig_climate.add_annotation(
             x=1995, y=-26.62, yref="y2",
-            text="<b>-26.62 м</b><br>(1995 г.)",
+            text=f"<b>-26.62 {u_sea}</b><br>(1995)",
             showarrow=True, arrowhead=2, ax=0, ay=-40, bgcolor="white"
         )
 
         # 3. Текущая точка 2025
         fig_climate.add_annotation(
             x=2025, y=-29.35, yref="y2",
-            text="<b>СЕЙЧАС</b><br>-29.35 м",
-            showarrow=True, arrowhead=2, arrowcolor="red",
-            ax=-50, ay=0, bgcolor="#FFEBEE", bordercolor="red"
+            text=f"<b>{curr_c['chart_labels']['now']}</b><br>-29.35 {u_sea}",
+            showarrow=True, arrowhead=2, arrowcolor="red", ax=-50, ay=0, bgcolor="#FFEBEE", bordercolor="red"
         )
 
         fig_climate.update_layout(
             height=380, margin=dict(l=10,r=10,t=20,b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             legend=dict(orientation="h", y=-0.3, xanchor="center", x=0.5),
-            yaxis=dict(title="Аномалия воздуха, °C", range=[-3, 3]),
-            yaxis2=dict(title="Уровень моря, м БС", overlaying="y", side="right", range=[-30, -25], showgrid=False)
+            yaxis=dict(title=curr_c["chart_labels"]["y1_title"], range=[-3, 3]),
+            yaxis2=dict(title=curr_c["chart_labels"]["y2_title"], overlaying="y", side="right", range=[-30, -25], showgrid=False)
         )
         
         st.plotly_chart(fig_climate, use_container_width=True, config={'displayModeBar': False})
-    st.divider()
+        
+        
+
+    
     
     
     # --- БЛОК: ГЛОБАЛЬНЫЕ ПОСЛЕДСТВИЯ ---
