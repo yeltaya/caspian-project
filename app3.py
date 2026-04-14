@@ -6758,19 +6758,78 @@ with tabs[5]:
 
             st.warning(f"**{wt['conclusion_title']}** {wt['conclusion_text']}", icon="⚠️")
 
-    # Вызов функции в основном приложении
-    if __name__ == "__main__":
-        show_water_resources_analysis()
-    
-    
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
-        BASE_IMAGE_PATH = os.path.join(BASE_DIR)
-        
+    import streamlit as st
+    import pandas as pd
+    import plotly.express as px
+    import os
 
-        vxb_list = [k for k in VXB_STATS.keys() if k != "Республика Казахстан"]
+    # 1. СЛОВАРЬ ПЕРЕВОДОВ
+    LANG_MAP = {
+        "Русский": {
+            "title": "Анализ водных ресурсов ВХБ Казахстана",
+            "select_basin": "Выберите ВХБ:",
+            "area": "Площадь",
+            "gauges": "Кол-во гидропостов",
+            "total_rivers": "Всего рек",
+            "artery": "Основная артерия",
+            "objects": "Водные объекты",
+            "local_flow_label": "Местный сток",
+            "inflow_label": "Приток",
+            "dynamics_title": "Многолетняя динамика стока (км³/год)",
+            "table_title": "Характеристики основных рек и створов",
+            "dynamics_col": "Динамика",
+            "norm_col": "Норма",
+            "peak_col": "Пик",
+            "min_col": "Мин",
+            "river_col": "Река / Створ"
+        },
+        "Қазақша": {
+            "title": "Қазақстанның СШБ су ресурстарын талдау",
+            "select_basin": "СШБ таңдаңыз:",
+            "area": "Ауданы",
+            "gauges": "Гидробекеттер саны",
+            "total_rivers": "Барлық өзендер",
+            "artery": "Негізгі артерия",
+            "objects": "Су нысандары",
+            "local_flow_label": "Жергілікті ағын",
+            "inflow_label": "Сыртқы ағын",
+            "dynamics_title": "Ағынның көпжылдық динамикасы (км³/жыл)",
+            "table_title": "Негізгі өзендер мен тұстамалардың сипаттамалары",
+            "dynamics_col": "Динамика",
+            "norm_col": "Норма",
+            "peak_col": "Пик",
+            "min_col": "Мин",
+            "river_col": "Өзен / Тұстама"
+        },
+        "English": {
+            "title": "Water Resources Analysis of Kazakhstan Basins",
+            "select_basin": "Select Basin:",
+            "area": "Area",
+            "gauges": "Gauging Stations",
+            "total_rivers": "Total Rivers",
+            "artery": "Main Artery",
+            "objects": "Water Objects",
+            "local_flow_label": "Local Flow",
+            "inflow_label": "Inflow",
+            "dynamics_title": "Long-term Flow Dynamics (km³/year)",
+            "table_title": "Characteristics of Main Rivers and Sections",
+            "dynamics_col": "Dynamics",
+            "norm_col": "Norm",
+            "peak_col": "Peak",
+            "min_col": "Min",
+            "river_col": "River / Section"
+        }
+    }
 
-        # Создайте этот словарь ПЕРЕД циклом for name in vxb_list:
-        # Создайте этот словарь ПЕРЕД циклом for name in vxb_list:
+    def show_water_resources_analysis():
+        # Настройка боковой панели для выбора языка
+        lang = st.sidebar.selectbox("Language / Тіл / Язык", ["Русский", "Қазақша", "English"])
+        t = LANG_MAP[lang]
+
+        st.title(t["title"])
+
+        # Данные ВХБ (сокращено для примера, используйте ваш полный словарь VXB_FULL_DATA)
+        # Примечание: В идеале текстовые описания ("артерия") также должны быть в словаре переводов
         VXB_FULL_DATA = {
             "Ертисский ВХБ": {
                 "photo": "Ертисский.tiff",
@@ -6960,6 +7019,41 @@ with tabs[5]:
             # Добавьте сюда остальные ВХБ по аналогии
     }
     
+
+        basin_name = st.selectbox(t["select_basin"], list(VXB_FULL_DATA.keys()))
+        data = VXB_FULL_DATA[basin_name]
+
+        # Отображение карточек с инфо
+        col1, col2, col3 = st.columns(3)
+        col1.metric(t["area"], data["площадь"])
+        col2.metric(t["gauges"], data["гп_кол"])
+        col3.metric(t["total_rivers"], data["рек_всего"])
+
+        st.subheader(t["dynamics_title"])
+        
+        # Построение графика
+        df_chart = pd.DataFrame({
+            "Year": data["years"][:len(data["local_flow"])],
+            t["local_flow_label"]: data["local_flow"],
+            t["inflow_label"]: data["inflow"] if data["inflow"][0] is not None else [0]*len(data["local_flow"])
+        })
+        
+        fig = px.line(df_chart, x="Year", y=[t["local_flow_label"], t["inflow_label"]], 
+                      markers=True, template="plotly_white")
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Таблица с характеристиками
+        st.subheader(t["table_title"])
+        df_rivers = pd.DataFrame(data["river_table_data"])
+        
+        # Переименование колонок таблицы под выбранный язык
+        df_rivers.columns = [t["river_col"], t["norm_col"], t["peak_col"], t["min_col"], t["dynamics_col"]]
+        st.table(df_rivers)
+
+    if __name__ == "__main__":
+        st.set_page_config(page_title="KazWater Analysis", layout="wide")
+        show_water_resources_analysis()
+
                 
     import base64
 
