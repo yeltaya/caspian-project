@@ -6384,6 +6384,13 @@ with tabs[5]:
     import plotly.graph_objects as go
     import numpy as np
 
+    # --- СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    # Проверяем сессию, если пусто — ставим 'ru' по умолчанию
+    lang = st.session_state.get('lang_code', 'ru')
+
+    # Теперь используем переменную 'lang' для получения словаря перевода
+    t = ui_tr[lang]
+
     # --- 1. ОПРЕДЕЛЕНИЕ ФУНКЦИИ (Должно быть в самом начале) ---
     @st.cache_data
     def load_geo_data(path):
