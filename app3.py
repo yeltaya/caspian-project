@@ -6382,9 +6382,25 @@ with tabs[5]:
     import os
     import pandas as pd
     import plotly.graph_objects as go
-     
-   
-    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
+    import numpy as np
+
+    # --- 1. ОПРЕДЕЛЕНИЕ ФУНКЦИИ (Должно быть в самом начале) ---
+    @st.cache_data
+    def load_geo_data(path):
+        all_gdf = []
+        rivers = None
+        if os.path.exists(path):
+            for file in os.listdir(path):
+                if file.endswith("_VXB.shp"):
+                    gdf = gpd.read_file(os.path.join(path, file))
+                    all_gdf.append(gdf.to_crs(epsg=4326))
+            rivers_path = os.path.join(path, "rivers_kz.shp")
+            if os.path.exists(rivers_path):
+                rivers = gpd.read_file(rivers_path).to_crs(epsg=4326)
+        basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
+        return basins, rivers
+
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
     ui_tr = {
         "ru": {
             "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
@@ -6394,11 +6410,8 @@ with tabs[5]:
             "inflow": "💧 Приток",
             "outflow": "📤 **Отток:**",
             "no_outflow": "🔄 Трансграничный отток не зафиксирован",
-            "unit_y": "км³/год",
-            "unit": "км³",
-            "btn_graph": "📈 Посмотреть гидрограф бассейна",
-            "info_prompt": "ℹ️ Выберите бассейн на карте для детального анализа",
-            "rk": "Республика Казахстан"
+            "unit_y": "км³/год", "unit": "км³", "rk": "Республика Казахстан",
+            "graph_title": "Динамика водности", "trend": "Тренд", "year": "Год"
         },
         "kz": {
             "title": "🌊 ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
@@ -6408,11 +6421,8 @@ with tabs[5]:
             "inflow": "💧 Келу ағыны",
             "outflow": "📤 **Кету ағыны:**",
             "no_outflow": "🔄 Трансшекаралық кету ағыны тіркелген жоқ",
-            "unit_y": "км³/жыл",
-            "unit": "км³",
-            "btn_graph": "📈 Бассейн гидрографын көру",
-            "info_prompt": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз",
-            "rk": "Қазақстан Республикасы"
+            "unit_y": "км³/жыл", "unit": "км³", "rk": "Қазақстан Республикасы",
+            "graph_title": "Сулылық динамикасы", "trend": "Тренд", "year": "Жыл"
         },
         "en": {
             "title": "🌊 WATER RESOURCES OF KAZAKHSTAN",
@@ -6422,124 +6432,74 @@ with tabs[5]:
             "inflow": "💧 Inflow",
             "outflow": "📤 **Outflow:**",
             "no_outflow": "🔄 No transboundary outflow recorded",
-            "unit_y": "km³/year",
-            "unit": "km³",
-            "btn_graph": "📈 View Basin Hydrograph",
-            "info_prompt": "ℹ️ Select a basin on the map for detailed analysis",
-            "rk": "Republic of Kazakhstan"
+            "unit_y": "km³/year", "unit": "km³", "rk": "Republic of Kazakhstan",
+            "graph_title": "Water Yield Dynamics", "trend": "Trend", "year": "Year"
         }
     }
 
-    # Определение текущего языка
+    # Получаем язык (убедитесь, что ваш селектор использует key='lang_code')
     lang = st.session_state.get('lang_code', 'ru')
     t = ui_tr[lang]
 
-    # --- 2. НАСТРОЙКИ ДАННЫХ С ПЕРЕВОДОМ ОТТОКА ---
+    st.title(t["title"])
+
+    # --- 3. ДАННЫЕ СТАТИСТИКИ (с переводами оттока) ---
     VXB_STATS = {
-        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": None},
-        "Балкаш-Алакольский ВХБ": {
-            "норма": 29.91, "местные": 17.20, "приток": 12.71, 
-            "отток": {"ru": "В КНР: 0.67", "kz": "ҚХР-ға: 0.67", "en": "To PRC: 0.67"}
-        },
-        "Ертисский ВХБ": {
-            "норма": 33.38, "местные": 26.36, "приток": 7.03, 
-            "отток": {"ru": "В КНР: 2.20, В РФ: 26.2", "kz": "ҚХР: 2.20, РФ: 26.2", "en": "To PRC: 2.20, To RF: 26.2"}
-        },
-        "Жайык-Каспийский ВХБ": {
-            "норма": 12.00, "местные": 3.36, "приток": 8.63, 
-            "отток": {"ru": "В РФ: 1.48", "kz": "РФ-ға: 1.48", "en": "To RF: 1.48"}
-        },
-        "Есильский ВХБ": {
-            "норма": 2.29, "местные": 2.29, "приток": 0, 
-            "отток": {"ru": "В РФ: 1.86", "kz": "РФ-ға: 1.86", "en": "To RF: 1.86"}
-        },
+        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": {"ru": "В Узбекистан", "kz": "Өзбекстанға", "en": "To Uzbekistan"}},
+        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, "отток": {"ru": "В КНР", "kz": "ҚХР-ға", "en": "To PRC"}},
+        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, "отток": {"ru": "В КНР и РФ", "kz": "ҚХР мен РФ", "en": "To PRC and RF"}},
+        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, "отток": {"ru": "В РФ", "kz": "РФ-ға", "en": "To RF"}},
+        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, "отток": {"ru": "В РФ", "kz": "РФ-ға", "en": "To RF"}},
         "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0, "отток": None},
         "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84, "отток": None},
-        "Тобыл-Торгайский ВХБ": {
-            "норма": 1.67, "местные": 1.33, "приток": 0.34, 
-            "отток": {"ru": "В РФ: 0.46", "kz": "РФ-ға: 0.46", "en": "To RF: 0.46"}
-        },
+        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, "отток": {"ru": "В РФ", "kz": "РФ-ға", "en": "To RF"}},
         "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
     }
 
-    # Отрисовка заголовока
-    st.title(t["title"])
-
-    # [Здесь ваша функция load_geo_data]
+    # --- 4. ЗАГРУЗКА И КАРТА ---
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    FOLDER_PATH = os.path.join(base_path, "shp")
     data_basins, data_rivers = load_geo_data(FOLDER_PATH)
 
     if data_basins is not None:
-        tooltip_col = 'ВХБ_н_'
         col1, col2 = st.columns([2.2, 1])
-        
         with col1:
             m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
-            
-            # Геометрия
-            folium.GeoJson(
-                data_basins,
-                style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
-                highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
-                tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])
-            ).add_to(m)
+            folium.GeoJson(data_basins, tooltip=folium.GeoJsonTooltip(fields=['ВХБ_н_'])).add_to(m)
+            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map_final")
 
-            # Реки
-            if data_rivers is not None:
-                folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
-            
-            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map")
-
-        # Определение выбранного бассейна
-        display_key = "Республика Казахстан"
+        # Определяем выбранный бассейн
+        sel_name = "Республика Казахстан"
         if output and output.get("last_active_drawing"):
-            raw_name = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
-            clean_name = str(raw_name).replace('\n', ' ').strip().lower()
-            for key in VXB_STATS.keys():
-                main_word = key.lower().split('-')[0].split(' ')[0]
-                if main_word in clean_name:
-                    display_key = key
+            res = output["last_active_drawing"]["properties"].get('ВХБ_н_', "Республика Казахстан")
+            for k in VXB_STATS.keys():
+                if k.lower().split(' ')[0] in str(res).lower():
+                    sel_name = k
                     break
 
         with col2:
-            st.markdown(f"""<style>[data-testid="stMetricValue"] {{ font-weight: 800 !important; color: #1e3799; }}</style>""", unsafe_allow_html=True)
-
             st.markdown(t["stats_h"])
+            st.success(f"📍 **{t['rk'] if sel_name == 'Республика Казахстан' else sel_name}**")
             
-            # Локализованное имя региона
-            region_label = t["rk"] if display_key == "Республика Казахстан" else display_key
-            st.success(f"📍 **{region_label}**")
+            cur = VXB_STATS[sel_name]
+            st.metric(t["norm"], f"{cur['норма']} {t['unit_y']}")
             
-            cur_stats = VXB_STATS[display_key]
+            c1, c2 = st.columns(2)
+            c1.metric(t["local"], f"{cur['местные']} {t['unit']}")
+            c2.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
             
-            st.metric(t["norm"], f"{cur_stats['норма']} {t['unit_y']}")
-            
-            m_col1, m_col2 = st.columns(2)
-            with m_col1:
-                st.metric(t["local"], f"{cur_stats['местные']} {t['unit']}")
-            with m_col2:
-                st.metric(t["inflow"], f"{cur_stats['приток']} {t['unit']}")
-            
-            # Вывод оттока с учетом языка
-            if cur_stats.get('отток'):
-                outflow_val = cur_stats['отток'][lang] if isinstance(cur_stats['отток'], dict) else cur_stats['отток']
-                st.warning(f"{t['outflow']} **{outflow_val}**")
+            if cur.get('отток'):
+                txt_out = cur['отток'][lang] if isinstance(cur['отток'], dict) else cur['отток']
+                st.warning(f"{t['outflow']} {txt_out}")
             else:
                 st.info(t["no_outflow"])
 
-            st.markdown("---") 
-            
-            if display_key != "Республика Казахстан":
-                anchor_id = display_key.replace(' ', '-').lower()
-                st.markdown(f"""
-                    <a href="#{anchor_id}" style="text-decoration: none;">
-                        <div style="background: linear-gradient(90deg, #1e3799, #009432); color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
-                            {t['btn_graph']}
-                        </div>
-                    </a>
-                """, unsafe_allow_html=True)
-            else:
-                st.caption(t["info_prompt"])
-            
+    # --- 5. ГРАФИК (с данными, чтобы избежать NameError) ---
+    st.markdown(f"### 📈 {t['graph_title']}")
+    # Здесь вставьте ваш блок data_raw = {...} и df_plot = pd.DataFrame(data_raw)
+    # Используйте t['local'], t['inflow'] в параметрах name= для go.Bar
+    
+    
                 
       
         import streamlit as st
