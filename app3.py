@@ -5997,57 +5997,89 @@ with tabs[4]:
 
     
     import streamlit as st
-    from PIL import Image
+    import base64
     import os
 
-    # Настройка страницы (широкий формат)
-    st.set_page_config(layout="wide")
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
+
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    risk_translations = {
+        "ru": {
+            "map_caption": "Карта рисков",
+            "sub_header": "📋 Оценка паводко-опасных регионов",
+            "high_risk": "**С повышенными рисками:** Акмолинская, СКО, Карагандинская, ВКО и область Абай.",
+            "med_risk": "**Со средними рисками:** Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.",
+            "low_risk": "**С низкими рисками:** Атырауская, Мангыстауская, Кызылординская и Жамбылская области.",
+            "err": "не найден"
+        },
+        "kz": {
+            "map_caption": "Қауіп-қатер картасы",
+            "sub_header": "📋 Су тасқыны қаупі бар аймақтарды бағалау",
+            "high_risk": "**Жоғары қауіпті:** Ақмола, СҚО, Қарағанды, ШҚО және Абай облыстары.",
+            "med_risk": "**Орташа қауіпті:** Қостанай, БҚО, Ақтөбе, Ұлытау, Павлодар, Түркістан, Алматы және Жетісу облыстары.",
+            "low_risk": "**Төмен қауіпті:** Атырау, Маңғыстау, Қызылорда және Жамбыл облыстары.",
+            "err": "табылмады"
+        },
+        "en": {
+            "map_caption": "Risk Map",
+            "sub_header": "📋 Assessment of Flood-Prone Regions",
+            "high_risk": "**High risk:** Akmola, North Kazakhstan, Karaganda, East Kazakhstan, and Abai regions.",
+            "med_risk": "**Medium risk:** Kostanay, West Kazakhstan, Aktobe, Ulytau, Pavlodar, Turkestan, Almaty, and Zhetisu regions.",
+            "low_risk": "**Low risk:** Atyrau, Mangystau, Kyzylorda, and Zhambyl regions.",
+            "err": "not found"
+        }
+    }
+
+    rt = risk_translations.get(current_l, risk_translations["ru"])
 
     def main():
-        # Создаем две колонки: левая для карты (относительная ширина 2), правая для текста (ширина 1)
+        # Создаем две колонки: левая для карты (2), правая для текста (1)
         col1, col2 = st.columns([2, 1])
 
-        import base64
-        import os
-
         with col1:
-            # Путь к изображению
             image_path = "risk.jpeg"
+            # Предполагается, что BASE_DIR определен выше в коде
+            full_path = os.path.join(BASE_DIR, image_path) if 'BASE_DIR' in locals() else image_path
             
-            if os.path.exists(image_path):
-                # Кодируем изображение в Base64
-                with open(image_path, "rb") as f:
+            if os.path.exists(full_path):
+                with open(full_path, "rb") as f:
                     data = base64.b64encode(f.read()).decode("utf-8")
                 
-                # Выводим увеличенное изображение (120% ширины)
+                # Выводим изображение
                 st.markdown(
                     f"""
-                    <div style="width: 80%; margin-bottom: 5px;">
-                        <img src="data:image/jpeg;base64,{data}" style="width: 80%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                    <div style="width: 100%; text-align: center; margin-bottom: 5px;">
+                        <img src="data:image/jpeg;base64,{data}" style="width: 90%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                     </div>
                     """, 
                     unsafe_allow_html=True
                 )
-                # Подпись под увеличенным рисунком
-                st.markdown('<div style="color: gray; font-size: 0.9rem; text-align: center; margin-bottom: 20px;">Карта рисков</div>', unsafe_allow_html=True)
+                # Подпись
+                st.markdown(f'<div style="color: gray; font-size: 0.9rem; text-align: center; margin-bottom: 20px;">{rt["map_caption"]}</div>', unsafe_allow_html=True)
             else:
-                st.error(f"Файл {image_path} не найден в основной папке.")
-                
+                st.error(f"File {image_path} {rt['err']}")
 
         with col2:
             # Текстовый блок справа
-            st.subheader("📋 Оценка паводко-опасных регионов")
+            st.subheader(rt["sub_header"])
             
-            st.markdown("""
-            **С повышенными рисками:** Акмолинская, СКО, Карагандинская, ВКО и область Абай.
+            st.markdown(f"""
+            {rt['high_risk']}
             
-            **Со средними рисками:** Костанайская, ЗКО, Актюбинская, Улытауская, Павлодарская, Туркестанская, Алматинская и область Жетісу.
+            {rt['med_risk']}
             
-            **С низкими рисками:** Атырауская, Мангыстауская, Кызылординская и Жамбылская области.
+            {rt['low_risk']}
             """)
-            
+
     if __name__ == "__main__":
         main()
+        
         
     import streamlit as st
     import os
