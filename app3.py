@@ -5823,8 +5823,8 @@ with tabs[4]:
     moisture_translations = {
         "ru": {
             "header": "🍂 Осеннее увлажнение (сентябрь–октябрь)",
-            "map1_cap": "1) Суммы осадков за осенний период, мм",
-            "map2_cap": "2) Отклонение от нормы, %",
+            "map1_cap": "Суммы осадков за осенний период, мм",
+            "map2_cap": "Отклонение от нормы, %",
             "desc1": """В ряде западных и восточных областей (преимущественно в <b>Западно-Казахстанской, Мангыстауской, Павлодарской, 
                         Восточно-Казахстанской областях, области Абай, на востоке Карагандинской и севере области Жетісу</b>) наблюдаются 
                         показатели выше нормы. В отдельных точках зафиксированы значения <span class="highlight-blue">более 150 мм</span>.""",
@@ -5835,8 +5835,8 @@ with tabs[4]:
         },
         "kz": {
             "header": "🍂 Күзгі ылғалдану (қыркүйек–қазан)",
-            "map1_cap": "1) Күзгі кезеңдегі жауын-шашын мөлшері, мм",
-            "map2_cap": "2) Қалыпты жағдайдан ауытқу, %",
+            "map1_cap": "Күзгі кезеңдегі жауын-шашын мөлшері, мм",
+            "map2_cap": "Қалыпты жағдайдан ауытқу, %",
             "desc1": """Бірқатар батыс және шығыс облыстарда (негізінен <b>Батыс Қазақстан, Маңғыстау, Павлодар, Шығыс Қазақстан, Абай облыстарында, 
                         Қарағандының шығысында және Жетісу облысының солтүстігінде</b>) күзгі ылғалдылық қалыпты деңгейден жоғары. 
                         Кейбір жерлерде <span class="highlight-blue">150 мм-ден астам</span> көрсеткіштер тіркелді.""",
@@ -5847,8 +5847,8 @@ with tabs[4]:
         },
         "en": {
             "header": "🍂 Autumn Soil Moisture (September–October)",
-            "map1_cap": "1) Autumn precipitation totals, mm",
-            "map2_cap": "2) Deviation from the norm, %",
+            "map1_cap": "Autumn precipitation totals, mm",
+            "map2_cap": "Deviation from the norm, %",
             "desc1": """In several western and eastern regions (mainly <b>West Kazakhstan, Mangystau, Pavlodar, East Kazakhstan, Abai regions, 
                         eastern Karaganda, and northern Zhetisu</b>), moisture levels are above normal. In some areas, values <span class="highlight-blue">> 150 mm</span> 
                         have been recorded, indicating significant wetting.""",
@@ -5909,72 +5909,92 @@ with tabs[4]:
 
 
 
-    import base64
-    import os
+    # --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
-    # Вспомогательная функция для обработки изображений (если еще не добавлена выше)
-    def get_img_as_base64(file_name):
-        path = os.path.join(BASE_DIR, file_name)
-        if os.path.exists(path):
-            with open(path, "rb") as f:
-                return base64.b64encode(f.read()).decode("utf-8")
-        return None
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    cold_period_translations = {
+        "ru": {
+            "header": "❄️ Количество осадков за холодный период",
+            "map1_cap": "1) Суммы осадков за холодный период, мм",
+            "map2_cap": "2) Отклонение от нормы за холодный период, %",
+            "desc1": """Превышение нормы наблюдается преимущественно на востоке (горные части ВКО и области Абай) 
+                        и севере (Павлодарская, Акмолинская, СКО, север Костанайской и Карагандинской областей). 
+                        В предгорьях Туркестанской и на востоке Мангистауской областей также выше нормы.""",
+            "desc2": """Осадки ниже нормы в западных (ЗКО, Актюбинская, Атырауская), южных (Туркестанская, Жамбылская), 
+                        юго-восточных (Алматинская, Жетісу) и центральных (Ұлытау, юг Костанайской) областях. 
+                        Около нормы — в равнинной части области Абай и Кызылординской области.""",
+            "err": "не найден"
+        },
+        "kz": {
+            "header": "❄️ Суық кезеңдегі жауын-шашын мөлшері",
+            "map1_cap": "1) Суық кезеңдегі жауын-шашын мөлшері, мм",
+            "map2_cap": "2) Суық кезеңдегі қалыпты жағдайдан ауытқу, %",
+            "desc1": """Нормадан асу негізінен шығыста (ШҚО және Абай облысының таулы бөліктері) 
+                        және солтүстікте (Павлодар, Ақмола, СҚО, Қостанай және Қарағанды облыстарының солтүстігі) байқалады. 
+                        Түркістан облысының тау бөктерінде және Маңғыстау облысының шығысында да нормадан жоғары.""",
+            "desc2": """Батыс (БҚО, Ақтөбе, Атырау), оңтүстік (Түркістан, Жамбыл), 
+                        оңтүстік-шығыс (Алматы, Жетісу) және орталық (Ұлытау, Қостанайдың оңтүстігі) облыстарда жауын-шашын нормадан төмен. 
+                        Абай облысының жазық бөлігінде және Қызылорда облысында нормаға жуық.""",
+            "err": "табылмады"
+        },
+        "en": {
+            "header": "❄️ Cold Period Precipitation Amount",
+            "map1_cap": "1) Cold period precipitation totals, mm",
+            "map2_cap": "2) Deviation from the norm for the cold period, %",
+            "desc1": """Above-normal levels are observed mainly in the east (mountainous parts of East Kazakhstan and Abai regions) 
+                        and the north (Pavlodar, Akmola, North Kazakhstan, northern Kostanay, and Karaganda regions). 
+                        Foothills of Turkestan and eastern Mangystau regions also show above-normal levels.""",
+            "desc2": """Precipitation is below normal in western (WKR, Aktobe, Atyrau), southern (Turkestan, Zhambyl), 
+                        southeastern (Almaty, Zhetisu), and central (Ulytau, southern Kostanay) regions. 
+                        Near normal levels — in the plains of Abai region and Kyzylorda region.""",
+            "err": "not found"
+        }
+    }
 
-    # --- РАЗДЕЛ: ОСАДКИ ЗА ХОЛОДНЫЙ ПЕРИОД ---
-    st.markdown('<div class="predictor-header">❄️ Количество осадков за холодный период</div>', unsafe_allow_html=True)
+    ct = cold_period_translations.get(current_l, cold_period_translations["ru"])
+
+    # --- 3. ОТОБРАЖЕНИЕ РАЗДЕЛА ---
+    st.markdown(f'<div class="predictor-header">{ct["header"]}</div>', unsafe_allow_html=True)
 
     col3, col4 = st.columns(2)
 
     with col3:
         data3 = get_img_as_base64("Без названия (3).jpeg")
         if data3:
-            st.markdown(
-                f"""
+            st.markdown(f"""
                 <div style="width: 100%; margin-bottom: 10px;">
-                    <img src="data:image/jpeg;base64,{data3}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <img src="data:image/jpeg;base64,{data3}" style="width: 100%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 </div>
-                """, 
-                unsafe_allow_html=True
-            )
+                """, unsafe_allow_html=True)
         else:
-            st.error("Файл 'Без названия (3).jpeg' не найден")
+            st.error(f"File 'Без названия (3).jpeg' {ct['err']}")
 
-        st.markdown('<div class="map-caption">1) Суммы осадков за холодный период, мм</div>', unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="report-text">
-            Превышение нормы наблюдается преимущественно на востоке (горные и предгорные части ВКО и области Абай),
-            и севере (в Павлодарской области, большей части Акмолинской и Северо-Кахастанской областей, на севере
-            Костанайской и Карагандинской областей). В горно-предгорных районах Туркестанкой области и восточной части
-            Мангистауской области также наблюдаются осадки больше нормы.
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f'<div class="map-caption">{ct["map1_cap"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="report-text">{ct["desc1"]}</div>', unsafe_allow_html=True)
 
     with col4:
         data4 = get_img_as_base64("Без названия (4).jpeg")
         if data4:
-            st.markdown(
-                f"""
+            st.markdown(f"""
                 <div style="width: 100%; margin-bottom: 10px;">
-                    <img src="data:image/jpeg;base64,{data4}" style="width: 115%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <img src="data:image/jpeg;base64,{data4}" style="width: 100%; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 </div>
-                """, 
-                unsafe_allow_html=True
-            )
+                """, unsafe_allow_html=True)
         else:
-            st.error("Файл 'Без названия (4).jpeg' не найден")
+            st.error(f"File 'Без названия (4).jpeg' {ct['err']}")
 
-        st.markdown('<div class="map-caption">2) Отклонение от нормы за холодный период, %</div>', unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="report-text">
-            Накопленные осадки ниже нормы в западных (ЗКО, Актюбинская, Атырауская), южных (Туркестанская, Жамбылская), 
-            юго-восточных (Алматинская, Жетісу) и центральных (Ұлытау, юг Костанайской) областях. 
-            Местами (равнинные части области Абай и значительная часть Кызылординской области) накопление наблюдается около нормы.
-        </div>
-        """, unsafe_allow_html=True)
-        
+        st.markdown(f'<div class="map-caption">{ct["map2_cap"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="report-text">{ct["desc2"]}</div>', unsafe_allow_html=True)
+
     st.divider()
+
+
     
     import streamlit as st
     from PIL import Image
