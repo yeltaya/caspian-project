@@ -8696,55 +8696,87 @@ with tabs[6]:
                                     <p class="metric-label">{card['label']}</p>
                                 </div>
                             """, unsafe_allow_html=True)
+                    
+       
+   
+    stats_ui = {
+            "ru": {
+                "box1_title": "Изменение акватории (2006 — 2024)",
+                "box1_loss": "-36.6 тыс. км²",
+                "box1_unit": "тыс. км²",
+                "box1_footer": "За этот период Каспий потерял объем воды, равный <b>47.6 км³</b>.",
+                "box2_title": "Превышение критического порога",
+                "box2_record": "РЕКОРД 1977 г.",
+                "box2_fact": "ФАКТ 2025 г.",
+                "box2_footer": "Уровень моря опустился ниже самого низкого значения XX века."
+            },
+            "kz": {
+                "box1_title": "Акваторияның өзгеруі (2006 — 2024)",
+                "box1_loss": "-36.6 мың км²",
+                "box1_unit": "мың км²",
+                "box1_footer": "Осы кезеңде Каспий <b>47.6 км³</b> су көлемін жоғалтты.",
+                "box2_title": "Критикалық шектің асып кетуі",
+                "box2_record": "1977 ж. РЕКОРДЫ",
+                "box2_fact": "2025 ж. ФАКТІСІ",
+                "box2_footer": "Теңіз деңгейі XX ғасырдағы ең төменгі мәннен де төмен түсті."
+            },
+            "en": {
+                "box1_title": "Area Changes (2006 — 2024)",
+                "box1_loss": "-36.6k km²",
+                "box1_unit": "k km²",
+                "box1_footer": "During this period, the Caspian lost water volume equal to <b>47.6 km³</b>.",
+                "box2_title": "Critical Threshold Exceeded",
+                "box2_record": "1977 RECORD",
+                "box2_fact": "2025 FACT",
+                "box2_footer": "The sea level has dropped below the lowest value of the 20th century."
+            }
+        }
 
-                        
-    
-    
-    
-
-    # Создаем две колонки с равной шириной
+        curr_s = stats_ui.get(lang_code, stats_ui["ru"])
+        
+# Создаем две колонки с равной шириной
     col1, col2 = st.columns(2)
 
     with col1:
         # 3. ПЕРВЫЙ БЛОК: ИЗМЕНЕНИЕ АКВАТОРИИ
-        st.markdown("""
+        st.markdown(f"""
             <div style="background: #F0F9FF; padding: 20px; border-radius: 20px; border: 1px solid #BAE6FD; height: 250px; font-family: 'Montserrat', sans-serif;">
                 <p style="margin: 0 0 15px 0; color: #0369A1; font-weight: 600; font-size: 1.1rem; text-align: center; text-transform: uppercase;">
-                    Изменение акватории (2006 — 2024)
+                    {curr_s["box1_title"]}
                 </p>
                 <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; margin-top: 25px;">
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #64748B; font-size: 0.7rem;">2006 г.</p>
-                        <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 400;">392.3 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #64748B; font-size: 0.7rem;">2006</p>
+                        <p style="margin: 0; color: #0C4A6E; font-size: 1.1rem; font-weight: 400;">392.3 <span style="font-size: 0.6rem;">{curr_s["box1_unit"]}</span></p>
                     </div>
                     <div style="flex-grow: 1; position: relative; margin: 0 15px; text-align: center;">
                         <div style="height: 2px; background: #0EA5E9; width: 100%;"></div>
                         <div style="position: absolute; right: -2px; top: -5px; width: 10px; height: 10px; border-top: 2px solid #0EA5E9; border-right: 2px solid #0EA5E9; transform: rotate(45deg);"></div>
                         <span style="background: #0EA5E9; color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; position: relative; top: -20px;">
-                            -36.6 тыс. км²
+                            {curr_s["box1_loss"]}
                         </span>
                     </div>
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #0369A1; font-size: 0.7rem; font-weight: 400;">2024 г.</p>
-                        <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 400;">355.7 <span style="font-size: 0.6rem;">тыс. км²</span></p>
+                        <p style="margin: 0; color: #0369A1; font-size: 0.7rem; font-weight: 400;">2024</p>
+                        <p style="margin: 0; color: #0369A1; font-size: 1.1rem; font-weight: 400;">355.7 <span style="font-size: 0.6rem;">{curr_s["box1_unit"]}</span></p>
                     </div>
                 </div>
                 <p style="margin: 15px 0 0 0; text-align: center; color: #0C4A6E; font-size: 0.85rem; line-height: 1.4;">
-                    За этот период Каспий потерял объем воды, равный <b>47.6 км³</b>.
+                    {curr_s["box1_footer"]}
                 </p>
             </div>
         """, unsafe_allow_html=True)
 
     with col2:
-        # 4. ВТОРОЙ БЛОК: КРИТИЧЕСКИЙ ПОРОГ (-34 см)
-        st.markdown("""
+        # 4. ВТОРОЙ БЛОК: КРИТИЧЕСКИЙ ПОРОГ
+        st.markdown(f"""
             <div style="background: #FFF5F5; padding: 20px; border-radius: 20px; border: 1px solid #FECACA; height: 250px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.05);">
                 <p style="margin: 0 0 15px 0; color: #D32F2F; font-weight: 800; font-size: 0.9rem; text-align: center; text-transform: uppercase;">
-                    Превышение критического порога
+                    {curr_s["box2_title"]}
                 </p>
                 <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; margin-top: 25px;">
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #64748B; font-size: 0.7rem;">РЕКОРД 1977 г.</p>
+                        <p style="margin: 0; color: #64748B; font-size: 0.7rem;">{curr_s["box2_record"]}</p>
                         <p style="margin: 0; color: #475569; font-size: 1.2rem; font-weight: 700;">-29.01 м</p>
                     </div>
                     <div style="flex-grow: 1; position: relative; margin: 0 15px; text-align: center;">
@@ -8755,17 +8787,17 @@ with tabs[6]:
                         </span>
                     </div>
                     <div style="text-align: center;">
-                        <p style="margin: 0; color: #D32F2F; font-size: 0.7rem; font-weight: 800;">ФАКТ 2025 г.</p>
+                        <p style="margin: 0; color: #D32F2F; font-size: 0.7rem; font-weight: 800;">{curr_s["box2_fact"]}</p>
                         <p style="margin: 0; color: #D32F2F; font-size: 1.5rem; font-weight: 900;">-29.35 м</p>
                     </div>
                 </div>
                 <p style="margin: 15px 0 0 0; text-align: center; color: #334155; font-size: 0.85rem; line-height: 1.4;">
-                    Уровень моря опустился ниже самого низкого значения XX века.
+                    {curr_s["box2_footer"]}
                 </p>
             </div>
         """, unsafe_allow_html=True)
+
         
-    st.divider()
     
     # 1. Уменьшаем отступы у линии (с 80px до 30px например)
     st.markdown("<hr style='margin: 30px 0; opacity: 0.1;'>", unsafe_allow_html=True)
