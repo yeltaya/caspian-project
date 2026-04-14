@@ -6213,34 +6213,34 @@ with tabs[4]:
     sele_translations = {
         "ru": {
             "header": "🏔️ Мониторинг селевой опасности дождевого генезиса",
-            "geo_risk": "<strong>География риска:</strong> Селеопасные районы занимают около <b>13%</b> территории Казахстана (горы и предгория). Мониторинг дождевого генезиса ведется по <b>11 основным селеопасным районам</b>.",
+            "geo_risk": "<strong>География риска:</strong> Селеопасные районы занимают около <b>13%</b> территории Казахстана (горы и предгория). Мониторинг дождевого генезиса ведется по <b>11  селеопасным районам</b>.",
             "map_cap": "Карта селевой опасности территории РК",
             "prod_title": "### 📋 Выпускаемая продукция",
             "prod_list": ["📅 Ежегодный бюллетень", "🕒 Ежедневный бюллетень", "⚡ Прогнозы: краткосрочные и сверхкраткосрочные", "⚠️ Штормовые предупреждения"],
             "districts_title": "#### 📍 Селеопасные районы:",
-            "districts": "• Иле Алатау<br>• Кунгей Алатау<br>• Терискей Алатау<br>• Жетысу Алатау<br>• Киргизский Алатау<br>• Таласский Алатау<br>• Угамский хребет<br>• горы Мангистау<br>• Тарбагатай<br>• Саур<br>• Алтай",
+            "districts": "• Иле Алатау<br>• Кунгей Алатау<br>• Терискей Алатау<br>• Жетысу Алатау<br>• Киргизский Алатау<br>• Таласский Алатау<br>• Угамский хребет<br>• горы Мангистау<br>• Тарбагатай<br>• Саур<br>• Казахстанский Алтай",
             "consumers": "**Потребители:** Государственные органы управления и население РК.",
             "placeholder": "🖼️ [Место для карты селевой опасности]"
         },
         "kz": {
             "header": "🏔️ Жаңбырдан болатын сел қаупінің мониторингі",
-            "geo_risk": "<strong>Қауіп географиясы:</strong> Сел қаупі бар аймақтар Қазақстан аумағының шамамен <b>13%</b> құрайды (таулар мен тау бөктері). Жаңбырдан болатын сел мониторингі <b>11 негізгі сел қаупі бар ауданда</b> жүргізіледі.",
+            "geo_risk": "<strong>Қауіп географиясы:</strong> Сел қаупі бар аймақтар Қазақстан аумағының шамамен <b>13%</b> құрайды (таулар мен тау бөктері). Жаңбырдан болатын сел мониторингі <b>11  сел қаупі бар ауданда</b> жүргізіледі.",
             "map_cap": "ҚР аумағының сел қаупі картасы",
             "prod_title": "### 📋 Шығарылатын өнімдер",
             "prod_list": ["📅 Жылдық бюллетень", "🕒 Күнделікті бюллетень", "⚡ Болжамдар: қысқа мерзімді және тым қысқа мерзімді", "⚠️ Дауылды ескертулер"],
             "districts_title": "#### 📍 Сел қаупі бар аудандар:",
-            "districts": "• Іле Алатауы<br>• Күнгей Алатауы<br>• Теріскей Алатауы<br>• Жетісу Алатауы<br>• Қырғыз Алатауы<br>• Талас Алатауы<br>• Өгем жотасы<br>• Маңғыстау таулары<br>• Тарбағатай<br>• Сауыр<br>• Алтай",
+            "districts": "• Іле Алатауы<br>• Күнгей Алатауы<br>• Теріскей Алатауы<br>• Жетісу Алатауы<br>• Қырғыз Алатауы<br>• Талас Алатауы<br>• Өгем жотасы<br>• Маңғыстау таулары<br>• Тарбағатай<br>• Сауыр<br>• Қазақстандық Алтай",
             "consumers": "**Тұтынушылар:** Мемлекеттік басқару органдары және ҚР халқы.",
             "placeholder": "🖼️ [Сел қаупі картасының орны]"
         },
         "en": {
             "header": "🏔️ Monitoring of Rainfall-Induced Mudflow Hazards",
-            "geo_risk": "<strong>Geography of Risk:</strong> Mudflow-prone areas cover about <b>13%</b> of Kazakhstan (mountains and foothills). Rainfall-induced mudflow monitoring is conducted for <b>11 main hazardous regions</b>.",
+            "geo_risk": "<strong>Geography of Risk:</strong> Mudflow-prone areas cover about <b>13%</b> of Kazakhstan (mountains and foothills). Rainfall-induced mudflow monitoring is conducted for <b>11 hazardous regions</b>.",
             "map_cap": "Mudflow Hazard Map of the Republic of Kazakhstan",
             "prod_title": "### 📋 Output Products",
             "prod_list": ["📅 Annual bulletin", "🕒 Daily bulletin", "⚡ Forecasts: short-term and very short-term", "⚠️ Storm warnings"],
             "districts_title": "#### 📍 Hazardous Regions:",
-            "districts": "• Ile Alatau<br>• Kungey Alatau<br>• Teriskey Alatau<br>• Zhetisu Alatau<br>• Kyrgyz Alatau<br>• Talas Alatau<br>• Ugam Range<br>• Mangystau Mountains<br>• Tarbagatay<br>• Saur<br>• Altai",
+            "districts": "• Ile Alatau<br>• Kungey Alatau<br>• Teriskey Alatau<br>• Zhetisu Alatau<br>• Kyrgyz Alatau<br>• Talas Alatau<br>• Ugam Range<br>• Mangystau Mountains<br>• Tarbagatay<br>• Saur<br>• Kazakhstan Altai",
             "consumers": "**Consumers:** State authorities and the population of the RK.",
             "placeholder": "🖼️ [Place for mudflow hazard map]"
         }
@@ -6319,7 +6319,7 @@ with tabs[4]:
                 "1. Дождевой 🌧️",
                 "2. Гляциальный 🏔️",
                 "3. Водоледяной ❄️",
-                "4. Сейсмический 🌋",
+                "4. Сейсмический 🏔️",
                 "5. Антропогенный 🚜"
             ],
             "criteria_title": "⚖️ **Критерии осадков (согласно Наставления 2005 г.):**",
@@ -6332,7 +6332,7 @@ with tabs[4]:
                 "1. Жаңбырлы 🌧️",
                 "2. Гляциалды (мұздық) 🏔️",
                 "3. Су-мұзды ❄️",
-                "4. Сейсмикалық 🌋",
+                "4. Сейсмикалық 🏔️",
                 "5. Антропогендік 🚜"
             ],
             "criteria_title": "⚖️ **Жауын-шашын критерийлері (2005 ж. Нұсқаулыққа сәйкес):**",
@@ -6345,7 +6345,7 @@ with tabs[4]:
                 "1. Rain-induced 🌧️",
                 "2. Glacial 🏔️",
                 "3. Water-ice ❄️",
-                "4. Seismic 🌋",
+                "4. Seismic 🏔️",
                 "5. Anthropogenic 🚜"
             ],
             "criteria_title": "⚖️ **Precipitation Criteria (acc. to 2005 Manual):**",
@@ -6510,37 +6510,43 @@ with tabs[5]:
                     break
 
         with col2:
-            # CSS для жирных метрик
-            st.markdown("<style>[data-testid='stMetricValue']{font-weight:800 !important; color:#1e3799;}</style>", unsafe_allow_html=True)
-            
             st.markdown(t["stats_h"])
-            # Перевод заголовка выбранного региона
+            
+            # Определяем заголовок (РК или конкретный бассейн)
             display_title = t['rk'] if sel_name == "Республика Казахстан" else sel_name
             st.success(f"📍 **{display_title}**")
             
             cur = VXB_STATS[sel_name]
+            
+            # 1. Норма (заголовок и единица измерения из словаря t)
             st.metric(t["norm"], f"{cur['норма']} {t['unit_y']}")
             
-            c1, c2 = st.columns(2)
-            c1.metric(t["local"], f"{cur['местные']} {t['unit']}")
-            c2.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
+            # 2. Местный сток и Приток
+            m_c1, m_c2 = st.columns(2)
+            m_c1.metric(t["local"], f"{cur['местные']} {t['unit']}")
+            m_c2.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
             
-            # Блок оттока (берем перевод из словаря внутри VXB_STATS)
+            # 3. Блок оттока
+            # Проверяем наличие данных об оттоке
             if cur.get('отток'):
-                outflow_val = cur['отток'][lang] if isinstance(cur['отток'], dict) else cur['отток']
+                # Если отток — это словарь с переводами, берем нужный язык
+                if isinstance(cur['отток'], dict):
+                    outflow_val = cur['отток'].get(lang, cur['отток']['ru'])
+                else:
+                    outflow_val = cur['отток']
+                
                 st.warning(f"{t['outflow_label']} **{outflow_val}**")
             else:
+                # Если оттока нет, выводим сообщение о его отсутствии на текущем языке
                 st.info(t["no_outflow"])
 
             st.markdown("---")
             if sel_name != "Республика Казахстан":
-                anchor_id = sel_name.replace(' ', '-').lower()
+                # Кнопка тоже на текущем языке
                 st.markdown(f"""
-                    <a href="#{anchor_id}" style="text-decoration: none;">
-                        <div style="background:linear-gradient(90deg, #1e3799, #009432); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
-                            {t['btn_text']}
-                        </div>
-                    </a>
+                    <div style="background:linear-gradient(90deg, #1e3799, #009432); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold;">
+                        {t['btn_text']}
+                    </div>
                 """, unsafe_allow_html=True)
             else:
                 st.caption(t["info_select"])
