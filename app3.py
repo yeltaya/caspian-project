@@ -6382,72 +6382,26 @@ with tabs[5]:
     import os
     import pandas as pd
     import plotly.graph_objects as go
-    import numpy as np
+     
+    
+    base_path = os.path.dirname(os.path.abspath(__file__))
+        
+        
+    # --- НАСТРОЙКИ И ДАННЫЕ ---
+    FOLDER_PATH = os.path.join(BASE_DIR, "shp")
 
-    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ИНТЕРФЕЙСА ---
-    ui_tr = {
-        "ru": {
-            "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
-            "stats_h": "### 📊 Характеристики",
-            "norm": "💠 Норма бассейна (W)",
-            "local": "💧︎ Местный сток",
-            "inflow": "💧 Приток",
-            "outflow_label": "📤 **Отток:**",
-            "no_outflow": "🔄 Трансграничный отток не зафиксирован",
-            "unit_y": "км³/год", "unit": "км³", "rk": "Республика Казахстан",
-            "btn_text": "📈 Посмотреть гидрограф бассейна",
-            "info_select": "ℹ️ Выберите бассейн на карте для детального анализа"
-        },
-        "kz": {
-            "title": "🌊 ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
-            "stats_h": "### 📊 Сипаттамалары",
-            "norm": "💠 Бассейн нормасы (W)",
-            "local": "💧︎ Жергілікті ағын",
-            "inflow": "💧 Келу ағыны",
-            "outflow_label": "📤 **Кету ағыны:**",
-            "no_outflow": "🔄 Трансшекаралық кету ағыны тіркелген жоқ",
-            "unit_y": "км³/жыл", "unit": "км³", "rk": "Қазақстан Республикасы",
-            "btn_text": "📈 Бассейн гидрографын көру",
-            "info_select": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз"
-        },
-        "en": {
-            "title": "🌊 WATER RESOURCES OF KAZAKHSTAN",
-            "stats_h": "### 📊 Characteristics",
-            "norm": "💠 Basin Norm (W)",
-            "local": "💧︎ Local Runoff",
-            "inflow": "💧 Inflow",
-            "outflow_label": "📤 **Outflow:**",
-            "no_outflow": "🔄 No transboundary outflow recorded",
-            "unit_y": "km³/year", "unit": "km³", "rk": "Republic of Kazakhstan",
-            "btn_text": "📈 View Basin Hydrograph",
-            "info_select": "ℹ️ Select a basin on the map for detailed analysis"
-        }
-    }
-
-    # Синхронизация языка
-    lang = st.session_state.get('lang_code', 'ru')
-    t = ui_tr[lang]
-
-    # --- 2. ДАННЫЕ СТАТИСТИКИ (с мультиязычным оттоком) ---
     VXB_STATS = {
-        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, 
-            "отток": {"ru": "В Узбекистан", "kz": "Өзбекстанға", "en": "To Uzbekistan"}},
-        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, 
-            "отток": {"ru": "В КНР: 0.67", "kz": "ҚХР-ға: 0.67", "en": "To PRC: 0.67"}},
-        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, 
-            "отток": {"ru": "В КНР: 2.20, В РФ: 26.2", "kz": "ҚХР-ға: 2.20, РФ-ға: 26.2", "en": "To PRC: 2.20, To RF: 26.2"}},
-        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, 
-            "отток": {"ru": "В РФ: 1.48", "kz": "РФ-ға: 1.48", "en": "To RF: 1.48"}},
-        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, 
-            "отток": {"ru": "В РФ: 1.86", "kz": "РФ-ға: 1.86", "en": "To RF: 1.86"}},
+        "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": None},
+        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, "отток": "В КНР: 0.67"},
+        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, "отток": "В КНР: 2.20, В РФ: 26.2"},
+        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, "отток": "В РФ: 1.48"},
+        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, "отток": "В РФ: 1.86"},
         "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0, "отток": None},
         "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84, "отток": None},
-        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, 
-            "отток": {"ru": "В РФ: 0.46", "kz": "РФ-ға: 0.46", "en": "To RF: 0.46"}},
+        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, "отток": "В РФ: 0.46"},
         "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
     }
 
-    # --- 3. ЗАГРУЗКА ГЕОДАННЫХ ---
     @st.cache_data
     def load_geo_data(path):
         all_gdf = []
@@ -6463,94 +6417,126 @@ with tabs[5]:
         basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
         return basins, rivers
 
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    FOLDER_PATH = os.path.join(base_path, "shp")
+    st.title("🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА")
     data_basins, data_rivers = load_geo_data(FOLDER_PATH)
 
-    st.title(t["title"])
-
     if data_basins is not None:
-        tooltip_col = 'ВХБ_н_' # Поле в .shp файле на русском
+        tooltip_col = 'ВХБ_н_'
         
+        # --- ВЕРХНЯЯ ЧАСТЬ: КАРТА И ИНФО-ПАНЕЛЬ ---
         col1, col2 = st.columns([2.2, 1])
         
         with col1:
-            m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
-            
-            # Полигоны (названия в tooltip всегда на русском из SHP)
-            folium.GeoJson(
-                data_basins,
-                style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
-                highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
-                tooltip=folium.GeoJsonTooltip(fields=[tooltip_col], labels=False)
-            ).add_to(m)
+                    m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
+                    
+                    # 1. Основные полигоны ВХБ
+                    folium.GeoJson(
+                        data_basins,
+                        style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
+                        highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
+                        tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])
+                    ).add_to(m)
 
-            # Названия на самой карте (тоже оставляем RU для стабильности)
-            for _, row in data_basins.iterrows():
-                centroid = row.geometry.centroid
-                name = row[tooltip_col]
-                folium.Marker(
-                    location=[centroid.y, centroid.x],
-                    icon=folium.DivIcon(html=f"""<div style="font-family:sans-serif; color:#1d3557; font-size:8pt; font-weight:bold; text-align:center; width:100px; transform:translate(-50%,-50%); pointer-events:none;">{name}</div>""")
-                ).add_to(m)
+                    # 2. ДОБАВЛЯЕМ НАЗВАНИЯ НА КАРТУ
+                    for _, row in data_basins.iterrows():
+                        # Вычисляем центр бассейна для размещения текста
+                        centroid = row.geometry.centroid
+                        name = row[tooltip_col]
+                        
+                        # Создаем текстовую метку
+                        folium.Marker(
+                            location=[centroid.y, centroid.x],
+                            icon=folium.DivIcon(
+                                html=f"""<div style="
+                                    font-family: sans-serif; 
+                                    color: #1d3557; 
+                                    font-size: 9pt; 
+                                    font-weight: bold; 
+                                    text-shadow: 1px 1px 2px white;
+                                    width: 150px;
+                                    text-align: center;
+                                    transform: translate(-50%, -50%);
+                                    pointer-events: none;
+                                ">{name}</div>"""
+                            )
+                        ).add_to(m)
 
-            if data_rivers is not None:
-                folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
-            
-            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map_final")
+                    # 3. Реки
+                    if data_rivers is not None:
+                        folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
+                    
+                    output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map")
+                    
 
-        # --- ЛОГИКА ОПРЕДЕЛЕНИЯ ВЫБОРА ---
-        sel_name = "Республика Казахстан"
+        # Определение выбора
+        display_name = "Республика Казахстан"
         if output and output.get("last_active_drawing"):
-            res = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
-            # Ищем ключ в VXB_STATS по частичному совпадению
-            for k in VXB_STATS.keys():
-                if k.lower().split(' ')[0] in str(res).lower():
-                    sel_name = k
+            raw_name = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
+            clean_name = str(raw_name).replace('\n', ' ').strip().lower()
+            for key in VXB_STATS.keys():
+                main_word = key.lower().split('-')[0].split(' ')[0]
+                if main_word in clean_name:
+                    display_name = key
                     break
 
         with col2:
-            st.markdown(t["stats_h"])
-            
-            # Определяем заголовок (РК или конкретный бассейн)
-            display_title = t['rk'] if sel_name == "Республика Казахстан" else sel_name
-            st.success(f"📍 **{display_title}**")
-            
-            cur = VXB_STATS[sel_name]
-            
-            # 1. Норма (заголовок и единица измерения из словаря t)
-            st.metric(t["norm"], f"{cur['норма']} {t['unit_y']}")
-            
-            # 2. Местный сток и Приток
-            m_c1, m_c2 = st.columns(2)
-            m_c1.metric(t["local"], f"{cur['местные']} {t['unit']}")
-            m_c2.metric(t["inflow"], f"{cur['приток']} {t['unit']}")
-            
-            # 3. Блок оттока
-            # Проверяем наличие данных об оттоке
-            if cur.get('отток'):
-                # Если отток — это словарь с переводами, берем нужный язык
-                if isinstance(cur['отток'], dict):
-                    outflow_val = cur['отток'].get(lang, cur['отток']['ru'])
-                else:
-                    outflow_val = cur['отток']
+                    # Внедряем CSS, чтобы сделать текст внутри метрик жирным
+                    st.markdown("""
+                        <style>
+                        [data-testid="stMetricValue"] {
+                            font-weight: 800 !important;
+                            color: #1e3799;
+                        }
+                        </style>
+                        """, unsafe_allow_html=True)
+
+                    st.markdown("### 📊 Характеристики")
+                    st.success(f"📍 **{display_name}**")
+                    
+                    cur_stats = VXB_STATS[display_name]
+                    
+                    # 1. Общая норма (жирный шрифт применится автоматически через CSS)
+                    st.metric("💠 Норма бассейна (W)", f"{cur_stats['норма']} км³/год")
+                    
+                    # Разделяем на Местный сток и Приток
+                    m_col1, m_col2 = st.columns(2)
+                    with m_col1:
+                    # Используем символ '💧' (U+1F4A7) с модификатором текста для затемнения
+                        st.metric("💧︎ Местный сток", f"{cur_stats['местные']} км³")
+    
+                    with m_col2:
+                        st.metric("💧 Приток", f"{cur_stats['приток']} км³")
+                    
+                    # 3. Блок оттока
+                    if cur_stats.get('отток'):
+                        # Внутри st.warning можно использовать стандартный жирный шрифт **
+                        st.warning(f"📤 **Отток:** **{cur_stats['отток']}**")
+                    else:
+                        st.info("🔄 Трансграничный отток не зафиксирован")
+
+                    st.markdown("---") 
+                    
+                    # 4. Стилизованная кнопка перехода
+                    if display_name != "Республика Казахстан":
+                        anchor_id = display_name.replace(' ', '-').lower()
+                        st.markdown(f"""
+                            <a href="#{anchor_id}" style="text-decoration: none;">
+                                <div style="
+                                    background: linear-gradient(90deg, #1e3799, #009432);
+                                    color: white; 
+                                    padding: 12px; 
+                                    border-radius: 8px; 
+                                    text-align: center;
+                                    font-weight: bold;
+                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                ">
+                                    📈 Посмотреть гидрограф бассейна
+                                </div>
+                            </a>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.caption("ℹ️ Выберите бассейн на карте для детального анализа")
                 
-                st.warning(f"{t['outflow_label']} **{outflow_val}**")
-            else:
-                # Если оттока нет, выводим сообщение о его отсутствии на текущем языке
-                st.info(t["no_outflow"])
-
-            st.markdown("---")
-            if sel_name != "Республика Казахстан":
-                # Кнопка тоже на текущем языке
-                st.markdown(f"""
-                    <div style="background:linear-gradient(90deg, #1e3799, #009432); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold;">
-                        {t['btn_text']}
-                    </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.caption(t["info_select"])
-
       
         import streamlit as st
         import pandas as pd
@@ -6872,77 +6858,35 @@ with tabs[5]:
     }
     
                 
-    import base64
-    import os
-
-    # ПРОВЕРЬТЕ: определена ли эта переменная выше? 
-    # Если нет, создайте её, например:
-    if 'display_name' not in locals():
-        display_name = None 
-
     for name in vxb_list:
+        # Берем данные из нашего справочника. Если данных нет — берем пустой словарь
         details = VXB_FULL_DATA.get(name, {})
+        
         if not details:
             st.warning(f"Данные для {name} еще не внесены в справочник.")
             continue
 
-        # Важно: убедитесь, что VXB_STATS тоже определен
-        item_stats = VXB_STATS.get(name, {}) 
-        
+        item_stats = VXB_STATS[name]
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-        photo_filename = details.get("photo", "")
-        photo_path = os.path.join(BASE_IMAGE_PATH, photo_filename)
+        # Путь к фото теперь берется из справочника
+        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         
         st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
-            img_col, info_col = st.columns([2, 1])
             
+            img_col, info_col = st.columns([1.2, 1])
             
-
-        import base64
-        import os
-        from PIL import Image
-        import io
-
-        with img_col:
-            # Используем photo_path (проверьте, что переменная определена выше)
-            if photo_filename and os.path.exists(photo_path):
-                try:
-                    # Открываем TIFF изображение через Pillow
-                    with Image.open(photo_path) as img:
-                        # Конвертируем в RGB (важно для TIFF, если там CMYK или слои)
-                        img = img.convert("RGB")
-                        
-                        # Сохраняем в буфер памяти как PNG или JPEG
-                        buffer = io.BytesIO()
-                        img.save(buffer, format="PNG")
-                        file_bytes = buffer.getvalue()
-                        
-                        # Кодируем в Base64
-                        encoded_base64 = base64.b64encode(file_bytes).decode("utf-8")
-                    
-                    # Теперь MIME-тип всегда image/png, так как мы сконвертировали
-                    mime_type = "image/png"
-
-                    html_code = f"""
-                        <div style="width: 100%; text-align: center;">
-                            <img src="data:{mime_type};base64,{encoded_base64}" 
-                                 style="width: 100%; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <p style="color: gray; margin-top: 8px;">Вид бассейна: {name}</p>
-                        </div>
-                    """
-                    st.markdown(html_code, unsafe_allow_html=True)
-
-                except Exception as e:
-                    st.error(f"Ошибка при обработке TIFF: {e}")
-            else:
-                st.warning(f"Файл не найден по пути: {photo_path}")
-                
-                                        
+            with img_col:
+                if os.path.exists(photo_path):
+                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
+                else:
+                    st.info(f"📸 Фото для {name} ожидается")
+                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
+            
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
@@ -7034,6 +6978,7 @@ with tabs[5]:
                     with st.expander("🔍 Читать полные текстовые описания анализа"):
                         for r, t in details["river_descriptions"].items():
                             st.write(f"**{r}:** {t}")
+                
                 
 
 
