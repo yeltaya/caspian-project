@@ -8335,36 +8335,33 @@ with tabs[5]:
         
         
 
-# --- Твой основной контент по Каспию идет во вкладку №5 (индекс 5) ---
-with tabs[6]:
-
-    # 1. Определяем переводы
-    translations = {
-        "RU": {
-            "title": "🌊 Исследование Каспийского моря",
-            "sidebar_lang": "Выберите язык"
-        },
-        "KZ": {
-            "title": "🌊 Каспий теңізін зерттеу",
-            "sidebar_lang": "Тілді таңдаңыз"
-        },
-        "EN": {
-            "title": "🌊 Caspian Sea Exploration",
-            "sidebar_lang": "Select Language"
-        }
+# 1. Словарь со всеми текстами (можно вынести в начало файла)
+content = {
+    "ru": {
+        "title": "🌊 Исследование Каспийского моря",
+        "description": "Анализ данных и мониторинг экосистемы."
+    },
+    "kz": {
+        "title": "🌊 Каспий теңізін зерттеу",
+        "description": "Деректерді талдау және экожүйені бақылау."
+    },
+    "en": {
+        "title": "🌊 Caspian Sea Exploration",
+        "description": "Data analysis and ecosystem monitoring."
     }
+}
 
-    # 2. Выбор языка в боковой панели
-    lang = st.sidebar.selectbox("Language / Тіл / Язык", ["RU", "KZ", "EN"])
-
-    # 3. Применение в коде
-    with tabs[6]:
-        # Используем f-строку для подстановки заголовка в зависимости от выбранного языка
-        st.markdown(f'<h1 class="main-title">{translations[lang]["title"]}</h1>', unsafe_allow_html=True)
-        
-        # Все последующие строки также должны использовать переводы:
-        # st.write(translations[lang]["your_key"])
-        
+# 2. Логика отображения в табе
+with tabs[6]:
+    # Выбор языка (уже есть в вашем коде выше)
+    # Используем lang_code для динамического вывода текста
+    current_text = content[lang_code]
+    
+    st.markdown(f'<h1 class="main-title">{current_text["title"]}</h1>', unsafe_allow_html=True)
+    
+    # Пример вывода другого текста с сохранением отступа в 4 пробела
+    st.write(current_text["description"])
+    
     
     if 'selected_param' not in st.session_state:
         st.session_state.selected_param = "Уровень моря"
