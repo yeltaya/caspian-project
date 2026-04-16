@@ -9359,12 +9359,43 @@ with tabs[6]:
 
     curr_lt = long_term_ui.get(lang_code, long_term_ui["ru"])
     
-# --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
+    # Пример структуры, если вы пропустили инициализацию
+    long_term_ui = {
+        "ru": {
+            "header": "📈 Оценка долгосрочных изменений",
+            "sub_header": "РГП «Казгидромет» проводятся исследования по долгосрочной оценке изменения уровня и параметров волнения.",
+            "cards": [
+                {"title": "🌊 Долгосрочный уровень", "desc": "Анализ многолетних колебаний и расчет сценариев изменения уровня моря до конца XXI века."},
+                {"title": "🌬️ Режим волнения", "desc": "Оценка будущих изменений ветрового волнения и штормовой активности в казахстанском секторе."}
+            ]
+        },
+        "kz": {
+            "header": "📈 Ұзақ мерзімді өзгерістерді бағалау",
+            "sub_header": "«Қазгидромет» РМК деңгейдің өзгеруін және толқын параметрлерін ұзақ мерзімді бағалау бойынша зерттеулер жүргізеді.",
+            "cards": [
+                {"title": "🌊 Ұзақ мерзімді деңгей", "desc": "XXI ғасырдың соңына дейін теңіз деңгейінің өзгеру сценарийлерін есептеу және көпжылдық ауытқуларды талдау."},
+                {"title": "🌬️ Толқын режимі", "desc": "Каспий теңізінің қазақстандық секторындағы жел толқындары мен дауыл белсенділігінің болашақ өзгерістерін бағалау."}
+            ]
+        },
+        "en": {
+            "header": "📈 Long-term Change Assessment",
+            "sub_header": "RSE 'Kazhydromet' conducts research on the long-term assessment of sea level changes and wave parameters.",
+            "cards": [
+                {"title": "🌊 Long-term Level", "desc": "Analysis of multi-year fluctuations and sea level change scenarios until the end of the 21st century."},
+                {"title": "🌬️ Wave Regime", "desc": "Assessment of future changes in wind waves and storm activity in the Kazakhstan sector."}
+            ]
+        }
+    }
+
+    # Выбор текущего перевода
+    curr_lt = long_term_ui.get(lang_code, long_term_ui["ru"])
+
+    # --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
     st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
     st.markdown(f'<div class="white-label-header"><p class="section-header-text">{curr_lt["header"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="promo-sub" style="margin-bottom: 25px; font-size: 1.1em !important;">{curr_lt["sub_header"]}</div>', unsafe_allow_html=True)
 
-    # Стили остаются статичными
+    # CSS стили (оставляем без изменений, они универсальны)
     st.markdown("""
     <style>
         .long-term-card {
@@ -9378,6 +9409,7 @@ with tabs[6]:
             flex-direction: column;
             justify-content: center;
             box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
         }
         .long-term-card:hover {
             transform: translateY(-10px);
@@ -9387,120 +9419,49 @@ with tabs[6]:
         .lt-title {
             font-family: 'Exo 2', sans-serif;
             font-weight: 800;
-            font-size: 1.6em;
+            font-size: 1.5em;
             margin-bottom: 10px;
             text-transform: uppercase;
+            line-height: 1.2;
         }
-        .lt-desc { font-size: 1.15em; opacity: 0.9; line-height: 1.4; }
+        .lt-desc { font-size: 1.1em; opacity: 0.9; line-height: 1.4; }
     </style>
     """, unsafe_allow_html=True)
 
     lt_col1, lt_col2 = st.columns(2)
 
+    # Рендеринг карточек
     with lt_col1:
-        card = curr_lt["cards"][0]
+        card1 = curr_lt["cards"][0]
         st.markdown(f"""
             <div class="long-term-card" style="background: linear-gradient(135deg, #003366 0%, #00509E 100%);">
-                <div class="lt-title">{card['title']}</div>
-                <div class="lt-desc">{card['desc']}</div>
+                <div class="lt-title">{card1['title']}</div>
+                <div class="lt-desc">{card1['desc']}</div>
             </div>
         """, unsafe_allow_html=True)
 
     with lt_col2:
-        card = curr_lt["cards"][1]
+        card2 = curr_lt["cards"][1]
         st.markdown(f"""
             <div class="long-term-card" style="background: linear-gradient(135deg, #337AB7 0%, #5BC0DE 100%);">
-                <div class="lt-title">{card['title']}</div>
-                <div class="lt-desc">{card['desc']}</div>
+                <div class="lt-title">{card2['title']}</div>
+                <div class="lt-desc">{card2['desc']}</div>
             </div>
         """, unsafe_allow_html=True)
-
         
-        
-        
-    prediction_ui = {
-        "ru": {
-            "sea_level_title": "📉 Прогноз уровня моря до 2050 г. (RCP & SSP)",
-            "wave_title": "🌊 Прогноз высоты волн (SSP5-8.5)",
-            "legend_fact": "<b>Факт (измерения)</b>",
-            "legend_rcp45": "RCP 4.5 (умер.)",
-            "legend_rcp85": "RCP 8.5 (экстр.)",
-            "legend_ssp1": "SSP1-2.6 ('Зеленый')",
-            "legend_ssp5": "SSP5-8.5 (Инерц.)",
-            "y_axis_bs": "м БС",
-            "y_axis_wave": "высота волны, м",
-            "x_axis_year": "год",
-            "ports": ["Форт-Шевченко", "Актау", "Курык"],
-            "description": "Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления."
-        },
-        "kz": {
-            "sea_level_title": "📉 2050 жылға дейінгі теңіз деңгейінің болжамы (RCP & SSP)",
-            "wave_title": "🌊 Толқын биіктігінің болжамы (SSP5-8.5)",
-            "legend_fact": "<b>Факт (өлшемдер)</b>",
-            "legend_rcp45": "RCP 4.5 (орташа)",
-            "legend_rcp85": "RCP 8.5 (экстр.)",
-            "legend_ssp1": "SSP1-2.6 ('Жасыл')",
-            "legend_ssp5": "SSP5-8.5 (Инерц.)",
-            "y_axis_bs": "м БС",
-            "y_axis_wave": "толқын биіктігі, м",
-            "x_axis_year": "жыл",
-            "ports": ["Форт-Шевченко", "Ақтау", "Құрық"],
-            "description": "<b>IPCC</b> халықаралық климаттық модельдеріне сәйкес, жаһандық жылынудың әсерінен Каспий теңізінің деңгейі төмендеуін жалғастырады."
-        },
-        "en": {
-            "sea_level_title": "📉 Sea Level Forecast to 2050 (RCP & SSP)",
-            "wave_title": "🌊 Wave Height Forecast (SSP5-8.5)",
-            "legend_fact": "<b>Actual (Measured)</b>",
-            "legend_rcp45": "RCP 4.5 (Mod.)",
-            "legend_rcp85": "RCP 8.5 (Extr.)",
-            "legend_ssp1": "SSP1-2.6 ('Green')",
-            "legend_ssp5": "SSP5-8.5 (Business as usual)",
-            "y_axis_bs": "m BS",
-            "y_axis_wave": "wave height, m",
-            "x_axis_year": "year",
-            "ports": ["Fort Shevchenko", "Aktau", "Kuryk"],
-            "description": "According to <b>IPCC</b> international climate models, Caspian Sea levels will continue to decline due to global warming."
-        }
-    }
-
-    curr_p = prediction_ui.get(lang_code, prediction_ui["ru"])
     
-    
-# --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ (ЛОКАЛИЗАЦИЯ) ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown(f'<div class="white-label-header"><p class="section-header-text">{curr_lt["header"]}</p></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="promo-sub" style="margin-bottom: 25px; font-size: 1.1em !important;">{curr_lt["sub_header"]}</div>', unsafe_allow_html=True)
-
-    # 1. Сетки карточек (Level & Waves)
-    lt_col1, lt_col2 = st.columns(2)
-    with lt_col1:
-        card = curr_lt["cards"][0]
-        st.markdown(f"""
-            <div class="long-term-card" style="background: linear-gradient(135deg, #003366 0%, #00509E 100%);">
-                <div class="lt-title">{card['title']}</div>
-                <div class="lt-desc">{card['desc']}</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    with lt_col2:
-        card = curr_lt["cards"][1]
-        st.markdown(f"""
-            <div class="long-term-card" style="background: linear-gradient(135deg, #337AB7 0%, #5BC0DE 100%);">
-                <div class="lt-title">{card['title']}</div>
-                <div class="lt-desc">{card['desc']}</div>
-            </div>
-        """, unsafe_allow_html=True)
-
+        
+        
+        
+    # --- ОБНОВЛЕННЫЙ БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ С SSP ---
     st.markdown("<br>", unsafe_allow_html=True)
-
-    # 2. ГРАФИКИ ПРОГНОЗОВ
     lt_plot_col1, lt_plot_col2 = st.columns([1.6, 1.4])
 
     with lt_plot_col1:
-        st.markdown(f'<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">{curr_p["sea_level_title"]}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">📉 Прогноз уровня моря до 2050 г. (RCP & SSP)</div>', unsafe_allow_html=True)
         
-        # Используем уникальное имя 'f_data', чтобы избежать KeyError
-        f_data = {
+        # Расширенные данные прогноза
+        data = {
             "Год": list(range(2006, 2051)),
             "Факт": [-27.04, -27.07, -27.13, -27.15, -27.25, -27.50, -27.57, -27.61, -27.74, -27.98, -27.99, -27.99, -28.03, -28.21, -28.24, -28.43, -28.67, -28.87, -29.18] + [None]*26,
             "RCP4.5": [None]*18 + [-29.18, -29.16, -29.39, -29.64, -29.77, -29.88, -29.81, -29.94, -30.01, -30.09, -30.34, -30.56, -30.78, -30.87, -30.82, -30.95, -30.95, -31.08, -31.26, -31.52, -31.72, -31.89, -32.03, -32.16, -32.07, -32.17, -32.42],
@@ -9510,59 +9471,90 @@ with tabs[6]:
         }
         
         fig_lt = go.Figure()
-        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["Факт"], name=curr_p["legend_fact"], line=dict(color="#1e293b", width=4)))
-        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["RCP4.5"], name=curr_p["legend_rcp45"], line=dict(color="#337AB7", width=2.5, dash='dash')))
-        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["RCP8.5"], name=curr_p["legend_rcp85"], line=dict(color="#D32F2F", width=2.5, dash='dash')))
-        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["SSP1-2.6"], name=curr_p["legend_ssp1"], line=dict(color="#2E7D32", width=2.5, dash='dot')))
-        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["SSP5-8.5"], name=curr_p["legend_ssp5"], line=dict(color="#FF8F00", width=2.5, dash='dot')))
+
+        # Историческая линия (сплошная жирная)
+        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["Факт"], name="<b>Факт (измерения)</b>", line=dict(color="#1e293b", width=4)))
+        
+        # Сценарии RCP (предыдущее поколение моделей)
+        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["RCP4.5"], name="RCP 4.5 (умер.)", line=dict(color="#337AB7", width=2.5, dash='dash')))
+        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["RCP8.5"], name="RCP 8.5 (экстр.)", line=dict(color="#D32F2F", width=2.5, dash='dash')))
+        
+        # Сценарии SSP (новое поколение моделей)
+        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["SSP1-2.6"], name="SSP1-2.6 ('Зеленый')", line=dict(color="#2E7D32", width=2.5, dash='dot')))
+        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["SSP5-8.5"], name="SSP5-8.5 (Инерц.)", line=dict(color="#FF8F00", width=2.5, dash='dot')))
 
         fig_lt.update_layout(
             height=450, margin=dict(l=0,r=0,t=10,b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             hovermode="x unified",
-            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=12)),
-            yaxis=dict(title=curr_p["y_axis_bs"], gridcolor='#E2E8F0', range=[-35, -26]),
-            xaxis=dict(showgrid=False, dtick=5)
+            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=14)),
+            yaxis=dict(title="м БС", gridcolor='#E2E8F0', range=[-35, -26], tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, dtick=5, tickfont=dict(size=12))
         )
+        
+        # Линия раздела (начало прогноза)
         fig_lt.add_vline(x=2024, line_width=1, line_dash="solid", line_color="#94a3b8")
+        
         st.plotly_chart(fig_lt, use_container_width=True, config={'displayModeBar': False})
 
+
     with lt_plot_col2:
-        st.markdown(f'<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">{curr_p["wave_title"]}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">🌊 Прогноз высоты волн (SSP5-8.5)</div>', unsafe_allow_html=True)
 
-        w_years = list(range(2015, 2051))
-        # Пример данных (проверьте наличие этих переменных в коде)
-        f_shev = [2.25, 2.01, 2.08, 2.20, 2.18, 2.03, 2.00, 2.08, 2.09, 1.96, 1.96, 2.00, 2.06, 2.00, 2.13, 2.03, 2.11, 2.03, 1.99, 1.96, 1.99, 2.07, 2.18, 2.29, 1.90, 1.98, 1.90, 1.95, 1.83, 2.15, 2.13, 2.02, 2.03, 1.96, 1.89, 2.21]
-        aktau_v = [2.28, 2.05, 2.10, 2.29, 2.23, 2.07, 2.07, 2.12, 2.14, 2.05, 2.07, 2.07, 2.11, 2.09, 2.32, 2.14, 2.17, 2.10, 2.04, 2.12, 2.11, 2.15, 2.29, 2.30, 1.96, 2.09, 1.99, 2.06, 1.95, 2.18, 2.25, 2.05, 2.07, 2.05, 1.88, 2.25]
-        kuryk_v = [2.32, 2.08, 2.15, 2.31, 2.26, 2.11, 2.09, 2.14, 2.17, 2.06, 2.08, 2.08, 2.12, 2.10, 2.33, 2.16, 2.20, 2.13, 2.08, 2.13, 2.13, 2.16, 2.33, 2.36, 1.98, 2.11, 1.99, 2.08, 1.96, 2.21, 2.29, 2.09, 2.12, 2.06, 1.91, 2.31]
+        # 1. Подготовка данных (замените эти списки на ваши данные или загрузите из df)
+        years = list(range(2015, 2051))
+        
+        # Пример данных (замените на свои реальные значения)
+        fort_shevchenko = [2.25, 2.01, 2.08, 2.20, 2.18, 2.03, 2.00, 2.08, 2.09, 1.96, 1.96, 2.00, 2.06, 2.00, 2.13, 2.03, 2.11, 2.03, 1.99, 1.96, 1.99, 2.07, 2.18, 2.29, 1.90, 1.98, 1.90, 1.95, 1.83, 2.15, 2.13, 2.02, 2.03, 1.96, 1.89, 2.21]
+        aktau = [2.28, 2.05, 2.10, 2.29, 2.23, 2.07, 2.07, 2.12, 2.14, 2.05, 2.07, 2.07, 2.11, 2.09, 2.32, 2.14, 2.17, 2.10, 2.04, 2.12, 2.11, 2.15, 2.29, 2.30, 1.96, 2.09, 1.99, 2.06, 1.95, 2.18, 2.25, 2.05, 2.07, 2.05, 1.88, 2.25]
+        kuryk = [2.32, 2.08, 2.15, 2.31, 2.26, 2.11, 2.09, 2.14, 2.17, 2.06, 2.08, 2.08, 2.12, 2.10, 2.33, 2.16, 2.20, 2.13, 2.08, 2.13, 2.13, 2.16, 2.33, 2.36, 1.98, 2.11, 1.99, 2.08, 1.96, 2.21, 2.29, 2.09, 2.12, 2.06, 1.91, 2.31]
 
-        fig_w = go.Figure()
-        fig_w.add_trace(go.Scatter(x=w_years, y=f_shev, name=curr_p["ports"][0], line=dict(color='#4F7942', width=3)))
-        fig_w.add_trace(go.Scatter(x=w_years, y=aktau_v, name=curr_p["ports"][1], line=dict(color='#A0C4DE', width=3)))
-        fig_w.add_trace(go.Scatter(x=w_years, y=kuryk_v, name=curr_p["ports"][2], line=dict(color='#D35400', width=3)))
+        # 2. Создание графика Plotly
+        fig = go.Figure()
 
-        fig_w.update_layout(
-            plot_bgcolor='white', paper_bgcolor='white', height=400,
+        # Линия для Форт-Шевченко
+        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Форт-Шевченко',
+                                 line=dict(color='#4F7942', width=3)))
+
+        # Линия для Актау
+        fig.add_trace(go.Scatter(x=years, y=aktau, name='Актау',
+                                 line=dict(color='#A0C4DE', width=3)))
+
+        # Линия для Курык
+        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Курык',
+                                 line=dict(color='#D35400', width=3)))
+
+        # 3. Настройка оформления (максимально близко к вашему скрину)
+        fig.update_layout(
+            plot_bgcolor='white',
+            paper_bgcolor='white',
             margin=dict(l=0, r=0, t=20, b=0),
-            legend=dict(orientation="h", y=-0.3, xanchor="center", x=0.5),
-            hovermode="x unified"
+            height=400,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+            hovermode="x unified" # Показывает значения всех линий при наведении на год
         )
-        fig_w.update_xaxes(title=curr_p["x_axis_year"], dtick=5, gridcolor='#f0f0f0')
-        fig_w.update_yaxes(title=curr_p["y_axis_wave"], range=[1.5, 2.5], gridcolor='#f0f0f0')
 
-        st.plotly_chart(fig_w, use_container_width=True, config={'displayModeBar': False})
+        # Настройка осей
+        fig.update_xaxes(title="год", showline=True, linewidth=1, linecolor='black', mirror=True, 
+                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0', autorange='reversed')
+        fig.update_yaxes(title="высота волны, м", showline=True, linewidth=1, linecolor='black', mirror=True, 
+                         range=[1.5, 2.5], gridcolor='#f0f0f0')
 
-    # 3. Финальное текстовое описание
-    st.markdown(f"""
-        <div style="margin-top: 20px; margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
+        # 4. Отображение в Streamlit
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+     
+
+    # Описание прогнозов
+    st.markdown("""
+        <div style="margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
             <p style="font-size: 1.15rem; border-left: 4px solid #3B82F6; padding-left: 15px;">
-                {curr_p["description"]}
+                Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления.
             </p>
         </div>
     """, unsafe_allow_html=True)
-    
-    
-    
+
+
 
     st.divider()
     
