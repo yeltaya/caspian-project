@@ -12137,12 +12137,6 @@ with tabs[7]:
         
         t = ui.get(current_l, ui["ru"])
         
-    # В основном блоке приложения (где-то внизу app3.py)
-    if page == "Мониторинг ветра": # или как называется ваш раздел
-        # ПЕРЕДАЕМ ЯЗЫК ЯВНО:
-        selected_lang = st.session_state.get('lang_code', 'ru')
-        render_wind_dashboard(selected_lang)
-        
     
         # --- 1. НАСТРОЙКИ ---
         data_file = "Max_wind.csv"
