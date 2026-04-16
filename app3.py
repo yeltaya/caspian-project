@@ -12086,43 +12086,63 @@ with tabs[7]:
     import os
     import base64
 
-    def render_wind_dashboard():
-        # --- 0. ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
-        current_l = st.session_state.get('lang_code', 'ru')
-        
-        # Словарик для интерфейса дашборда
-        ui = {
-            "ru": {
-                "title": "💨 Мониторинг ветровой активности Казахстана",
-                "facts": "Интересные факты",
-                "record": "Экстремальный рекорд",
-                "trend_label": "Общая тенденция",
-                "map_sub": "🗺️ Карта ветровых режимов",
-                "chart_sub": "📈 Динамика по регионам",
-                "select_reg": "Выберите область для анализа:",
-                "analysis_header": "### 📝 Анализ данных",
-                "trend_up": "наблюдается тенденция к **увеличению** силы ветра",
-                "trend_down": "наблюдается тенденция к **снижению** ветровой нагрузки",
-                "trend_stable": "показатели остаются относительно **стабильными**",
-                "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**."
-            },
-            "kz": {
-                "title": "💨 Қазақстанның жел белсенділігінің мониторингі",
-                "facts": "Қызықты деректер",
-                "record": "Экстремалды рекорд",
-                "trend_label": "Жалпы тенденция",
-                "map_sub": "🗺️ Жел режимдерінің картасы",
-                "chart_sub": "📈 Өңірлер бойынша динамика",
-                "select_reg": "Талдау үшін облысты таңдаңыз:",
-                "analysis_header": "### 📝 Мәліметтерді талдау",
-                "trend_up": "жел күшінің **арту** тенденциясы байқалады",
-                "trend_down": "жел жүктемесінің **төмендеу** тенденциясы байқалады",
-                "trend_stable": "көрсеткіштер салыстырмалы түрде **тұрақты**",
-                "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**."
-            }
+# --- 0. ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
+    # Проверяем сессию, если её нет — ставим 'ru'
+    if 'lang_code' not in st.session_state:
+        st.session_state['lang_code'] = 'ru'
+    
+    current_l = st.session_state['lang_code']
+    
+    # Словарик для интерфейса дашборда (ДОБАВЛЕН "en")
+    ui = {
+        "ru": {
+            "title": "💨 Мониторинг ветровой активности Казахстана",
+            "facts": "Интересные факты",
+            "record": "Экстремальный рекорд",
+            "trend_label": "Общая тенденция",
+            "map_sub": "🗺️ Карта ветровых режимов",
+            "chart_sub": "📈 Динамика по регионам",
+            "select_reg": "Выберите область для анализа:",
+            "analysis_header": "### 📝 Анализ данных",
+            "trend_up": "наблюдается тенденция к **увеличению** силы ветра",
+            "trend_down": "наблюдается тенденция к **снижению** ветровой нагрузки",
+            "trend_stable": "показатели остаются относительно **стабильными**",
+            "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**."
+        },
+        "kz": {
+            "title": "💨 Қазақстанның жел белсенділігінің мониторингі",
+            "facts": "Қызықты деректер",
+            "record": "Экстремалды рекорд",
+            "trend_label": "Жалпы тенденция",
+            "map_sub": "🗺️ Жел режимдерінің картасы",
+            "chart_sub": "📈 Өңірлер бойынша динамика",
+            "select_reg": "Талдау үшін облысты таңдаңыз:",
+            "analysis_header": "### 📝 Мәліметтерді талдау",
+            "trend_up": "жел күшінің **арту** тенденциясы байқалады",
+            "trend_down": "жел жүктемесінің **төмендеу** тенденциясы байқалады",
+            "trend_stable": "көрсеткіштер салыстырмалы түрде **тұрақты**",
+            "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**."
+        },
+        "en": {
+            "title": "💨 Wind Activity Monitoring in Kazakhstan",
+            "facts": "Quick Facts",
+            "record": "Extreme Record",
+            "trend_label": "General Trend",
+            "map_sub": "🗺️ Wind Regime Map",
+            "chart_sub": "📈 Regional Dynamics",
+            "select_reg": "Select region for analysis:",
+            "analysis_header": "### 📝 Data Analysis",
+            "trend_up": "there is a tendency towards **increasing** wind strength",
+            "trend_down": "there is a tendency towards **decreasing** wind load",
+            "trend_stable": "indicators remain relatively **stable**",
+            "summary_fmt": "For the **{}** region during the {}-{} period, {}. Average extreme gust speed: **{:.1f} m/s**."
         }
-        t = ui.get(current_l, ui["ru"])
-
+    }
+    
+    # Берем перевод или откатываемся на русский, если языка нет в списке
+    t = ui.get(current_l, ui["ru"])
+    
+    
         # --- 1. НАСТРОЙКИ ---
         data_file = "Max_wind.csv"
         image_path = "wind_RES5.jpg"
