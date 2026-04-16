@@ -12086,18 +12086,10 @@ with tabs[7]:
     import os
     import base64
 
-    def render_wind_dashboard():
-        # --- 0. ПРОВЕРКА И ПРИВЯЗКА ЯЗЫКА ---
-        # Если мы вызываем функцию внутри основного приложения, 
-        # язык должен браться из общего состояния
-        if 'lang_code' not in st.session_state:
-            st.session_state['lang_code'] = 'ru'
+    def render_wind_dashboard(lang): # Добавили аргумент
+        # Теперь current_l ВСЕГДА равен тому, что выбрал пользователь
+        current_l = lang 
         
-        current_l = st.session_state['lang_code']
-        
-        # Отладочное сообщение (потом можно удалить)
-        # st.write(f"Debug: Current language is {current_l}") 
-
         ui = {
             "ru": {
                 "title": "💨 Мониторинг ветровой активности Казахстана",
@@ -12111,8 +12103,7 @@ with tabs[7]:
                 "trend_up": "наблюдается тенденция к **увеличению** силы ветра",
                 "trend_down": "наблюдается тенденция к **снижению** ветровой нагрузки",
                 "trend_stable": "показатели остаются относительно **стабильными**",
-                "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**.",
-                "year_col": "Год"
+                "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**."
             },
             "kz": {
                 "title": "💨 Қазақстанның жел белсенділігінің мониторингі",
@@ -12126,29 +12117,33 @@ with tabs[7]:
                 "trend_up": "жел күшінің **арту** тенденциясы байқалады",
                 "trend_down": "жел жүктемесінің **төмендеу** тенденциясы байқалады",
                 "trend_stable": "көрсеткіштер салыстырмалы түрде **тұрақты**",
-                "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**.",
-                "year_col": "Год" # В CSV колонки обычно на одном языке
+                "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**."
             },
             "en": {
-                "title": "💨 Kazakhstan Wind Activity Monitoring",
-                "facts": "Key Indicators",
+                "title": "💨 Wind Activity Monitoring in Kazakhstan",
+                "facts": "Quick Facts",
                 "record": "Extreme Record",
                 "trend_label": "General Trend",
                 "map_sub": "🗺️ Wind Regime Map",
                 "chart_sub": "📈 Regional Dynamics",
                 "select_reg": "Select region for analysis:",
                 "analysis_header": "### 📝 Data Analysis",
-                "trend_up": "trend towards **increasing** wind strength",
-                "trend_down": "trend towards **decreasing** wind load",
+                "trend_up": "there is a tendency towards **increasing** wind strength",
+                "trend_down": "there is a tendency towards **decreasing** wind load",
                 "trend_stable": "indicators remain relatively **stable**",
-                "summary_fmt": "For **{}** region ({}-{} period): {}. Average extreme gust speed: **{:.1f} m/s**.",
-                "year_col": "Год"
+                "summary_fmt": "For the **{}** region during the {}-{} period, {}. Average extreme gust speed: **{:.1f} m/s**."
             }
         }
         
-        # Безопасное получение словаря
         t = ui.get(current_l, ui["ru"])
-
+        
+    # В основном блоке приложения (где-то внизу app3.py)
+    if page == "Мониторинг ветра": # или как называется ваш раздел
+        # ПЕРЕДАЕМ ЯЗЫК ЯВНО:
+        selected_lang = st.session_state.get('lang_code', 'ru')
+        render_wind_dashboard(selected_lang)
+        
+    
         # --- 1. НАСТРОЙКИ ---
         data_file = "Max_wind.csv"
         image_path = "wind_RES5.jpg"
