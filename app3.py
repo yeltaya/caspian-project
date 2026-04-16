@@ -10444,17 +10444,37 @@ with tabs[7]:
     
 
     st.markdown("---")
-    
-    # Словарик для системных заголовков интерфейса
+        
+    # 2. Словарик интерфейса
     ui_translate = {
-        "ru": {"sub": "📈 Климат областей", "select": "Выберите область:", "geo": "Географическое описание", "conc": "Заключение"},
-        "kz": {"sub": "📈 Облыстар климаты", "select": "Облысты таңдаңыз:", "geo": "Географиялық сипаттама", "conc": "Қорытынды"},
-        "en": {"sub": "📈 Regional Climate", "select": "Select region:", "geo": "Geographical description", "conc": "Conclusion"}
+        "ru": {
+            "sub": "📈 Климат областей", 
+            "select": "Выберите область:", 
+            "geo": "Географическое описание", 
+            "conc": "Заключение"
+        },
+        "kz": {
+            "sub": "📈 Облыстар климаты", 
+            "select": "Облысты таңдаңыз:", 
+            "geo": "Географиялық сипаттама", 
+            "conc": "Қорытынды"
+        },
+        "en": {
+            "sub": "📈 Regional Climate", 
+            "select": "Select region:", 
+            "geo": "Geographical description", 
+            "conc": "Conclusion"
+        }
     }
 
+    # 3. Использование перевода
     st.subheader(ui_translate[L]["sub"])
-    
-    
+
+    # Пример для выбора области
+    # selected_name = st.selectbox(ui_translate[L]["select"], list(ALL_REGIONS_DATABASE.keys()))
+
+
+        
     # --- 1. БАЗА ДАННЫХ (Часть 1: СКО) ---
     ALL_REGIONS_DATABASE = {
         "Северо-Казахстанская область": {
@@ -11536,6 +11556,8 @@ with tabs[7]:
             st.warning(f"Данные для колонки {col_t} или {col_p} не найдены в файлах Excel.")
             
             
+ 
+ 
  
     st.markdown("### 🗺️ Природно-климатические зоны")
 
