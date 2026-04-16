@@ -10113,11 +10113,43 @@ with tabs[7]:
         )
         
         
-        
+    import os
+    import base64
     import streamlit as st
     import streamlit.components.v1 as components
 
-    # --- ДАННЫЕ РЕЙТИНГА ---
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
+    records_ui = {
+        "ru": {
+            "main_title": "🏆 Анализ температурных рекордов",
+            "card_title": "Беспрецедентный рост",
+            "card_text": "<span style='font-weight: 800; font-size: 1.2rem;'>2025 год</span> официально признан самым жарким в истории наблюдений Казахстана. Климат стал теплее обычного почти на <b>3 градуса</b> (+2,96°C).",
+            "card_sub": "Примечательно, что <b>9 из 10</b> самых теплых лет пришлись на XXI век, что подтверждает ускорение глобального потепления.",
+            "chart_cap": "Самые теплые годы в Казахстане (1941–2025)",
+            "map_cap": "Карта аномалий"
+        },
+        "kz": {
+            "main_title": "🏆 Температуралық рекордтарды талдау",
+            "card_title": "Бұрын-соңды болмаған өсім",
+            "card_text": "<span style='font-weight: 800; font-size: 1.2rem;'>2025 жыл</span> Қазақстанның бақылау тарихындағы ең ыстық жыл болып ресми түрде танылды. Климат әдеттегіден шамамен <b>3 градусқа</b> (+2,96°C) жылы болды.",
+            "card_sub": "Ең жылы 10 жылдың <b>9-ы</b> XXI ғасырға тиесілі екені назар аудартады, бұл жаһандық жылынудың жеделдеуін растайды.",
+            "chart_cap": "Қазақстандағы ең жылы жылдар (1941–2025)",
+            "map_cap": "Аномалиялар картасы"
+        },
+        "en": {
+            "main_title": "🏆 Temperature Records Analysis",
+            "card_title": "Unprecedented Growth",
+            "card_text": "<span style='font-weight: 800; font-size: 1.2rem;'>2025</span> is officially recognized as the hottest year in Kazakhstan's recorded history. The climate was nearly <b>3 degrees</b> warmer than usual (+2.96°C).",
+            "card_sub": "Notably, <b>9 out of the 10</b> warmest years occurred in the 21st century, confirming the acceleration of global warming.",
+            "chart_cap": "Warmest years in Kazakhstan (1941–2025)",
+            "map_cap": "Anomaly map"
+        }
+    }
+
+    # Инициализация текущего перевода
+    curr_rec = records_ui.get(lang_code, records_ui["ru"])
+
+    # --- 2. ДАННЫЕ РЕЙТИНГА ---
     rank_data = [
         {"rank": 1, "year": 2025, "value": 2.96, "color": "#990000"},
         {"rank": 2, "year": 2023, "value": 2.58, "color": "#b30000"},
@@ -10131,32 +10163,27 @@ with tabs[7]:
         {"rank": 10, "year": 2002, "value": 1.55, "color": "#ffcdd2"}
     ]
 
-
-
-    st.markdown("### 🏆 Анализ температурных рекордов")
+    st.markdown(f"### {curr_rec['main_title']}")
 
     # Создаем колонки
     col_info, col_chart, col_map = st.columns([1, 1, 1], gap="large")
 
     with col_info:
-        # Текстовый хайлайт
-        st.markdown("""
+        st.markdown(f"""
             <div style="background-color: #fff5f5; padding: 20px; border-radius: 12px; border-left: 6px solid #d32f2f; margin-top: 10px;">
-                <h4 style="margin-top: 0; color: #d32f2f;">Беспрецедентный рост</h4>
+                <h4 style="margin-top: 0; color: #d32f2f;">{curr_rec['card_title']}</h4>
                 <p style="font-size: 1rem; line-height: 1.5;">
-                    <span style="font-weight: 800; font-size: 1.2rem;">2025 год</span> официально признан самым жарким в истории наблюдений Казахстана.
-                    Климат стал теплее обычного почти на <b>3 градуса</b> (+2,96°C).
+                    {curr_rec['card_text']}
                 </p>
                 <p style="font-size: 0.9rem; color: #666;">
-                    Примечательно, что <b>9 из 10</b> самых теплых лет пришлись на XXI век, что подтверждает ускорение глобального потепления.
+                    {curr_rec['card_sub']}
                 </p>
             </div>
         """, unsafe_allow_html=True)
 
     with col_chart:
-        st.caption("Самые теплые годы в Казахстане (1941–2025)")
+        st.caption(curr_rec['chart_cap'])
         
-        # Генерация HTML для инфографики
         rows_html = ""
         max_val = 2.96
         for item in rank_data:
@@ -10172,35 +10199,24 @@ with tabs[7]:
                 </div>
             </div>
             """
-                # Отрисовка через iframe для стабильности
-        components.html(f"""
-            <div style="padding-top: 5px;">
-                {rows_html}
-            </div>
-        """, height=350)
+        
+        components.html(f"""<div style="padding-top: 5px;">{rows_html}</div>""", height=350)
 
-   
-            
     with col_map:
         map_path = "temp1.gif"
-        
         if os.path.exists(map_path):
-            # Чтобы HTML увидел файл, он должен быть доступен (например, в папке со скриптом)
-            # Но проще всего вывести через st.image(contents) как выше.
-            # Если все же нужен HTML:
-            import base64
             with open(map_path, "rb") as f:
                 data_url = base64.b64encode(f.read()).decode("utf-8")
             
             st.markdown(
-                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%;">',
+                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%; border-radius: 12px;">',
                 unsafe_allow_html=True,
             )
-            st.caption("Карта аномалий")
-        
+            st.caption(curr_rec['map_cap'])
         
     st.divider()
-
+    
+    
 
     st.markdown("### 🏆 Анализ влажности")
     
