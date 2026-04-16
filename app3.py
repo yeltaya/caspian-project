@@ -11581,24 +11581,57 @@ with tabs[7]:
     p_val = reg.get("trend_precip", "н/д")
     analysis = reg.get("analysis_text", "Анализ для данной области уточняется.")
 
-    # Стили оставляем в markdown (их можно вынести отдельно, чтобы не дублировать)
+    ui_translate = {
+        "ru": {
+            "trend_label": "тренд",
+            "trend_note": "прирост за 10 лет",
+            "stat_title": "📉 Статистический анализ",
+            "temp_header": "🌡️ Температурный режим",
+            "prec_header": "💧 Режим увлажнения",
+            "period": "Период",
+            "norm": "Норма",
+            "seasons": ["Зима", "Весна", "Лето", "Осень", "Год"],
+            "warm_years": "🏆 Самые теплые годы",
+            "dry_years": "🏆 Самые сухие годы",
+            "perc_norm": "Процент от нормы"
+        },
+        "kz": {
+            "trend_label": "тренд",
+            "trend_note": "10 жылдық өсім",
+            "stat_title": "📉 Статистикалық талдау",
+            "temp_header": "🌡️ Температуралық режим",
+            "prec_header": "💧 Ылғалдану режимі",
+            "period": "Кезең",
+            "norm": "Норма",
+            "seasons": ["Қыс", "Көктем", "Жаз", "Күз", "Жыл"],
+            "warm_years": "🏆 Ең жылы жылдар",
+            "dry_years": "🏆 Ең құрғақ жылдар",
+            "perc_norm": "Нормадан пайыз"
+        },
+        "en": {
+            "trend_label": "trend",
+            "trend_note": "increase per 10 years",
+            "stat_title": "📉 Statistical Analysis",
+            "temp_header": "🌡️ Temperature Regime",
+            "prec_header": "💧 Moisture Regime",
+            "period": "Period",
+            "norm": "Normal",
+            "seasons": ["Winter", "Spring", "Summer", "Autumn", "Year"],
+            "warm_years": "🏆 Warmest Years",
+            "dry_years": "🏆 Driest Years",
+            "perc_norm": "Percent of normal"
+        }
+    }
+
+# Извлекаем текущие переводы для удобства
+    ui = ui_translate[L]
+
+    # HTML блок с трендами
     st.markdown(f"""
         <style>
-        .trends-container {{
-            display: flex;
-            justify-content: flex-start;
-            gap: 30px;
-            margin: 15px 0;
-        }}
-        .trend-card {{
-            flex: 0 1 auto;
-            padding: 15px 25px;
-            border-radius: 10px;
-            background-color: #fcfcfc;
-            border: 1px solid #eee;
-            min-width: 200px;
-        }}
-        .trend-label {{ font-size: 0.9rem; color: #666; margin-bottom: 5px; }}
+        .trends-container {{ display: flex; justify-content: flex-start; gap: 30px; margin: 15px 0; }}
+        .trend-card {{ flex: 0 1 auto; padding: 15px 25px; border-radius: 10px; background-color: #fcfcfc; border: 1px solid #eee; min-width: 200px; }}
+        .trend-label {{ font-size: 0.9rem; color: #666; margin-bottom: 5px; text-transform: uppercase; }}
         .trend-value {{ font-size: 1.8rem; font-weight: 800; line-height: 1.1; }}
         .v-green {{ color: #28a745; }}
         .v-orange {{ color: #f39c12; }}
@@ -11607,18 +11640,18 @@ with tabs[7]:
         
         <div class="trends-container">
             <div class="trend-card" style="border-left: 5px solid #28a745;">
-                <div class="trend-label">тренд</div>
+                <div class="trend-label">{ui['trend_label']}</div>
                 <div class="trend-value v-green">📈 {t_val}</div>
-                <div class="trend-note">прирост на каждые 10 лет</div>
+                <div class="trend-note">{ui['trend_note']}</div>
             </div>
             <div class="trend-card" style="border-left: 5px solid #f39c12;">
-                <div class="trend-label">тренд</div>
+                <div class="trend-label">{ui['trend_label']}</div>
                 <div class="trend-value v-orange">📈 {p_val}</div>
-                <div class="trend-note">прирост на каждые 10 лет</div>
+                <div class="trend-note">{ui['trend_note']}</div>
             </div>
             <div style="flex: 1; display: flex; align-items: center; padding-left: 10px;">
                 <p style="color: #444; font-size: 0.95rem; border-left: 2px dashed #ccc; padding-left: 20px;">
-                    💡 <b>Анализ:</b> {analysis}
+                    💡 <b>{ui['conc']}:</b> {analysis}
                 </p>
             </div>
         </div>
@@ -11626,100 +11659,82 @@ with tabs[7]:
 
     st.markdown("---")  
     
-# --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА ---
-    st.markdown("### 📉 Статистический анализ")
+    # --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА ---
+    st.markdown(f"### {ui['stat_title']}")
 
-    # Получаем данные региона (reg уже определен выше через selected_name)
     tn = reg.get('t_norm', {"w": 0, "sp": 0, "su": 0, "au": 0, "y": 0})
     pn = reg.get('p_norm', {"w": 0, "sp": 0, "su": 0, "au": 0, "y": 0})
 
-    # Расчет значений 2025 года на основе аномалии из CSV
-    # Температура: Норма + Аномалия
     t25 = {k: v + current_temp_anom for k, v in tn.items()}
-    # Осадки: Норма * (1 + % аномалии / 100)
     p25 = {k: v * (1 + current_precip_anom / 100) for k, v in pn.items()}
 
     col_main_temp, col_main_precip = st.columns(2, gap="large")
 
     # --- ЛЕВАЯ КОЛОНКА: ТЕМПЕРАТУРА ---
     with col_main_temp:
-        st.subheader("🌡️ Температурный режим")
-        t_col1, t_col2 = st.columns([1.6, 1])
+        st.subheader(ui['temp_header'])
         
-        with t_col1:
-            st.markdown(f"**Сезонные показатели (°C)**")
-            temp_df = pd.DataFrame({
-                "Период": ["Норма", "2025"],
-                "Зима": [f"{tn['w']}", f"{t25['w']:.1f}"],
-                "Весна": [f"{tn['sp']}", f"{t25['sp']:.1f}"],
-                "Лето": [f"{tn['su']}", f"{t25['su']:.1f}"],
-                "Осень": [f"{tn['au']}", f"{t25['au']:.1f}"],
-                "Год": [f"{tn['y']}", f"{t25['y']:.1f}"]
-            })
-            st.table(temp_df)
-            extreme = reg.get('temp_extreme', {"max": "н/д", "min": "н/д"})
-            st.caption(f"💡 Макс: {extreme['max']}, Мин: {extreme['min']}")
+        # Таблица температур
+        temp_df = pd.DataFrame({
+            ui['period']: [ui['norm'], "2025"],
+            ui['seasons'][0]: [tn['w'], f"{t25['w']:.1f}"],
+            ui['seasons'][1]: [tn['sp'], f"{t25['sp']:.1f}"],
+            ui['seasons'][2]: [tn['su'], f"{t25['su']:.1f}"],
+            ui['seasons'][3]: [tn['au'], f"{t25['au']:.1f}"],
+            ui['seasons'][4]: [tn['y'], f"{t25['y']:.1f}"]
+        })
+        st.table(temp_df)
+        
+        # Экстремумы
+        extreme = reg.get('temp_extreme', {"max": "н/д", "min": "н/д"})
+        st.caption(f"💡 Max: {extreme['max']}, Min: {extreme['min']}")
 
-        with t_col2:
-            st.markdown("**🏆 Самые теплые годы**")
-            # Используем данные ТОП-5 из вашего словаря
-            top_data = reg.get('top_years', [])
-            if top_data:
-                max_val = max([item['val'] for item in top_data])
-                rows_html = "".join([f"""
-                    <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
-                        <div style="width:35px; font-size:11px; font-weight:bold;">{item['year']}</div>
-                        <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
-                            <div style="width:{(item['val']/max_val)*100}%; background:{item['col']}; height:100%; border-radius:2px;"></div>
-                        </div>
-                        <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{item['val']:.1f}°</div>
-                    </div>""" for item in top_data])
-                st.components.v1.html(rows_html, height=160)
+        st.markdown(f"**{ui['warm_years']}**")
+        top_data = reg.get('top_years', [])
+        if top_data:
+            max_v = max([item['val'] for item in top_data])
+            rows_html = "".join([f"""
+                <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                    <div style="width:35px; font-size:11px; font-weight:bold;">{item['year']}</div>
+                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
+                        <div style="width:{(item['val']/max_v)*100}%; background:{item['col']}; height:100%; border-radius:2px;"></div>
+                    </div>
+                    <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{item['val']:.1f}°</div>
+                </div>""" for item in top_data])
+            st.components.v1.html(rows_html, height=160)
 
     # --- ПРАВАЯ КОЛОНКА: ОСАДКИ ---
     with col_main_precip:
-        st.subheader("💧 Режим увлажнения")
-        p_col1, p_col2 = st.columns([1.6, 1])
+        st.subheader(ui['prec_header'])
         
-        with p_col1:
-            st.markdown(f"**Сезонные осадки (мм)**")
-            prec_df = pd.DataFrame({
-                "Период": ["Норма", "2025"],
-                "Зима": [f"{pn['w']}", f"{p25['w']:.0f}"],
-                "Весна": [f"{pn['sp']}", f"{p25['sp']:.0f}"],
-                "Лето": [f"{pn['su']}", f"{p25['su']:.0f}"],
-                "Осень": [f"{pn['au']}", f"{p25['au']:.0f}"],
-                "Год": [f"{pn['y']}", f"{p25['y']:.0f}"]
-            })
-            st.table(prec_df)
-            st.caption(f"Процент от нормы: {current_precip_anom + 100:.1f}%")
+        # Таблица осадков
+        prec_df = pd.DataFrame({
+            ui['period']: [ui['norm'], "2025"],
+            ui['seasons'][0]: [pn['w'], f"{p25['w']:.0f}"],
+            ui['seasons'][1]: [pn['sp'], f"{p25['sp']:.0f}"],
+            ui['seasons'][2]: [pn['su'], f"{p25['su']:.0f}"],
+            ui['seasons'][3]: [pn['au'], f"{p25['au']:.0f}"],
+            ui['seasons'][4]: [pn['y'], f"{p25['y']:.0f}"]
+        })
+        st.table(prec_df)
+        st.caption(f"{ui['perc_norm']}: {current_precip_anom + 100:.1f}%")
 
-        with p_col2:
-            st.markdown("**🏆 Самые сухие годы**")
+        st.markdown(f"**{ui['dry_years']}**")
+        records = reg.get("top_precip_years", [])
+        if records:
+            max_p = max([r['val'] for r in records]) if records else 1
+            p_html = "".join([f"""
+                <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                    <div style="width:40px; font-size:11px; font-weight:bold; color:#333;">{r['year']}</div>
+                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 8px;">
+                        <div style="width:{(r['val']/max_p)*100}%; background:{r['col']}; height:100%; border-radius:2px;"></div>
+                    </div>
+                    <div style="width:50px; text-align:right; font-size:11px; font-weight:bold; color:#333;">{r['val']:.0f} мм</div>
+                </div>""" for r in records])
+            st.components.v1.html(f"<div style='margin-top:10px;'>{p_html}</div>", height=160)
             
-            # 1. Получаем список из базы (тот, что вы прислали)
-            records = reg.get("top_precip_years", [])
             
-            if records:
-                # 2. Находим максимум для масштабирования полосок
-                max_val = max([r['val'] for r in records]) if records else 1
-                
-                # 3. Генерируем HTML, используя данные из списка
-                p_html = "".join([f"""
-                    <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
-                        <div style="width:40px; font-size:11px; font-weight:bold; color:#333;">{r['year']}</div>
-                        <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 8px;">
-                            <div style="width:{(r['val']/max_val)*100}%; background:{r['col']}; height:100%; border-radius:2px;"></div>
-                        </div>
-                        <div style="width:50px; text-align:right; font-size:11px; font-weight:bold; color:#333;">{r['val']:.0f} мм</div>
-                    </div>""" for r in records])
-                
-                # 4. Выводим результат
-                st.components.v1.html(f"<div style='margin-top:10px;'>{p_html}</div>", height=160)
-            else:
-                st.info("Данные о рекордах отсутствуют")
-        
-            
+
  
     st.markdown("### 🚨 Основные климатические риски")
 
