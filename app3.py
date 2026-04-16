@@ -11988,7 +11988,36 @@ with tabs[7]:
     }
 
 
+    # 1. Сначала ПРАВИЛЬНО создаем переменные колонок
+    col_nav, col_display = st.columns([1, 4]) 
 
+    # 2. Блок навигации
+    with col_nav:
+        st.subheader(it.get("nav_title", "Navigation"))
+        
+        # ПРОВЕРКА: существует ли sectors_config и не пустой ли он
+        if sectors_config:
+            try:
+                # Сбор названий секторов
+                sector_labels = {v["name"][current_l]: k for k, v in sectors_config.items()}
+                sel_sector_label = st.selectbox(it.get("sector_label", "Сектор:"), list(sector_labels.keys()))
+                sector_key = sector_labels[sel_sector_label]
+                
+                # Сбор индексов
+                index_options = sectors_config[sector_key]["indices"]
+                sel_index = st.radio(it.get("index_label", "Индекс:"), list(index_options.keys()))
+                
+                # Извлекаем данные индекса заранее, чтобы использовать в col_display
+                index_data = index_options[sel_index]
+                
+            except KeyError as e:
+                st.error(f"Ошибка в структуре данных: отсутствует перевод для {e}")
+                index_data = None
+        else:
+            st.error("Словарь sectors_config не определен!")
+            index_data = None
+            
+        
     with col_display:
         # 1. Получаем данные выбранного индекса
         # Теперь мы точно знаем, что они лежат в ["indices"][sel_index]
