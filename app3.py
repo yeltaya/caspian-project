@@ -9957,10 +9957,14 @@ with tabs[7]:
 
     
     
+    import pandas as pd
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import streamlit as st
+
     # --- 1. ОБЩИЕ ДАННЫЕ ---
     years = list(range(1940, 2026))
 
-    # Данные аномалий температуры
     temp_vals = [
         0.24, -0.33, -0.86, -1.05, 0.09, -1.28, -0.67, -0.52, 0.24, -1.18, -1.59, -0.47, -1.13, -0.19, -2.03, 0.04, 
         -0.92, -0.48, -0.61, -1.17, -1.58, 0.39, 0.76, 0.81, -0.96, 0.44, -0.26, -0.01, -0.51, -2.31, -0.40, 0.44, 
@@ -9970,7 +9974,6 @@ with tabs[7]:
         1.78, 2.58, 1.72, 2.96
     ]
 
-    # Данные аномалий осадков (примерные, синхронизированные с твоими показателями)
     precip_vals = [
         5.2, -10.4, 15.1, -2.3, 8.7, -25.4, 12.0, -4.5, 30.1, -12.3, 
         -5.9, 14.7, -11.3, -0.19, -20.3, 10.4, -9.2, -14.8, 6.1, -11.7, 
@@ -9989,48 +9992,23 @@ with tabs[7]:
         'Осадки': precip_vals
     })
 
-    # --- 1. CSS ДЛЯ НАСТОЯЩИХ ХАЙЛАЙТОВ (СТИЛЬ ПЛАШЕК) ---
+    # --- 2. CSS ДЛЯ ПЛАШЕК ---
     st.markdown("""
         <style>
-        /* Контейнер для плашек */
-        .highlight-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        /* Сама плашка как на скриншоте 19589a */
-        .highlight-box {
-            background-color: rgba(240, 242, 246, 0.5); /* Светлый нейтральный фон */
-            border-radius: 10px;
-            padding: 12px 18px;
-            border-left: 4px solid #ccc;
-        }
-        .h-temp-box { border-left-color: #d32f2f; background-color: #fff5f5; } /* Легкий красный оттенок */
-        .h-precip-box { border-left-color: #2e7d32; background-color: #f6fff6; } /* Легкий зеленый оттенок */
-        
-        .h-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        .h-content {
-            font-size: 0.95rem;
-            color: #31333F;
-            line-height: 1.4;
-        }
-        .h-bold { font-weight: 800; color: #1a1a1a; }
+        .highlight-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .highlight-box { border-radius: 10px; padding: 12px 18px; border-left: 4px solid #ccc; }
+        .h-temp-box { border-left-color: #d32f2f; background-color: #fff5f5; }
+        .h-precip-box { border-left-color: #2e7d32; background-color: #f6fff6; }
+        .h-label { font-size: 0.7rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+        .h-content { font-size: 0.95rem; color: #31333F; line-height: 1.4; }
         </style>
     """, unsafe_allow_html=True)
 
-    # --- 2. УНИВЕРСАЛЬНАЯ ФУНКЦИЯ С ЛЕГЕНДОЙ И ХАЙЛАЙТАМИ ---
-    def render_climate_section(title, description, column_name, colorscale, bar_colors, unit, highlights, h_style_class):
+    # --- 3. ФУНКЦИЯ РЕНДЕРИНГА (С исправленными отступами и key_suffix) ---
+    def render_climate_section(title, description, column_name, colorscale, bar_colors, unit, highlights, h_style_class, key_suffix):
+        # Каждая строка внутри функции должна иметь ровно 4 пробела отступа
         st.markdown(f"### {title}")
         
-        # --- ХАЙЛАЙТЫ ПЕРЕД ГРАФИКОМ ---
         st.markdown(f"""
             <div class="highlight-wrapper">
                 <div class="highlight-box {h_style_class}">
@@ -10046,52 +10024,47 @@ with tabs[7]:
         
         st.caption(description)
         
-            # 1. Warming Stripes
+        # Stripes
         fig_stripes = px.imshow([df_climate[column_name]], x=df_climate['Год'], 
                                 color_continuous_scale=colorscale, aspect="auto", color_continuous_midpoint=0)
         fig_stripes.update_layout(height=60, margin=dict(l=0, r=0, t=5, b=5), yaxis={'visible': False},
                                   xaxis=dict(showgrid=False, tickmode='linear', dtick=20),
                                   coloraxis_showscale=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-        
-        # ДОБАВЛЕН KEY:
         st.plotly_chart(fig_stripes, use_container_width=True, config={'displayModeBar': False}, key=f"stripes_{key_suffix}")
         
-        # 2. Основной график
+        # Main Chart
         fig_chart = go.Figure()
-    
         colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in df_climate[column_name]]
         
-        # Столбцы (Аномалии)
-        fig_chart.add_trace(go.Bar(
-            x=df_climate['Год'], 
-            y=df_climate[column_name], 
-            marker_color=colors, 
-            opacity=0.6, 
-            name='Ежегодная аномалия' # Имя для легенды
-        ))
+        fig_chart.add_trace(go.Bar(x=df_climate['Год'], y=df_climate[column_name], marker_color=colors, opacity=0.6, name='Аномалия'))
         
-        # Линия скользящего среднего (Тренд)
-        df_climate[f'SMA_{column_name}'] = df_climate[column_name].rolling(window=10, min_periods=1, center=True).mean()
-        fig_chart.add_trace(go.Scatter(
-            x=df_climate['Год'], 
-            y=df_climate[f'SMA_{column_name}'], 
-            mode='lines', 
-            line=dict(color='#222', width=2.5), 
-            name='10-летнее среднее' # Имя для легенды
-        ))
+        # Трендовая линия
+        sma_data = df_climate[column_name].rolling(window=10, min_periods=1, center=True).mean()
+        fig_chart.add_trace(go.Scatter(x=df_climate['Год'], y=sma_data, mode='lines', line=dict(color='#222', width=2.5), name='10-летнее среднее'))
 
         fig_chart.update_layout(
-            height=320, 
-            margin=dict(l=0, r=0, t=10, b=10),
-            # Настройка легенды
-            showlegend=True, 
+            height=320, margin=dict(l=0, r=0, t=10, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=True, gridcolor='#f0f0f0', dtick=20),
-            yaxis=dict(title=f"Аномалия ({unit})", showgrid=True, gridcolor='#f0f0f0', zeroline=True, zerolinecolor='#ccc')
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            yaxis=dict(title=f"Аномалия ({unit})", showgrid=True, gridcolor='#f0f0f0')
         )
-        st.plotly_chart(fig_chart, use_container_width=True)
+        st.plotly_chart(fig_chart, use_container_width=True, key=f"main_{key_suffix}")
+
+    # --- 4. ВЫЗОВ (Убедитесь, что curr_an определен!) ---
+    # Пример объекта curr_an для теста:
+    curr_an = {
+        "sub_header": "Анализ климатических изменений",
+        "temp_title": "Температурный режим",
+        "temp_desc": "Изменение среднегодовой температуры",
+        "unit_temp": "°C",
+        "temp_now_val": "+2.96°C в 2025 году",
+        "temp_trend_val": "Стабильный рост с 1990-х",
+        "prec_title": "Режим осадков",
+        "prec_desc": "Отклонение уровня осадков от нормы",
+        "unit_prec": "мм",
+        "prec_now_val": "-2.5 мм в 2025 году",
+        "prec_trend_val": "Увеличение вариативности"
+    }
 
     st.subheader(curr_an["sub_header"])
     col_l, col_r = st.columns(2, gap="large")
@@ -10100,17 +10073,17 @@ with tabs[7]:
         render_climate_section(
             curr_an["temp_title"], curr_an["temp_desc"], "Температура", 'RdBu_r', ['#d32f2f', '#1f77b4'], curr_an["unit_temp"],
             {"current": curr_an["temp_now_val"], "trend": curr_an["temp_trend_val"]},
-            "h-temp-box",
-            "temp" # Это и есть наш key_suffix
+            "h-temp-box", "temp"
         )
 
     with col_r:
         render_climate_section(
             curr_an["prec_title"], curr_an["prec_desc"], "Осадки", 'BrBG', ['#2e7d32', '#8d6e63'], curr_an["unit_prec"],
             {"current": curr_an["prec_now_val"], "trend": curr_an["prec_trend_val"]},
-            "h-precip-box",
-            "precip" # Это и есть наш key_suffix
+            "h-precip-box", "precip"
         )
+        
+        
         
         
     import os
