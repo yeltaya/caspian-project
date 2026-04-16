@@ -10333,60 +10333,116 @@ with tabs[7]:
 
 
 
-    # Основной заголовок секции
-    st.header("🔮 Изменение климата в будущем")
+     import streamlit as st
 
-    st.markdown("""
-    Изменение климата — это не просто сухие цифры прогнозов, а вызов, который определит облик нашей страны в ближайшие десятилетия. 
-    Ниже представлены инструменты и данные, позволяющие заглянуть в будущее Казахстана.
-    """)
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ (Добавьте это к вашему основному словарю translations) ---
+    future_translations = {
+        "ru": {
+            "header": "🔮 Изменение климата в будущем",
+            "intro": "Изменение климата — это не просто сухие цифры прогнозов, а вызов, который определит облик нашей страны в ближайшие десятилетия. Ниже представлены инструменты и данные, позволяющие заглянуть в будущее Казахстана.",
+            "map_subheader": "🗺️ Интерактивная карта прогнозов",
+            "map_caption": "Данные предоставлены Потсдамским институтом изучения климатических изменений (PIK).",
+            "ssp_title": "🌍 Выбор будущего (SSP)",
+            "ssp_info": """
+                **Будущее не предопределено.** Оно зависит от пути, который выберет человечество:
+                * **🌱 Зеленый путь (SSP1):** Быстрый переход на ВИЭ, резкое сокращение CO2.
+                * **⚖️ Средний путь (SSP2):** Развитие по текущему вектору.
+                * **🏭 Интенсивный путь (SSP5):** Активное использование угля и нефти.
+            """,
+            "math_title": "💻 Математика климата (CMIP6)",
+            "math_text": "Мы используем **CMIP6** — «золотой стандарт» науки. Это сложнейшие модели ($GCM$), которые имитируют движение атмосферы и океанов на суперкомпьютерах.",
+            "kz_scale_title": "🇰🇿 Масштаб Казахстана",
+            "kz_scale_warning": "**Важно:** Казахстан прогревается в **1.5–2 раза быстрее**, чем планета в среднем. Мы применяем «даунскейлинг», чтобы перенести глобальные расчеты на наш рельеф.",
+            "reality_title": "📉 Новая реальность к 2100 году",
+            "reality_text": "Где «волны жары» станут нормой и как изменится зимний режим? В каких регионах усилится засуха, а где возможны паводки из-за таяния снегов?",
+            "footer_success": "Эти данные помогают планировать развитие городов и сельского хозяйства Казахстана уже сегодня."
+        },
+        "kz": {
+            "header": "🔮 Болашақтағы климаттың өзгеруі",
+            "intro": "Климаттың өзгеруі — бұл жай ғана болжамдардың құрғақ сандары емес, бұл алдағы онжылдықтарда еліміздің келбетін айқындайтын сын-қатер. Төменде Қазақстанның болашағына көз жүгіртуге мүмкіндік беретін құралдар мен мәліметтер берілген.",
+            "map_subheader": "🗺️ Болжамдардың интерактивті картасы",
+            "map_caption": "Мәліметтер Потсдам климаттық өзгерістерді зерттеу институтымен (PIK) ұсынылған.",
+            "ssp_title": "🌍 Болашақты таңдау (SSP)",
+            "ssp_info": """
+                **Болашақ алдын ала анықталмаған.** Ол адамзат таңдайтын жолға байланысты:
+                * **🌱 Жасыл жол (SSP1):** ЖЭК-ке жылдам көшу, CO2-ні шұғыл азайту.
+                * **⚖️ Орташа жол (SSP2):** Ағымдағы вектор бойынша даму.
+                * **🏭 Қарқынды жол (SSP5):** Көмір мен мұнайды белсенді пайдалану.
+            """,
+            "math_title": "💻 Климат математикасы (CMIP6)",
+            "math_text": "Біз **CMIP6** — ғылымның «алтын стандартын» қолданамыз. Бұл атмосфера мен мұхиттардың қозғалысын суперкомпьютерлерде имитациялайтын күрделі модельдер ($GCM$).",
+            "kz_scale_title": "🇰🇿 Қазақстан ауқымы",
+            "kz_scale_warning": "**Маңызды:** Қазақстан планетаның орташа деңгейіне қарағанда **1.5–2 есе жылдам** жылынуда. Біз жаһандық есептеулерді жергілікті жер бедеріне көшіру үшін «даунскейлингті» қолданамыз.",
+            "reality_title": "📉 2100 жылға қарай жаңа шындық",
+            "reality_text": "«Ыстық толқындары» қай жерде қалыпты жағдайға айналады және қысқы режим қалай өзгереді? Қай аймақтарда құрғақшылық күшейіп, қай жерде қардың еруіне байланысты су тасқыны болуы мүмкін?",
+            "footer_success": "Бұл мәліметтер бүгінгі таңда Қазақстанның қалалары мен ауыл шаруашылығын дамытуды жоспарлауға көмектеседі."
+        },
+        "en": {
+            "header": "🔮 Future Climate Change",
+            "intro": "Climate change is not just dry forecast numbers, but a challenge that will define the shape of our country in the coming decades. Below are tools and data to glimpse into the future of Kazakhstan.",
+            "map_subheader": "🗺️ Interactive Forecast Map",
+            "map_caption": "Data provided by the Potsdam Institute for Climate Impact Research (PIK).",
+            "ssp_title": "🌍 Choosing the Future (SSP)",
+            "ssp_info": """
+                **The future is not predetermined.** It depends on the path humanity chooses:
+                * **🌱 Green Path (SSP1):** Rapid transition to renewables, sharp CO2 reduction.
+                * **⚖️ Middle Path (SSP2):** Development along the current vector.
+                * **🏭 Intensive Path (SSP5):** Active use of coal and oil.
+            """,
+            "math_title": "💻 Climate Mathematics (CMIP6)",
+            "math_text": "We use **CMIP6** — the 'gold standard' of science. These are complex models ($GCM$) that simulate the movement of the atmosphere and oceans on supercomputers.",
+            "kz_scale_title": "🇰🇿 Kazakhstan Scale",
+            "kz_scale_warning": "**Important:** Kazakhstan is warming **1.5–2 times faster** than the global average. We use 'downscaling' to transfer global calculations to our local terrain.",
+            "reality_title": "📉 New Reality by 2100",
+            "reality_text": "Where will 'heatwaves' become the norm and how will the winter regime change? In which regions will drought intensify, and where are floods possible due to melting snow?",
+            "footer_success": "This data helps plan the development of Kazakhstan's cities and agriculture today."
+        }
+    }
+
+    # Получаем текущий перевод на основе lang_code (ru/kz/en)
+    f_lang = future_translations[lang_code]
+
+    # --- 2. РЕНДЕРИНГ СЕКЦИИ ---
+
+    # Основной заголовок секции
+    st.header(f_lang["header"])
+
+    st.markdown(f_lang["intro"])
 
     # Создаем две колонки: левая для карты, правая для текста
     col_map, col_text = st.columns([1.5, 1])
 
     with col_map:
-        st.subheader("🗺️ Интерактивная карта прогнозов")
-        # Ссылка на инструмент Потсдамского института
+        st.subheader(f_lang["map_subheader"])
+        # Ссылка на инструмент
         pik_url = "http://10.0.2.121:8080/forecast"
         
         # Отображение карты через iframe
+        # Добавляем key для уникальности при переключении языков
         st.components.v1.iframe(pik_url, height=800, scrolling=True)
         
-        st.caption("Данные предоставлены Потсдамским институтом изучения климатических изменений (PIK).")
+        st.caption(f_lang["map_caption"])
 
     with col_text:
         # 1. Сценарии SSP
-        st.markdown("### 🌍 Выбор будущего (SSP)")
-        st.info("""
-        **Будущее не предопределено.** Оно зависит от пути, который выберет человечество (Shared Socioeconomic Pathways):
-        * **🌱 Зеленый путь (SSP1):** Быстрый переход на ВИЭ, резкое сокращение CO2.
-        * **⚖️ Средний путь (SSP2):** Развитие по текущему вектору.
-        * **🏭 Интенсивный путь (SSP5):** Активное использование угля и нефти.
-        """)
+        st.markdown(f"### {f_lang['ssp_title']}")
+        st.info(f_lang["ssp_info"])
 
         # 2. Модели CMIP6
-        st.markdown("### 💻 Математика климата (CMIP6)")
-        st.write("""
-        Мы используем **CMIP6** — «золотой стандарт» науки. Это сложнейшие модели ($GCM$), 
-        которые имитируют движение атмосферы и океанов на суперкомпьютерах.
-        """)
+        st.markdown(f"### {f_lang['math_title']}")
+        st.write(f_lang["math_text"])
 
         # 3. Специфика Казахстана
-        st.markdown("### 🇰🇿 Масштаб Казахстана")
-        st.warning("""
-        **Важно:** Казахстан прогревается в **1.5–2 раза быстрее**, чем планета в среднем. 
-        Мы применяем «даунскейлинг», чтобы перенести глобальные расчеты на наш рельеф.
-        """)
+        st.markdown(f"### {f_lang['kz_scale_title']}")
+        st.warning(f_lang["kz_scale_warning"])
         
-        st.markdown("### 📉 Новая реальность к 2100 году")
-        st.write("""
-        Где «волны жары» станут нормой и как изменится зимний режим?
-        В каких регионах усилится засуха, а где возможны паводки из-за таяния снегов?
-        """)
+        # 4. Прогнозы
+        st.markdown(f"### {f_lang['reality_title']}")
+        st.write(f_lang["reality_text"])
         
-        st.success("Эти данные помогают планировать развитие городов и сельского хозяйства Казахстана уже сегодня.")
+        st.success(f_lang["footer_success"])
         
-
+    
 
     st.markdown("---")
     st.subheader("📈 Климат областей")
