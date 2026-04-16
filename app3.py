@@ -10114,8 +10114,6 @@ with tabs[7]:
         )
         
         
-    
-        
         
     import os
     import base64
@@ -10221,15 +10219,57 @@ with tabs[7]:
     st.divider()
     
     
+    import streamlit.components.v1 as components
+    import os
+    import base64
 
-    st.markdown("### 🏆 Анализ влажности")
-    
+    # --- 1. ТЕКСТЫ ДЛЯ ЭТОГО БЛОКА (добавьте в ваш общий словарь translations) ---
+    # Если у вас словарь уже создан выше, просто дополните его этими ключами:
+    humidity_translations = {
+        "ru": {
+            "header": "🏆 Анализ влажности",
+            "card_title": "Динамика увлажнения",
+            "card_text": """<span style="font-weight: 800;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению годовых сумм атмосферных осадков на 2,5 мм/10 лет, в основном за счет осадков весеннего сезона. 
+                            <br><br>
+                            Уменьшение осадков наблюдалось в центральных и южных регионах. Изменения максимальной продолжительности бездождных периодов достигли 1–4 дней за десятилетие.""",
+            "chart_title": "Самые сухие годы в Казахстане",
+            "chart_period": "(1941–2025 гг.)",
+            "map_caption": "Карта аномалий осадков"
+        },
+        "kz": {
+            "header": "🏆 Ылғалдылықты талдау",
+            "card_title": "Ылғалдану динамикасы",
+            "card_text": """<span style="font-weight: 800;">Соңғы 50 жылда</span> атмосфералық жауын-шашынның жылдық мөлшері онжылдықта 2,5 мм-ге артуының әлсіз тенденциясы байқалады. 
+                            <br><br>
+                            Орталық және оңтүстік аймақтарда жауын-шашынның азаюы байқалды. Жауын-шашынсыз кезеңдердің максималды ұзақтығының өзгеруі онжылдықта 1–4 күнді құрады.""",
+            "chart_title": "Қазақстандағы ең құрғақ жылдар",
+            "chart_period": "(1941–2025 жж.)",
+            "map_caption": "Жауын-шашын аномалияларының картасы"
+        },
+        "en": {
+            "header": "🏆 Humidity Analysis",
+            "card_title": "Moisture Dynamics",
+            "card_text": """<span style="font-weight: 800;">Over the last 50 years</span>, there has been a slight trend toward an increase in annual precipitation by 2.5 mm/10 years. 
+                            <br><br>
+                            A decrease in precipitation was observed in central and southern regions. Changes in the maximum duration of dry periods reached 1–4 days per decade.""",
+            "chart_title": "Driest Years in Kazakhstan",
+            "chart_period": "(1941–2025)",
+            "map_caption": "Precipitation Anomaly Map"
+        }
+    }
+
+    # Извлекаем нужный перевод (lang_code должен быть определен выше в коде)
+    h_lang = humidity_translations[lang_code]
+
+    # --- 2. ЛОГИКА ОТОБРАЖЕНИЯ ---
+
+    st.markdown(f"### {h_lang['header']}")
+
     col_info2, col_chart2, col_map2 = st.columns([1, 1, 1], gap="large")
-    
-# --- ДАННЫЕ РЕЙТИНГА ОСАДКОВ (ЗАСУХА) ---
-    # Гамма синхронизирована с оранжевыми оттенками карты аномалий
+
+    # Данные рейтинга (цифры остаются прежними, так как это факты)
     rank_data_precip = [
-        {"rank": 1, "year": 1944, "value": 73.5, "color": "#B85B28"}, # Насыщенный коричнево-оранжевый
+        {"rank": 1, "year": 1944, "value": 73.5, "color": "#B85B28"},
         {"rank": 2, "year": 1975, "value": 77.0, "color": "#D47A3B"},
         {"rank": 3, "year": 1974, "value": 78.3, "color": "#E6914B"},
         {"rank": 4, "year": 1995, "value": 78.8, "color": "#F2A762"},
@@ -10238,34 +10278,28 @@ with tabs[7]:
         {"rank": 7, "year": 1955, "value": 82.4, "color": "#FBD9B0"},
         {"rank": 8, "year": 1936, "value": 82.6, "color": "#FDE5C7"},
         {"rank": 9, "year": 2020, "value": 85.2, "color": "#FEF0DE"},
-        {"rank": 10, "year": 2021, "value": 85.5, "color": "#FFF8F0"}  # Самый светлый, почти песочный
+        {"rank": 10, "year": 2021, "value": 85.5, "color": "#FFF8F0"}
     ]
-    
- 
-    with col_info2:
-            st.markdown("""
-                <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
-                    <h4 style="margin-top: 0; color: #5d4037;">Динамика увлажнения</h4>
-                    <p style="font-size: 0.95rem; line-height: 1.4;">
-                        <span style="font-weight: 800;">За последние 50 лет</span> наблюдается слабая тенденция к увеличению годовых сумм атмосферных осадков на 2,5 мм/10 лет, в основном за счет осадков весеннего сезона. 
-                        <br><br>
-                        Уменьшение осадков наблюдалось в центральных и южных регионах. Изменения максимальной продолжительности бездождных периодов с осадками менее 1 мм в сутки достигли 1–4 дней за десятилетие, как в сторону увеличения, так и в сторону уменьшения.
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
 
-        
-    # 2. КОЛОНКА С ГРАФИКОМ
+    with col_info2:
+        st.markdown(f"""
+            <div style="background-color: #fdfaf5; padding: 20px; border-radius: 12px; border-left: 6px solid #8d6e63; margin-top: 0px;">
+                <h4 style="margin-top: 0; color: #5d4037;">{h_lang['card_title']}</h4>
+                <p style="font-size: 0.95rem; line-height: 1.4;">
+                    {h_lang['card_text']}
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
     with col_chart2:
-        # Крупный заголовок как в верхнем блоке
-        st.markdown("""
+        st.markdown(f"""
             <div style="font-size: 1.1rem; font-weight: 600; color: #555; margin-bottom: 15px; font-family: sans-serif;">
-                Самые сухие годы в Казахстане <span style="font-weight: 400; font-size: 0.9rem; color: #888;">(1941–2025 гг.)</span>
+                {h_lang['chart_title']} <span style="font-weight: 400; font-size: 0.9rem; color: #888;">{h_lang['chart_period']}</span>
             </div>
         """, unsafe_allow_html=True)
         
         rows_html = ""
-        max_val_precip = 100 # База для процентов
+        max_val_precip = 100 
         
         for item in rank_data_precip:
             width = (item["value"] / max_val_precip) * 100
@@ -10275,34 +10309,29 @@ with tabs[7]:
                 <div style="width: 45px; font-size: 12px; font-weight: 600; color: #333;">{item['year']}</div>
                 <div style="flex-grow: 1; background-color: #f0f2f6; border-radius: 4px; height: 100%; position: relative;">
                     <div style="width: {width}%; background-color: {item['color']}; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; border-radius: 4px;">
-                        <span style="color: white; font-size: 11px; font-weight: bold;">{item['value']}%</span>
+                        <span style="color: { '#333' if item['rank'] > 8 else 'white' }; font-size: 11px; font-weight: bold;">{item['value']}%</span>
                     </div>
                 </div>
             </div>
             """
-        
+        # Добавляем уникальный key для компонента, чтобы избежать конфликтов при переключении
         components.html(f"<div style='margin-top: 5px;'>{rows_html}</div>", height=340)
-              
-        
+
     with col_map2:
         map_path = "Precipitation.gif"
-        
         if os.path.exists(map_path):
-            # Чтобы HTML увидел файл, он должен быть доступен (например, в папке со скриптом)
-            # Но проще всего вывести через st.image(contents) как выше.
-            # Если все же нужен HTML:
-            import base64
             with open(map_path, "rb") as f:
                 data_url = base64.b64encode(f.read()).decode("utf-8")
             
             st.markdown(
-                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%;">',
+                f'<img src="data:image/gif;base64,{data_url}" alt="map gif" style="width:100%; border-radius: 8px;">',
                 unsafe_allow_html=True,
             )
-            st.caption("Карта аномалий")
-        
-            
+            st.caption(h_lang['map_caption'])
+
     st.divider()
+
+
 
     # Основной заголовок секции
     st.header("🔮 Изменение климата в будущем")
