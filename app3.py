@@ -12144,26 +12144,26 @@ with tabs[7]:
     
     
         # --- 1. НАСТРОЙКИ ---
-        data_file = "Max_wind.csv"
-        image_path = "wind_RES5.jpg"
-        map_percent = 100 
+    data_file = "Max_wind.csv"
+    image_path = "wind_RES5.jpg"
+    map_percent = 100 
 
-        st.title(t["title"])
-        st.divider()
+    st.title(t["title"])
+    st.divider()
         
         # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
-        st.subheader(t["facts"])
-        c1, c2, c3 = st.columns(3)
-        with c1: st.metric(t["record"], "60 м/с", "Жаланашколь")
-        with c2: st.metric(t["trend_label"], "-3.3 м/с")
-        with c3: st.metric("Аномалия", "+0.5 м/с", delta="1980s")
+    st.subheader(t["facts"])
+    c1, c2, c3 = st.columns(3)
+    with c1: st.metric(t["record"], "60 м/с", "Жаланашколь")
+    with c2: st.metric(t["trend_label"], "-3.3 м/с")
+    with c3: st.metric("Аномалия", "+0.5 м/с", delta="1980s")
 
-        st.divider()
+    st.divider()
 
         # --- СЕКЦИЯ 2: КАРТА И ГРАФИК ---
-        col_map, col_charts = st.columns([1, 1])
+    col_map, col_charts = st.columns([1, 1])
 
-        with col_map:
+    with col_map:
             st.subheader(t["map_sub"])
             if os.path.exists(image_path):
                 with open(image_path, "rb") as f:
@@ -12178,7 +12178,7 @@ with tabs[7]:
             else:
                 st.error(f"File {image_path} not found.")
 
-        with col_charts:
+    with col_charts:
             st.subheader(t["chart_sub"])
             if os.path.exists(data_file):
                 try:
