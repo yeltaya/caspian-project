@@ -9642,143 +9642,149 @@ with tabs[7]:
 
 
 
-    import streamlit as st
-    import streamlit.components.v1 as components
+    global_ui = {
+        "ru": {
+            "col1_title": "🌏 Глобальный мониторинг",
+            "col2_title": "📈 Глобальный контекст",
+            "col3_title": "📊 Аналитика климатических изменений",
+            "source_cap": "Данные: Copernicus Climate Pulse",
+            "record_title": "📈 Рекордное потепление",
+            "record_text": "Согласно докладу Всемирной метеорологической организации с 1980-х годов, каждое последующее десятилетие было теплее, чем любое предыдущее десятилетие с 1850 года.",
+            "kz_context_title": "🇰🇿 Климат Казахстана меняется быстрее",
+            "kz_context_text": "Территория Казахстана, находящаяся в центре Евразийского континента и удаленная от океана на значительное расстояние, прогревается более значительными темпами, чем земной шар в среднем.",
+            "stat_temp_label": "Темп потепления",
+            "stat_temp_sub": "за 10 лет (в среднем)",
+            "stat_temp_badge": "↑ ВЫШЕ МИРОВОГО",
+            "stat_anom_label": "Аномалия 2025",
+            "stat_anom_sub": "от нормы 1961-1990",
+            "stat_anom_badge": "РАНГ №1",
+            "stat_rain_label": "Дефицит осадков",
+            "stat_rain_sub": "критическое снижение влажности в июне и октябре",
+            "stat_rain_badge": "⚠ РИСК ЗАСУШЛИВОСТИ",
+            "info_footer": "💡 Наблюдается устойчивый тренд на ускорение прогрева территории республики."
+        },
+        "kz": {
+            "col1_title": "🌏 Жаһандық мониторинг",
+            "col2_title": "📈 Жаһандық контекст",
+            "col3_title": "📊 Климаттық өзгерістер аналитикасы",
+            "source_cap": "Деректер: Copernicus Climate Pulse",
+            "record_title": "📈 Рекордтық жылыну",
+            "record_text": "Дүниежүзілік метеорологиялық ұйымның есебіне сәйкес, 1980-жылдардан бастап әрбір келесі онжылдық 1850 жылдан бергі кез келген алдыңғы онжылдықтан жылырақ болды.",
+            "kz_context_title": "🇰🇿 Қазақстан климаты жылдам өзгеруде",
+            "kz_context_text": "Еуразия құрлығының орталығында орналасқан және мұхиттан айтарлықтай қашықтықта орналасқан Қазақстан аумағы жер шарының орташа деңгейіне қарағанда қарқынды жылынуда.",
+            "stat_temp_label": "Жылыну қарқыны",
+            "stat_temp_sub": "10 жылда (орташа)",
+            "stat_temp_badge": "↑ ӘЛЕМДІК ДЕҢГЕЙДЕН ЖОҒАРЫ",
+            "stat_anom_label": "2025 аномалиясы",
+            "stat_anom_sub": "1961-1990 нормасынан",
+            "stat_anom_badge": "№1 ДӘРЕЖЕ",
+            "stat_rain_label": "Жауын-шашын тапшылығы",
+            "stat_rain_sub": "маусым және қазан айларында ылғалдылықтың төмендеуі",
+            "stat_rain_badge": "⚠ ҚҰРҒАҚШЫЛЫҚ ҚАУПІ",
+            "info_footer": "💡 Республика аумағының жылынуын жеделдетудің тұрақты тренді байқалады."
+        },
+        "en": {
+            "col1_title": "🌏 Global Monitoring",
+            "col2_title": "📈 Global Context",
+            "col3_title": "📊 Climate Change Analytics",
+            "source_cap": "Data: Copernicus Climate Pulse",
+            "record_title": "📈 Record Warming",
+            "record_text": "According to the World Meteorological Organization report, since the 1980s, each successive decade has been warmer than any previous decade since 1850.",
+            "kz_context_title": "🇰🇿 Kazakhstan's Climate is Changing Faster",
+            "kz_context_text": "Kazakhstan's territory, located in the center of the Eurasian continent and far from the ocean, is warming at a faster rate than the global average.",
+            "stat_temp_label": "Warming Rate",
+            "stat_temp_sub": "per 10 years (average)",
+            "stat_temp_badge": "↑ ABOVE GLOBAL",
+            "stat_anom_label": "2025 Anomaly",
+            "stat_anom_sub": "from 1961-1990 norm",
+            "stat_anom_badge": "RANK #1",
+            "stat_rain_label": "Precipitation Deficit",
+            "stat_rain_sub": "critical humidity drop in June and October",
+            "stat_rain_badge": "⚠ DROUGHT RISK",
+            "info_footer": "💡 There is a steady trend towards accelerated warming of the country's territory."
+        }
+    }
 
-    # 1. Сначала принудительно выравниваем все колонки по верхнему краю через CSS
+    curr_g = global_ui.get(lang_code, global_ui["ru"])
+    
+ # 1. Стили выравнивания и верстки
     st.markdown("""
         <style>
-        [data-testid="stHorizontalBlock"] {
-            align-items: flex-start !important;
+        [data-testid="stHorizontalBlock"] { align-items: flex-start !important; }
+        .analytics-vertical-wrapper { display: flex; flex-direction: column; gap: 20px; margin: 20px 0; }
+        .m-top-row { display: flex; flex-direction: row; gap: 20px; width: 100%; }
+        .m-row-item { 
+            flex: 1; display: flex; flex-direction: column; padding: 15px; 
+            background-color: #f8f9fa; border-radius: 8px; border-left: 6px solid #1a4fa3; 
         }
+        .m-label { color: #666; font-size: 0.9rem; font-weight: 500; margin-bottom: 5px; }
+        .m-value { color: #1a4fa3; font-size: 1.8rem; font-weight: 850; line-height: 1; }
+        .m-sub { font-size: 0.8rem; color: #888; margin-top: 5px; }
+        .m-badge { 
+            display: inline-block; align-self: flex-start; padding: 4px 10px; 
+            border-radius: 5px; font-size: 0.7rem; font-weight: bold; margin-top: 10px; text-transform: uppercase; 
+        }
+        .b-red { background: #fee2e2; color: #b91c1c; }
+        .b-orange { background: #fef3c7; color: #d97706; }
+        @media (max-width: 768px) { .m-top-row { flex-direction: column; } }
         </style>
     """, unsafe_allow_html=True)
 
-    # 2. Создаем колонки. 
-# Пропорции колонок
     col1, col2, col3 = st.columns([1.3, 0.8, 1.3], gap="medium")
 
     with col1:
-        st.subheader("🌏 Глобальный мониторинг")
-        # УМЕНЬШЕННАЯ ВЫСОТА ГЛОБУСА
+        st.subheader(curr_g["col1_title"])
         components.iframe("https://pulse.climate.copernicus.eu", height=500, scrolling=False)
-        st.caption("Данные: Copernicus Climate Pulse")
+        st.caption(curr_g["source_cap"])
 
     with col2:
-        st.subheader("📈 Глобальный контекст")
-        # Хайлайт 1: Глобальный рекорд
+        st.subheader(curr_g["col2_title"])
+        # Хайлайт 1
         st.markdown(f"""
             <div style="background-color: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 5px solid #ffa500; margin-bottom: 15px;">
-                <b style="color: #e67e22; font-size: 1.1rem;">📈 Рекордное потепление</b><br>
-                <span style="font-size: 1.15rem; color: #1a1a1a;">
-                    Согласно докладу Всемирной метеорологической организации с 1980-х годов, 
-                    каждое последующее десятилетие было теплее, чем любое предыдущее десятилетие с 1850 года.
-                </span>
+                <b style="color: #e67e22; font-size: 1.1rem;">{curr_g['record_title']}</b><br>
+                <span style="font-size: 1.05rem; color: #1a1a1a;">{curr_g['record_text']}</span>
             </div>
         """, unsafe_allow_html=True)
 
-        # Хайлайт 2: Специфика Казахстана
+        # Хайлайт 2
         st.markdown(f"""
             <div style="background-color: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 5px solid #2ecc71; margin-bottom: 15px;">
-                <b style="color: #27ae60; font-size: 1.1rem;">🇰🇿 Климат Казахстана меняется быстрее</b><br>
-                <span style="font-size: 1.15rem; color: #1a1a1a;">
-                    Территория Казахстана, находящаяся в центре Евразийского континента и удаленная от океана на значительное расстояние, 
-                    прогревается более значительными темпами, чем земной шар в среднем.
-                </span>
+                <b style="color: #27ae60; font-size: 1.1rem;">{curr_g['kz_context_title']}</b><br>
+                <span style="font-size: 1.05rem; color: #1a1a1a;">{curr_g['kz_context_text']}</span>
             </div>
         """, unsafe_allow_html=True)
         
     with col3:  
-        st.subheader("📊 Аналитика климатических изменений")
-
-        st.markdown("""
-            <style>
-            .analytics-vertical-wrapper {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-                margin: 20px 0;
-            }
-            /* Контейнер для двух элементов в одной строке */
-            .m-top-row {
-                display: flex;
-                flex-direction: row;
-                gap: 20px;
-                width: 100%;
-            }
-            .m-row-item {
-                flex: 1; /* Растягивает элементы поровну */
-                display: flex;
-                flex-direction: column;
-                padding: 15px;
-                background-color: #f8f9fa;
-                border-radius: 8px;
-                border-left: 6px solid #1a4fa3;
-            }
-            .m-label {
-                color: #666;
-                font-size: 0.9rem;
-                font-weight: 500;
-                margin-bottom: 5px;
-            }
-            .m-value {
-                color: #1a4fa3;
-                font-size: 2.0rem;
-                font-weight: 850;
-                line-height: 1;
-            }
-            .m-sub {
-                font-size: 0.8rem;
-                color: #888;
-                margin-top: 5px;
-            }
-            .m-badge {
-                display: inline-block;
-                align-self: flex-start;
-                padding: 4px 10px;
-                border-radius: 5px;
-                font-size: 0.75rem;
-                font-weight: bold;
-                margin-top: 10px;
-                text-transform: uppercase;
-            }
-            .b-red { background: #fee2e2; color: #b91c1c; }
-            .b-orange { background: #fef3c7; color: #d97706; }
-            
-            /* Адаптивность для мобильных устройств */
-            @media (max-width: 768px) {
-                .m-top-row { flex-direction: column; }
-            }
-            </style>
-
+        st.subheader(curr_g["col3_title"])
+        st.markdown(f"""
             <div class="analytics-vertical-wrapper">
                 <div class="m-top-row">
                     <div class="m-row-item">
-                        <div class="m-label">Темп потепления</div>
+                        <div class="m-label">{curr_g['stat_temp_label']}</div>
                         <div class="m-value">+0.40°С</div>
-                        <div class="m-sub">за 10 лет (в среднем)</div>
-                        <div class="m-badge b-red">↑ ВЫШЕ МИРОВОГО</div>
-                    </div>                   
+                        <div class="m-sub">{curr_g['stat_temp_sub']}</div>
+                        <div class="m-badge b-red">{curr_g['stat_temp_badge']}</div>
+                    </div>                    
                     <div class="m-row-item">
-                        <div class="m-label">Аномалия 2025</div>
+                        <div class="m-label">{curr_g['stat_anom_label']}</div>
                         <div class="m-value">+2.96 °С</div>
-                        <div class="m-sub">от нормы 1961-1990</div>
-                        <div class="m-badge b-red">РАНГ №1</div>
+                        <div class="m-sub">{curr_g['stat_anom_sub']}</div>
+                        <div class="m-badge b-red">{curr_g['stat_anom_badge']}</div>
                     </div>
                 </div>
                 <div class="m-row-item">
-                    <div class="m-label">Дефицит осадков</div>
+                    <div class="m-label">{curr_g['stat_rain_label']}</div>
                     <div class="m-value">-2.5 мм</div>
-                    <div class="m-sub">критическое снижение влажности в июне и октябре</div>
-                    <div class="m-badge b-orange">⚠ РИСК ЗАСУШЛИВОСТИ</div>
+                    <div class="m-sub">{curr_g['stat_rain_sub']}</div>
+                    <div class="m-badge b-orange">{curr_g['stat_rain_badge']}</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
+        st.info(curr_g["info_footer"])
 
-        # И плашка под ними
-        st.info("💡 Наблюдается устойчивый тренд на ускорение прогрева территории республики.")
-
+        
 
     # --- 1. ОБЩИЕ ДАННЫЕ ---
     years = list(range(1940, 2026))
