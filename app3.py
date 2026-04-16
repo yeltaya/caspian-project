@@ -10444,36 +10444,41 @@ with tabs[7]:
     
 
     st.markdown("---")
-        
-    # 2. Словарик интерфейса
-    ui_translate = {
-        "ru": {
-            "sub": "📈 Климат областей", 
-            "select": "Выберите область:", 
-            "geo": "Географическое описание", 
-            "conc": "Заключение"
-        },
-        "kz": {
-            "sub": "📈 Облыстар климаты", 
-            "select": "Облысты таңдаңыз:", 
-            "geo": "Географиялық сипаттама", 
-            "conc": "Қорытынды"
-        },
-        "en": {
-            "sub": "📈 Regional Climate", 
-            "select": "Select region:", 
-            "geo": "Geographical description", 
-            "conc": "Conclusion"
-        }
-    }
+    
+     
+# 1. Выбор области с учетом выбранного языка
+    selected_name = st.selectbox(
+        ui_translate[L]["select"], 
+        list(ALL_REGIONS_DATABASE.keys())
+    )
 
-    # 3. Использование перевода
-    st.subheader(ui_translate[L]["sub"])
+    # 2. Извлекаем данные по выбранной области
+    reg = ALL_REGIONS_DATABASE[selected_name]
 
-    # Пример для выбора области
-    # selected_name = st.selectbox(ui_translate[L]["select"], list(ALL_REGIONS_DATABASE.keys()))
+    # --- ОТОБРАЖЕНИЕ ТЕКСТОВОЙ ИНФОРМАЦИИ ---
+    
+    # 3. Географическое описание
+    st.markdown(f"### {ui_translate[L]['geo']}")
+    
+    # Проверяем: если текст — словарь (ru/kz/en), берем L. Если строка — выводим как есть.
+    geo_text = reg['geo_text'][L] if isinstance(reg['geo_text'], dict) else reg['geo_text']
+    st.write(geo_text)
 
+    # 4. Анализ и заключение
+    st.markdown(f"### {ui_translate[L]['conc']}")
+    
+    analysis_text = reg['analysis_text'][L] if isinstance(reg['analysis_text'], dict) else reg['analysis_text']
+    st.write(analysis_text, unsafe_allow_html=True)
 
+    # 5. Риски (в виде информационных плашек)
+    if "risks" in reg:
+        for risk in reg["risks"]:
+            # Определяем заголовок и текст риска на нужном языке
+            r_title = risk["title"][L] if isinstance(risk["title"], dict) else risk["title"]
+            r_desc = risk["text"][L] if isinstance(risk["text"], dict) else risk["text"]
+            
+            st.info(f"**{r_title}**: {r_desc}")
+            
         
     # --- 1. БАЗА ДАННЫХ (Часть 1: СКО) ---
     ALL_REGIONS_DATABASE = {
