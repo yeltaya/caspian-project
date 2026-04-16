@@ -9452,16 +9452,15 @@ with tabs[6]:
     
         
         
-        
-    # --- ОБНОВЛЕННЫЙ БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ С SSP ---
+# --- БЛОК: ГРАФИКИ ПРОГНОЗОВ (SSP & RCP) ---
     st.markdown("<br>", unsafe_allow_html=True)
     lt_plot_col1, lt_plot_col2 = st.columns([1.6, 1.4])
 
     with lt_plot_col1:
-        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">📉 Прогноз уровня моря до 2050 г. (RCP & SSP)</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">{curr_p["sea_level_title"]}</div>', unsafe_allow_html=True)
         
-        # Расширенные данные прогноза
-        data = {
+        # Данные уровня моря (f_data)
+        f_data = {
             "Год": list(range(2006, 2051)),
             "Факт": [-27.04, -27.07, -27.13, -27.15, -27.25, -27.50, -27.57, -27.61, -27.74, -27.98, -27.99, -27.99, -28.03, -28.21, -28.24, -28.43, -28.67, -28.87, -29.18] + [None]*26,
             "RCP4.5": [None]*18 + [-29.18, -29.16, -29.39, -29.64, -29.77, -29.88, -29.81, -29.94, -30.01, -30.09, -30.34, -30.56, -30.78, -30.87, -30.82, -30.95, -30.95, -31.08, -31.26, -31.52, -31.72, -31.89, -32.03, -32.16, -32.07, -32.17, -32.42],
@@ -9472,78 +9471,65 @@ with tabs[6]:
         
         fig_lt = go.Figure()
 
-        # Историческая линия (сплошная жирная)
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["Факт"], name="<b>Факт (измерения)</b>", line=dict(color="#1e293b", width=4)))
-        
-        # Сценарии RCP (предыдущее поколение моделей)
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["RCP4.5"], name="RCP 4.5 (умер.)", line=dict(color="#337AB7", width=2.5, dash='dash')))
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["RCP8.5"], name="RCP 8.5 (экстр.)", line=dict(color="#D32F2F", width=2.5, dash='dash')))
-        
-        # Сценарии SSP (новое поколение моделей)
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["SSP1-2.6"], name="SSP1-2.6 ('Зеленый')", line=dict(color="#2E7D32", width=2.5, dash='dot')))
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["SSP5-8.5"], name="SSP5-8.5 (Инерц.)", line=dict(color="#FF8F00", width=2.5, dash='dot')))
+        # Линии графиков с локализованными именами из curr_p
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["Факт"], name=curr_p["legend_fact"], line=dict(color="#1e293b", width=4)))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["RCP4.5"], name=curr_p["legend_rcp45"], line=dict(color="#337AB7", width=2.5, dash='dash')))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["RCP8.5"], name=curr_p["legend_rcp85"], line=dict(color="#D32F2F", width=2.5, dash='dash')))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["SSP1-2.6"], name=curr_p["legend_ssp1"], line=dict(color="#2E7D32", width=2.5, dash='dot')))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["SSP5-8.5"], name=curr_p["legend_ssp5"], line=dict(color="#FF8F00", width=2.5, dash='dot')))
 
         fig_lt.update_layout(
             height=450, margin=dict(l=0,r=0,t=10,b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             hovermode="x unified",
-            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=14)),
-            yaxis=dict(title="м БС", gridcolor='#E2E8F0', range=[-35, -26], tickfont=dict(size=12)),
-            xaxis=dict(showgrid=False, dtick=5, tickfont=dict(size=12))
+            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=12)),
+            yaxis=dict(title=curr_p["y_axis_bs"], gridcolor='#E2E8F0', range=[-35, -26]),
+            xaxis=dict(showgrid=False, dtick=5)
         )
-        
-        # Линия раздела (начало прогноза)
         fig_lt.add_vline(x=2024, line_width=1, line_dash="solid", line_color="#94a3b8")
-        
         st.plotly_chart(fig_lt, use_container_width=True, config={'displayModeBar': False})
 
 
     with lt_plot_col2:
-        st.markdown('<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">🌊 Прогноз высоты волн (SSP5-8.5)</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">{curr_p["wave_title"]}</div>', unsafe_allow_html=True)
 
-        # 1. Подготовка данных (замените эти списки на ваши данные или загрузите из df)
-        years = list(range(2015, 2051))
+        w_years = list(range(2015, 2051))
         
-        # Пример данных (замените на свои реальные значения)
-        fort_shevchenko = [2.25, 2.01, 2.08, 2.20, 2.18, 2.03, 2.00, 2.08, 2.09, 1.96, 1.96, 2.00, 2.06, 2.00, 2.13, 2.03, 2.11, 2.03, 1.99, 1.96, 1.99, 2.07, 2.18, 2.29, 1.90, 1.98, 1.90, 1.95, 1.83, 2.15, 2.13, 2.02, 2.03, 1.96, 1.89, 2.21]
-        aktau = [2.28, 2.05, 2.10, 2.29, 2.23, 2.07, 2.07, 2.12, 2.14, 2.05, 2.07, 2.07, 2.11, 2.09, 2.32, 2.14, 2.17, 2.10, 2.04, 2.12, 2.11, 2.15, 2.29, 2.30, 1.96, 2.09, 1.99, 2.06, 1.95, 2.18, 2.25, 2.05, 2.07, 2.05, 1.88, 2.25]
-        kuryk = [2.32, 2.08, 2.15, 2.31, 2.26, 2.11, 2.09, 2.14, 2.17, 2.06, 2.08, 2.08, 2.12, 2.10, 2.33, 2.16, 2.20, 2.13, 2.08, 2.13, 2.13, 2.16, 2.33, 2.36, 1.98, 2.11, 1.99, 2.08, 1.96, 2.21, 2.29, 2.09, 2.12, 2.06, 1.91, 2.31]
+        # Данные высоты волн
+        f_shev = [2.25, 2.01, 2.08, 2.20, 2.18, 2.03, 2.00, 2.08, 2.09, 1.96, 1.96, 2.00, 2.06, 2.00, 2.13, 2.03, 2.11, 2.03, 1.99, 1.96, 1.99, 2.07, 2.18, 2.29, 1.90, 1.98, 1.90, 1.95, 1.83, 2.15, 2.13, 2.02, 2.03, 1.96, 1.89, 2.21]
+        akt_v = [2.28, 2.05, 2.10, 2.29, 2.23, 2.07, 2.07, 2.12, 2.14, 2.05, 2.07, 2.07, 2.11, 2.09, 2.32, 2.14, 2.17, 2.10, 2.04, 2.12, 2.11, 2.15, 2.29, 2.30, 1.96, 2.09, 1.99, 2.06, 1.95, 2.18, 2.25, 2.05, 2.07, 2.05, 1.88, 2.25]
+        kur_v = [2.32, 2.08, 2.15, 2.31, 2.26, 2.11, 2.09, 2.14, 2.17, 2.06, 2.08, 2.08, 2.12, 2.10, 2.33, 2.16, 2.20, 2.13, 2.08, 2.13, 2.13, 2.16, 2.33, 2.36, 1.98, 2.11, 1.99, 2.08, 1.96, 2.21, 2.29, 2.09, 2.12, 2.06, 1.91, 2.31]
 
-        # 2. Создание графика Plotly
-        fig = go.Figure()
+        fig_w = go.Figure()
 
-        # Линия для Форт-Шевченко
-        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name='Форт-Шевченко',
-                                 line=dict(color='#4F7942', width=3)))
+        # Названия портов берутся из curr_p["ports"]
+        fig_w.add_trace(go.Scatter(x=w_years, y=f_shev, name=curr_p["ports"][0], line=dict(color='#4F7942', width=3)))
+        fig_w.add_trace(go.Scatter(x=w_years, y=akt_v, name=curr_p["ports"][1], line=dict(color='#A0C4DE', width=3)))
+        fig_w.add_trace(go.Scatter(x=w_years, y=kur_v, name=curr_p["ports"][2], line=dict(color='#D35400', width=3)))
 
-        # Линия для Актау
-        fig.add_trace(go.Scatter(x=years, y=aktau, name='Актау',
-                                 line=dict(color='#A0C4DE', width=3)))
-
-        # Линия для Курык
-        fig.add_trace(go.Scatter(x=years, y=kuryk, name='Курык',
-                                 line=dict(color='#D35400', width=3)))
-
-        # 3. Настройка оформления (максимально близко к вашему скрину)
-        fig.update_layout(
-            plot_bgcolor='white',
-            paper_bgcolor='white',
-            margin=dict(l=0, r=0, t=20, b=0),
-            height=400,
+        fig_w.update_layout(
+            plot_bgcolor='white', paper_bgcolor='white',
+            margin=dict(l=0, r=0, t=20, b=0), height=400,
             legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
-            hovermode="x unified" # Показывает значения всех линий при наведении на год
+            hovermode="x unified"
         )
 
-        # Настройка осей
-        fig.update_xaxes(title="год", showline=True, linewidth=1, linecolor='black', mirror=True, 
-                         tickmode='linear', dtick=1, tickangle=90, gridcolor='#f0f0f0', autorange='reversed')
-        fig.update_yaxes(title="высота волны, м", showline=True, linewidth=1, linecolor='black', mirror=True, 
-                         range=[1.5, 2.5], gridcolor='#f0f0f0')
+        # Локализованные подписи осей
+        fig_w.update_xaxes(title=curr_p["x_axis_year"], showline=True, linewidth=1, linecolor='black', mirror=True, dtick=5, gridcolor='#f0f0f0')
+        fig_w.update_yaxes(title=curr_p["y_axis_wave"], showline=True, linewidth=1, linecolor='black', mirror=True, range=[1.5, 2.5], gridcolor='#f0f0f0')
 
-        # 4. Отображение в Streamlit
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        st.plotly_chart(fig_w, use_container_width=True, config={'displayModeBar': False})
 
-     
+    # Финальное локализованное описание
+    st.markdown(f"""
+        <div style="margin-top: 25px; margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
+            <p style="font-size: 1.15rem; border-left: 4px solid #3B82F6; padding-left: 15px;">
+                {curr_p["description"]}
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    
 
     # Описание прогнозов
     st.markdown("""
