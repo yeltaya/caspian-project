@@ -10046,16 +10046,19 @@ with tabs[7]:
         
         st.caption(description)
         
-        # 1. Warming Stripes
+            # 1. Warming Stripes
         fig_stripes = px.imshow([df_climate[column_name]], x=df_climate['Год'], 
                                 color_continuous_scale=colorscale, aspect="auto", color_continuous_midpoint=0)
         fig_stripes.update_layout(height=60, margin=dict(l=0, r=0, t=5, b=5), yaxis={'visible': False},
                                   xaxis=dict(showgrid=False, tickmode='linear', dtick=20),
                                   coloraxis_showscale=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-        st.plotly_chart(fig_stripes, use_container_width=True, config={'displayModeBar': False})
         
-        # 2. Основной график с легендой
+        # ДОБАВЛЕН KEY:
+        st.plotly_chart(fig_stripes, use_container_width=True, config={'displayModeBar': False}, key=f"stripes_{key_suffix}")
+        
+        # 2. Основной график
         fig_chart = go.Figure()
+    
         colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in df_climate[column_name]]
         
         # Столбцы (Аномалии)
@@ -10090,35 +10093,27 @@ with tabs[7]:
         )
         st.plotly_chart(fig_chart, use_container_width=True)
 
-    # --- 3. ВЕРСТКА БЛОКА ---
-    st.subheader("📈 Климат Казахстана")
+    st.subheader(curr_an["sub_header"])
     col_l, col_r = st.columns(2, gap="large")
 
     with col_l:
         render_climate_section(
-            "Температура воздуха",
-            "Графическое представление аномалий температуры (отклонение от нормы).",
-            "Температура", 'RdBu_r', ['#d32f2f', '#1f77b4'], "°C",
-            {
-                "current": "Средняя (1941-2025): 5,67 ºC. В 2025 году достигла <span class='h-bold'>8,4 ºC</span>.",
-                "trend": "Повышение на <span class='h-bold'>0,40 ºC каждые 10 лет</span> за последние полвека."
-            },
-            "h-temp-box"
+            curr_an["temp_title"], curr_an["temp_desc"], "Температура", 'RdBu_r', ['#d32f2f', '#1f77b4'], curr_an["unit_temp"],
+            {"current": curr_an["temp_now_val"], "trend": curr_an["temp_trend_val"]},
+            "h-temp-box",
+            "temp" # Это и есть наш key_suffix
         )
 
     with col_r:
         render_climate_section(
-            "Атмосферные осадки",
-            "Анализ изменчивости осадков и трендов увлажнения.",
-            "Осадки", 'BrBG', ['#2e7d32', '#8d6e63'], "мм",
-            {
-                "current": "Средняя норма: 320 мм. В 2025 году зафиксирован дефицит <span class='h-bold'>-2,5 мм</span>.",
-                "trend": "Снижение уровня влажности на <span class='h-bold'>1,2% каждое десятилетие</span>."
-            },
-            "h-precip-box"
+            curr_an["prec_title"], curr_an["prec_desc"], "Осадки", 'BrBG', ['#2e7d32', '#8d6e63'], curr_an["unit_prec"],
+            {"current": curr_an["prec_now_val"], "trend": curr_an["prec_trend_val"]},
+            "h-precip-box",
+            "precip" # Это и есть наш key_suffix
         )
-
-    
+        
+        
+        
     import streamlit as st
     import streamlit.components.v1 as components
 
