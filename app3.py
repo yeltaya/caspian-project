@@ -9466,72 +9466,101 @@ with tabs[6]:
     curr_p = prediction_ui.get(lang_code, prediction_ui["ru"])
     
     
-# --- ОБНОВЛЕННЫЙ БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
+# --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ (ЛОКАЛИЗАЦИЯ) ---
+    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown(f'<div class="white-label-header"><p class="section-header-text">{curr_lt["header"]}</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="promo-sub" style="margin-bottom: 25px; font-size: 1.1em !important;">{curr_lt["sub_header"]}</div>', unsafe_allow_html=True)
+
+    # 1. Сетки карточек (Level & Waves)
+    lt_col1, lt_col2 = st.columns(2)
+    with lt_col1:
+        card = curr_lt["cards"][0]
+        st.markdown(f"""
+            <div class="long-term-card" style="background: linear-gradient(135deg, #003366 0%, #00509E 100%);">
+                <div class="lt-title">{card['title']}</div>
+                <div class="lt-desc">{card['desc']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with lt_col2:
+        card = curr_lt["cards"][1]
+        st.markdown(f"""
+            <div class="long-term-card" style="background: linear-gradient(135deg, #337AB7 0%, #5BC0DE 100%);">
+                <div class="lt-title">{card['title']}</div>
+                <div class="lt-desc">{card['desc']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
     st.markdown("<br>", unsafe_allow_html=True)
+
+    # 2. ГРАФИКИ ПРОГНОЗОВ
     lt_plot_col1, lt_plot_col2 = st.columns([1.6, 1.4])
 
     with lt_plot_col1:
         st.markdown(f'<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">{curr_p["sea_level_title"]}</div>', unsafe_allow_html=True)
         
-        # Данные (остаются без изменений)
-        # ... (data словарь из вашего исходного кода) ...
+        # Используем уникальное имя 'f_data', чтобы избежать KeyError
+        f_data = {
+            "Год": list(range(2006, 2051)),
+            "Факт": [-27.04, -27.07, -27.13, -27.15, -27.25, -27.50, -27.57, -27.61, -27.74, -27.98, -27.99, -27.99, -28.03, -28.21, -28.24, -28.43, -28.67, -28.87, -29.18] + [None]*26,
+            "RCP4.5": [None]*18 + [-29.18, -29.16, -29.39, -29.64, -29.77, -29.88, -29.81, -29.94, -30.01, -30.09, -30.34, -30.56, -30.78, -30.87, -30.82, -30.95, -30.95, -31.08, -31.26, -31.52, -31.72, -31.89, -32.03, -32.16, -32.07, -32.17, -32.42],
+            "RCP8.5": [None]*18 + [-29.18, -29.37, -29.37, -29.43, -29.62, -29.76, -29.95, -30.16, -30.43, -30.51, -30.47, -30.67, -30.92, -31.17, -31.38, -31.54, -31.78, -32.02, -32.22, -32.36, -32.60, -32.77, -33.03, -33.26, -33.51, -33.74, -33.99],
+            "SSP1-2.6": [None]*18 + [-29.18, -29.33, -29.52, -29.65, -29.76, -29.88, -30.05, -30.22, -30.41, -30.53, -30.67, -30.81, -30.91, -31.01, -31.12, -31.24, -31.33, -31.53, -31.62, -31.75, -31.88, -31.94, -32.01, -32.18, -32.34, -32.49, -32.67],
+            "SSP5-8.5": [None]*18 + [-28.87, -28.64, -28.58, -28.58, -28.74, -28.92, -28.94, -29.02, -29.05, -29.21, -29.34, -29.51, -29.65, -29.79, -29.81, -29.88, -30.00, -30.13, -30.20, -30.21, -30.32, -30.51, -30.63, -30.74, -30.90, -30.99, -31.13, -31.38]
+        }
         
         fig_lt = go.Figure()
-
-        # Историческая линия
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["Факт"], name=curr_p["legend_fact"], line=dict(color="#1e293b", width=4)))
-        
-        # Сценарии RCP
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["RCP4.5"], name=curr_p["legend_rcp45"], line=dict(color="#337AB7", width=2.5, dash='dash')))
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["RCP8.5"], name=curr_p["legend_rcp85"], line=dict(color="#D32F2F", width=2.5, dash='dash')))
-        
-        # Сценарии SSP
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["SSP1-2.6"], name=curr_p["legend_ssp1"], line=dict(color="#2E7D32", width=2.5, dash='dot')))
-        fig_lt.add_trace(go.Scatter(x=data["Год"], y=data["SSP5-8.5"], name=curr_p["legend_ssp5"], line=dict(color="#FF8F00", width=2.5, dash='dot')))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["Факт"], name=curr_p["legend_fact"], line=dict(color="#1e293b", width=4)))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["RCP4.5"], name=curr_p["legend_rcp45"], line=dict(color="#337AB7", width=2.5, dash='dash')))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["RCP8.5"], name=curr_p["legend_rcp85"], line=dict(color="#D32F2F", width=2.5, dash='dash')))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["SSP1-2.6"], name=curr_p["legend_ssp1"], line=dict(color="#2E7D32", width=2.5, dash='dot')))
+        fig_lt.add_trace(go.Scatter(x=f_data["Год"], y=f_data["SSP5-8.5"], name=curr_p["legend_ssp5"], line=dict(color="#FF8F00", width=2.5, dash='dot')))
 
         fig_lt.update_layout(
             height=450, margin=dict(l=0,r=0,t=10,b=0),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             hovermode="x unified",
-            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=14)),
+            legend=dict(orientation="h", y=-0.25, xanchor="center", x=0.5, font=dict(size=12)),
             yaxis=dict(title=curr_p["y_axis_bs"], gridcolor='#E2E8F0', range=[-35, -26]),
             xaxis=dict(showgrid=False, dtick=5)
         )
-        
+        fig_lt.add_vline(x=2024, line_width=1, line_dash="solid", line_color="#94a3b8")
         st.plotly_chart(fig_lt, use_container_width=True, config={'displayModeBar': False})
 
     with lt_plot_col2:
         st.markdown(f'<div class="promo-bold" style="font-size: 1.3em; margin-bottom: 10px;">{curr_p["wave_title"]}</div>', unsafe_allow_html=True)
 
-        # Подготовка данных (используем названия портов из словаря)
-        years = list(range(2015, 2051))
-        # ... (ваши списки fort_shevchenko, aktau, kuryk) ...
+        w_years = list(range(2015, 2051))
+        # Пример данных (проверьте наличие этих переменных в коде)
+        f_shev = [2.25, 2.01, 2.08, 2.20, 2.18, 2.03, 2.00, 2.08, 2.09, 1.96, 1.96, 2.00, 2.06, 2.00, 2.13, 2.03, 2.11, 2.03, 1.99, 1.96, 1.99, 2.07, 2.18, 2.29, 1.90, 1.98, 1.90, 1.95, 1.83, 2.15, 2.13, 2.02, 2.03, 1.96, 1.89, 2.21]
+        aktau_v = [2.28, 2.05, 2.10, 2.29, 2.23, 2.07, 2.07, 2.12, 2.14, 2.05, 2.07, 2.07, 2.11, 2.09, 2.32, 2.14, 2.17, 2.10, 2.04, 2.12, 2.11, 2.15, 2.29, 2.30, 1.96, 2.09, 1.99, 2.06, 1.95, 2.18, 2.25, 2.05, 2.07, 2.05, 1.88, 2.25]
+        kuryk_v = [2.32, 2.08, 2.15, 2.31, 2.26, 2.11, 2.09, 2.14, 2.17, 2.06, 2.08, 2.08, 2.12, 2.10, 2.33, 2.16, 2.20, 2.13, 2.08, 2.13, 2.13, 2.16, 2.33, 2.36, 1.98, 2.11, 1.99, 2.08, 1.96, 2.21, 2.29, 2.09, 2.12, 2.06, 1.91, 2.31]
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=years, y=fort_shevchenko, name=curr_p["ports"][0], line=dict(color='#4F7942', width=3)))
-        fig.add_trace(go.Scatter(x=years, y=aktau, name=curr_p["ports"][1], line=dict(color='#A0C4DE', width=3)))
-        fig.add_trace(go.Scatter(x=years, y=kuryk, name=curr_p["ports"][2], line=dict(color='#D35400', width=3)))
+        fig_w = go.Figure()
+        fig_w.add_trace(go.Scatter(x=w_years, y=f_shev, name=curr_p["ports"][0], line=dict(color='#4F7942', width=3)))
+        fig_w.add_trace(go.Scatter(x=w_years, y=aktau_v, name=curr_p["ports"][1], line=dict(color='#A0C4DE', width=3)))
+        fig_w.add_trace(go.Scatter(x=w_years, y=kuryk_v, name=curr_p["ports"][2], line=dict(color='#D35400', width=3)))
 
-        fig.update_layout(
-            plot_bgcolor='white', paper_bgcolor='white',
-            margin=dict(l=0, r=0, t=20, b=0), height=400,
-            legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+        fig_w.update_layout(
+            plot_bgcolor='white', paper_bgcolor='white', height=400,
+            margin=dict(l=0, r=0, t=20, b=0),
+            legend=dict(orientation="h", y=-0.3, xanchor="center", x=0.5),
             hovermode="x unified"
         )
+        fig_w.update_xaxes(title=curr_p["x_axis_year"], dtick=5, gridcolor='#f0f0f0')
+        fig_w.update_yaxes(title=curr_p["y_axis_wave"], range=[1.5, 2.5], gridcolor='#f0f0f0')
 
-        fig.update_xaxes(title=curr_p["x_axis_year"], showline=True, linewidth=1, linecolor='black', mirror=True, dtick=5)
-        fig.update_yaxes(title=curr_p["y_axis_wave"], showline=True, linewidth=1, linecolor='black', mirror=True, range=[1.5, 2.5])
+        st.plotly_chart(fig_w, use_container_width=True, config={'displayModeBar': False})
 
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-    # Описание прогнозов
+    # 3. Финальное текстовое описание
     st.markdown(f"""
-        <div style="margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
+        <div style="margin-top: 20px; margin-bottom: 35px; color: #1E293B; line-height: 1.6; font-family: 'Montserrat', sans-serif;">
             <p style="font-size: 1.15rem; border-left: 4px solid #3B82F6; padding-left: 15px;">
                 {curr_p["description"]}
             </p>
         </div>
     """, unsafe_allow_html=True)
+    
     
     
 
