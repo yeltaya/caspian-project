@@ -12203,9 +12203,8 @@ with tabs[7]:
 
     # --- ЗАПУСК ---
     if __name__ == "__main__":
-        # Если вы запускаете файл отдельно, можно добавить кнопки теста:
-        # st.sidebar.radio("Test Language", ["ru", "kz", "en"], key="lang_code")
-        render_wind_dashboard()
+        selected_lang = st.session_state.get('lang_code', 'ru')
+        render_wind_dashboard(selected_lang)
         
     
         
