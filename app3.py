@@ -12086,128 +12086,119 @@ with tabs[7]:
     import os
     import base64
 
-# --- 0. ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
-    # Проверяем сессию, если её нет — ставим 'ru'
-    if 'lang_code' not in st.session_state:
-        st.session_state['lang_code'] = 'ru'
-    
-    current_l = st.session_state['lang_code']
-    
-    # Словарик для интерфейса дашборда (ДОБАВЛЕН "en")
-    ui = {
-        "ru": {
-            "title": "💨 Мониторинг ветровой активности Казахстана",
-            "facts": "Интересные факты",
-            "record": "Экстремальный рекорд",
-            "trend_label": "Общая тенденция",
-            "map_sub": "🗺️ Карта ветровых режимов",
-            "chart_sub": "📈 Динамика по регионам",
-            "select_reg": "Выберите область для анализа:",
-            "analysis_header": "### 📝 Анализ данных",
-            "trend_up": "наблюдается тенденция к **увеличению** силы ветра",
-            "trend_down": "наблюдается тенденция к **снижению** ветровой нагрузки",
-            "trend_stable": "показатели остаются относительно **стабильными**",
-            "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**."
-        },
-        "kz": {
-            "title": "💨 Қазақстанның жел белсенділігінің мониторингі",
-            "facts": "Қызықты деректер",
-            "record": "Экстремалды рекорд",
-            "trend_label": "Жалпы тенденция",
-            "map_sub": "🗺️ Жел режимдерінің картасы",
-            "chart_sub": "📈 Өңірлер бойынша динамика",
-            "select_reg": "Талдау үшін облысты таңдаңыз:",
-            "analysis_header": "### 📝 Мәліметтерді талдау",
-            "trend_up": "жел күшінің **арту** тенденциясы байқалады",
-            "trend_down": "жел жүктемесінің **төмендеу** тенденциясы байқалады",
-            "trend_stable": "көрсеткіштер салыстырмалы түрде **тұрақты**",
-            "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**."
-        },
-        "en": {
-            "title": "💨 Wind Activity Monitoring in Kazakhstan",
-            "facts": "Quick Facts",
-            "record": "Extreme Record",
-            "trend_label": "General Trend",
-            "map_sub": "🗺️ Wind Regime Map",
-            "chart_sub": "📈 Regional Dynamics",
-            "select_reg": "Select region for analysis:",
-            "analysis_header": "### 📝 Data Analysis",
-            "trend_up": "there is a tendency towards **increasing** wind strength",
-            "trend_down": "there is a tendency towards **decreasing** wind load",
-            "trend_stable": "indicators remain relatively **stable**",
-            "summary_fmt": "For the **{}** region during the {}-{} period, {}. Average extreme gust speed: **{:.1f} m/s**."
-        }
-    }
-    
-    # Берем перевод или откатываемся на русский, если языка нет в списке
-    t = ui.get(current_l, ui["ru"])
-    
-    
-        # --- 1. НАСТРОЙКИ ---
-    data_file = "Max_wind.csv"
-    image_path = "wind_RES5.jpg"
-    map_percent = 100 
+    def render_wind_dashboard():
+        # --- 0. ПРОВЕРКА И ПРИВЯЗКА ЯЗЫКА ---
+        # Если мы вызываем функцию внутри основного приложения, 
+        # язык должен браться из общего состояния
+        if 'lang_code' not in st.session_state:
+            st.session_state['lang_code'] = 'ru'
+        
+        current_l = st.session_state['lang_code']
+        
+        # Отладочное сообщение (потом можно удалить)
+        # st.write(f"Debug: Current language is {current_l}") 
 
-    st.title(t["title"])
-    st.divider()
+        ui = {
+            "ru": {
+                "title": "💨 Мониторинг ветровой активности Казахстана",
+                "facts": "Интересные факты",
+                "record": "Экстремальный рекорд",
+                "trend_label": "Общая тенденция",
+                "map_sub": "🗺️ Карта ветровых режимов",
+                "chart_sub": "📈 Динамика по регионам",
+                "select_reg": "Выберите область для анализа:",
+                "analysis_header": "### 📝 Анализ данных",
+                "trend_up": "наблюдается тенденция к **увеличению** силы ветра",
+                "trend_down": "наблюдается тенденция к **снижению** ветровой нагрузки",
+                "trend_stable": "показатели остаются относительно **стабильными**",
+                "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**.",
+                "year_col": "Год"
+            },
+            "kz": {
+                "title": "💨 Қазақстанның жел белсенділігінің мониторингі",
+                "facts": "Қызықты деректер",
+                "record": "Экстремалды рекорд",
+                "trend_label": "Жалпы тенденция",
+                "map_sub": "🗺️ Жел режимдерінің картасы",
+                "chart_sub": "📈 Өңірлер бойынша динамика",
+                "select_reg": "Талдау үшін облысты таңдаңыз:",
+                "analysis_header": "### 📝 Мәліметтерді талдау",
+                "trend_up": "жел күшінің **арту** тенденциясы байқалады",
+                "trend_down": "жел жүктемесінің **төмендеу** тенденциясы байқалады",
+                "trend_stable": "көрсеткіштер салыстырмалы түрде **тұрақты**",
+                "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**.",
+                "year_col": "Год" # В CSV колонки обычно на одном языке
+            },
+            "en": {
+                "title": "💨 Kazakhstan Wind Activity Monitoring",
+                "facts": "Key Indicators",
+                "record": "Extreme Record",
+                "trend_label": "General Trend",
+                "map_sub": "🗺️ Wind Regime Map",
+                "chart_sub": "📈 Regional Dynamics",
+                "select_reg": "Select region for analysis:",
+                "analysis_header": "### 📝 Data Analysis",
+                "trend_up": "trend towards **increasing** wind strength",
+                "trend_down": "trend towards **decreasing** wind load",
+                "trend_stable": "indicators remain relatively **stable**",
+                "summary_fmt": "For **{}** region ({}-{} period): {}. Average extreme gust speed: **{:.1f} m/s**.",
+                "year_col": "Год"
+            }
+        }
+        
+        # Безопасное получение словаря
+        t = ui.get(current_l, ui["ru"])
+
+        # --- 1. НАСТРОЙКИ ---
+        data_file = "Max_wind.csv"
+        image_path = "wind_RES5.jpg"
+        
+        st.title(t["title"])
+        st.divider()
         
         # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
-    st.subheader(t["facts"])
-    c1, c2, c3 = st.columns(3)
-    with c1: st.metric(t["record"], "60 м/с", "Жаланашколь")
-    with c2: st.metric(t["trend_label"], "-3.3 м/с")
-    with c3: st.metric("Аномалия", "+0.5 м/с", delta="1980s")
+        st.subheader(t["facts"])
+        c1, c2, c3 = st.columns(3)
+        
+        # Здесь тоже используем t["record"] и т.д.
+        with c1: st.metric(t["record"], "60 m/s" if current_l == "en" else "60 м/с", "Jalanashkol" if current_l == "en" else "Жаланашколь")
+        with c2: st.metric(t["trend_label"], "-3.3 m/s" if current_l == "en" else "-3.3 м/с")
+        with c3: st.metric("Anomaly" if current_l == "en" else "Аномалия", "+0.5 m/s" if current_l == "en" else "+0.5 м/с", delta="1980s")
 
-    st.divider()
+        st.divider()
 
         # --- СЕКЦИЯ 2: КАРТА И ГРАФИК ---
-    col_map, col_charts = st.columns([1, 1])
+        col_map, col_charts = st.columns([1, 1])
 
-    with col_map:
+        with col_map:
             st.subheader(t["map_sub"])
             if os.path.exists(image_path):
                 with open(image_path, "rb") as f:
                     encoded = base64.b64encode(f.read()).decode()
-                
-                st.markdown(f"""
-                    <div style="text-align: center;">
-                        <img src="data:image/png;base64,{encoded}" 
-                             style="width: {map_percent}%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f'<img src="data:image/png;base64,{encoded}" style="width:100%; border-radius:12px;">', unsafe_allow_html=True)
             else:
-                st.error(f"File {image_path} not found.")
+                st.error(f"Image not found: {image_path}")
 
-    with col_charts:
+        with col_charts:
             st.subheader(t["chart_sub"])
             if os.path.exists(data_file):
                 try:
-                    # Читаем данные, заменяя запятые на точки для корректных расчетов
                     df = pd.read_csv(data_file, sep=';', encoding='utf-8-sig')
+                    # Важно: 'Год' — это имя колонки в CSV, оно не меняется от языка интерфейса
                     regions = [col for col in df.columns if col != 'Год']
                     selected_region = st.selectbox(t["select_reg"], regions)
                     
                     if selected_region:
-                        # Очистка данных
                         df[selected_region] = pd.to_numeric(df[selected_region].astype(str).str.replace(',', '.'), errors='coerce')
                         df_plot = df.dropna(subset=[selected_region, 'Год']).sort_values('Год')
 
-                        fig = px.line(df_plot, x='Год', y=selected_region, 
-                                      markers=True, color_discrete_sequence=['#00CC96'])
-                        
-                        fig.update_layout(
-                            paper_bgcolor='rgba(0,0,0,0)',
-                            plot_bgcolor='rgba(0,0,0,0)',
-                            margin=dict(l=0, r=0, t=30, b=0),
-                            hovermode="x unified"
-                        )
+                        fig = px.line(df_plot, x='Год', y=selected_region, markers=True)
+                        fig.update_layout(xaxis_title=t["year_col"], yaxis_title=selected_region)
                         st.plotly_chart(fig, use_container_width=True)
 
-                        # --- АВТОМАТИЧЕСКИЙ АНАЛИЗ ---
+                        # --- АНАЛИЗ ---
                         st.markdown(t["analysis_header"])
                         avg_val = df_plot[selected_region].mean()
-                        
-                        # Логика тренда
                         diff = df_plot[selected_region].iloc[-1] - df_plot[selected_region].iloc[0]
                         trend_txt = t["trend_up"] if diff > 1 else (t["trend_down"] if diff < -1 else t["trend_stable"])
                         
@@ -12219,12 +12210,15 @@ with tabs[7]:
                             avg_val
                         ))
                 except Exception as e:
-                    st.error(f"Data error: {e}")
+                    st.error(f"Error: {e}")
 
-    # Запуск
+    # --- ЗАПУСК ---
     if __name__ == "__main__":
-        st.set_page_config(layout="wide")
+        # Если вы запускаете файл отдельно, можно добавить кнопки теста:
+        # st.sidebar.radio("Test Language", ["ru", "kz", "en"], key="lang_code")
         render_wind_dashboard()
+        
+    
         
         
     
