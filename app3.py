@@ -9784,12 +9784,16 @@ with tabs[7]:
 
         st.info(curr_g["info_footer"])
 
-        
 
-    # --- 1. ОБЩИЕ ДАННЫЕ ---
+
+    import streamlit as st
+    import pandas as pd
+    import plotly.graph_objects as go
+
+    # --- 1. ДАННЫЕ (C 1940 ПО 2025) ---
     years = list(range(1940, 2026))
 
-    # Данные аномалий температуры
+    # Аномалии температуры (°C)
     temp_vals = [
         0.24, -0.33, -0.86, -1.05, 0.09, -1.28, -0.67, -0.52, 0.24, -1.18, -1.59, -0.47, -1.13, -0.19, -2.03, 0.04, 
         -0.92, -0.48, -0.61, -1.17, -1.58, 0.39, 0.76, 0.81, -0.96, 0.44, -0.26, -0.01, -0.51, -2.31, -0.40, 0.44, 
@@ -9799,7 +9803,7 @@ with tabs[7]:
         1.78, 2.58, 1.72, 2.96
     ]
 
-    # Данные аномалий осадков (примерные, синхронизированные с твоими показателями)
+    # Аномалии осадков (мм)
     precip_vals = [
         5.2, -10.4, 15.1, -2.3, 8.7, -25.4, 12.0, -4.5, 30.1, -12.3, 
         -5.9, 14.7, -11.3, -0.19, -20.3, 10.4, -9.2, -14.8, 6.1, -11.7, 
@@ -9818,42 +9822,104 @@ with tabs[7]:
         'Осадки': precip_vals
     })
 
-    # --- 1. CSS ДЛЯ НАСТОЯЩИХ ХАЙЛАЙТОВ (СТИЛЬ ПЛАШЕК) ---
+    # --- 2. ЛОКАЛИЗАЦИЯ ---
+    # Предполагаем, что lang_code берется из session_state или выбора пользователя
+    if 'lang_code' not in st.session_state:
+        st.session_state.lang_code = 'ru'
+
+    lang_code = st.session_state.lang_code
+
+    anomaly_ui = {
+        "ru": {
+            "temp_title": "🌡️ Аномалии среднегодовой температуры (отн. 1961-1990 гг.)",
+            "precip_title": "🌧️ Аномалии годовой суммы осадков (мм)",
+            "temp_box_label": "Температурный рекорд",
+            "temp_box_text": "2025 год стал <span class='h-bold'>самым теплым</span> за всю историю наблюдений в Казахстане с аномалией <span class='h-bold'>+2.96 °С</span>.",
+            "prec_box_label": "Тренды увлажнения",
+            "prec_box_text": "Наблюдается высокая <span class='h-bold'>межгодовая изменчивость</span> с общим трендом к засушливости.",
+            "y_temp": "Отклонение, °C",
+            "y_prec": "Отклонение, мм",
+            "x_year": "Год",
+            "source": "ℹ️ *Данные: РГП «Казгидромет»*"
+        },
+        "kz": {
+            "temp_title": "🌡️ Орташа жылдық температура аномалиялары (1961-1990 жж. салыстырғанда)",
+            "precip_title": "🌧️ Жылдық жауын-шашын мөлшерінің аномалиялары (мм)",
+            "temp_box_label": "Температуралық рекорд",
+            "temp_box_text": "2025 жыл Қазақстандағы бақылау тарихындағы <span class='h-bold'>ең жылы жыл</span> болды, аномалия <span class='h-bold'>+2.96 °С</span>.",
+            "prec_box_label": "Ылғалдану трендтері",
+            "prec_box_text": "Жалпы құрғақшылыққа бейімділікпен жоғары <span class='h-bold'>жыл аралық өзгергіштік</span> байқалады.",
+            "y_temp": "Ауытқу, °C",
+            "y_prec": "Ауытқу, мм",
+            "x_year": "Жыл",
+            "source": "ℹ️ *Мәліметтер: «Қазгидромет» РМК*"
+        },
+        "en": {
+            "temp_title": "🌡️ Annual Temperature Anomalies (rel. to 1961-1990)",
+            "precip_title": "🌧️ Annual Precipitation Anomalies (mm)",
+            "temp_box_label": "Temperature Record",
+            "temp_box_text": "2025 was the <span class='h-bold'>warmest year</span> on record in Kazakhstan with an anomaly of <span class='h-bold'>+2.96 °C</span>.",
+            "prec_box_label": "Moisture Trends",
+            "prec_box_text": "High <span class='h-bold'>interannual variability</span> is observed with a general trend toward aridity.",
+            "y_temp": "Departure, °C",
+            "y_prec": "Departure, mm",
+            "x_year": "Year",
+            "source": "ℹ️ *Data: RSE 'Kazhydromet'*"
+        }
+    }
+    curr_an = anomaly_ui.get(lang_code, anomaly_ui["ru"])
+
+    # --- 3. CSS СТИЛИ ---
     st.markdown("""
         <style>
-        /* Контейнер для плашек */
-        .highlight-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        /* Сама плашка как на скриншоте 19589a */
-        .highlight-box {
-            background-color: rgba(240, 242, 246, 0.5); /* Светлый нейтральный фон */
-            border-radius: 10px;
-            padding: 12px 18px;
-            border-left: 4px solid #ccc;
-        }
-        .h-temp-box { border-left-color: #d32f2f; background-color: #fff5f5; } /* Легкий красный оттенок */
-        .h-precip-box { border-left-color: #2e7d32; background-color: #f6fff6; } /* Легкий зеленый оттенок */
-        
-        .h-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        .h-content {
-            font-size: 0.95rem;
-            color: #31333F;
-            line-height: 1.4;
-        }
+        .highlight-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .highlight-box { border-radius: 10px; padding: 15px; border-left: 5px solid #ccc; }
+        .h-temp-box { border-left-color: #d32f2f; background-color: #fff5f5; }
+        .h-precip-box { border-left-color: #2e7d32; background-color: #f6fff6; }
+        .h-label { font-size: 0.75rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        .h-content { font-size: 1rem; color: #31333F; line-height: 1.4; }
         .h-bold { font-weight: 800; color: #1a1a1a; }
         </style>
     """, unsafe_allow_html=True)
+
+    # --- 4. ОТРИСОВКА ---
+    anom_col1, anom_col2 = st.columns([2, 1], gap="large")
+
+    with anom_col1:
+        # График Температуры
+        st.markdown(f"##### {curr_an['temp_title']}")
+        fig_t = go.Figure()
+        colors_t = ['#d32f2f' if x > 0 else '#1976d2' for x in df_climate['Температура']]
+        fig_t.add_trace(go.Bar(x=df_climate['Год'], y=df_climate['Температура'], marker_color=colors_t))
+        fig_t.update_layout(height=300, margin=dict(l=0,r=0,t=10,b=0), plot_bgcolor='rgba(0,0,0,0)', 
+                            yaxis=dict(title=curr_an['y_temp'], gridcolor='#eee'), xaxis=dict(showgrid=False))
+        st.plotly_chart(fig_t, use_container_width=True, config={'displayModeBar': False})
+
+        # График Осадков
+        st.markdown(f"##### {curr_an['precip_title']}")
+        fig_p = go.Figure()
+        fig_p.add_trace(go.Bar(x=df_climate['Год'], y=df_climate['Осадки'], marker_color='#2e7d32', opacity=0.7))
+        fig_p.update_layout(height=300, margin=dict(l=0,r=0,t=10,b=0), plot_bgcolor='rgba(0,0,0,0)', 
+                            yaxis=dict(title=curr_an['y_prec'], gridcolor='#eee'), xaxis=dict(showgrid=False))
+        st.plotly_chart(fig_p, use_container_width=True, config={'displayModeBar': False})
+
+    with anom_col2:
+        st.markdown(f"""
+            <div class="highlight-wrapper">
+                <div class="highlight-box h-temp-box">
+                    <div class="h-label">{curr_an['temp_box_label']}</div>
+                    <div class="h-content">{curr_an['temp_box_text']}</div>
+                </div>
+                <div class="highlight-box h-precip-box">
+                    <div class="h-label">{curr_an['prec_box_label']}</div>
+                    <div class="h-content">{curr_an['prec_box_text']}</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        st.caption(curr_an["source"])
+        
+    
+    
 
     # --- 2. УНИВЕРСАЛЬНАЯ ФУНКЦИЯ С ЛЕГЕНДОЙ И ХАЙЛАЙТАМИ ---
     def render_climate_section(title, description, column_name, colorscale, bar_colors, unit, highlights, h_style_class):
