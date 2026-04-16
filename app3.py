@@ -9166,98 +9166,149 @@ with tabs[6]:
     
     
     
-    # --- БЛОК: ПРОГНОЗЫ И ПРОДУКЦИЯ С ЭФФЕКТОМ НАЖАТИЯ ---
-    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">📈 Прогнозы и информационная продукция</p></div>', unsafe_allow_html=True)
+    forecast_ui = {
+        "ru": {
+            "header": "📈 Прогнозы и информационная продукция",
+            "methods_title": "🛠️ Методы прогнозирования",
+            "products_title": "📄 Выпускаемая продукция",
+            "methods": [
+                {"title": "УРОВЕНЬ", "desc": "Модели <b>WRF</b> & <b>Mike21</b>"},
+                {"title": "ВОЛНЕНИЕ", "desc": "Модели <b>WRF</b> & <b>SWAN</b>"},
+                {"title": "ЛЕД", "desc": "Статистический метод расчета"}
+            ],
+            "products": [
+                {"name": "📅 Бюллетень по морю", "freq": "Еженедельно (пт)"},
+                {"name": "🌊 Бюллетень волнения", "freq": "Еженедельно (пт)"},
+                {"name": "❄️ Обзор льда", "freq": "Еженедельно (вт)"},
+                {"name": "🌀 Обзор сгонно-нагонных явлений", "freq": "Раз в месяц"},
+                {"name": "📈 Прогноз уровня и волнения", "freq": "2 раза в неделю"},
+                {"name": "📁 Водный кадастр", "freq": "Ежегодно"}
+            ]
+        },
+        "kz": {
+            "header": "📈 Болжамдар және ақпараттық өнімдер",
+            "methods_title": "🛠️ Болжау әдістері",
+            "products_title": "📄 Шығарылатын өнімдер",
+            "methods": [
+                {"title": "ДЕҢГЕЙ", "desc": "<b>WRF</b> және <b>Mike21</b> модельдері"},
+                {"title": "ТОЛҚЫН", "desc": "<b>WRF</b> және <b>SWAN</b> модельдері"},
+                {"title": "МҰЗ", "desc": "Есептеудің статистикалық әдісі"}
+            ],
+            "products": [
+                {"name": "📅 Теңіз бюллетені", "freq": "Апта сайын (жұм)"},
+                {"name": "🌊 Толқын бюллетені", "freq": "Апта сайын (жұм)"},
+                {"name": "❄️ Мұз шолуы", "freq": "Апта сайын (сей)"},
+                {"name": "🌀 Тасу-қайту құбылыстарын шолу", "freq": "Айына бір рет"},
+                {"name": "📈 Деңгей мен толқын болжамы", "freq": "Аптасына 2 рет"},
+                {"name": "📁 Су кадастры", "freq": "Жыл сайын"}
+            ]
+        },
+        "en": {
+            "header": "📈 Forecasts and Information Products",
+            "methods_title": "🛠️ Forecasting Methods",
+            "products_title": "📄 Issued Products",
+            "methods": [
+                {"title": "LEVEL", "desc": "<b>WRF</b> & <b>Mike21</b> models"},
+                {"title": "WAVES", "desc": "<b>WRF</b> & <b>SWAN</b> models"},
+                {"title": "ICE", "desc": "Statistical calculation method"}
+            ],
+            "products": [
+                {"name": "📅 Sea Bulletin", "freq": "Weekly (Fri)"},
+                {"name": "🌊 Wave Bulletin", "freq": "Weekly (Fri)"},
+                {"name": "❄️ Ice Review", "freq": "Weekly (Tue)"},
+                {"name": "🌀 Surge/Ebb Review", "freq": "Monthly"},
+                {"name": "📈 Level & Wave Forecast", "freq": "Twice a week"},
+                {"name": "📁 Water Cadastre", "freq": "Annually"}
+            ]
+        }
+    }
 
-    # Расширенные стили для анимации плашек
+    curr_f = forecast_ui.get(lang_code, forecast_ui["ru"])
+    
+
+# --- БЛОК: ПРОГНОЗЫ И ПРОДУКЦИЯ ---
+    st.markdown("<hr style='margin: 20px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown(f'<div class="white-label-header"><p class="section-header-text">{curr_f["header"]}</p></div>', unsafe_allow_html=True)
+
+    # Стили остаются без изменений (инкапсулированы в Markdown)
     st.markdown("""
     <style>
-        /* Контейнер карточки прогноза */
         .interactive-card {
             padding: 25px;
             border-radius: 15px;
             color: white;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Плавный переход */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             min-height: 280px;
             display: flex;
             flex-direction: column;
-            user-select: none; /* Чтобы текст не выделялся при частом нажатии */
+            user-select: none;
         }
-
-        /* Эффект при наведении курсора */
-        .interactive-card:hover {
-            transform: translateY(-8px); /* Приподнимаем */
-            box-shadow: 0 12px 20px rgba(0,0,0,0.2); /* Усиливаем тень */
-        }
-
-        /* Эффект при клике (нажатии) */
-        .interactive-card:active {
-            transform: translateY(-2px); /* Слегка опускаем обратно */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Ослабляем тень */
-            filter: brightness(0.9); /* Слегка затемняем */
-        }
-
-        .forecast-title-large {
-            font-family: 'Exo 2', sans-serif;
-            font-weight: 800;
-            font-size: 1.4em;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-
-        .forecast-text-large {
-            font-size: 1.1em;
-            line-height: 1.4;
-            opacity: 0.95;
-        }
+        .interactive-card:hover { transform: translateY(-8px); box-shadow: 0 12px 20px rgba(0,0,0,0.2); }
+        .interactive-card:active { transform: translateY(-2px); filter: brightness(0.9); }
+        .forecast-title-large { font-family: 'Exo 2', sans-serif; font-weight: 800; font-size: 1.4em; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+        .forecast-text-large { font-size: 1.1em; line-height: 1.4; opacity: 0.95; }
     </style>
     """, unsafe_allow_html=True)
 
     m_col1, m_col2 = st.columns([1.6, 1.4])
 
     with m_col1:
-        st.markdown('<div class="promo-bold" style="font-size: 1.5em; margin-bottom:20px;">🛠️ Методы прогнозирования</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="promo-bold" style="font-size: 1.5em; margin-bottom:20px;">{curr_f["methods_title"]}</div>', unsafe_allow_html=True)
         
-        p1, p2, p3 = st.columns(3)
-        forecast_items = [
-            {"title": "УРОВЕНЬ", "desc": "Модели <b>WRF</b> & <b>Mike21</b>", "bg": "linear-gradient(135deg, #1D4E77 0%, #2A6091 100%)"},
-            {"title": "ВОЛНЕНИЕ", "desc": "Модели <b>WRF</b> & <b>SWAN</b>", "bg": "linear-gradient(135deg, #337AB7 0%, #4A90E2 100%)"},
-            {"title": "ЛЕД", "desc": "Статистический метод расчета", "bg": "linear-gradient(135deg, #A3C8E7 0%, #CDE4F7 100%)"}
+        p_cols = st.columns(3)
+        # Цвета градиентов остаются статичными
+        bg_gradients = [
+            "linear-gradient(135deg, #1D4E77 0%, #2A6091 100%)",
+            "linear-gradient(135deg, #337AB7 0%, #4A90E2 100%)",
+            "linear-gradient(135deg, #A3C8E7 0%, #CDE4F7 100%)"
         ]
 
-        for i, col in enumerate([p1, p2, p3]):
+        for i, col in enumerate(p_cols):
             with col:
+                method = curr_f["methods"][i]
                 st.markdown(f"""
-                    <div class="interactive-card" style="background: {forecast_items[i]['bg']};">
-                        <div class="forecast-title-large">{forecast_items[i]['title']}</div>
-                        <p class="forecast-text-large">{forecast_items[i]['desc']}</p>
+                    <div class="interactive-card" style="background: {bg_gradients[i]};">
+                        <div class="forecast-title-large">{method['title']}</div>
+                        <p class="forecast-text-large">{method['desc']}</p>
                     </div>
                 """, unsafe_allow_html=True)
 
     with m_col2:
-        st.markdown('<div class="promo-bold" style="font-size: 1.5em; margin-bottom:20px;">📄 Выпускаемая продукция</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="promo-bold" style="font-size: 1.5em; margin-bottom:20px;">{curr_f["products_title"]}</div>', unsafe_allow_html=True)
         
-        st.markdown("""
+        # Разделяем список продуктов на две колонки внутри контейнера
+        prod_list = curr_f["products"]
+        mid = (len(prod_list) + 1) // 2
+        left_prods = prod_list[:mid]
+        right_prods = prod_list[mid:]
+
+        # Формируем HTML для продуктов
+        def gen_prod_html(items):
+            html = ""
+            for item in items:
+                html += f"""<div style="margin-bottom:18px;">
+                                <span style="font-size:1.15em; font-weight:700;">{item['name']}</span><br>
+                                <span style="color:#0072FF; font-weight:600;">{item['freq']}</span>
+                            </div>"""
+            return html
+
+        st.markdown(f"""
         <div style="background: #FAFAFA; padding: 30px; border-radius: 15px; border: 1px solid #E0E0E0; min-height: 280px;">
             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
                 <div style="flex: 1; min-width: 220px;">
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📅 Бюллетень по морю</span><br><span style="color:#0072FF; font-weight:600;">Еженедельно (пт)</span></div>
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">🌊 Бюллетень волнения</span><br><span style="color:#0072FF; font-weight:600;">Еженедельно (пт)</span></div>
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">❄️ Обзор льда</span><br><span style="color:#0072FF; font-weight:600;">Еженедельно (вт)</span></div>
+                    {gen_prod_html(left_prods)}
                 </div>
                 <div style="flex: 1; min-width: 220px;">
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">🌀 Обзор сгонно-нагонных явлений</span><br><span style="color:#0072FF; font-weight:600;">Раз в месяц</span></div>
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📈 Прогноз уровня и волнения</span><br><span style="color:#0072FF; font-weight:600;">2 раза в неделю</span></div>
-                    <div style="margin-bottom:18px;"><span style="font-size:1.15em; font-weight:700;">📁 Водный кадастр</span><br><span style="color:#0072FF; font-weight:600;">Ежегодно</span></div>
+                    {gen_prod_html(right_prods)}
                 </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
         
+        
+    
         
     st.divider()        
         
