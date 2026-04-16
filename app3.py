@@ -9312,14 +9312,59 @@ with tabs[6]:
         
     st.divider()        
         
-    # --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
-    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
-    st.markdown('<div class="white-label-header"><p class="section-header-text">📈 Оценка долгосрочных изменений</p></div>', unsafe_allow_html=True)
-    st.markdown('<div class="promo-sub" style="margin-bottom: 25px; font-size: 1.1em !important;">'
-                'РГП «Казгидромет» проводятся исследования по долгосрочной оценке изменения уровня и параметров волнения.'
-                '</div>', unsafe_allow_html=True)
+    long_term_ui = {
+        "ru": {
+            "header": "📈 Оценка долгосрочных изменений",
+            "sub_header": "РГП «Казгидромет» проводятся исследования по долгосрочной оценке изменения уровня и параметров волнения.",
+            "cards": [
+                {
+                    "title": "🌊 Долгосрочный уровень",
+                    "desc": "Анализ многолетних колебаний и расчет сценариев изменения уровня моря до конца XXI века на основе данных глобальных климатических моделей."
+                },
+                {
+                    "title": "🌬️ Режим волнения",
+                    "desc": "Оценка будущих изменений ветрового волнения и штормовой активности в казахстанском секторе Каспийского моря."
+                }
+            ]
+        },
+        "kz": {
+            "header": "📈 Ұзақ мерзімді өзгерістерді бағалау",
+            "sub_header": "«Қазгидромет» РМК деңгейдің өзгеруін және толқын параметрлерін ұзақ мерзімді бағалау бойынша зерттеулер жүргізеді.",
+            "cards": [
+                {
+                    "title": "🌊 Ұзақ мерзімді деңгей",
+                    "desc": "Жаһандық климаттық модельдердің деректері негізінде XXI ғасырдың соңына дейін теңіз деңгейінің өзгеру сценарийлерін есептеу және көпжылдық ауытқуларды талдау."
+                },
+                {
+                    "title": "🌬️ Толқын режимі",
+                    "desc": "Каспий теңізінің қазақстандық секторындағы жел толқындары мен дауыл белсенділігінің болашақ өзгерістерін бағалау."
+                }
+            ]
+        },
+        "en": {
+            "header": "📈 Long-term Change Assessment",
+            "sub_header": "RSE 'Kazhydromet' conducts research on the long-term assessment of sea level changes and wave parameters.",
+            "cards": [
+                {
+                    "title": "🌊 Long-term Level",
+                    "desc": "Analysis of multi-year fluctuations and calculation of sea level change scenarios until the end of the 21st century based on global climate models."
+                },
+                {
+                    "title": "🌬️ Wave Regime",
+                    "desc": "Assessment of future changes in wind waves and storm activity in the Kazakhstan sector of the Caspian Sea."
+                }
+            ]
+        }
+    }
 
-    # Стили для интерактива (если они еще не объявлены выше)
+    curr_lt = long_term_ui.get(lang_code, long_term_ui["ru"])
+    
+# --- БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ ---
+    st.markdown("<hr style='margin: 40px 0; opacity: 0.1;'>", unsafe_allow_html=True)
+    st.markdown(f'<div class="white-label-header"><p class="section-header-text">{curr_lt["header"]}</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="promo-sub" style="margin-bottom: 25px; font-size: 1.1em !important;">{curr_lt["sub_header"]}</div>', unsafe_allow_html=True)
+
+    # Стили остаются статичными
     st.markdown("""
     <style>
         .long-term-card {
@@ -9338,9 +9383,7 @@ with tabs[6]:
             transform: translateY(-10px);
             box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
-        .long-term-card:active {
-            transform: translateY(-2px);
-        }
+        .long-term-card:active { transform: translateY(-2px); }
         .lt-title {
             font-family: 'Exo 2', sans-serif;
             font-weight: 800;
@@ -9348,35 +9391,31 @@ with tabs[6]:
             margin-bottom: 10px;
             text-transform: uppercase;
         }
-        .lt-desc {
-            font-size: 1.15em;
-            opacity: 0.9;
-            line-height: 1.4;
-        }
+        .lt-desc { font-size: 1.15em; opacity: 0.9; line-height: 1.4; }
     </style>
     """, unsafe_allow_html=True)
 
     lt_col1, lt_col2 = st.columns(2)
 
     with lt_col1:
-        st.markdown("""
+        card = curr_lt["cards"][0]
+        st.markdown(f"""
             <div class="long-term-card" style="background: linear-gradient(135deg, #003366 0%, #00509E 100%);">
-                <div class="lt-title">🌊 Долгосрочный уровень</div>
-                <div class="lt-desc">
-                    Анализ многолетних колебаний и расчет сценариев изменения уровня моря до конца XXI века на основе данных глобальных климатических моделей.
-                </div>
+                <div class="lt-title">{card['title']}</div>
+                <div class="lt-desc">{card['desc']}</div>
             </div>
         """, unsafe_allow_html=True)
 
     with lt_col2:
-        st.markdown("""
+        card = curr_lt["cards"][1]
+        st.markdown(f"""
             <div class="long-term-card" style="background: linear-gradient(135deg, #337AB7 0%, #5BC0DE 100%);">
-                <div class="lt-title">🌬️ Режим волнения</div>
-                <div class="lt-desc">
-                    Оценка будущих изменений ветрового волнения и штормовой активности в казахстанском секторе Каспийского моря.
-                </div>
+                <div class="lt-title">{card['title']}</div>
+                <div class="lt-desc">{card['desc']}</div>
             </div>
         """, unsafe_allow_html=True)
+
+        
         
         
     # --- ОБНОВЛЕННЫЙ БЛОК: ДОЛГОСРОЧНЫЙ ПРОГНОЗ С SSP ---
