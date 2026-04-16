@@ -9962,9 +9962,73 @@ with tabs[7]:
     import plotly.graph_objects as go
     import streamlit as st
 
-    # --- 1. ОБЩИЕ ДАННЫЕ ---
-    years = list(range(1940, 2026))
+    # --- 0. ВЫБОР ЯЗЫКА (ВАШ БЛОК) ---
+    col_lang_l, col_lang_r = st.columns([4, 1])
+    with col_lang_r:
+        lang = st.selectbox("Язык", ["Русский", "Қазақша", "English"], label_visibility="collapsed")
+        
+    lang_map = {
+        "Русский": "ru",
+        "Қазақша": "kz",
+        "English": "en"
+    }
+    lang_code = lang_map.get(lang, "ru")
 
+    # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
+    # Здесь мы разделяем тексты, чтобы они не отображались одновременно
+    all_translations = {
+        "ru": {
+            "sub_header": "Анализ климатических изменений",
+            "temp_title": "Температурный режим",
+            "temp_desc": "Изменение среднегодовой температуры",
+            "unit_temp": "°C",
+            "temp_now_val": "+2.96°C в 2025 году",
+            "temp_trend_val": "Стабильный рост с 1990-х",
+            "prec_title": "Режим осадков",
+            "prec_desc": "Отклонение уровня осадков от нормы",
+            "unit_prec": "мм",
+            "prec_now_val": "-2.5 мм в 2025 году",
+            "prec_trend_val": "Увеличение вариативности",
+            "label_now": "Текущее состояние",
+            "label_trend": "Многолетний тренд"
+        },
+        "kz": {
+            "sub_header": "Климаттық өзгерістерді талдау",
+            "temp_title": "Температуралық режим",
+            "temp_desc": "Орташа жылдық температураның өзгеруі",
+            "unit_temp": "°C",
+            "temp_now_val": "2025 жылы +2.96°C",
+            "temp_trend_val": "1990 жылдардан бастап тұрақты өсу",
+            "prec_title": "Жауын-шашын режимі",
+            "prec_desc": "Жауын-шашын деңгейінің нормадан ауытқуы",
+            "unit_prec": "мм",
+            "prec_now_val": "2025 жылы -2.5 мм",
+            "prec_trend_val": "Өзгермеліліктің артуы",
+            "label_now": "Ағымдағы жағдайы",
+            "label_trend": "Көпжылдық тренд"
+        },
+        "en": {
+            "sub_header": "Climate Change Analysis",
+            "temp_title": "Temperature Regime",
+            "temp_desc": "Annual average temperature changes",
+            "unit_temp": "°C",
+            "temp_now_val": "+2.96°C in 2025",
+            "temp_trend_val": "Steady growth since the 1990s",
+            "prec_title": "Precipitation Regime",
+            "prec_desc": "Precipitation level deviation from normal",
+            "unit_prec": "mm",
+            "prec_now_val": "-2.5 mm in 2025",
+            "prec_trend_val": "Increased variability",
+            "label_now": "Current State",
+            "label_trend": "Long-term Trend"
+        }
+    }
+
+    # Ключевой момент: выбираем данные только для активного языка
+    curr_an = all_translations[lang_code]
+
+    # --- 2. ОБЩИЕ ДАННЫЕ (ГРАФИКИ) ---
+    years = list(range(1940, 2026))
     temp_vals = [
         0.24, -0.33, -0.86, -1.05, 0.09, -1.28, -0.67, -0.52, 0.24, -1.18, -1.59, -0.47, -1.13, -0.19, -2.03, 0.04, 
         -0.92, -0.48, -0.61, -1.17, -1.58, 0.39, 0.76, 0.81, -0.96, 0.44, -0.26, -0.01, -0.51, -2.31, -0.40, 0.44, 
@@ -9973,7 +10037,6 @@ with tabs[7]:
         1.08, 1.20, 1.46, 1.37, 0.62, 0.80, -0.04, 0.38, 1.89, 0.15, 1.64, 1.48, 1.30, 0.04, 1.50, 1.92, 1.58, 
         1.78, 2.58, 1.72, 2.96
     ]
-
     precip_vals = [
         5.2, -10.4, 15.1, -2.3, 8.7, -25.4, 12.0, -4.5, 30.1, -12.3, 
         -5.9, 14.7, -11.3, -0.19, -20.3, 10.4, -9.2, -14.8, 6.1, -11.7, 
@@ -9986,13 +10049,9 @@ with tabs[7]:
         9.2, 5.8, -17.8, -25.8, -17.2, -2.5
     ]
 
-    df_climate = pd.DataFrame({
-        'Год': years,
-        'Температура': temp_vals,
-        'Осадки': precip_vals
-    })
+    df_climate = pd.DataFrame({'Год': years, 'Температура': temp_vals, 'Осадки': precip_vals})
 
-    # --- 2. CSS ДЛЯ ПЛАШЕК ---
+    # --- 3. CSS ---
     st.markdown("""
         <style>
         .highlight-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
@@ -10000,23 +10059,22 @@ with tabs[7]:
         .h-temp-box { border-left-color: #d32f2f; background-color: #fff5f5; }
         .h-precip-box { border-left-color: #2e7d32; background-color: #f6fff6; }
         .h-label { font-size: 0.7rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px; }
-        .h-content { font-size: 0.95rem; color: #31333F; line-height: 1.4; }
+        .h-content { font-size: 0.95rem; color: #31333F; line-height: 1.4; font-weight: 500; }
         </style>
     """, unsafe_allow_html=True)
 
-    # --- 3. ФУНКЦИЯ РЕНДЕРИНГА (С исправленными отступами и key_suffix) ---
+    # --- 4. ФУНКЦИЯ РЕНДЕРИНГА ---
     def render_climate_section(title, description, column_name, colorscale, bar_colors, unit, highlights, h_style_class, key_suffix):
-        # Каждая строка внутри функции должна иметь ровно 4 пробела отступа
         st.markdown(f"### {title}")
         
         st.markdown(f"""
             <div class="highlight-wrapper">
                 <div class="highlight-box {h_style_class}">
-                    <div class="h-label">Текущее состояние</div>
+                    <div class="h-label">{curr_an['label_now']}</div>
                     <div class="h-content">{highlights['current']}</div>
                 </div>
                 <div class="highlight-box {h_style_class}">
-                    <div class="h-label">Многолетний тренд</div>
+                    <div class="h-label">{curr_an['label_trend']}</div>
                     <div class="h-content">{highlights['trend']}</div>
                 </div>
             </div>
@@ -10024,7 +10082,7 @@ with tabs[7]:
         
         st.caption(description)
         
-        # Stripes
+        # 1. Stripes
         fig_stripes = px.imshow([df_climate[column_name]], x=df_climate['Год'], 
                                 color_continuous_scale=colorscale, aspect="auto", color_continuous_midpoint=0)
         fig_stripes.update_layout(height=60, margin=dict(l=0, r=0, t=5, b=5), yaxis={'visible': False},
@@ -10032,40 +10090,24 @@ with tabs[7]:
                                   coloraxis_showscale=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_stripes, use_container_width=True, config={'displayModeBar': False}, key=f"stripes_{key_suffix}")
         
-        # Main Chart
+        # 2. Main Chart
         fig_chart = go.Figure()
         colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in df_climate[column_name]]
+        fig_chart.add_trace(go.Bar(x=df_climate['Год'], y=df_climate[column_name], marker_color=colors, opacity=0.6, name='Anomaly'))
         
-        fig_chart.add_trace(go.Bar(x=df_climate['Год'], y=df_climate[column_name], marker_color=colors, opacity=0.6, name='Аномалия'))
-        
-        # Трендовая линия
         sma_data = df_climate[column_name].rolling(window=10, min_periods=1, center=True).mean()
-        fig_chart.add_trace(go.Scatter(x=df_climate['Год'], y=sma_data, mode='lines', line=dict(color='#222', width=2.5), name='10-летнее среднее'))
+        fig_chart.add_trace(go.Scatter(x=df_climate['Год'], y=sma_data, mode='lines', line=dict(color='#222', width=2.5), name='10-year SMA'))
 
         fig_chart.update_layout(
             height=320, margin=dict(l=0, r=0, t=10, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-            yaxis=dict(title=f"Аномалия ({unit})", showgrid=True, gridcolor='#f0f0f0')
+            xaxis=dict(showgrid=True, gridcolor='#f0f0f0', dtick=20),
+            yaxis=dict(title=f"({unit})", showgrid=True, gridcolor='#f0f0f0')
         )
         st.plotly_chart(fig_chart, use_container_width=True, key=f"main_{key_suffix}")
 
-    # --- 4. ВЫЗОВ (Убедитесь, что curr_an определен!) ---
-    # Пример объекта curr_an для теста:
-    curr_an = {
-        "sub_header": "Анализ климатических изменений",
-        "temp_title": "Температурный режим",
-        "temp_desc": "Изменение среднегодовой температуры",
-        "unit_temp": "°C",
-        "temp_now_val": "+2.96°C в 2025 году",
-        "temp_trend_val": "Стабильный рост с 1990-х",
-        "prec_title": "Режим осадков",
-        "prec_desc": "Отклонение уровня осадков от нормы",
-        "unit_prec": "мм",
-        "prec_now_val": "-2.5 мм в 2025 году",
-        "prec_trend_val": "Увеличение вариативности"
-    }
-
+    # --- 5. ВЫВОД ---
     st.subheader(curr_an["sub_header"])
     col_l, col_r = st.columns(2, gap="large")
 
@@ -10084,6 +10126,7 @@ with tabs[7]:
         )
         
         
+    
         
         
     import os
