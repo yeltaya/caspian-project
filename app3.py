@@ -10333,7 +10333,6 @@ with tabs[7]:
 
 
 
-     import streamlit as st
 
     # --- 1. СЛОВАРЬ ПЕРЕВОДОВ (Добавьте это к вашему основному словарю translations) ---
     future_translations = {
