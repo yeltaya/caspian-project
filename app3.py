@@ -10452,7 +10452,8 @@ with tabs[7]:
         "en": {"sub": "📈 Regional Climate", "select": "Select region:", "geo": "Geographical description", "conc": "Conclusion"}
     }
 
-    st.subheader(ui_translate[L]["sub"])
+# Используем lang_code, так как именно в эту переменную вы сохранили "ru", "kz" или "en"
+    st.subheader(ui_translate[lang_code]["sub"])
     
     
     # --- 1. БАЗА ДАННЫХ (Часть 1: СКО) ---
