@@ -9786,94 +9786,126 @@ with tabs[7]:
 
 
 
+
+
+    
+    
     import streamlit as st
     import pandas as pd
+    import plotly.express as px
     import plotly.graph_objects as go
 
-    # --- 1. ДАННЫЕ ---
+    # --- 1. ОБЩИЕ ДАННЫЕ ---
     years = list(range(1940, 2026))
-    temp_vals = [0.24, -0.33, -0.86, -1.05, 0.09, -1.28, -0.67, -0.52, 0.24, -1.18, -1.59, -0.47, -1.13, -0.19, -2.03, 0.04, -0.92, -0.48, -0.61, -1.17, -1.58, 0.39, 0.76, 0.81, -0.96, 0.44, -0.26, -0.01, -0.51, -2.31, -0.40, 0.44, -1.46, 0.27, -0.66, 0.86, -1.28, 0.25, 0.18, 0.04, -0.06, 0.86, 0.60, 1.76, -1.20, -0.40, -0.08, -0.32, 0.47, 0.79, 1.04, 0.90, 0.12, -1.01, -0.14, 1.41, -0.77, 1.26, 0.40, 1.07, 0.91, 0.96, 1.55, 0.35, 1.53, 1.08, 1.20, 1.46, 1.37, 0.62, 0.80, -0.04, 0.38, 1.89, 0.15, 1.64, 1.48, 1.30, 0.04, 1.50, 1.92, 1.58, 1.78, 2.58, 1.72, 2.96]
-    precip_vals = [5.2, -10.4, 15.1, -2.3, 8.7, -25.4, 12.0, -4.5, 30.1, -12.3, -5.9, 14.7, -11.3, -0.19, -20.3, 10.4, -9.2, -14.8, 6.1, -11.7, -15.8, 3.9, 17.6, 8.1, -19.6, 14.4, -2.6, -10.1, -5.1, -23.1, 14.0, 4.4, -14.6, 12.7, -6.6, 18.6, -12.8, 2.5, 11.8, 4.4, -6.6, 8.6, 16.0, 7.6, -12.0, -14.0, -8.0, -13.2, 4.7, 7.9, 10.4, 9.0, 1.2, -10.1, -11.4, 14.1, -7.7, 12.6, 4.0, 10.7, -9.1, 9.6, 15.5, 3.5, 15.3, -10.8, 12.0, -14.6, 13.7, 6.2, 8.0, -10.4, 3.8, 18.9, 1.5, -16.4, 14.8, 13.0, 0.4, -15.0, 9.2, 5.8, -17.8, -25.8, -17.2, -2.5]
 
-    df_climate = pd.DataFrame({'Год': years, 'Температура': temp_vals, 'Осадки': precip_vals})
+    temp_vals = [
+        0.24, -0.33, -0.86, -1.05, 0.09, -1.28, -0.67, -0.52, 0.24, -1.18, -1.59, -0.47, -1.13, -0.19, -2.03, 0.04, 
+        -0.92, -0.48, -0.61, -1.17, -1.58, 0.39, 0.76, 0.81, -0.96, 0.44, -0.26, -0.01, -0.51, -2.31, -0.40, 0.44, 
+        -1.46, 0.27, -0.66, 0.86, -1.28, 0.25, 0.18, 0.04, -0.06, 0.86, 0.60, 1.76, -1.20, -0.40, -0.08, -0.32, 
+        0.47, 0.79, 1.04, 0.90, 0.12, -1.01, -0.14, 1.41, -0.77, 1.26, 0.40, 1.07, 0.91, 0.96, 1.55, 0.35, 1.53, 
+        1.08, 1.20, 1.46, 1.37, 0.62, 0.80, -0.04, 0.38, 1.89, 0.15, 1.64, 1.48, 1.30, 0.04, 1.50, 1.92, 1.58, 
+        1.78, 2.58, 1.72, 2.96
+    ]
+
+    precip_vals = [
+        5.2, -10.4, 15.1, -2.3, 8.7, -25.4, 12.0, -4.5, 30.1, -12.3, 
+        -5.9, 14.7, -11.3, -0.19, -20.3, 10.4, -9.2, -14.8, 6.1, -11.7, 
+        -15.8, 3.9, 17.6, 8.1, -19.6, 14.4, -2.6, -10.1, -5.1, -23.1, 
+        14.0, 4.4, -14.6, 12.7, -6.6, 18.6, -12.8, 2.5, 11.8, 4.4, 
+        -6.6, 8.6, 16.0, 7.6, -12.0, -14.0, -8.0, -13.2, 4.7, 7.9, 
+        10.4, 9.0, 1.2, -10.1, -11.4, 14.1, -7.7, 12.6, 4.0, 10.7, 
+        -9.1, 9.6, 15.5, 3.5, 15.3, -10.8, 12.0, -14.6, 13.7, 6.2, 
+        8.0, -10.4, 3.8, 18.9, 1.5, -16.4, 14.8, 13.0, 0.4, -15.0, 
+        9.2, 5.8, -17.8, -25.8, -17.2, -2.5
+    ]
+
+    df_climate = pd.DataFrame({
+        'Год': years,
+        'Температура': temp_vals,
+        'Осадки': precip_vals
+    })
 
     # --- 2. ЛОКАЛИЗАЦИЯ ---
-    lang_code = st.session_state.get('lang_code', 'ru')
-    anomaly_ui = {
+    climate_i18n = {
         "ru": {
-            "temp_main_title": "Температура воздуха",
-            "prec_main_title": "Атмосферные осадки",
-            "label_now": "Текущее состояние",
+            "header": "📈 Климат Казахстана",
+            "temp_title": "Температура воздуха",
+            "temp_desc": "Графическое представление аномалий температуры (отклонение от нормы).",
+            "prec_title": "Атмосферные осадки",
+            "prec_desc": "Анализ изменчивости осадков и трендов увлажнения.",
+            "label_current": "Текущее состояние",
             "label_trend": "Многолетний тренд",
-            "temp_now_text": "Средняя (1941-2025): 5,67 °С. В 2025 году достигла <span class='h-bold'>8,4 °С</span>.",
-            "temp_trend_text": "Повышение на <span class='h-bold'>0,40 °С каждые 10 лет</span> за последние полвека.",
-            "prec_now_text": "Средняя норма: 320 мм. В 2025 году зафиксирован дефицит <span class='h-bold'>-2,5 мм</span>.",
-            "prec_trend_text": "Снижение уровня влажности на <span class='h-bold'>1,2% каждое десятилетие</span>.",
-            "y_temp": "Аномалия (°C)", "y_prec": "Аномалия (мм)", "x_year": "Год"
+            "temp_current_val": "Средняя (1941-2025): 5,67 ºC. В 2025 году достигла <span class='h-bold'>8,4 ºC</span>.",
+            "temp_trend_val": "Повышение на <span class='h-bold'>0,40 ºC каждые 10 лет</span> за последние полвека.",
+            "prec_current_val": "Средняя норма: 320 мм. В 2025 году зафиксирован дефицит <span class='h-bold'>-2,5 мм</span>.",
+            "prec_trend_val": "Снижение уровня влажности на <span class='h-bold'>1,2% каждое десятилетие</span>.",
+            "legend_annual": "Ежегодная аномалия",
+            "legend_sma": "10-летнее среднее",
+            "axis_anomaly": "Аномалия"
         },
-        # ... kz и en можно добавить по аналогии
+        "kz": {
+            "header": "📈 Қазақстан климаты",
+            "temp_title": "Ауа температурасы",
+            "temp_desc": "Температура аномалияларының графикалық көрінісі (нормадан ауытқу).",
+            "prec_title": "Атмосфералық жауын-шашын",
+            "prec_desc": "Жауын-шашын өзгергіштігі мен ылғалдану трендтерін талдау.",
+            "label_current": "Ағымдағы жағдай",
+            "label_trend": "Көпжылдық тренд",
+            "temp_current_val": "Орташа (1941-2025): 5,67 ºC. 2025 жылы <span class='h-bold'>8,4 ºC</span> жетті.",
+            "temp_trend_val": "Соңғы жарты ғасырда әр <span class='h-bold'>10 жыл сайын 0,40 ºC</span> жоғарылауда.",
+            "prec_current_val": "Орташа норма: 320 мм. 2025 жылы <span class='h-bold'>-2,5 мм</span> тапшылығы тіркелді.",
+            "prec_trend_val": "Ылғалдылық деңгейінің әр <span class='h-bold'>онжылдықта 1,2%-ға</span> төмендеуі.",
+            "legend_annual": "Жылдық аномалия",
+            "legend_sma": "10 жылдық орташа",
+            "axis_anomaly": "Аномалия"
+        },
+        "en": {
+            "header": "📈 Climate of Kazakhstan",
+            "temp_title": "Air Temperature",
+            "temp_desc": "Graphical representation of temperature anomalies (departure from normal).",
+            "prec_title": "Precipitation",
+            "prec_desc": "Analysis of precipitation variability and moisture trends.",
+            "label_current": "Current Status",
+            "label_trend": "Long-term Trend",
+            "temp_current_val": "Average (1941-2025): 5.67 ºC. In 2025 it reached <span class='h-bold'>8.4 ºC</span>.",
+            "temp_trend_val": "Increase of <span class='h-bold'>0.40 ºC every 10 years</span> over the last half century.",
+            "prec_current_val": "Average normal: 320 mm. In 2025, a deficit of <span class='h-bold'>-2.5 mm</span> was recorded.",
+            "prec_trend_val": "Humidity level decrease of <span class='h-bold'>1.2% per decade</span>.",
+            "legend_annual": "Annual Anomaly",
+            "legend_sma": "10-year Average",
+            "axis_anomaly": "Anomaly"
+        }
     }
-    curr = anomaly_ui.get(lang_code, anomaly_ui["ru"])
 
-    # --- 3. CSS (Адаптировано под скриншот) ---
+    # Получаем текущий язык (по умолчанию русский)
+    lang = st.session_state.get("lang_code", "ru")
+    t = climate_i18n[lang]
+
+    # --- 3. CSS СТИЛИ ---
     st.markdown("""
         <style>
-        .status-box { padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 5px solid; }
-        .temp-bg { background-color: #fff5f5; border-left-color: #e53e3e; }
-        .prec-bg { background-color: #f0fff4; border-left-color: #38a169; }
-        .h-label { font-size: 0.75rem; font-weight: bold; color: #a0aec0; text-transform: uppercase; margin-bottom: 4px; }
-        .h-content { font-size: 0.95rem; color: #2d3748; line-height: 1.4; }
-        .h-bold { font-weight: 800; color: #000; }
+        .highlight-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .highlight-box { background-color: rgba(240, 242, 246, 0.5); border-radius: 10px; padding: 12px 18px; border-left: 4px solid #ccc; }
+        .h-temp-box { border-left-color: #d32f2f; background-color: #fff5f5; }
+        .h-precip-box { border-left-color: #2e7d32; background-color: #f6fff6; }
+        .h-label { font-size: 0.7rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .h-content { font-size: 0.95rem; color: #31333F; line-height: 1.4; }
+        .h-bold { font-weight: 800; color: #1a1a1a; }
         </style>
     """, unsafe_allow_html=True)
 
-    # --- 4. ОТРИСОВКА (ДВЕ РАВНЫЕ КОЛОНКИ) ---
-    col_left, col_right = st.columns(2, gap="large")
-
-    with col_left:
-        st.subheader(curr["temp_main_title"])
-        # Плашки температуры
-        st.markdown(f'<div class="status-box temp-bg"><div class="h-label">{curr["label_now"]}</div><div class="h-content">{curr["temp_now_text"]}</div></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="status-box temp-bg"><div class="h-label">{curr["label_trend"]}</div><div class="h-content">{curr["temp_trend_text"]}</div></div>', unsafe_allow_html=True)
-        
-        # График температуры
-        fig_t = go.Figure()
-        colors_t = ['#d32f2f' if x > 0 else '#1976d2' for x in df_climate['Температура']]
-        fig_t.add_trace(go.Bar(x=df_climate['Год'], y=df_climate['Температура'], marker_color=colors_t))
-        fig_t.update_layout(height=350, margin=dict(l=0,r=0,t=10,b=0), plot_bgcolor='white',
-                            yaxis=dict(title=curr["y_temp"], gridcolor='#eee'), xaxis=dict(showgrid=False))
-        st.plotly_chart(fig_t, use_container_width=True)
-
-    with col_right:
-        st.subheader(curr["prec_main_title"])
-        # Плашки осадков
-        st.markdown(f'<div class="status-box prec-bg"><div class="h-label">{curr["label_now"]}</div><div class="h-content">{curr["prec_now_text"]}</div></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="status-box prec-bg"><div class="h-label">{curr["label_trend"]}</div><div class="h-content">{curr["prec_trend_text"]}</div></div>', unsafe_allow_html=True)
-        
-        # График осадков
-        fig_p = go.Figure()
-        fig_p.add_trace(go.Bar(x=df_climate['Год'], y=df_climate['Осадки'], marker_color='#38a169', opacity=0.6))
-        fig_p.update_layout(height=350, margin=dict(l=0,r=0,t=10,b=0), plot_bgcolor='white',
-                            yaxis=dict(title=curr["y_prec"], gridcolor='#eee'), xaxis=dict(showgrid=False))
-        st.plotly_chart(fig_p, use_container_width=True)
-        
-    
-    
-    
-
-    # --- 2. УНИВЕРСАЛЬНАЯ ФУНКЦИЯ С ЛЕГЕНДОЙ И ХАЙЛАЙТАМИ ---
+    # --- 4. ФУНКЦИЯ ОТРИСОВКИ ---
     def render_climate_section(title, description, column_name, colorscale, bar_colors, unit, highlights, h_style_class):
         st.markdown(f"### {title}")
         
-        # --- ХАЙЛАЙТЫ ПЕРЕД ГРАФИКОМ ---
         st.markdown(f"""
             <div class="highlight-wrapper">
                 <div class="highlight-box {h_style_class}">
-                    <div class="h-label">Текущее состояние</div>
+                    <div class="h-label">{t['label_current']}</div>
                     <div class="h-content">{highlights['current']}</div>
                 </div>
                 <div class="highlight-box {h_style_class}">
-                    <div class="h-label">Многолетний тренд</div>
+                    <div class="h-label">{t['label_trend']}</div>
                     <div class="h-content">{highlights['trend']}</div>
                 </div>
             </div>
@@ -9889,70 +9921,49 @@ with tabs[7]:
                                   coloraxis_showscale=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_stripes, use_container_width=True, config={'displayModeBar': False})
         
-        # 2. Основной график с легендой
+        # 2. Основной график
         fig_chart = go.Figure()
         colors = [bar_colors[0] if x > 0 else bar_colors[1] for x in df_climate[column_name]]
         
-        # Столбцы (Аномалии)
         fig_chart.add_trace(go.Bar(
-            x=df_climate['Год'], 
-            y=df_climate[column_name], 
-            marker_color=colors, 
-            opacity=0.6, 
-            name='Ежегодная аномалия' # Имя для легенды
+            x=df_climate['Год'], y=df_climate[column_name], 
+            marker_color=colors, opacity=0.6, name=t['legend_annual']
         ))
         
-        # Линия скользящего среднего (Тренд)
         df_climate[f'SMA_{column_name}'] = df_climate[column_name].rolling(window=10, min_periods=1, center=True).mean()
         fig_chart.add_trace(go.Scatter(
-            x=df_climate['Год'], 
-            y=df_climate[f'SMA_{column_name}'], 
-            mode='lines', 
-            line=dict(color='#222', width=2.5), 
-            name='10-летнее среднее' # Имя для легенды
+            x=df_climate['Год'], y=df_climate[f'SMA_{column_name}'], 
+            mode='lines', line=dict(color='#222', width=2.5), name=t['legend_sma']
         ))
 
         fig_chart.update_layout(
-            height=320, 
-            margin=dict(l=0, r=0, t=10, b=10),
-            # Настройка легенды
-            showlegend=True, 
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)',
+            height=320, margin=dict(l=0, r=0, t=10, b=10),
+            showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
             xaxis=dict(showgrid=True, gridcolor='#f0f0f0', dtick=20),
-            yaxis=dict(title=f"Аномалия ({unit})", showgrid=True, gridcolor='#f0f0f0', zeroline=True, zerolinecolor='#ccc')
+            yaxis=dict(title=f"{t['axis_anomaly']} ({unit})", showgrid=True, gridcolor='#f0f0f0', zeroline=True, zerolinecolor='#ccc')
         )
         st.plotly_chart(fig_chart, use_container_width=True)
 
-    # --- 3. ВЕРСТКА БЛОКА ---
-    st.subheader("📈 Климат Казахстана")
+    # --- 5. ВЕРСТКА ---
+    st.subheader(t["header"])
     col_l, col_r = st.columns(2, gap="large")
 
     with col_l:
         render_climate_section(
-            "Температура воздуха",
-            "Графическое представление аномалий температуры (отклонение от нормы).",
-            "Температура", 'RdBu_r', ['#d32f2f', '#1f77b4'], "°C",
-            {
-                "current": "Средняя (1941-2025): 5,67 ºC. В 2025 году достигла <span class='h-bold'>8,4 ºC</span>.",
-                "trend": "Повышение на <span class='h-bold'>0,40 ºC каждые 10 лет</span> за последние полвека."
-            },
+            t["temp_title"], t["temp_desc"], "Температура", 'RdBu_r', ['#d32f2f', '#1f77b4'], "°C",
+            {"current": t["temp_current_val"], "trend": t["temp_trend_val"]},
             "h-temp-box"
         )
 
     with col_r:
         render_climate_section(
-            "Атмосферные осадки",
-            "Анализ изменчивости осадков и трендов увлажнения.",
-            "Осадки", 'BrBG', ['#2e7d32', '#8d6e63'], "мм",
-            {
-                "current": "Средняя норма: 320 мм. В 2025 году зафиксирован дефицит <span class='h-bold'>-2,5 мм</span>.",
-                "trend": "Снижение уровня влажности на <span class='h-bold'>1,2% каждое десятилетие</span>."
-            },
+            t["prec_title"], t["prec_desc"], "Осадки", 'BrBG', ['#2e7d32', '#8d6e63'], "мм",
+            {"current": t["prec_current_val"], "trend": t["prec_trend_val"]},
             "h-precip-box"
         )
-
+        
+        
     
     import streamlit as st
     import streamlit.components.v1 as components
