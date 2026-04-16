@@ -9962,18 +9962,6 @@ with tabs[7]:
     import plotly.graph_objects as go
     import streamlit as st
 
-    # --- 0. ВЫБОР ЯЗЫКА (ВАШ БЛОК) ---
-    col_lang_l, col_lang_r = st.columns([4, 1])
-    with col_lang_r:
-        lang = st.selectbox("Язык", ["Русский", "Қазақша", "English"], label_visibility="collapsed")
-        
-    lang_map = {
-        "Русский": "ru",
-        "Қазақша": "kz",
-        "English": "en"
-    }
-    lang_code = lang_map.get(lang, "ru")
-
     # --- 1. СЛОВАРЬ ПЕРЕВОДОВ ---
     # Здесь мы разделяем тексты, чтобы они не отображались одновременно
     all_translations = {
