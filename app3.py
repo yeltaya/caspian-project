@@ -9450,8 +9450,58 @@ with tabs[6]:
         """, unsafe_allow_html=True)
         
     
-        
-        
+            
+     # 1. Сначала определяем основной словарь переводов (если его еще нет)
+    prediction_ui = {
+        "ru": {
+            "sea_level_title": "📉 Прогноз уровня моря до 2050 г. (RCP & SSP)",
+            "wave_title": "🌊 Прогноз высоты волн (SSP5-8.5)",
+            "legend_fact": "<b>Факт (измерения)</b>",
+            "legend_rcp45": "RCP 4.5 (умер.)",
+            "legend_rcp85": "RCP 8.5 (экстр.)",
+            "legend_ssp1": "SSP1-2.6 ('Зеленый')",
+            "legend_ssp5": "SSP5-8.5 (Инерц.)",
+            "y_axis_bs": "м БС",
+            "y_axis_wave": "высота волны, м",
+            "x_axis_year": "год",
+            "ports": ["Форт-Шевченко", "Актау", "Курык"],
+            "description": "Согласно международным климатическим моделям <b>IPCC</b>, уровень Каспийского моря продолжит снижаться под влиянием глобального потепления."
+        },
+        "kz": {
+            "sea_level_title": "📉 2050 жылға дейінгі теңіз деңгейінің болжамы (RCP & SSP)",
+            "wave_title": "🌊 Толқын биіктігінің болжамы (SSP5-8.5)",
+            "legend_fact": "<b>Факт (өлшемдер)</b>",
+            "legend_rcp45": "RCP 4.5 (орташа)",
+            "legend_rcp85": "RCP 8.5 (экстр.)",
+            "legend_ssp1": "SSP1-2.6 ('Жасыл')",
+            "legend_ssp5": "SSP5-8.5 (Инерц.)",
+            "y_axis_bs": "м БС",
+            "y_axis_wave": "толқын биіктігі, м",
+            "x_axis_year": "жыл",
+            "ports": ["Форт-Шевченко", "Ақтау", "Құрық"],
+            "description": "<b>IPCC</b> халықаралық климаттық модельдеріне сәйкес, жаһандық жылынудың әсерінен Каспий теңізінің деңгейі төмендеуін жалғастырады."
+        },
+        "en": {
+            "sea_level_title": "📉 Sea Level Forecast to 2050 (RCP & SSP)",
+            "wave_title": "🌊 Wave Height Forecast (SSP5-8.5)",
+            "legend_fact": "<b>Actual (Measured)</b>",
+            "legend_rcp45": "RCP 4.5 (Mod.)",
+            "legend_rcp85": "RCP 8.5 (Extr.)",
+            "legend_ssp1": "SSP1-2.6 ('Green')",
+            "legend_ssp5": "SSP5-8.5 (Business as usual)",
+            "y_axis_bs": "m BS",
+            "y_axis_wave": "wave height, m",
+            "x_axis_year": "year",
+            "ports": ["Fort Shevchenko", "Aktau", "Kuryk"],
+            "description": "According to <b>IPCC</b> international climate models, Caspian Sea levels will continue to decline due to global warming."
+        }
+    }
+
+    # 2. ОПРЕДЕЛЯЕМ ПЕРЕМЕННУЮ curr_p (именно её не хватает в ошибке)
+    # Переменная lang_code должна быть определена ранее (например, через st.selectbox)
+    curr_p = prediction_ui.get(lang_code, prediction_ui["ru"])
+
+       
 # --- БЛОК: ГРАФИКИ ПРОГНОЗОВ (SSP & RCP) ---
     st.markdown("<br>", unsafe_allow_html=True)
     lt_plot_col1, lt_plot_col2 = st.columns([1.6, 1.4])
