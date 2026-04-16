@@ -11581,57 +11581,24 @@ with tabs[7]:
     p_val = reg.get("trend_precip", "н/д")
     analysis = reg.get("analysis_text", "Анализ для данной области уточняется.")
 
-    ui_translate = {
-        "ru": {
-            "trend_label": "тренд",
-            "trend_note": "прирост за 10 лет",
-            "stat_title": "📉 Статистический анализ",
-            "temp_header": "🌡️ Температурный режим",
-            "prec_header": "💧 Режим увлажнения",
-            "period": "Период",
-            "norm": "Норма",
-            "seasons": ["Зима", "Весна", "Лето", "Осень", "Год"],
-            "warm_years": "🏆 Самые теплые годы",
-            "dry_years": "🏆 Самые сухие годы",
-            "perc_norm": "Процент от нормы"
-        },
-        "kz": {
-            "trend_label": "тренд",
-            "trend_note": "10 жылдық өсім",
-            "stat_title": "📉 Статистикалық талдау",
-            "temp_header": "🌡️ Температуралық режим",
-            "prec_header": "💧 Ылғалдану режимі",
-            "period": "Кезең",
-            "norm": "Норма",
-            "seasons": ["Қыс", "Көктем", "Жаз", "Күз", "Жыл"],
-            "warm_years": "🏆 Ең жылы жылдар",
-            "dry_years": "🏆 Ең құрғақ жылдар",
-            "perc_norm": "Нормадан пайыз"
-        },
-        "en": {
-            "trend_label": "trend",
-            "trend_note": "increase per 10 years",
-            "stat_title": "📉 Statistical Analysis",
-            "temp_header": "🌡️ Temperature Regime",
-            "prec_header": "💧 Moisture Regime",
-            "period": "Period",
-            "norm": "Normal",
-            "seasons": ["Winter", "Spring", "Summer", "Autumn", "Year"],
-            "warm_years": "🏆 Warmest Years",
-            "dry_years": "🏆 Driest Years",
-            "perc_norm": "Percent of normal"
-        }
-    }
-
-# Извлекаем текущие переводы для удобства
-    ui = ui_translate[L]
-
-    # HTML блок с трендами
+    # Стили оставляем в markdown (их можно вынести отдельно, чтобы не дублировать)
     st.markdown(f"""
         <style>
-        .trends-container {{ display: flex; justify-content: flex-start; gap: 30px; margin: 15px 0; }}
-        .trend-card {{ flex: 0 1 auto; padding: 15px 25px; border-radius: 10px; background-color: #fcfcfc; border: 1px solid #eee; min-width: 200px; }}
-        .trend-label {{ font-size: 0.9rem; color: #666; margin-bottom: 5px; text-transform: uppercase; }}
+        .trends-container {{
+            display: flex;
+            justify-content: flex-start;
+            gap: 30px;
+            margin: 15px 0;
+        }}
+        .trend-card {{
+            flex: 0 1 auto;
+            padding: 15px 25px;
+            border-radius: 10px;
+            background-color: #fcfcfc;
+            border: 1px solid #eee;
+            min-width: 200px;
+        }}
+        .trend-label {{ font-size: 0.9rem; color: #666; margin-bottom: 5px; }}
         .trend-value {{ font-size: 1.8rem; font-weight: 800; line-height: 1.1; }}
         .v-green {{ color: #28a745; }}
         .v-orange {{ color: #f39c12; }}
@@ -11640,18 +11607,18 @@ with tabs[7]:
         
         <div class="trends-container">
             <div class="trend-card" style="border-left: 5px solid #28a745;">
-                <div class="trend-label">{ui['trend_label']}</div>
+                <div class="trend-label">тренд</div>
                 <div class="trend-value v-green">📈 {t_val}</div>
-                <div class="trend-note">{ui['trend_note']}</div>
+                <div class="trend-note">прирост на каждые 10 лет</div>
             </div>
             <div class="trend-card" style="border-left: 5px solid #f39c12;">
-                <div class="trend-label">{ui['trend_label']}</div>
+                <div class="trend-label">тренд</div>
                 <div class="trend-value v-orange">📈 {p_val}</div>
-                <div class="trend-note">{ui['trend_note']}</div>
+                <div class="trend-note">прирост на каждые 10 лет</div>
             </div>
             <div style="flex: 1; display: flex; align-items: center; padding-left: 10px;">
                 <p style="color: #444; font-size: 0.95rem; border-left: 2px dashed #ccc; padding-left: 20px;">
-                    💡 <b>{ui['conc']}:</b> {analysis}
+                    💡 <b>Анализ:</b> {analysis}
                 </p>
             </div>
         </div>
@@ -11659,82 +11626,100 @@ with tabs[7]:
 
     st.markdown("---")  
     
-    # --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА ---
-    st.markdown(f"### {ui['stat_title']}")
+# --- 4. ДЕТАЛЬНАЯ СТАТИСТИКА ---
+    st.markdown("### 📉 Статистический анализ")
 
+    # Получаем данные региона (reg уже определен выше через selected_name)
     tn = reg.get('t_norm', {"w": 0, "sp": 0, "su": 0, "au": 0, "y": 0})
     pn = reg.get('p_norm', {"w": 0, "sp": 0, "su": 0, "au": 0, "y": 0})
 
+    # Расчет значений 2025 года на основе аномалии из CSV
+    # Температура: Норма + Аномалия
     t25 = {k: v + current_temp_anom for k, v in tn.items()}
+    # Осадки: Норма * (1 + % аномалии / 100)
     p25 = {k: v * (1 + current_precip_anom / 100) for k, v in pn.items()}
 
     col_main_temp, col_main_precip = st.columns(2, gap="large")
 
     # --- ЛЕВАЯ КОЛОНКА: ТЕМПЕРАТУРА ---
     with col_main_temp:
-        st.subheader(ui['temp_header'])
+        st.subheader("🌡️ Температурный режим")
+        t_col1, t_col2 = st.columns([1.6, 1])
         
-        # Таблица температур
-        temp_df = pd.DataFrame({
-            ui['period']: [ui['norm'], "2025"],
-            ui['seasons'][0]: [tn['w'], f"{t25['w']:.1f}"],
-            ui['seasons'][1]: [tn['sp'], f"{t25['sp']:.1f}"],
-            ui['seasons'][2]: [tn['su'], f"{t25['su']:.1f}"],
-            ui['seasons'][3]: [tn['au'], f"{t25['au']:.1f}"],
-            ui['seasons'][4]: [tn['y'], f"{t25['y']:.1f}"]
-        })
-        st.table(temp_df)
-        
-        # Экстремумы
-        extreme = reg.get('temp_extreme', {"max": "н/д", "min": "н/д"})
-        st.caption(f"💡 Max: {extreme['max']}, Min: {extreme['min']}")
+        with t_col1:
+            st.markdown(f"**Сезонные показатели (°C)**")
+            temp_df = pd.DataFrame({
+                "Период": ["Норма", "2025"],
+                "Зима": [f"{tn['w']}", f"{t25['w']:.1f}"],
+                "Весна": [f"{tn['sp']}", f"{t25['sp']:.1f}"],
+                "Лето": [f"{tn['su']}", f"{t25['su']:.1f}"],
+                "Осень": [f"{tn['au']}", f"{t25['au']:.1f}"],
+                "Год": [f"{tn['y']}", f"{t25['y']:.1f}"]
+            })
+            st.table(temp_df)
+            extreme = reg.get('temp_extreme', {"max": "н/д", "min": "н/д"})
+            st.caption(f"💡 Макс: {extreme['max']}, Мин: {extreme['min']}")
 
-        st.markdown(f"**{ui['warm_years']}**")
-        top_data = reg.get('top_years', [])
-        if top_data:
-            max_v = max([item['val'] for item in top_data])
-            rows_html = "".join([f"""
-                <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
-                    <div style="width:35px; font-size:11px; font-weight:bold;">{item['year']}</div>
-                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
-                        <div style="width:{(item['val']/max_v)*100}%; background:{item['col']}; height:100%; border-radius:2px;"></div>
-                    </div>
-                    <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{item['val']:.1f}°</div>
-                </div>""" for item in top_data])
-            st.components.v1.html(rows_html, height=160)
+        with t_col2:
+            st.markdown("**🏆 Самые теплые годы**")
+            # Используем данные ТОП-5 из вашего словаря
+            top_data = reg.get('top_years', [])
+            if top_data:
+                max_val = max([item['val'] for item in top_data])
+                rows_html = "".join([f"""
+                    <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                        <div style="width:35px; font-size:11px; font-weight:bold;">{item['year']}</div>
+                        <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 5px;">
+                            <div style="width:{(item['val']/max_val)*100}%; background:{item['col']}; height:100%; border-radius:2px;"></div>
+                        </div>
+                        <div style="width:35px; text-align:right; font-size:11px; font-weight:bold;">{item['val']:.1f}°</div>
+                    </div>""" for item in top_data])
+                st.components.v1.html(rows_html, height=160)
 
     # --- ПРАВАЯ КОЛОНКА: ОСАДКИ ---
     with col_main_precip:
-        st.subheader(ui['prec_header'])
+        st.subheader("💧 Режим увлажнения")
+        p_col1, p_col2 = st.columns([1.6, 1])
         
-        # Таблица осадков
-        prec_df = pd.DataFrame({
-            ui['period']: [ui['norm'], "2025"],
-            ui['seasons'][0]: [pn['w'], f"{p25['w']:.0f}"],
-            ui['seasons'][1]: [pn['sp'], f"{p25['sp']:.0f}"],
-            ui['seasons'][2]: [pn['su'], f"{p25['su']:.0f}"],
-            ui['seasons'][3]: [pn['au'], f"{p25['au']:.0f}"],
-            ui['seasons'][4]: [pn['y'], f"{p25['y']:.0f}"]
-        })
-        st.table(prec_df)
-        st.caption(f"{ui['perc_norm']}: {current_precip_anom + 100:.1f}%")
+        with p_col1:
+            st.markdown(f"**Сезонные осадки (мм)**")
+            prec_df = pd.DataFrame({
+                "Период": ["Норма", "2025"],
+                "Зима": [f"{pn['w']}", f"{p25['w']:.0f}"],
+                "Весна": [f"{pn['sp']}", f"{p25['sp']:.0f}"],
+                "Лето": [f"{pn['su']}", f"{p25['su']:.0f}"],
+                "Осень": [f"{pn['au']}", f"{p25['au']:.0f}"],
+                "Год": [f"{pn['y']}", f"{p25['y']:.0f}"]
+            })
+            st.table(prec_df)
+            st.caption(f"Процент от нормы: {current_precip_anom + 100:.1f}%")
 
-        st.markdown(f"**{ui['dry_years']}**")
-        records = reg.get("top_precip_years", [])
-        if records:
-            max_p = max([r['val'] for r in records]) if records else 1
-            p_html = "".join([f"""
-                <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
-                    <div style="width:40px; font-size:11px; font-weight:bold; color:#333;">{r['year']}</div>
-                    <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 8px;">
-                        <div style="width:{(r['val']/max_p)*100}%; background:{r['col']}; height:100%; border-radius:2px;"></div>
-                    </div>
-                    <div style="width:50px; text-align:right; font-size:11px; font-weight:bold; color:#333;">{r['val']:.0f} мм</div>
-                </div>""" for r in records])
-            st.components.v1.html(f"<div style='margin-top:10px;'>{p_html}</div>", height=160)
+        with p_col2:
+            st.markdown("**🏆 Самые сухие годы**")
             
+            # 1. Получаем список из базы (тот, что вы прислали)
+            records = reg.get("top_precip_years", [])
             
-
+            if records:
+                # 2. Находим максимум для масштабирования полосок
+                max_val = max([r['val'] for r in records]) if records else 1
+                
+                # 3. Генерируем HTML, используя данные из списка
+                p_html = "".join([f"""
+                    <div style="display:flex; align-items:center; margin-bottom:8px; font-family:sans-serif;">
+                        <div style="width:40px; font-size:11px; font-weight:bold; color:#333;">{r['year']}</div>
+                        <div style="flex-grow:1; background:#eee; height:12px; border-radius:2px; margin:0 8px;">
+                            <div style="width:{(r['val']/max_val)*100}%; background:{r['col']}; height:100%; border-radius:2px;"></div>
+                        </div>
+                        <div style="width:50px; text-align:right; font-size:11px; font-weight:bold; color:#333;">{r['val']:.0f} мм</div>
+                    </div>""" for r in records])
+                
+                # 4. Выводим результат
+                st.components.v1.html(f"<div style='margin-top:10px;'>{p_html}</div>", height=160)
+            else:
+                st.info("Данные о рекордах отсутствуют")
+        
+            
  
     st.markdown("### 🚨 Основные климатические риски")
 
@@ -11767,26 +11752,63 @@ with tabs[7]:
     conclusion = reg.get("final_conclusion", "Анализ данных продолжается.")
     st.info(f"💡 **Общие выводы:** {conclusion}")
 
-    import streamlit as st
-    import pandas as pd
-    import plotly.express as px
-    import io
+# --- 1. СИНХРОНИЗАЦИЯ ЯЗЫКА ---
+    if 'lang_code' in locals() or 'lang_code' in globals():
+        current_l = lang_code
+    elif 'lang_code' in st.session_state:
+        current_l = st.session_state['lang_code']
+    else:
+        current_l = "ru"
 
-    st.title("🌍 Климатические индексы ")
+    # --- 2. СЛОВАРЬ ПЕРЕВОДОВ ---
+    index_translations = {
+        "ru": {
+            "title": "🌍 Климатические индексы",
+            "quote": """
+            > **Климатический индекс** — это расчетный диагностический показатель, который используется для количественной оценки интенсивности, частоты и продолжительности конкретных погодных явлений.
+            > 
+            > В отличие от простых метеорологических величин, индекс базируется на **пороговых значениях**, имеющих критическое значение для физических, биологических или экономических систем.
+            """,
+            "sector_label": "Выберите отрасль экономики:",
+            "index_label": "Выберите климатический индекс:",
+            "map_caption": "Карта пространственного распределения трендов",
+            "err_file": "Файл не найден в репозитории"
+        },
+        "kz": {
+            "title": "🌍 Климаттық индекстер",
+            "quote": """
+            > **Климаттық индекс** — бұл ауа райы құбылыстарының қарқындылығын, жиілігін және ұзақтығын сандық бағалау үшін қолданылатын есептік диагностикалық көрсеткіш.
+            > 
+            > Қарапайым метеорологиялық шамалардан айырмашылығы, индекс физикалық, биологиялық немесе экономикалық жүйелер үшін маңызды болып табылатын **шекті мәндерге** негізделген.
+            """,
+            "sector_label": "Экономика саласын таңдаңыз:",
+            "index_label": "Климаттық индексті таңдаңыз:",
+            "map_caption": "Трендтердің кеңістіктік таралу картасы",
+            "err_file": "Файл репозиторийден табылмады"
+        },
+        "en": {
+            "title": "🌍 Climate Indices",
+            "quote": """
+            > **Climate Index** is a calculated diagnostic indicator used to quantify the intensity, frequency, and duration of specific weather events.
+            > 
+            > Unlike simple meteorological variables, an index is based on **threshold values** that are critical for physical, biological, or economic systems.
+            """,
+            "sector_label": "Select economic sector:",
+            "index_label": "Select climate index:",
+            "map_caption": "Spatial distribution map of trends",
+            "err_file": "File not found in the repository"
+        }
+    }
 
-    st.markdown("""
-    > **Климатический индекс** — это расчетный диагностический показатель, который используется для количественной оценки интенсивности, частоты и продолжительности конкретных погодных явлений.
-    > 
-    > В отличие от простых метеорологических величин, индекс базируется на **пороговых значениях**, имеющих критическое значение для физических, биологических или экономических систем.
-    """)
+    it = index_translations.get(current_l, index_translations["ru"])
 
+    # --- 3. ОТОБРАЖЕНИЕ ЗАГОЛОВКА ---
+    st.title(it["title"])
+    st.markdown(it["quote"])
     st.divider()
 
-    # --- 2. ДАННЫЕ ДЛЯ ГРАФИКОВ (Пример загрузки) ---
-
+    # --- 4. ДАННЫЕ ДЛЯ ГРАФИКОВ (Улучшенная функция) ---
     def get_data(index_name):
-        # 1. Настройка соответствия индексов и имен файлов
-        # Убедитесь, что названия файлов в точности совпадают с файлами в GitHub
         file_mapping = {
             "GDD (Grow)": "gdd_data.csv",
             "GSL": "gsl_data.csv",
@@ -11801,37 +11823,25 @@ with tabs[7]:
         }
         
         file_name = file_mapping.get(index_name)
-        
         if not file_name:
             return pd.DataFrame(columns=["Year", "Казахстан"])
 
-        # 2. Список возможных путей (в корне или в папке data)
-        possible_paths = [
-            file_name,
-            os.path.join("data", file_name),
-            os.path.join("src", file_name)
-        ]
+        possible_paths = [file_name, os.path.join("data", file_name)]
         
-        # 3. Перебор путей и кодировок
         for path in possible_paths:
             if os.path.exists(path):
-                # Пробуем разные кодировки, чтобы не было UnicodeDecodeError
-                for enc in ['utf-8', 'cp1251', 'latin1', 'utf-8-sig']:
+                for enc in ['utf-8', 'cp1251', 'utf-8-sig']:
                     try:
-                        # Пробуем разные разделители (запятая или табуляция)
                         df = pd.read_csv(path, sep=None, engine='python', encoding=enc)
-                        
-                        # Проверка: если pandas не нашел колонки, пробуем принудительно табуляцию
                         if "Year" not in df.columns:
                             df = pd.read_csv(path, sep='\t', encoding=enc)
-                            
                         return df
-                    except (UnicodeDecodeError, Exception):
+                    except:
                         continue
         
-        # Если файл так и не найден после всех попыток
-        st.error(f"Файл {file_name} не найден в репозитории по путям: {possible_paths}")
+        st.error(f"{it['err_file']}: {file_name}")
         return pd.DataFrame(columns=["Year", "Казахстан"])
+        
         
 
     # --- 3. КОНФИГУРАЦИЯ СЕКТОРОВ ---
@@ -11918,209 +11928,209 @@ with tabs[7]:
         }
         
     }
-
-    # --- 4. ИНТЕРФЕЙС ---
+    
+    
+# --- 4. МУЛЬТИЯЗЫЧНЫЙ ИНТЕРФЕЙС ---
     import os
 
-    col_nav, col_display = st.columns([1, 4]) # Немного увеличим область контента
+    # Используем колонки для навигации и контента
+    col_nav, col_display = st.columns([1, 4]) 
 
     with col_nav:
-        st.subheader("Навигация")
-        sel_sector = st.selectbox("Сектор:", list(sectors_config.keys()))
-        sel_index = st.radio("Индекс:", list(sectors_config[sel_sector].keys()))
+        st.subheader(it.get("nav_title", "Navigation")) # "Навигация" из словаря
+        
+        # Динамический выбор сектора (ключ - название на текущем языке)
+        sector_labels = {v["name"][current_l]: k for k, v in sectors_config.items()}
+        sel_sector_label = st.selectbox(it["sector_label"], list(sector_labels.keys()))
+        sector_key = sector_labels[sel_sector_label]
+        
+        # Выбор индекса внутри сектора
+        index_options = sectors_config[sector_key]["indices"]
+        sel_index = st.radio(it["index_label"], list(index_options.keys()))
 
     with col_display:
-        st.header(f"Анализ: {sel_index}")
+        st.header(f"{it.get('analysis_title', 'Analysis')}: {sel_index}")
         
-        # 1. Достаем данные индекса в переменную, чтобы код был чище
-        index_data = sectors_config[sel_sector][sel_index]
+        # Достаем данные выбранного индекса
+        idx_info = index_options[sel_index]
         
-        # 2. Выводим основное описание
-        st.info(index_data["desc"])
+        # 1. Основное описание (в синем блоке)
+        st.info(idx_info["desc"][current_l])
         
-        # 3. ПРОВЕРКА: если есть desc1, выводим его дополнительно
-        if "desc1" in index_data:
-            st.write(index_data["desc1"])
+        # 2. Подробное описание (если есть)
+        if "desc1" in idx_info:
+            st.write(idx_info["desc1"][current_l])
+        
+        st.divider()
         
         # Создаем два столбца для Карты и Графика
         col_map, col_chart = st.columns(2)
     
-        
         # --- БЛОК КАРТЫ ---
         with col_map:
-            st.write("**🗺️ Пространственное распределение**")
-            image_name = sectors_config[sel_sector][sel_index]['map']
+            st.write(f"**🗺️ {it['map_caption']}**")
+            image_name = idx_info['map']
             
-            # Логика поиска пути файла
-            if os.path.exists(image_name):
-                image_path = image_name
-            elif os.path.exists(f"maps/{image_name}"):
-                image_path = f"maps/{image_name}"
-            else:
-                image_path = image_name
+            # Логика поиска пути
+            image_path = image_name if os.path.exists(image_name) else f"maps/{image_name}"
                 
-            try:
-                # use_container_width=True подстроит карту под ширину узкой колонки
+            if os.path.exists(image_path):
                 st.image(image_path, use_container_width=True)
-            except:
-                st.error(f"Файл {image_name} не найден.")
+            else:
+                st.warning(f"{it['err_file']}: {image_name}")
 
         # --- БЛОК ГРАФИКА ---
         with col_chart:
-            st.write("**📈 Временная динамика**")
+            st.write(f"**📈 {it.get('chart_title', 'Temporal Dynamics')}**")
             df = get_data(sel_index)
             
-            fig = px.line(df, x="Year", y="Казахстан", 
-                          markers=True, 
-                          line_shape="spline",
-                          height=300) # Ограничиваем высоту для компактности
-            
-            fig.update_traces(line_color='#e74c3c')
-            # Убираем лишние отступы в графике
-            fig.update_layout(margin=dict(l=0, r=0, t=30, b=0))
-            
-            st.plotly_chart(fig, use_container_width=True)
-            
-
+            if not df.empty:
+                fig = px.line(df, x="Year", y="Казахстан", 
+                              markers=True, 
+                              line_shape="spline",
+                              height=350)
+                
+                # Стилизация графика под брендбук
+                fig.update_traces(line_color='#e74c3c', line_width=3)
+                fig.update_layout(
+                    margin=dict(l=0, r=0, t=30, b=0),
+                    hovermode="x unified",
+                    xaxis_title=it.get("year_label", "Year"),
+                    yaxis_title=sel_index
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No numerical data available for chart")
+                
+                
     import streamlit as st
     import pandas as pd
     import plotly.express as px
     import os
+    import base64
 
     def render_wind_dashboard():
-        # --- НАСТРОЙКИ ---
+        # --- 0. ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
+        current_l = st.session_state.get('lang_code', 'ru')
+        
+        # Словарик для интерфейса дашборда
+        ui = {
+            "ru": {
+                "title": "💨 Мониторинг ветровой активности Казахстана",
+                "facts": "Интересные факты",
+                "record": "Экстремальный рекорд",
+                "trend_label": "Общая тенденция",
+                "map_sub": "🗺️ Карта ветровых режимов",
+                "chart_sub": "📈 Динамика по регионам",
+                "select_reg": "Выберите область для анализа:",
+                "analysis_header": "### 📝 Анализ данных",
+                "trend_up": "наблюдается тенденция к **увеличению** силы ветра",
+                "trend_down": "наблюдается тенденция к **снижению** ветровой нагрузки",
+                "trend_stable": "показатели остаются относительно **стабильными**",
+                "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**."
+            },
+            "kz": {
+                "title": "💨 Қазақстанның жел белсенділігінің мониторингі",
+                "facts": "Қызықты деректер",
+                "record": "Экстремалды рекорд",
+                "trend_label": "Жалпы тенденция",
+                "map_sub": "🗺️ Жел режимдерінің картасы",
+                "chart_sub": "📈 Өңірлер бойынша динамика",
+                "select_reg": "Талдау үшін облысты таңдаңыз:",
+                "analysis_header": "### 📝 Мәліметтерді талдау",
+                "trend_up": "жел күшінің **арту** тенденциясы байқалады",
+                "trend_down": "жел жүктемесінің **төмендеу** тенденциясы байқалады",
+                "trend_stable": "көрсеткіштер салыстырмалы түрде **тұрақты**",
+                "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**."
+            }
+        }
+        t = ui.get(current_l, ui["ru"])
+
+        # --- 1. НАСТРОЙКИ ---
         data_file = "Max_wind.csv"
         image_path = "wind_RES5.jpg"
-        
-        # ОБЯЗАТЕЛЬНО ОБЪЯВЛЯЕМ ПРОЦЕНТ (иначе будет ошибка NameError)
-        map_percent = 125  # Меняйте это число для управления размером карты
-        # -----------------
+        map_percent = 100 
 
-        st.title("💨 Мониторинг ветровой активности Казахстана")
+        st.title(t["title"])
         st.divider()
         
-          # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
-        st.subheader("Интересные факты")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric(label="Экстремальный рекорд", value="60 м/с", delta="Жаланашколь")
-            st.caption("Зафиксировано в 1979, 1982, 1983 гг.")
-            
-        with col2:
-            st.metric(label="Общая тенденция", value="-3.3 м/с", delta_color="normal")
-            st.caption("Снижение макс. скорости за 45 лет")
-            
-        with col3:
-            st.metric(label="Пиковая аномалия", value="+0.5 м/с", delta="в 1980-х")
-            st.caption("Отклонение от нормы")
+        # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
+        st.subheader(t["facts"])
+        c1, c2, c3 = st.columns(3)
+        with c1: st.metric(t["record"], "60 м/с", "Жаланашколь")
+        with c2: st.metric(t["trend_label"], "-3.3 м/с")
+        with c3: st.metric("Аномалия", "+0.5 м/с", delta="1980s")
 
         st.divider()
-        
 
-        # Пропорции колонок: 3 к 2
+        # --- СЕКЦИЯ 2: КАРТА И ГРАФИК ---
         col_map, col_charts = st.columns([1, 1])
 
         with col_map:
-            st.subheader("🗺️ Карта ветровых режимов")
-
+            st.subheader(t["map_sub"])
             if os.path.exists(image_path):
-                # Читаем файл и кодируем в base64 для вставки в HTML
                 with open(image_path, "rb") as f:
-                    data = f.read()
-                    encoded = base64.b64encode(data).decode()
+                    encoded = base64.b64encode(f.read()).decode()
                 
-                # HTML вставка: ставим ширину в зависимости от процентов от ширины экрана (vw)
-                # Или просто используем style="width: 100%;"
-                html_code = f"""
+                st.markdown(f"""
                     <div style="text-align: center;">
                         <img src="data:image/png;base64,{encoded}" 
-                             style="width: {map_percent}%; min-width: 400px; border-radius: 10px;">
-                        <p style="color: gray; font-size: 0.8rem;">Масштаб: {map_percent}%</p>
+                             style="width: {map_percent}%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                     </div>
-                """
-                st.markdown(html_code, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
             else:
-                st.error(f"Файл {image_path} не найден.")
-        
-                
-            st.info("**Справка:** Жетісуские ворота — самая ветреная точка, где скорость достигает 60 м/с.")
+                st.error(f"File {image_path} not found.")
 
         with col_charts:
-            st.subheader("📈 Динамика по регионам")
-            
+            st.subheader(t["chart_sub"])
             if os.path.exists(data_file):
                 try:
+                    # Читаем данные, заменяя запятые на точки для корректных расчетов
                     df = pd.read_csv(data_file, sep=';', encoding='utf-8-sig')
                     regions = [col for col in df.columns if col != 'Год']
-                    selected_region = st.selectbox("Выберите область для анализа:", regions)
+                    selected_region = st.selectbox(t["select_reg"], regions)
                     
                     if selected_region:
-                        df[selected_region] = pd.to_numeric(df[selected_region].replace('#Н/Д', None), errors='coerce')
+                        # Очистка данных
+                        df[selected_region] = pd.to_numeric(df[selected_region].astype(str).str.replace(',', '.'), errors='coerce')
                         df_plot = df.dropna(subset=[selected_region, 'Год']).sort_values('Год')
 
-                        # Создаем график
-                        fig = px.line(
-                            df_plot, 
-                            x='Год', 
-                            y=selected_region,
-                            title=f"Абсолютный максимум: {selected_region}",
-                            markers=True,
-                            color_discrete_sequence=['#00CC96']
+                        fig = px.line(df_plot, x='Год', y=selected_region, 
+                                      markers=True, color_discrete_sequence=['#00CC96'])
+                        
+                        fig.update_layout(
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            plot_bgcolor='rgba(0,0,0,0)',
+                            margin=dict(l=0, r=0, t=30, b=0),
+                            hovermode="x unified"
                         )
-                        
-                        fig.update_layout(yaxis_title="м/с", xaxis_title="Год", hovermode="x unified")
                         st.plotly_chart(fig, use_container_width=True)
-                        
-                        # --- БЛОК АВТОМАТИЧЕСКОГО АНАЛИЗА ---
-                        st.markdown("### 📝 Анализ данных")
-                        
-                        # 1. Основные показатели
-                        max_val = df_plot[selected_region].max()
-                        year_max = df_plot.loc[df_plot[selected_region].idxmax(), 'Год']
+
+                        # --- АВТОМАТИЧЕСКИЙ АНАЛИЗ ---
+                        st.markdown(t["analysis_header"])
                         avg_val = df_plot[selected_region].mean()
                         
-                        # 2. Определение тренда (сравнение начала и конца периода)
-                        first_val = df_plot[selected_region].iloc[0]
-                        last_val = df_plot[selected_region].iloc[-1]
-                        trend_diff = last_val - first_val
+                        # Логика тренда
+                        diff = df_plot[selected_region].iloc[-1] - df_plot[selected_region].iloc[0]
+                        trend_txt = t["trend_up"] if diff > 1 else (t["trend_down"] if diff < -1 else t["trend_stable"])
                         
-                        if trend_diff > 1:
-                            trend_desc = "наблюдается тенденция к **увеличению** силы ветра"
-                        elif trend_diff < -1:
-                            trend_desc = "наблюдается тенденция к **снижению** ветровой нагрузки"
-                        else:
-                            trend_desc = "показатели остаются относительно **стабильными**"
-
-                        # 3. Вывод анализа в интерфейс
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.metric("Максимум", f"{max_val} м/с", f"год: {year_max}", delta_color="inverse")
-                        with col2:
-                            st.metric("Среднее значение", f"{avg_val:.1f} м/с")
-
-                        analysis_text = f"""
-                        Для региона **{selected_region}** за анализируемый период {df_plot['Год'].min()}-{df_plot['Год'].max()} гг. 
-                        {trend_desc}. Средняя скорость экстремальных порывов составляет **{avg_val:.1f} м/с**. 
-                        
-                        Наиболее критическая ситуация зафиксирована в **{year_max} году**, когда скорость ветра 
-                        достигла рекордных **{max_val} м/с**, что требует особого внимания при проектировании 
-                        инфраструктуры в данной области.
-                        """
-                        st.info(analysis_text)
-
+                        st.info(t["summary_fmt"].format(
+                            selected_region, 
+                            int(df_plot['Год'].min()), 
+                            int(df_plot['Год'].max()), 
+                            trend_txt, 
+                            avg_val
+                        ))
                 except Exception as e:
-                    st.error(f"Ошибка при обработке файла: {e}")
-            else:
-                st.error(f"Файл {data_file} не найден.")
-                
+                    st.error(f"Data error: {e}")
 
-    # Запуск приложения
+    # Запуск
     if __name__ == "__main__":
-        # Рекомендуется добавить wide mode для больших карт
-        st.set_page_config(page_title="Wind Monitor", layout="wide")
+        st.set_page_config(layout="wide")
         render_wind_dashboard()
-    
+        
+        
     
 
 
