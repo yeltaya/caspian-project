@@ -12879,104 +12879,103 @@ with tabs[7]:
                 st.write("Выберите область слева, чтобы увидеть аналитику.")
 
     
-# Словарь локализации для Эко-мониторинга
-env_lang = {
+# Словарь переводов для вкладки Экологии
+ui_eco = {
     "ru": {
-        "title": "🌱 Мониторинг качества окружающей среды в Республике Казахстан",
+        "title": "🌱 Мониторинг качества окружающей среды в РК",
         "intro": "Сбор, обработка, анализ данных экологического мониторинга для обеспечения экологической безопасности граждан Казахстана.",
         "stats_h": "### 📊 Статистика мониторинга РГП «Казгидромет»",
-        "air_h": "#### 🌬️ Атмосферный воздух",
+        "air_title": "🌬️ Атмосферный воздух",
         "air_list": "* **Населенных пунктов:** 70\n* **Постов наблюдений:** 175 *(131 авто / 44 ручных)*\n* **Загрязняющих веществ:** 36 видов\n* **Охват:** 17 областей РК",
-        "water_h": "#### 💧 Поверхностные воды",
+        "water_title": "💧 Поверхностные воды",
         "water_list": "* **Водных объектов:** 134 *(88 рек, 29 озер, 13 вдхр)*\n* **Гидрохимических створов:** 373\n* **Морской мониторинг:** 1 (Каспийское море)",
-        "soil_h": "#### 🏜️ Почва и осадки",
+        "soil_title": "🏜️ Почва и осадки",
         "soil_list": "* **Мониторинг почв:** 101 населенный пункт\n* **Атмосферные осадки:** 47 метеостанций\n* **Снежный покров:** 40 метеостанций",
-        "radio_h": "#### ☢️ Радиационный мониторинг",
+        "radio_title": "☢️ Радиационный мониторинг",
         "radio_list": "* **Гамма-фон:** 89 станций (ежедневно)\n* **Радиоактивное загрязнение:** 43 станции\n* **География:** все 17 областей Казахстана",
-        "footer_tip": "💡 Различные типы постов (ручные, автоматические, передвижные) измеряют широкий спектр тяжелых металлов и загрязнителей.",
-        "tabs": ["💨 НМУ", "☀️ УФ-индекс", "🏜️ Прогноз качества воздуха", "📱 AirKZ"],
+        "post_tip": "💡 Различные типы постов измеряют широкий спектр тяжелых металлов и загрязнителей.",
+        "tab_names": ["💨 НМУ", "☀️ УФ-индекс", "🏜️ Прогноз качества воздуха", "📱 AirKZ"],
         "nmu_h": "### 🌬️ Прогноз неблагоприятных метеорологических условий",
         "nmu_card_h": "Прогноз НМУ",
-        "nmu_text": "<p><b>Неблагоприятные метеоусловия (НМУ)</b> — это сочетание факторов (штиль, инверсия), способствующих накоплению вредных веществ.</p><p>Прогноз помогает принять меры: предприятиям снизить выбросы, а жителям меньше быть на улице.</p>",
-        "uf_h": "☀️ Прогноз УФ индекса",
-        "uf_text": "<p><b>Период:</b> май – сентябрь.</p><p>Прогноз уровня ультрафиолета на ближайшие <b>7 дней</b> с рекомендациями для населения.</p>",
-        "silam_h": "🏜️ SILAM",
-        "silam_text": "Интерактивная карта прогноза концентраций загрязняющих веществ в динамике по часам до 48 часов.",
+        "nmu_body": "<b>Неблагоприятные метеоусловия (НМУ)</b> — это сочетание факторов (штиль, инверсия), способствующих накоплению вредных веществ. <br><br>Прогноз помогает предприятиям снизить выбросы, а жителям — сократить время на улице.",
+        "uf_card_h": "☀️ Прогноз УФ индекса",
+        "uf_body": "<b>Период:</b> май – сентябрь.<br>Выпускается бюллетень с прогнозом уровня ультрафиолета на ближайшие <b>7 дней</b> с рекомендациями для населения.",
+        "silam_card_h": "🏜️ SILAM",
+        "silam_body": "Модель прогноза концентраций загрязняющих веществ в динамике по часам с заблаговременностью до 48 часов.",
         "airkz_h": "### 📱 Мобильное приложение AirKz",
-        "airkz_info": "Инструмент для контроля качества воздуха в реальном времени.",
+        "airkz_sub": "Инструмент для контроля качества воздуха в реальном времени.",
         "airkz_new": "✅ **Что нового в обновлении:**",
-        "airkz_list": "* Новый дизайн\n* Знак тревоги при превышении ПДК\n* Описания загрязнителей от Минздрава РК",
-        "img_err": "Изображение не найдено"
+        "airkz_list": "* Новый дизайн и интерфейс\n* Знак тревоги при превышении ПДК\n* Описания загрязнителей от Минздрава РК",
+        "users": "💡 Более 10 000 активных пользователей"
     },
     "kk": {
         "title": "🌱 Қазақстан Республикасындағы қоршаған орта сапасының мониторингі",
         "intro": "Қазақстан азаматтарының экологиялық қауіпсіздігін қамтамасыз ету үшін экологиялық мониторинг деректерін жинау, өңдеу және талдау.",
         "stats_h": "### 📊 «Қазгидромет» РМК мониторинг статистикасы",
-        "air_h": "#### 🌬️ Атмосфералық ауа",
-        "air_list": "* **Елді мекендер:** 70\n* **Бақылау бекеттері:** 175 *(131 авто / 44 қолмен)*\n* **Ластаушы заттар:** 36 түрі\n* **Қамту аймағы:** ҚР 17 облысы",
-        "water_h": "#### 💧 Беткі сулар",
+        "air_title": "🌬️ Атмосфералық ауа",
+        "air_list": "* **Елді мекендер:** 70\n* **Бақылау бекеттері:** 175 *(131 авто / 44 қолмен)*\n* **Ластаушы заттар:** 36 түрі\n* **Қамту:** ҚР 17 облысы",
+        "water_title": "💧 Беткі сулар",
         "water_list": "* **Су нысандары:** 134 *(88 өзен, 29 көл, 13 су қоймасы)*\n* **Гидрохимиялық тұстамалар:** 373\n* **Теңіз мониторингі:** 1 (Каспий теңізі)",
-        "soil_h": "#### 🏜️ Топырақ пен жауын-шашын",
+        "soil_title": "🏜️ Топырақ пен жауын-шашын",
         "soil_list": "* **Топырақ мониторингі:** 101 елді мекен\n* **Атмосфералық жауын-шашын:** 47 метеостанция\n* **Қар жамылғысы:** 40 метеостанция",
-        "radio_h": "#### ☢️ Радиациялық мониторинг",
+        "radio_title": "☢️ Радиациялық мониторинг",
         "radio_list": "* **Гамма-фон:** 89 станция (күн сайын)\n* **Радиациялық ластану:** 43 станция\n* **География:** Қазақстанның барлық 17 облысы",
-        "footer_tip": "💡 Бекеттердің әртүрлі түрлері ауыр металдар мен ластаушы заттардың кең спектрін өлшейді.",
-        "tabs": ["💨 ҚОМ", "☀️ УК-индекс", "🏜️ Ауа сапасының болжамы", "📱 AirKZ"],
+        "post_tip": "💡 Бекеттердің әртүрлі түрлері ауыр металдар мен ластаушы заттардың кең спектрін өлшейді.",
+        "tab_names": ["💨 ҚОМ", "☀️ УК-индекс", "🏜️ Ауа сапасының болжамы", "📱 AirKZ"],
         "nmu_h": "### 🌬️ Қолайсыз метеорологиялық жағдайлар болжамы",
         "nmu_card_h": "ҚОМ болжамы",
-        "nmu_text": "<p><b>Қолайсыз метеожағдайлар (ҚОМ)</b> — зиянды заттардың жиналуына ықпал ететін факторлар жиынтығы.</p><p>Болжам шара қолдануға көмектеседі: кәсіпорындарға шығарындыларды азайтуға, тұрғындарға далада аз болуға.</p>",
-        "uf_h": "☀️ УК индексінің болжамы",
-        "uf_text": "<p><b>Кезең:</b> мамыр – қыркүйек.</p><p>Алдағы <b>7 күнге</b> арналған ультракүлгін деңгейінің болжамы және халыққа арналған ұсыныстар.</p>",
-        "silam_h": "🏜️ SILAM",
-        "silam_text": "48 сағатқа дейінгі ауа сапасының динамикасын көруге мүмкіндік беретін интерактивті карта.",
+        "nmu_body": "<b>Қолайсыз метеожағдайлар (ҚОМ)</b> — зиянды заттардың жиналуына ықпал ететін факторлар жиынтығы. <br><br>Болжам кәсіпорындарға шығарындыларды азайтуға, ал тұрғындарға далада болу уақытын қысқартуға көмектеседі.",
+        "uf_card_h": "☀️ УК индексінің болжамы",
+        "uf_body": "<b>Кезең:</b> мамыр – қыркүйек.<br>Алдағы <b>7 күнге</b> арналған ультракүлгін деңгейінің болжамы және халыққа арналған ұсыныстар.",
+        "silam_card_h": "🏜️ SILAM",
+        "silam_body": "48 сағатқа дейінгі ауа сапасының динамикасын сағат бойынша көруге мүмкіндік беретін модель.",
         "airkz_h": "### 📱 AirKz мобильді қосымшасы",
-        "airkz_info": "Нақты уақыт режимінде ауа сапасын бақылау құралы.",
+        "airkz_sub": "Нақты уақыт режимінде ауа сапасын бақылау құралы.",
         "airkz_new": "✅ **Жаңартудағы жаңалықтар:**",
-        "airkz_list": "* Жаңа дизайн\n* ШРК асқандағы дабыл белгісі\n* Денсаулық сақтау министрлігі мақұлдаған сипаттамалар",
-        "img_err": "Сурет табылмады"
+        "airkz_list": "* Жаңа дизайн және интерфейс\n* ШРК асқандағы дабыл белгісі\n* Денсаулық сақтау министрлігі мақұлдаған сипаттамалар",
+        "users": "💡 10 000-нан астам белсенді пайдаланушы"
     },
     "en": {
         "title": "🌱 Environmental Quality Monitoring in Kazakhstan",
         "intro": "Collection, processing, and analysis of environmental data to ensure ecological safety for citizens.",
         "stats_h": "### 📊 Monitoring Statistics of «Kazhydromet»",
-        "air_h": "#### 🌬️ Ambient Air",
+        "air_title": "🌬️ Ambient Air",
         "air_list": "* **Settlements:** 70\n* **Monitoring posts:** 175 *(131 auto / 44 manual)*\n* **Pollutants:** 36 species\n* **Coverage:** 17 regions of RK",
-        "water_h": "#### 💧 Surface Waters",
+        "water_title": "💧 Surface Waters",
         "water_list": "* **Water bodies:** 134 *(88 rivers, 29 lakes, 13 reservoirs)*\n* **Hydrochemical sections:** 373\n* **Marine monitoring:** 1 (Caspian Sea)",
-        "soil_h": "#### 🏜️ Soil and Precipitation",
-        "soil_list": "* **Soil monitoring:** 101 settlements\n* **Precipitation:** 47 stations\n* **Snow cover:** 40 stations",
-        "radio_h": "#### ☢️ Radiation Monitoring",
+        "soil_title": "🏜️ Soil and Precipitation",
+        "soil_list": "* **Soil monitoring:** 101 settlements\n* **Precipitation:** 47 weather stations\n* **Snow cover:** 40 weather stations",
+        "radio_title": "☢️ Radiation Monitoring",
         "radio_list": "* **Gamma background:** 89 stations (daily)\n* **Radioactive pollution:** 43 stations\n* **Geography:** all 17 regions of Kazakhstan",
-        "footer_tip": "💡 Various types of posts measure a wide range of heavy metals and pollutants.",
-        "tabs": ["💨 UMW", "☀️ UV Index", "🏜️ Air Quality Forecast", "📱 AirKZ"],
+        "post_tip": "💡 Various types of posts measure a wide range of heavy metals and pollutants.",
+        "tab_names": ["💨 UMW", "☀️ UV Index", "🏜️ Air Quality Forecast", "📱 AirKZ"],
         "nmu_h": "### 🌬️ Unfavorable Meteorological Conditions Forecast",
         "nmu_card_h": "UMW Forecast",
-        "nmu_text": "<p><b>Unfavorable weather conditions (UMW)</b> — factors (calm, inversion) that lead to pollutant accumulation.</p><p>Forecast helps to take action: plants reduce emissions, citizens reduce outdoor time.</p>",
-        "uf_h": "☀️ UV Index Forecast",
-        "uf_text": "<p><b>Period:</b> May – September.</p><p>UV level forecast for the next <b>7 days</b> with recommendations for the public.</p>",
-        "silam_h": "🏜️ SILAM",
-        "silam_text": "Interactive air quality forecast model showing dynamic data for up to 48 hours.",
+        "nmu_body": "<b>Unfavorable meteorological conditions (UMW)</b> — factors that promote the accumulation of pollutants.<br><br>The forecast helps enterprises reduce emissions and residents reduce outdoor activity.",
+        "uf_card_h": "☀️ UV Index Forecast",
+        "uf_body": "<b>Period:</b> May – September.<br>A <b>7-day</b> UV level forecast with recommendations for the general public.",
+        "silam_card_h": "🏜️ SILAM",
+        "silam_body": "Pollutant concentration forecast model showing dynamics for up to 48 hours.",
         "airkz_h": "### 📱 AirKz Mobile App",
-        "airkz_info": "Real-time air quality monitoring tool for Kazakhstan residents.",
+        "airkz_sub": "A real-time air quality monitoring tool for residents.",
         "airkz_new": "✅ **What's new:**",
-        "airkz_list": "* New design\n* Alert sign for MPC exceedance\n* Pollutant descriptions from Ministry of Health",
-        "img_err": "Image not found"
+        "airkz_list": "* New design and interface\n* Alert sign for MPC exceedance\n* Pollutant descriptions approved by the Ministry of Health",
+        "users": "💡 Over 10,000 active users"
     }
 }
 
 # Инициализация языка
-curr = st.session_state.get('lang_code', 'ru')
-L = env_lang.get(curr, env_lang["ru"])
+lang = st.session_state.get('lang_code', 'ru')
+L = ui_eco.get(lang, ui_eco["ru"])
+
 
 
 with tabs[8]:
     st.title(L["title"])
     
-    # CSS (оставляем без изменений)
     st.markdown("""
         <style>
-        .stCard { background-color: white; padding: 20px; border-radius: 15px; 
-                  border-left: 5px solid #007bff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .stCard { background-color: white; padding: 20px; border-radius: 15px; border-left: 5px solid #007bff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
         </style>
         """, unsafe_allow_html=True)
 
@@ -12985,56 +12984,58 @@ with tabs[8]:
 
     col_left, col_right = st.columns(2)
     with col_left:
-        st.markdown(L["air_h"])
+        st.markdown(f"#### {L['air_title']}")
         st.markdown(L["air_list"])
-        st.markdown(L["water_h"])
+        st.markdown(f"#### {L['water_title']}")
         st.markdown(L["water_list"])
 
     with col_right:
-        st.markdown(L["soil_h"])
+        st.markdown(f"#### {L['soil_title']}")
         st.markdown(L["soil_list"])
-        st.markdown(L["radio_h"])
+        st.markdown(f"#### {L['radio_title']}")
         st.markdown(L["radio_list"])
 
-    st.info(L["footer_tip"])
+    st.info(L["post_tip"])
     st.divider()
 
-    # Вложенные вкладки
-    t1, t2, t3, t4 = st.tabs(L["tabs"])
+    # Вложенные вкладки (используем названия из словаря)
+    tab1, tab2, tab3, tab4 = st.tabs(L["tab_names"])
 
-    with t1:
+    with tab1:
         st.markdown(L["nmu_h"])
         col_a, col_b = st.columns([1, 2])
         with col_a:
-            st.markdown(f"""<div class="stCard"><h4>{L['nmu_card_h']}</h4>{L['nmu_text']}</div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="stCard"><h4>{L['nmu_card_h']}</h4><p>{L['nmu_body']}</p></div>""", unsafe_allow_html=True)
         with col_b:
             img_data = get_base64_image("nmu.png")
             if img_data:
                 st.markdown(f'<img src="data:image/png;base64,{img_data}" style="width:70%; border-radius:8px; border:1px solid #ddd;">', unsafe_allow_html=True)
-            else:
-                st.warning(L["img_err"])
 
-    with t2:
+    with tab2:
         col_text, col_img = st.columns([1, 2])
         with col_text:
-            st.markdown(f"""<div class="stCard"><h4>{L['uf_h']}</h4>{L['uf_text']}</div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="stCard"><h4>{L['uf_card_h']}</h4><p>{L['uf_body']}</p></div>""", unsafe_allow_html=True)
         with col_img:
             st.image("uf.gif", use_container_width=True)
 
-    with t3:
+    with tab3:
         col_text, col_b = st.columns([1, 2])
         with col_text:
-            st.markdown(f"""<div class="stCard"><h4>{L['silam_h']}</h4><p>{L['silam_text']}</p></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="stCard"><h4>{L['silam_card_h']}</h4><p>{L['silam_body']}</p></div>""", unsafe_allow_html=True)
         with col_b:
             st.components.v1.iframe("https://www.kazhydromet.kz/vc/silam/", height=600, scrolling=True)
 
-    with t4:
+    with tab4:
         st.markdown(L["airkz_h"])
-        st.write(L["airkz_info"])
+        st.write(L["airkz_sub"])
         st.success(L["airkz_new"])
         st.markdown(L["airkz_list"])
+        st.info(L["users"])
 
     st.markdown("---")
+    
+    
+    
     
     
     
