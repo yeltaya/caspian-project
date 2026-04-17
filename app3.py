@@ -7343,7 +7343,7 @@ with tabs[5]:
                     {"Река / Створ": "р. Токташ – с. Жаугаш Батыра", "Норма": 1.26, "Пик": "2.23 (2016)", "Мин": "0.67 (2022)", "Динамика": "↘ Снижение"},
                     {"Река / Створ": "р. Аксу – а. Аксу", "Норма": 15.3, "Пик": "32.0 (2016)", "Мин": "2.81 (2024)", "Динамика": "↘ Снижение"},
                     {"Река / Створ": "р. Карабалта – а. Баласагун", "Норма": 1.40, "Пик": "4.0 (2016)", "Мин": "0.15 (2024)", "Динамика": "↔ Стабильно"}
-            ]
+        ]
         },
             "Тобыл-Торгайский ВХБ": {
                 "photo": "Тобыл-Торгай.tiff",
@@ -7390,20 +7390,16 @@ with tabs[5]:
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
-            img_col, info_col = st.columns([2.5, 1])
+            
+            img_col, info_col = st.columns([3, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    st.image(
-                        photo_path, 
-                        use_container_width=True, 
-                        caption=f"{L['photo_caption']}: {lang_content['name']}"
-                    )
+                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
                 else:
-                    st.info(f"{L['wait_photo']} {lang_content['name']}")
-                    st.image("https://via.placeholder.com/800x400?text=Photo+Missing", use_container_width=True)
-                    
-                    
+                    st.info(f"📸 Фото для {name} ожидается")
+                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
+            
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
