@@ -30,6 +30,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
+# BASE_DIR определяется один раз здесь и используется всеми вкладками
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # --- ГЛОБАЛЬНЫЕ КЕШИРОВАННЫЕ ХЕЛПЕРЫ ---
 # Один кеш для всех base64 — убирает десятки повторных чтений с диска на каждый rerun
 @st.cache_data(show_spinner=False)
