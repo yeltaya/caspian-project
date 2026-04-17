@@ -12783,26 +12783,34 @@ with tabs[7]:
 
     df = load_data()
 
+
     if df is not None:
         # --- ПОДГОТОВКА СПИСКА ОБЛАСТЕЙ ---
         excluded = ['Год', 'высота макс', 'сред высота снега']
         region_options = [col for col in df.columns if col not in excluded]
 
+        # --- ДОБАВЬТЕ ЭТИ СТРОКИ (Создание переменных) ---
+        st.sidebar.markdown("### ⚙️ Настройки графика")
+        show_avg = st.sidebar.checkbox("Показать среднее по РК", value=True)
+        show_total_max = st.sidebar.checkbox("Показать абс. максимум РК", value=False)
+        # --------------------------------------------------
+        
+        
+
         # --- ОСНОВНОЙ МАКЕТ (2 Колонки) ---
         col_chart, col_analysis = st.columns([2, 1])
 
         with col_chart:
-            # Выбор областей прямо над графиком для удобства
+            # Выбор областей прямо над графиком
             selected_regions = st.multiselect(
                 "Выберите области для сравнения:", 
                 options=region_options, 
                 default=[region_options[0]] if region_options else None
             )
 
-            # Создание динамического графика Plotly
             fig = go.Figure()
 
-            # 1. Линия среднего (если включено)
+            # Теперь show_avg определена и ошибки не будет
             if show_avg:
                 fig.add_trace(go.Scatter(
                     x=df['Год'], y=df['сред высота снега'],
@@ -12811,7 +12819,6 @@ with tabs[7]:
                     fill='tozeroy', fillcolor='rgba(200, 200, 200, 0.2)'
                 ))
 
-            # 2. Линии выбранных областей
             for region in selected_regions:
                 fig.add_trace(go.Scatter(
                     x=df['Год'], y=df[region],
@@ -12820,13 +12827,14 @@ with tabs[7]:
                     hovertemplate='Год: %{x}<br>Высота: %{y} см'
                 ))
 
-            # 3. Линия максимума (если включено)
+            # Теперь show_total_max тоже определена
             if show_total_max:
                 fig.add_trace(go.Scatter(
                     x=df['Год'], y=df['высота макс'],
                     name='Абс. максимум РК',
                     line=dict(color='red', width=1, dash='dot')
                 ))
+                
 
             fig.update_layout(
                 hovermode="x unified",
