@@ -7217,7 +7217,7 @@ with tabs[5]:
                     }
                 },
                 "kk": {
-                    "name": "Ертіс СХБ",
+                    "name": "Ертіс СШБ",
                     "artery": "Ертіс өзені – Қазақстандағы ең мол сулы өзен...",
                     "objects": ">82 су қоймасы мен тоғандар",
                     "rivers": {
@@ -7230,7 +7230,7 @@ with tabs[5]:
                     }
                 },
                 "en": {
-                    "name": "Ertis BWMA",
+                    "name": "Ertis WMB",
                     "artery": "The Ertis River is the largest water artery of Kazakhstan...",
                     "objects": ">82 reservoirs and ponds",
                     "rivers": {
@@ -7273,7 +7273,7 @@ with tabs[5]:
                     }
                 },
                 "kk": {
-                    "name": "Арал-Сырдария СХБ",
+                    "name": "Арал-Сырдария СШБ",
                     "artery": "Сырдария өзені – Орталық Азияның аридті аймағындағы...",
                     "objects": "33-тен астам су қоймасы",
                     "rivers": {
@@ -7284,7 +7284,7 @@ with tabs[5]:
                     }
                 },
                 "en": {
-                    "name": "Aral-Syrdarya BWMA",
+                    "name": "Aral-Syrdarya WMB",
                     "artery": "The Syr Darya river is a major transboundary river...",
                     "objects": "Over 33 reservoirs and ponds",
                     "rivers": {
@@ -7320,7 +7320,7 @@ with tabs[5]:
                     }
                 },
                 "kk": {
-                    "name": "Жайық-Каспий СХБ",
+                    "name": "Жайық-Каспий СШБ",
                     "artery": "Жайық өзені – Каспий теңізі алабының трансшекаралық өзені...",
                     "rivers": {
                         "ilek": {"name": "Елек ө. – Ақтөбе қ.", "trend": "↘ Төмендеу"},
@@ -7328,7 +7328,7 @@ with tabs[5]:
                     }
                 },
                 "en": {
-                    "name": "Zhayyk-Caspian BWMA",
+                    "name": "Zhayyk-Caspian WMB",
                     "artery": "The Zhayyk river is a transboundary river of the Caspian Sea...",
                     "rivers": {
                         "ilek": {"name": "Ilek river – Aktobe city", "trend": "↘ Decrease"},
@@ -7364,7 +7364,7 @@ with tabs[5]:
                         }
                     },
                     "kk": {
-                        "name": "Есіл СХБ",
+                        "name": "Есіл СШБ",
                         "artery": "Есіл өзені – негізінен қар суымен қоректенетін жазық өзені...",
                         "objects": "50-ге жуық су қоймасы.",
                         "rivers": {
@@ -7374,7 +7374,7 @@ with tabs[5]:
                         }
                     },
                     "en": {
-                        "name": "Esil BWMA",
+                        "name": "Esil WMB",
                         "artery": "The Esil River is a lowland river of the steppe zone...",
                         "objects": "About 50 reservoirs.",
                         "rivers": {
@@ -7468,7 +7468,7 @@ with tabs[5]:
                         }
                     },
                     "kk": {
-                        "name": "Шу-Талас СХБ",
+                        "name": "Шу-Талас СШБ",
                         "artery": "Шу өзені – бастауын Қырғызстан тауларынан алатын трансшекаралық өзен...",
                         "objects": "21-ден астам су қоймасы",
                         "rivers": {
@@ -7478,7 +7478,7 @@ with tabs[5]:
                         }
                     },
                     "en": {
-                        "name": "Shu-Talas BWMA",
+                        "name": "Shu-Talas WMB",
                         "artery": "The Shu River is a transboundary river originating in Kyrgyzstan...",
                         "objects": "Over 21 reservoirs",
                         "rivers": {
@@ -7516,7 +7516,7 @@ with tabs[5]:
                         }
                     },
                     "kk": {
-                        "name": "Тобыл-Торғай СХБ",
+                        "name": "Тобыл-Торғай СШБ",
                         "artery": "Тобыл өзені – Ертістің сол жақ саласы, далалық аймақта қалыптасады...",
                         "objects": "180-190 су қоймасы мен тоғандар",
                         "rivers": {
@@ -7526,7 +7526,7 @@ with tabs[5]:
                         }
                     },
                     "en": {
-                        "name": "Tobyl-Torgai BWMA",
+                        "name": "Tobyl-Torgai WMB",
                         "artery": "The Tobyl River is a left-bank tributary of the Ertis river...",
                         "objects": "180-190 reservoirs and ponds",
                         "rivers": {
@@ -7586,38 +7586,6 @@ with tabs[5]:
             "photo_caption": "Basin view"
         }
     }
-
-    # 1. Словарь подписей интерфейса (вынесите его за пределы цикла, в начало скрипта)
-    UI_LABELS = {
-        "ru": {
-            "area": "Площадь", "gp": "ГП в ВХБ", "rivers_total": "Всего рек",
-            "local_res": "💧 Местные ресурсы", "inflow": "💧 Приток",
-            "artery": "🌊 Артерия:", "objects": "🏢 Объекты:",
-            "table_title": "📋 Сводная таблица гидрологических показателей",
-            "col_river": "🌊 Река / Створ", "col_norm": "Норма (W)", 
-            "col_max": "🚀 Максимум", "col_min": "📉 Минимум", "col_trend": "Тренд",
-            "photo_caption": "Вид бассейна", "wait_photo": "📸 Фото ожидается", "no_data": "Данные не внесены"
-        },
-        "kk": {
-            "area": "Ауданы", "gp": "ГП саны", "rivers_total": "Барлық өзендер",
-            "local_res": "💧 Жергілікті ресурстар", "inflow": "💧 Келетін су",
-            "artery": "🌊 Артерия:", "objects": "🏢 Объектілер:",
-            "table_title": "📋 Гидрологиялық көрсеткіштердің жиынтық кестесі",
-            "col_river": "🌊 Өзен / Тұстама", "col_norm": "Норма (W)", 
-            "col_max": "🚀 Максимум", "col_min": "📉 Минимум", "col_trend": "Динамика",
-            "photo_caption": "Алап көрінісі", "wait_photo": "📸 Фото күтілуде", "no_data": "Мәліметтер жоқ"
-        },
-        "en": {
-            "area": "Area", "gp": "Hydroposts", "rivers_total": "Total rivers",
-            "local_res": "💧 Local resources", "inflow": "💧 Inflow",
-            "artery": "🌊 Artery:", "objects": "🏢 Objects:",
-            "table_title": "📋 Summary table of hydrological indicators",
-            "col_river": "🌊 River / Section", "col_norm": "Normal (W)", 
-            "col_max": "🚀 Maximum", "col_min": "📉 Minimum", "col_trend": "Trend",
-            "photo_caption": "Basin view", "wait_photo": "📸 Photo pending", "no_data": "No data available"
-        }
-    }
-
     # Определяем текущий язык
     lang = st.session_state.get('lang', 'ru')
     L = UI_LABELS[lang]
