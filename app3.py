@@ -7335,6 +7335,7 @@ with tabs[5]:
                         "zhayyk_yanvarcevo": {"name": "Zhayyk river – Yanvartsevo", "trend": "↘ Decrease"}
                     }
                 }
+            }
         },
             "esil": {
                 "stats": {
