@@ -13841,261 +13841,216 @@ with tabs[8]:
     
         
   
+lang_int = {
+    "ru": {
+        "header": "🌐 Международное сотрудничество",
+        "quote": "«Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».",
+        "stats_title": "Ключевые показатели за 2024-2025 гг.",
+        "m1_val": "5", "m1_label": "Международных меморандумов", "m1_sub": "заключено в 2025 году",
+        "m2_val": ">50", "m2_label": "Специалистов обучено", "m2_sub": "онлайн и офлайн форматах",
+        "m3_val": "25+", "m3_label": "Встреч с партнерами", "m3_sub": "для обмена опытом и данными",
+        "wmo_title": "📍 Ключевые направления работы с ВМО",
+        "wmo_1_h": "📊 Региональный центр по паводкам (CARFFGS)",
+        "wmo_1_body": "**Функции Центра по быстроразвивающимся паводкам в ЦА.**\n* Оперативный мониторинг и прогнозирование.\n* Координация усилий стран региона.",
+        "wmo_2_h": "💧 Гидрологический мониторинг (HydroSoS)",
+        "wmo_2_body": "**Инициатива HydroSoS:**\n* Мониторинг состояния водных ресурсов.\n* Оценка речного стока для устойчивого водопользования.",
+        "wmo_3_h": "📡 Интегрированная система ВМО (WIGOS)",
+        "wmo_3_body": "**Региональный Центр WIGOS:**\n* Пилотный проект: Казахстан, Россия и Беларусь.\n* Повышение качества наблюдений и обмена данными.",
+        "wmo_4_h": "📢 Глобальная инициатива (EW4All)",
+        "wmo_4_body": "**Роль НГМС РК:**\n* Председатель Целевой группы для Региона II (Азия).\n* Региональный участник в Восточной Европе и ЦА.",
+        "org_details": "📋 Детализация ключевых проектов по организациям",
+        "platform_h": "🚀 Казгидромет — международная образовательная платформа",
+        "platform_sub": "В отчетном периоде проведены ключевые мероприятия:",
+        "platform_list": "<li><b>Семинар ВМО:</b> Управление климатическими данными</li><li><b>Семинар GIZ:</b> Модель SWIM для трансграничных бассейнов</li><li><b>Воркшоп:</b> Приложение Snowmapper</li>",
+        "wigos_banner": "### 🏆 Субрегиональный Центр ИГСНВ (WIGOS) RAVI / RAII\n**Статус:** С 1 января 2026 года Казахстан официально стал субрегиональным центром ВМО.",
+        "tasks_h": "🎯 Основные задачи РЦИ",
+        "region_h": "🌍 Значение для региона",
+        "task_list": [
+            ("🗂️ Централизация", "Доступ к гидрометаданным стран Центральной Азии."),
+            ("📈 Аналитика", "Отчеты для международных организаций."),
+            ("💧 Мониторинг", "Контроль водных ресурсов и атмосферы."),
+            ("🧠 Технологии", "Трансфер знаний между странами.")
+        ]
+    },
+    "kk": {
+        "header": "🌐 Халықаралық ынтымақтастық",
+        "quote": "«Халықаралық ынтымақтастық біздің қызметіміздің негізі болып табылады, өңірдің климаттық және су қауіпсіздігін қамтамасыз ету үшін жаһандық тәжірибе мен озық технологияларды біріктіреді».",
+        "stats_title": "2024-2025 жж. негізгі көрсеткіштер",
+        "m1_val": "5", "m1_label": "Халықаралық меморандум", "m1_sub": "2025 жылы жасалды",
+        "m2_val": ">50", "m2_label": "Маман оқытылды", "m2_sub": "онлайн және офлайн форматта",
+        "m3_val": "25+", "m3_label": "Серіктестермен кездесу", "m3_sub": "тәжірибе алмасу үшін",
+        "wmo_title": "📍 ДМҰ-мен жұмыстың негізгі бағыттары",
+        "wmo_1_h": "📊 Тасқын жөніндегі өңірлік орталық (CARFFGS)",
+        "wmo_1_body": "**Орталық Азиядағы жедел тасқындар жөніндегі орталық.**\n* Жедел мониторинг және болжау.\n* Өңір елдерінің күш-жігерін үйлестіру.",
+        "wmo_2_h": "💧 Гидрологиялық мониторинг (HydroSoS)",
+        "wmo_2_body": "**HydroSoS бастамасы:**\n* Су ресурстарының жай-күйін мониторингілеу.\n* Тұрақты су пайдалану үшін өзен ағысын бағалау.",
+        "wmo_3_h": "📡 ДМҰ интеграцияланған жүйесі (WIGOS)",
+        "wmo_3_body": "**WIGOS өңірлік орталығы:**\n* Пилоттық жоба: Қазақстан, Ресей және Беларусь.\n* Мәлімет алмасу сапасын арттыру.",
+        "wmo_4_h": "📢 Жаһандық бастама (EW4All)",
+        "wmo_4_body": "**ҚР ГМҚ рөлі:**\n* II өңір (Азия) үшін Мақсатты топтың төрағасы.\n* Шығыс Еуропа мен ОА-дағы өңірлік қатысушы.",
+        "org_details": "📋 Ұйымдар бойынша негізгі жобалар",
+        "platform_h": "🚀 Қазгидромет — халықаралық білім беру платформасы",
+        "platform_sub": "Есепті кезеңде келесі іс-шаралар өткізілді:",
+        "platform_list": "<li><b>ДМҰ семинары:</b> Климаттық деректерді басқару</li><li><b>GIZ семинары:</b> Трансшекаралық бассейндерге арналған SWIM моделі</li><li><b>Воркшоп:</b> Snowmapper қосымшасы</li>",
+        "wigos_banner": "### 🏆 ИГСНВ (WIGOS) RAVI / RAII Субрегионалдық орталығы\n**Мәртебе:** 2026 жылғы 1 қаңтардан бастап Қазақстан ресми түрде ДМҰ субрегионалдық орталығы болды.",
+        "tasks_h": "🎯 Орталықтың негізгі міндеттері",
+        "region_h": "🌍 Өңір үшін маңызы",
+        "task_list": [
+            ("🗂️ Орталықтандыру", "Орталық Азия елдерінің деректеріне қолжетімділік."),
+            ("📈 Аналитика", "Халықаралық ұйымдар үшін есептер дайындау."),
+            ("💧 Мониторинг", "Су ресурстары мен атмосфераны бақылау."),
+            ("🧠 Технологиялар", "Елдер арасында білім трансферті.")
+        ]
+    },
+    "en": {
+        "header": "🌐 International Cooperation",
+        "quote": "“International cooperation is the foundation of our activities, bringing together global experience and advanced technologies to ensure climate and water security in the region.”",
+        "stats_title": "Key Indicators for 2024-2025",
+        "m1_val": "5", "m1_label": "International Memorandums", "m1_sub": "signed in 2025",
+        "m2_val": ">50", "m2_label": "Specialists Trained", "m2_sub": "online and offline formats",
+        "m3_val": "25+", "m3_label": "Partner Meetings", "m3_sub": "for data and experience exchange",
+        "wmo_title": "📍 Key Areas of Work with WMO",
+        "wmo_1_h": "📊 Regional Flash Flood Centre (CARFFGS)",
+        "wmo_1_body": "**Functions of the Flash Flood Centre in CA.**\n* Operational monitoring and forecasting.\n* Coordination of regional efforts.",
+        "wmo_2_h": "💧 Hydrological Monitoring (HydroSoS)",
+        "wmo_2_body": "**HydroSoS Initiative:**\n* Monitoring and forecasting water resources state.\n* River discharge assessment for sustainable use.",
+        "wmo_3_h": "📡 Integrated WMO System (WIGOS)",
+        "wmo_3_body": "**Regional WIGOS Centre:**\n* Pilot project: Kazakhstan, Russia, and Belarus.\n* Improving observation quality and data exchange.",
+        "wmo_4_h": "📢 Global Initiative (EW4All)",
+        "wmo_4_body": "**Role of NHMS of RK:**\n* Chair of the Task Team for Region II (Asia).\n* Regional participant in Eastern Europe and CA.",
+        "org_details": "📋 Key Projects by Organizations",
+        "platform_h": "🚀 Kazhydromet — International Educational Platform",
+        "platform_sub": "Key international events held during the reporting period:",
+        "platform_list": "<li><b>WMO Seminar:</b> Climate Data Management</li><li><b>GIZ Seminar:</b> SWIM model for transboundary basins</li><li><b>Workshop:</b> Snowmapper application practice</li>",
+        "wigos_banner": "### 🏆 Sub-regional WIGOS Centre RAVI / RAII\n**Status:** Since January 1, 2026, Kazakhstan officially became a WMO sub-regional center.",
+        "tasks_h": "🎯 Key Tasks of the Center",
+        "region_h": "🌍 Regional Significance",
+        "task_list": [
+            ("🗂️ Centralization", "Access to hydromet data of Central Asian countries."),
+            ("📈 Analytics", "Reports for international organizations."),
+            ("💧 Monitoring", "Control of water resources and atmosphere."),
+            ("🧠 Technology", "Knowledge transfer between regional countries.")
+        ]
+    }
+}
+
+# Текущий язык
+curr_lang = st.session_state.get('lang_code', 'ru')
+L = lang_int.get(curr_lang, lang_int["ru"])
+
 with tabs[9]:
-    st.header("🌐 Международное сотрудничество")
+    st.header(L["header"])
     
-    # CSS: Немного уменьшим min-height и padding, так как карточки в одну строку будут уже
     st.markdown("""
         <style>
         [data-testid="column"] {
-            border: 1px solid #e6e9ef;
-            border-radius: 10px;
-            padding: 10px !important;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-            transition: transform 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 180px; 
+            border: 1px solid #e6e9ef; border-radius: 10px; padding: 10px !important;
+            background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            transition: transform 0.2s ease; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; min-height: 180px; 
         }
-        
-        [data-testid="column"]:hover {
-            transform: translateY(-3px);
-            border-color: #1f4e78;
-        }
+        [data-testid="column"]:hover { transform: translateY(-3px); border-color: #1f4e78; }
+        .stExpander { border: 1px solid #e6e9ef !important; border-radius: 8px !important; margin-bottom: 10px !important; }
         </style>
     """, unsafe_allow_html=True)
 
-    # Цитата (без изменений)
-    st.markdown("""
+    # Цитата
+    st.markdown(f"""
         <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 30px; background-color: #f8f9fa; padding: 15px;">
             <p style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4; margin: 0; font-size: 1.1rem;">
-                «Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».
+                {L['quote']}
             </p>
         </div>
     """, unsafe_allow_html=True)
 
     partners = [
-        {"name": "ВМО", "image": "wmo_logo.png"},
-        {"name": "МСГ-СНГ", "image": "cis_logo.png"},
-        {"name": "КАСПКОМ", "image": "caspcom_logo.png"},
-        {"name": "ПРООН", "image": "undp_logo.png"},
-        {"name": "Всемирный банк", "image": "worldbank_logo.png"},
+        {"name": "WMO", "image": "wmo_logo.png"},
+        {"name": "MSG-CIS", "image": "cis_logo.png"},
+        {"name": "CASPCOM", "image": "caspcom_logo.png"},
+        {"name": "UNDP", "image": "undp_logo.png"},
+        {"name": "World Bank", "image": "worldbank_logo.png"},
         {"name": "EUMETSAT", "image": "eumetsat_logo.png"}
     ]
 
-    # Создаем ровно столько колонок, сколько партнеров в списке
     cols = st.columns(len(partners))
-
     for j, partner in enumerate(partners):
         with cols[j]:
-            # Название организации
-            st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; font-size: 0.8rem; margin-bottom: 8px; height: 30px; display: flex; align-items: center; justify-content: center;">{partner["name"]}</div>', unsafe_allow_html=True)
-            
-            # Логотип
+            st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; font-size: 0.8rem; margin-bottom: 8px;">{partner["name"]}</div>', unsafe_allow_html=True)
             try:
-                # В одну строку лучше использовать use_container_width=True, 
-                # чтобы они автоматически подстраивались под узкие колонки
                 st.image(partner["image"], use_container_width=True)
             except:
-                st.caption(f"Ошибка {partner['name']}")
+                st.caption("Logo")
                 
-# Добавляем разделитель или небольшой отступ
-    st.write("---")
+    st.divider()
     
-    # Заголовок для блока достижений
-    st.markdown("<h4 style='text-align: center; color: #1f4e78; margin-bottom: 25px;'>Ключевые показатели за 2024-2025 гг.</h4>", unsafe_allow_html=True)
+    st.markdown(f"<h4 style='text-align: center; color: #1f4e78; margin-bottom: 25px;'>{L['stats_title']}</h4>", unsafe_allow_html=True)
 
-    # Создаем 3 колонки для метрик
     m_col1, m_col2, m_col3 = st.columns(3)
+    for col, m in zip([m_col1, m_col2, m_col3], [("m1_val", "m1_label", "m1_sub"), ("m2_val", "m2_label", "m2_sub"), ("m3_val", "m3_label", "m3_sub")]):
+        with col:
+            st.markdown(f"""
+                <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px; height: 100%;">
+                    <h2 style="color: #1f4e78; margin: 0;">{L[m[0]]}</h2>
+                    <p style="color: #555; font-weight: bold; margin: 0;">{L[m[1]]}</p>
+                    <p style="color: #888; font-size: 0.8rem; margin: 0;">{L[m[2]]}</p>
+                </div>
+            """, unsafe_allow_html=True)
 
-    with m_col1:
-        st.markdown("""
-            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
-                <h2 style="color: #1f4e78; margin: 0;">5</h2>
-                <p style="color: #555; font-weight: bold; margin: 0;">Международных меморандумов</p>
-                <p style="color: #888; font-size: 0.8rem; margin: 0;">заключено в 2025 году</p>
-            </div>
-        """, unsafe_allow_html=True)
+    st.divider()
+    st.subheader(L["wmo_title"])
 
-    with m_col2:
-        st.markdown("""
-            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
-                <h2 style="color: #1f4e78; margin: 0;">>50</h2>
-                <p style="color: #555; font-weight: bold; margin: 0;">Специалистов обучено</p>
-                <p style="color: #888; font-size: 0.8rem; margin: 0;">онлайн и офлайн форматах</p>
-            </div>
-        """, unsafe_allow_html=True)
+    r1_1, r1_2 = st.columns(2)
+    with r1_1:
+        with st.expander(L["wmo_1_h"], expanded=True):
+            st.markdown(L["wmo_1_body"])
+    with r1_2:
+        with st.expander(L["wmo_2_h"], expanded=True):
+            st.markdown(L["wmo_2_body"])
 
-    with m_col3:
-        st.markdown("""
-            <div style="text-align: center; background-color: #f0f4f8; padding: 20px; border-radius: 10px;">
-                <h2 style="color: #1f4e78; margin: 0;">25+</h2>
-                <p style="color: #555; font-weight: bold; margin: 0;">Встреч с партнерами</p>
-                <p style="color: #888; font-size: 0.8rem; margin: 0;">для обмена опытом и данными</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        
-    st.write("---")
+    r2_1, r2_2 = st.columns(2)
+    with r2_1:
+        with st.expander(L["wmo_3_h"], expanded=True):
+            st.markdown(L["wmo_3_body"])
+    with r2_2:
+        with st.expander(L["wmo_4_h"], expanded=True):
+            st.info(L["wmo_4_body"])
+
+    st.divider()
     
-    st.subheader("📍 Ключевые направления работы с ВМО")
-
-    # Создаем первый ряд колонок
-    row1_col1, row1_col2 = st.columns(2)
-
-    with row1_col1:
-        with st.expander("📊 Региональный центр по паводкам (CARFFGS)", expanded=True):
-            st.markdown("""
-            **Выполнение функций Регионального центра по быстроразвивающимся паводкам в странах ЦА.**
-            * Обеспечение оперативного мониторинга и прогнозирования паводковых явлений.
-            * Координация усилий стран Центральноазиатского региона.
-            """)
-
-    with row1_col2:
-        with st.expander("💧 Гидрологический мониторинг (HydroSoS)", expanded=True):
-            st.markdown("""
-            **Реализация инициативы HydroSoS:**
-            * Мониторинг и прогнозирование состояния водных ресурсов.
-            * Оценка водных ресурсов по речному стоку для обеспечения устойчивого водопользования.
-            """)
-
-    # Создаем второй ряд колонок
-    row2_col1, row2_col2 = st.columns(2)
-
-    with row2_col1:
-        with st.expander("📡 Интегрированная система ВМО (WIGOS)", expanded=True):
-            st.markdown("""
-            **Совместный Региональный Центр WIGOS (Суб-регионы VI и II):**
-            * Пилотный проект: Казахстан, Россия и Беларусь (по ротации).
-            * Повышение качества наблюдений и обмена данными.
-            """)
-
-    with row2_col2:
-        with st.expander("📢 Глобальная инициатива (EW4All)", expanded=True):
-            st.info("""
-            **Ключевая роль НГМС РК:**
-            * **Председатель Целевой группы** для Региона II (Азия).
-            * Региональный участник в Восточной Европе и ЦА.
-            """)
-
-    # Стилизация для аккуратного вида
-    st.markdown("""
-        <style>
-        .stExpander {
-            border: 1px solid #e6e9ef !important;
-            border-radius: 8px !important;
-            margin-bottom: 10px !important;
-            height: 100%; /* Чтобы блоки в одном ряду были одинаковой высоты */
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    
-    
-    st.write("---")
-    st.subheader("📋 Детализация ключевых проектов по организациям")
-
-    # Используем колонки для компактного размещения карточек организаций
-    org_col1, org_col2 = st.columns(2)
-
-    with org_col1:
-        with st.expander("🏛️ ЮНЕСКО", expanded=False):
-            st.markdown("""
-            * **Проект по криосфере:** Активное участие в исследованиях ледников и снежного покрова.
-            * **Проект OUTLAST:** Разработка многосекторальной глобальной системы прогнозирования опасности засухи.
-            """)
-        
-        with st.expander("🌿 GIZ (Германия)", expanded=False):
-            st.markdown("""
-            * **Зеленая Центральная Азия:** Управление водными ресурсами с учетом климатических изменений.
-            * **German Water Partnership:** Технологическое сотрудничество в водном секторе.
-            """)
-
-    with org_col2:
-        with st.expander("🌍 Адаптационный Фонд", expanded=False):
-            st.markdown("""
-            * **Региональное управление засухами:** Интегрированные программы для стран Центральной Азии.
-            * **Межрегиональное взаимодействие:** Управление засухами для стран Южного Кавказа, Казахстана и Молдовы.
-            """)
-        
-        with st.expander("🤝 Двустороннее сотрудничество (2024-2027)", expanded=False):
-            st.info("""
-            Реализация **Производственных Программ** по обмену данными, опытом и методологиями с:
-            * 🇷🇺 Россия | 🇧🇾 Беларусь
-            * 🇺🇿 Узбекистан | 🇹🇯 Таджикистан
-            * 🇦🇿 Азербайджан
-            """)
-
-# Специальный блок: Казгидромет как площадка (Светлый вариант без синего фона)
-    st.write("")
-    st.markdown("""
+    # Секция Платформы
+    st.markdown(f"""
         <div style="border: 2px solid #1f4e78; padding: 25px; border-radius: 12px; background-color: #fcfdfe;">
             <h4 style="margin-top: 0; color: #1f4e78; border-bottom: 1px solid #e6e9ef; padding-bottom: 10px;">
-                🚀 Казгидромет — международная образовательная платформа
+                {L['platform_h']}
             </h4>
-            <p style="color: #333; margin-top: 15px;">В отчетном периоде на базе РГП «Казгидромет» проведены ключевые международные мероприятия:</p>
+            <p style="color: #333; margin-top: 15px;">{L['platform_sub']}</p>
             <ul style="list-style-type: none; padding-left: 0;">
-                <li style="margin-bottom: 10px;">
-                    <span style="color: #1f4e78;">📍</span> <b>Семинар ВМО:</b> Управление климатическими данными 
-                    <br><small style="color: #666; padding-left: 25px;">(Эксперты из 8 стран: Турция, Германия, Франция, Канада, Бразилия, Австралия, Индонезия)</small>
-                </li>
-                <li style="margin-bottom: 10px;">
-                    <span style="color: #1f4e78;">📍</span> <b>Семинар GIZ:</b> Внедрение гидрологической модели SWIM для трансграничных бассейнов ЦА
-                </li>
-                <li style="margin-bottom: 10px;">
-                    <span style="color: #1f4e78;">📍</span> <b>Технологический воркшоп:</b> Практическое применение приложения Snowmapper
-                </li>
+                {L['platform_list']}
             </ul>
         </div>
     """, unsafe_allow_html=True)
-    
-    
-    st.write("---")   
 
-    # Основной баннер нового статуса
-    st.info("""
-    ### 🏆 Субрегиональный Центр ИГСНВ (WIGOS) RAVI / RAII
-    **Статус:** С 1 января 2026 года Казахстан официально стал субрегиональным центром в рамках пилотного проекта Всемирной метеорологической организации (ВМО).
-    """)
+    st.divider()
 
-    # Разделение на Задачи и Страны-участницы
-    col_tasks, col_regions = st.columns([1.5, 1])
+    st.info(L["wigos_banner"])
 
-    with col_tasks:
-        st.subheader("🎯 Основные задачи РЦИ")
-        
-        tasks = [
-            ("🗂️ Централизация данных", "Обеспечение доступа к гидрометеорологическим и экологическим данным стран Центральной Азии."),
-            ("📈 Аналитика и прогнозы", "Формирование отчетов для региональных и международных организаций."),
-            ("💧 Совместный мониторинг", "Поддержка проектов по контролю водных ресурсов и атмосферы."),
-            ("🧠 Обмен технологиями", "Трансфер знаний и современных технологий между странами региона.")
-        ]
-        
-        for title, desc in tasks:
+    col_t, col_r = st.columns([1.5, 1])
+    with col_t:
+        st.subheader(L["tasks_h"])
+        for title, desc in L["task_list"]:
             with st.expander(title, expanded=True):
                 st.write(desc)
 
-    with col_regions:
-        st.subheader("🌍 Значение для региона")
-        st.write("Центр координирует взаимодействие и обмен данными между следующими странами:")
-        
-        # Список стран с флагами для визуальной привлекательности
-        countries = [
-            "🇦🇲 Армения", "🇧🇾 Беларусь", "🇰🇿 Казахстан", 
-            "🇷🇺 РФ", "🇰🇬 Кыргызстан", "🇹🇲 Туркменистан", 
-            "🇹🇯 Таджикистан", "🇺🇿 Узбекистан"
-        ]
-        
-        # Вывод стран списком в стилизованном контейнере
-        st.markdown(
-            f"""
+    with col_r:
+        st.subheader(L["region_h"])
+        countries = ["🇦🇲 Armenia", "🇧🇾 Belarus", "🇰🇿 Kazakhstan", "🇷🇺 Russia", "🇰🇬 Kyrgyzstan", "🇹🇲 Turkmenistan", "🇹🇯 Tajikistan", "🇺🇿 Uzbekistan"]
+        st.markdown(f"""
             <div style="background-color: rgba(31, 78, 121, 0.1); padding: 20px; border-radius: 10px; border: 1px solid #1f4e79;">
                 {'<br>'.join([f'<b style="color: #5B9BD5;">•</b> {c}' for c in countries])}
             </div>
-            """, 
-            unsafe_allow_html=True
-        )
+        """, unsafe_allow_html=True)
+        
+
+
+
 
