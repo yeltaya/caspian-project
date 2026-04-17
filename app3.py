@@ -3554,7 +3554,16 @@ with tabs[1]:
     draw_block(a_col2, "agro_btn_2", t["block2_title"], "📉", t["block2_desc"], t["block2_list"], "Soil")
     draw_block(a_col3, "agro_btn_3", t["block3_title"], "📲", t["block3_desc"], t["block3_list"], "AutoAgro")
 
+    import base64
 
+    def get_img_as_base64(file_path):
+        try:
+            with open(file_path, "rb") as f:
+                data = f.read()
+            return base64.b64encode(data).decode()
+        except Exception as e:
+            return None
+        
     def render_final_agro_map(lang_code):
         # 1. Словарь переводов для блока карты
         map_translations = {
