@@ -12616,9 +12616,9 @@ with tabs[7]:
 
     def render_wind_dashboard():
         # --- 0. ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
-        # Синхронизируем с вашим глобальным кодом (lang_code или lang)
         current_l = st.session_state.get('lang_code', 'ru')
         
+        # Словарик для интерфейса дашборда
         ui = {
             "ru": {
                 "title": "💨 Мониторинг ветровой активности Казахстана",
@@ -12632,8 +12632,7 @@ with tabs[7]:
                 "trend_up": "наблюдается тенденция к **увеличению** силы ветра",
                 "trend_down": "наблюдается тенденция к **снижению** ветровой нагрузки",
                 "trend_stable": "показатели остаются относительно **стабильными**",
-                "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**.",
-                "location": "Жаланашколь"
+                "summary_fmt": "Для региона **{}** за период {}-{} гг. {}. Средняя скорость экстремальных порывов: **{:.1f} м/с**."
             },
             "kz": {
                 "title": "💨 Қазақстанның жел белсенділігінің мониторингі",
@@ -12647,23 +12646,7 @@ with tabs[7]:
                 "trend_up": "жел күшінің **арту** тенденциясы байқалады",
                 "trend_down": "жел жүктемесінің **төмендеу** тенденциясы байқалады",
                 "trend_stable": "көрсеткіштер салыстырмалы түрде **тұрақты**",
-                "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**.",
-                "location": "Жалаңашкөл"
-            },
-            "en": {
-                "title": "💨 Wind Activity Monitoring in Kazakhstan",
-                "facts": "Key Facts",
-                "record": "Extreme Record",
-                "trend_label": "General Trend",
-                "map_sub": "🗺️ Wind Regime Map",
-                "chart_sub": "📈 Dynamics by Region",
-                "select_reg": "Select a region for analysis:",
-                "analysis_header": "### 📝 Data Analysis",
-                "trend_up": "there is a tendency towards **increased** wind strength",
-                "trend_down": "there is a tendency towards **decreased** wind load",
-                "trend_stable": "indicators remain relatively **stable**",
-                "summary_fmt": "For the **{}** region from {}-{}, {}. Average extreme gust speed: **{:.1f} m/s**.",
-                "location": "Zhalanashkol"
+                "summary_fmt": "**{}** өңірі үшін {}-{} жж. кезеңінде {}. Экстремалды екпіннің орташа жылдамдығы: **{:.1f} м/с**."
             }
         }
         t = ui.get(current_l, ui["ru"])
@@ -12671,21 +12654,22 @@ with tabs[7]:
         # --- 1. НАСТРОЙКИ ---
         data_file = "Max_wind.csv"
         image_path = "wind_RES5.jpg"
-        
+        map_percent = 100 
+
         st.title(t["title"])
         st.divider()
         
         # --- СЕКЦИЯ 1: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ---
         st.subheader(t["facts"])
         c1, c2, c3 = st.columns(3)
-        with c1: st.metric(t["record"], f"60 {st.session_state.get('unit_ms', 'м/с')}", t["location"])
+        with c1: st.metric(t["record"], "60 м/с", "Жаланашколь")
         with c2: st.metric(t["trend_label"], "-3.3 м/с")
-        with c3: st.metric("Аномалия", "+0.5 м/с", delta="vs 1980s")
+        with c3: st.metric("Аномалия", "+0.5 м/с", delta="1980s")
 
         st.divider()
 
         # --- СЕКЦИЯ 2: КАРТА И ГРАФИК ---
-        col_map, col_charts = st.columns([1.2, 1]) # Увеличил пропорцию для карты
+        col_map, col_charts = st.columns([1, 1])
 
         with col_map:
             st.subheader(t["map_sub"])
@@ -12693,42 +12677,37 @@ with tabs[7]:
                 with open(image_path, "rb") as f:
                     encoded = base64.b64encode(f.read()).decode()
                 
-                # HTML вставка для "большого" фото
                 st.markdown(f"""
                     <div style="text-align: center;">
-                        <img src="data:image/jpeg;base64,{encoded}" 
-                             style="width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                        <img src="data:image/png;base64,{encoded}" 
+                             style="width: {map_percent}%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                     </div>
                 """, unsafe_allow_html=True)
             else:
-                st.warning(f"Map file {image_path} not found.")
+                st.error(f"File {image_path} not found.")
 
         with col_charts:
             st.subheader(t["chart_sub"])
             if os.path.exists(data_file):
                 try:
-                    # Загрузка с авто-определением разделителя
+                    # Читаем данные, заменяя запятые на точки для корректных расчетов
                     df = pd.read_csv(data_file, sep=';', encoding='utf-8-sig')
                     regions = [col for col in df.columns if col != 'Год']
                     selected_region = st.selectbox(t["select_reg"], regions)
                     
                     if selected_region:
-                        # Очистка: убираем пробелы, меняем запятые на точки
-                        df[selected_region] = pd.to_numeric(
-                            df[selected_region].astype(str).str.replace(',', '.').str.strip(), 
-                            errors='coerce'
-                        )
+                        # Очистка данных
+                        df[selected_region] = pd.to_numeric(df[selected_region].astype(str).str.replace(',', '.'), errors='coerce')
                         df_plot = df.dropna(subset=[selected_region, 'Год']).sort_values('Год')
 
-                        # График
-                        fig = px.line(df_plot, x='Год', y=selected_region, markers=True)
-                        fig.update_traces(line_color='#00CC96', line_width=3, marker=dict(size=8))
+                        fig = px.line(df_plot, x='Год', y=selected_region, 
+                                      markers=True, color_discrete_sequence=['#00CC96'])
                         
                         fig.update_layout(
-                            hovermode="x unified",
-                            xaxis_title="", yaxis_title="m/s",
-                            margin=dict(l=0, r=0, t=20, b=0),
-                            height=350
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            plot_bgcolor='rgba(0,0,0,0)',
+                            margin=dict(l=0, r=0, t=30, b=0),
+                            hovermode="x unified"
                         )
                         st.plotly_chart(fig, use_container_width=True)
 
@@ -12736,9 +12715,9 @@ with tabs[7]:
                         st.markdown(t["analysis_header"])
                         avg_val = df_plot[selected_region].mean()
                         
-                        # Логика тренда (сравнение начала и конца периода)
+                        # Логика тренда
                         diff = df_plot[selected_region].iloc[-1] - df_plot[selected_region].iloc[0]
-                        trend_txt = t["trend_up"] if diff > 0.5 else (t["trend_down"] if diff < -0.5 else t["trend_stable"])
+                        trend_txt = t["trend_up"] if diff > 1 else (t["trend_down"] if diff < -1 else t["trend_stable"])
                         
                         st.info(t["summary_fmt"].format(
                             selected_region, 
@@ -12748,16 +12727,12 @@ with tabs[7]:
                             avg_val
                         ))
                 except Exception as e:
-                    st.error(f"Error processing {data_file}: {e}")
-            else:
-                st.error(f"Data file {data_file} not found.")
+                    st.error(f"Data error: {e}")
 
-    # Запуск (только для теста, обычно вызывается из main.py)
+    # Запуск
     if __name__ == "__main__":
         st.set_page_config(layout="wide")
         render_wind_dashboard()
-        
-    
         
         
     
