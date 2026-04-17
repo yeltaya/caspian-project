@@ -3437,6 +3437,123 @@ with tabs[1]:
 
     # 9. АГРОМЕТЕОРОЛОГИЧЕСКИЙ МОНИТОРИНГ
 
+    # 1. Словарь переводов для агро-блока
+    agro_translations = {
+        "ru": {
+            "title": "Агрометеорологический мониторинг",
+            "subtitle": "Гидрометеорологическое обеспечение продовольственной безопасности сельскохозяйственной отрасли Казахстана /на основе агрометеорологических наблюдений/",
+            "stat_points": "Пунктов наблюдений",
+            "stat_digital": "Цифровая передача",
+            "stat_forecasts": "Видов прогнозов",
+            "stat_accuracy": "Оправдываемость",
+            "block1_title": "🌱 Традиционные наблюдения",
+            "block1_desc": "На государственной агрометеорологической сети проводятся наблюдения за температурой и влажностью воздуха, осадками, атмосферными явлениями, ветром, суммарной солнечной радиацией, температурой и состоянием почвы, за ростом сельскохозяйственных и пастбищных культур.",
+            "block1_list": ["<b>129:</b> метеорологических станций", "<b>47:</b> агрометеорологических постов"],
+            "block2_title": "💧 Специальные измерения",
+            "block2_desc": "Наблюдения за влиянием погоды на растениеводство и животноводство.",
+            "block2_list": ["<b>134:</b> пункта влажность почвы", "<b>100:</b> районов с маршрутными обследованиями"],
+            "block3_title": "📡 Автоматизировано",
+            "block3_desc": "Современные агрометеорологические посты оснащены автоматическими датчиками с передачей данных в центр обработки. Визуальные наблюдения и данные с ручных постов передаются автоматически после заноски данных с помощью планшета.",
+            "block3_list": ["<b>50:</b> агрометеорологических постов", "<b>96:</b> влагомеров почвы"]
+        },
+        "kz": {
+            "title": "Агрометеорологиялық мониторинг",
+            "subtitle": "Қазақстанның ауыл шаруашылығы саласының азық-түлік қауіпсіздігін гидрометеорологиялық қамтамасыз ету /агрометеорологиялық бақылаулар негізінде/",
+            "stat_points": "Бақылау пункттері",
+            "stat_digital": "Цифрлық беру",
+            "stat_forecasts": "Болжам түрлері",
+            "stat_accuracy": "Дәлдігі",
+            "block1_title": "🌱 Дәстүрлі бақылаулар",
+            "block1_desc": "Мемлекеттік агрометеорологиялық желіде ауа температурасы мен ылғалдылығы, жауын-шашын, атмосфералық құбылыстар, жел, жиынтық күн радиациясы, топырақтың температурасы мен күйі, ауыл шаруашылығы және жайылымдық дақылдардың өсуіне бақылау жүргізіледі.",
+            "block1_list": ["<b>129:</b> метеорологиялық станция", "<b>47:</b> агрометеорологиялық бекет"],
+            "block2_title": "💧 Арнайы өлшемдер",
+            "block2_desc": "Ауа райының өсімдік шаруашылығы мен мал шаруашылығына әсерін бақылау.",
+            "block2_list": ["<b>134:</b> топырақ ылғалдылығы пункті", "<b>100:</b> маршруттық зерттеулері бар аудандар"],
+            "block3_title": "📡 Автоматтандырылған",
+            "block3_desc": "Заманауи агрометеорологиялық бекеттер өңдеу орталығына мәліметтерді беретін автоматты датчиктермен жабдықталған. Көзбен шолып бақылау және қолмен басқарылатын бекеттердің деректері планшеттің көмегімен енгізілгеннен кейін автоматты түрде беріледі.",
+            "block3_list": ["<b>50:</b> агрометеорологиялық бекет", "<b>96:</b> топырақ ылғал өлшегіштері"]
+        },
+        "en": {
+            "title": "Agrometeorological Monitoring",
+            "subtitle": "Hydrometeorological support for food security of the agricultural sector of Kazakhstan /based on agrometeorological observations/",
+            "stat_points": "Observation points",
+            "stat_digital": "Digital transmission",
+            "stat_forecasts": "Forecast types",
+            "stat_accuracy": "Accuracy",
+            "block1_title": "🌱 Traditional Observations",
+            "block1_desc": "The state agrometeorological network conducts observations of air temperature and humidity, precipitation, atmospheric phenomena, wind, total solar radiation, soil temperature and condition, and the growth of crops and pasture plants.",
+            "block1_list": ["<b>129:</b> meteorological stations", "<b>47:</b> agrometeorological posts"],
+            "block2_title": "💧 Special Measurements",
+            "block2_desc": "Observations of the weather impact on crop production and animal husbandry.",
+            "block2_list": ["<b>134:</b> soil moisture points", "<b>100:</b> districts with route surveys"],
+            "block3_title": "📡 Automated",
+            "block3_desc": "Modern agrometeorological posts are equipped with automatic sensors transmitting data to the processing center. Visual observations and manual post data are transmitted automatically via tablet entry.",
+            "block3_list": ["<b>50:</b> agrometeorological posts", "<b>96:</b> soil moisture meters"]
+        }
+    }
+
+    # Получаем текущий перевод
+    t = agro_translations.get(lang_code, agro_translations["ru"])
+
+    # 9. ЗАГОЛОВОК
+    st.markdown(f"""
+        <div style="text-align:center; margin: 40px 0 20px 0;">
+            <h2 style="color: #1b5e20; font-family: 'Exo 2', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 2.2em;">
+                {t['title']}
+            </h2>
+            <p style="color: #546e7a; font-size: 1.1em; font-weight: 500;">{t['subtitle']}</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # 9.1 HIGHLIGHTS
+    st.markdown(f"""
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 30px;">
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #1b5e20; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">📍</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">226</div>
+                        <div style="font-size: 0.9em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{t['stat_points']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #2e7d32; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">📲</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">100%</div>
+                        <div style="font-size: 0.9em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{t['stat_digital']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #43a047; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">📊</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">10</div>
+                        <div style="font-size: 0.9em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{t['stat_forecasts']}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 160px; background: #ffffff; border-left: 5px solid #81c784; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8em;">🎯</span>
+                    <div>
+                        <div style="font-size: 1.5em; font-weight: 800; color: #1b5e20; line-height: 1.1;">78%</div>
+                        <div style="font-size: 0.9em; color: #546e7a; text-transform: uppercase; font-weight: 700;">{t['stat_accuracy']}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # --- БЛОКИ С ПОДРОБНОСТЯМИ ---
+    a_col1, a_col2, a_col3 = st.columns(3)
+
+    draw_block(a_col1, "agro_btn_1", t["block1_title"], "🚜", t["block1_desc"], t["block1_list"], "Phenology")
+    draw_block(a_col2, "agro_btn_2", t["block2_title"], "📉", t["block2_desc"], t["block2_list"], "Soil")
+    draw_block(a_col3, "agro_btn_3", t["block3_title"], "📲", t["block3_desc"], t["block3_list"], "AutoAgro")
+
 
 
 
