@@ -7182,6 +7182,169 @@ with tabs[5]:
 
         # Создайте этот словарь ПЕРЕД циклом for name in vxb_list:
         # Создайте этот словарь ПЕРЕД циклом for name in vxb_list:
+
+    VXB_FULL_DATA = {
+        "ertis": {
+            "stats": {
+                "photo": "ertis.webp",
+                "area": 347757,
+                "stations": 58,
+                "rivers_count": 13201,
+                "years": list(range(1940, 2024)),
+                "local_flow": [25.49, 33.64, 28.02, 25.26, 24.65, 19.6, 41.14, 37.13, 26.61, 28.29, 26.56, 15.32, 29.44, 19.89, 31.42, 20.18, 25.12, 27.11, 37.99, 25.85, 32.94, 28.71, 21.32, 18.68, 22.39, 21.29, 35.9, 21.66, 21.05, 35.08, 28.72, 31.42, 26.58, 31.4, 16.7, 24.76, 24.51, 25.69, 21.33, 33.19, 21.11, 19.46, 18.22, 24.69, 25.4, 28.48, 23.26, 27.19, 29.77, 25.01, 30.83, 20.56, 29.86, 31.49, 28.56, 26.83, 23.46, 22.99, 22.93, 22.1, 21.44, 33.15, 30.37, 18.74, 24.62, 23.41, 24.99, 27.52, 19.34, 31.04, 31.4, 21.57, 19.08, 42.49, 30.77, 32.48, 35.51, 26.86, 26.39, 25.45, 24.9, 22.22, 22.3, 25.4, 30.65],
+                "inflow": [8.17, 9.65, 10.75, 7.64, 6.46, 5.7, 10.59, 8.96, 5.83, 6.63, 7.22, 5.22, 9.88, 5.7, 7.85, 7.53, 8.88, 7.4, 10.75, 8.41, 8.86, 10.4, 6.9, 5.81, 6.97, 5.48, 11.31, 4.88, 7.67, 11.37, 9.57, 9.79, 7.34, 9.41, 3.17, 6.14, 5.17, 7.01, 4.33, 6.65, 5.68, 5.7, 3.29, 5.54, 9.44, 7.57, 5.21, 8.02, 9.72, 4.47, 6.41, 4.63, 6.64, 11.12, 9.29, 6.85, 5.51, 6.22, 6.55, 6.31, 5.89, 8.6, 7.5, 4.37, 5.67, 6.81, 5.83, 4.38, 3.63, 2.35, 7.23, 3.62, 2.85, 7.84, 5.64, 6.05, 8.5, 8.72, 7.2, 4.65, 5.31, 4.29, 3.28, 5.25, 6.98]
+            },
+            "river_table": [
+                {"id": "kalzhyr", "norm": 22.6, "peak": "47.6 (2001)", "min": "7.8 (2012)"},
+                {"id": "kurshim", "norm": 58.6, "peak": "137.0 (2013)", "min": "26.4 (1951)"},
+                {"id": "buktyrma", "norm": 208.0, "peak": "404.0 (2013)", "min": "117.0 (1974)"},
+                {"id": "ulbi", "norm": 104.0, "peak": "160.0 (1946)", "min": "49.3 (1951)"},
+                {"id": "oba", "norm": 162.0, "peak": "255.0 (1958)", "min": "85.8 (1951)"},
+                {"id": "kara_ertis", "norm": 301.0, "peak": "478.0 (1969)", "min": "134.0 (1982)"}
+            ],
+            "i18n": {
+                "ru": {
+                    "name": "Ертисский ВХБ",
+                    "artery": "Река Ертис - крупнейшая по водности река Казахстана...",
+                    "objects": ">82 вдхр. и прудов",
+                    "rivers": {
+                        "kalzhyr": {"name": "р. Калжыр – с. Калжыр", "trend": "↘ Снижение"},
+                        "kurshim": {"name": "р. Куршим – с. Вознесенка", "trend": "↗ Рост"},
+                        "buktyrma": {"name": "р. Буктырма – с. Л. Пристань", "trend": "↗ Рост"},
+                        "ulbi": {"name": "р. Ульби – с. Ульби Перевалочная", "trend": "↘ Снижение"},
+                        "oba": {"name": "р. Оба – г. Шемонаиха", "trend": "↔ Стабильно"},
+                        "kara_ertis": {"name": "р. Кара Ертис – с. Боран", "trend": "↘ Снижение"}
+                    }
+                },
+                "kk": {
+                    "name": "Ертіс СХБ",
+                    "artery": "Ертіс өзені – Қазақстандағы ең мол сулы өзен...",
+                    "objects": ">82 су қоймасы мен тоғандар",
+                    "rivers": {
+                        "kalzhyr": {"name": "Қалжыр ө. – Қалжыр а.", "trend": "↘ Төмендеу"},
+                        "kurshim": {"name": "Күршім ө. – Вознесенка а.", "trend": "↗ Өсу"},
+                        "buktyrma": {"name": "Бұқтырма ө. – Л. Пристань а.", "trend": "↗ Өсу"},
+                        "ulbi": {"name": "Үлбі ө. – Үлбі Перевалочная а.", "trend": "↘ Төмендеу"},
+                        "oba": {"name": "Оба ө. – Шемонаиха қ.", "trend": "↔ Тұрақты"},
+                        "kara_ertis": {"name": "Қара Ертіс ө. – Боран а.", "trend": "↘ Төмендеу"}
+                    }
+                },
+                "en": {
+                    "name": "Ertis BWMA",
+                    "artery": "The Ertis River is the largest water artery of Kazakhstan...",
+                    "objects": ">82 reservoirs and ponds",
+                    "rivers": {
+                        "kalzhyr": {"name": "Kalzhyr river – Kalzhyr v.", "trend": "↘ Decrease"},
+                        "kurshim": {"name": "Kurshim river – Voznesenka v.", "trend": "↗ Growth"},
+                        "buktyrma": {"name": "Buktyrma river – L. Pristan v.", "trend": "↗ Growth"},
+                        "ulbi": {"name": "Ulbi river – Ulbi Perevalochnaya", "trend": "↘ Decrease"},
+                        "oba": {"name": "Oba river – Shemonaikha", "trend": "↔ Stable"},
+                        "kara_ertis": {"name": "Kara Ertis river – Boran v.", "trend": "↘ Decrease"}
+                    }
+                }
+            }
+        },
+        "aral_syrdarya": {
+            "stats": {
+                "photo": "aral.webp",
+                "area": 345000,
+                "stations": 41,
+                "rivers_count": "1500-2000",
+                "years": list(range(1940, 2024)),
+                "local_flow": [2.15, 3.24, 3.43, 2.70, 2.09, 2.33, 3.16, 2.35, 2.56, 4.93, 3.30, 2.40, 4.65, 3.73, 4.93, 3.39, 3.09, 3.00, 5.71, 5.36, 4.86, 2.19, 2.29, 2.91, 3.85, 2.36, 2.49, 2.79, 3.65, 8.33, 3.21, 2.57, 4.06, 3.41, 2.40, 2.97, 2.97, 2.61, 3.58, 5.29, 3.42, 3.50, 2.77, 2.27, 2.99, 3.51, 2.29, 4.35, 3.43, 2.71, 4.15, 2.52, 3.05, 3.93, 3.74, 2.40, 2.21, 2.31, 3.00, 2.66, 2.39, 2.40, 3.84, 3.16, 2.86, 4.36, 2.98, 3.31, 2.22, 2.72, 3.34, 2.06, 3.19, 3.15, 4.25, 2.96, 4.09, 4.96, 2.40, 2.86, 2.24, 2.92, 2.96, 2.69, 3.13],
+                "inflow": [15.40, 21.41, 25.80, 22.42, 17.04, 24.16, 22.83, 16.87, 21.50, 28.79, 17.72, 18.67, 33.20, 27.88, 33.11, 22.96, 22.74, 14.07, 28.35, 28.92, 31.27, 14.00, 12.20, 19.02, 22.61, 11.48, 25.13, 11.61, 14.45, 50.46, 19.68, 14.03, 14.04, 16.90, 4.57, 4.16, 6.23, 7.22, 10.09, 14.13, 11.45, 11.38, 11.70, 9.05, 9.80, 9.90, 8.77, 12.84, 19.95, 12.87, 14.35, 14.00, 16.22, 21.44, 25.76, 14.44, 15.81, 14.13, 23.87, 18.54, 14.10, 13.53, 21.26, 27.28, 23.56, 22.26, 16.49, 17.98, 12.43, 14.60, 24.94, 13.37, 17.93, 13.56, 17.60, 14.63, 12.24, 22.39, 15.20, 13.94, 12.33, 9.40, 12.71, 14.66, 16.89]
+            },
+            "river_table": [
+                {"id": "syrdarya_shardara", "norm": 728.0, "peak": "1066 (1952)", "min": "167 (1975)"},
+                {"id": "syrdarya_tomenaryk", "norm": 682.0, "peak": "1023.0 (1952)", "min": "122.0 (1975)"},
+                {"id": "keles", "norm": 13.0, "peak": "30.9 (2024)", "min": "1.5 (1987)"},
+                {"id": "arys", "norm": 162.0, "peak": "94.89 (1969)", "min": "5.79 (1986)"}
+            ],
+            "i18n": {
+                "ru": {
+                    "name": "Арало-Сырдарьинский ВХБ",
+                    "artery": "Река Сырдарья - крупная трансграничная река аридной зоны...",
+                    "objects": "Свыше 33 вдхр. и прудов",
+                    "rivers": {
+                        "syrdarya_shardara": {"name": "р. Сырдарья – н.б. Шардаринского вдхр", "trend": "↘ Снижение"},
+                        "syrdarya_tomenaryk": {"name": "р. Сырдарья – ст. Томенарык", "trend": "↘ Снижение"},
+                        "keles": {"name": "р. Келес – устье", "trend": "↗ Рост"},
+                        "arys": {"name": "р. Арысь – ст. Арысь", "trend": "↔ Стабильно"}
+                    }
+                },
+                "kk": {
+                    "name": "Арал-Сырдария СХБ",
+                    "artery": "Сырдария өзені – Орталық Азияның аридті аймағындағы...",
+                    "objects": "33-тен астам су қоймасы",
+                    "rivers": {
+                        "syrdarya_shardara": {"name": "Сырдария ө. – Шардара су қоймасы", "trend": "↘ Төмендеу"},
+                        "syrdarya_tomenaryk": {"name": "Сырдария ө. – Төменарық ст.", "trend": "↘ Төмендеу"},
+                        "keles": {"name": "Келес ө. – сағасы", "trend": "↗ Өсу"},
+                        "arys": {"name": "Арыс ө. – Арыс ст.", "trend": "↔ Тұрақты"}
+                    }
+                },
+                "en": {
+                    "name": "Aral-Syrdarya BWMA",
+                    "artery": "The Syr Darya river is a major transboundary river...",
+                    "objects": "Over 33 reservoirs and ponds",
+                    "rivers": {
+                        "syrdarya_shardara": {"name": "Syr Darya – Shardara res.", "trend": "↘ Decrease"},
+                        "syrdarya_tomenaryk": {"name": "Syr Darya – Tomenaryk st.", "trend": "↘ Decrease"},
+                        "keles": {"name": "Keles river – mouth", "trend": "↗ Growth"},
+                        "arys": {"name": "Arys river – Arys station", "trend": "↔ Stable"}
+                    }
+                }
+            }
+        },
+        "zhayyk_kaspi": {
+            "stats": {
+                "photo": "zhayyk.webp",
+                "area": 645000,
+                "stations": 52,
+                "rivers_count": "200-240",
+                "years": list(range(1940, 2024)),
+                "local_flow": [2.44, 8.12, 10.59, 3.36, 1.01, 2.16, 8.28], # Сокращено для примера
+                "inflow": [4.15, 18.72, 14.63, 5.82, 3.70, 6.69, 21.48]
+            },
+            "river_table": [
+                {"id": "ilek", "norm": 16.3, "peak": "59.3 (2024)", "min": "1.57 (1967)"},
+                {"id": "zhayyk_yanvarcevo", "norm": 343, "peak": "793 (1957)", "min": "96 (1967)"}
+            ],
+            "i18n": {
+                "ru": {
+                    "name": "Жайык-Каспийский ВХБ",
+                    "artery": "Река Жайык - трансграничная река бассейна Каспийского моря...",
+                    "rivers": {
+                        "ilek": {"name": "р. Илек – г. Актобе", "trend": "↘ Снижение"},
+                        "zhayyk_yanvarcevo": {"name": "р. Жайык – пос. Январцево", "trend": "↘ Снижение"}
+                    }
+                },
+                "kk": {
+                    "name": "Жайық-Каспий СХБ",
+                    "artery": "Жайық өзені – Каспий теңізі алабының трансшекаралық өзені...",
+                    "rivers": {
+                        "ilek": {"name": "Елек ө. – Ақтөбе қ.", "trend": "↘ Төмендеу"},
+                        "zhayyk_yanvarcevo": {"name": "Жайық ө. – Январцево а.", "trend": "↘ Төмендеу"}
+                    }
+                },
+                "en": {
+                    "name": "Zhayyk-Caspian BWMA",
+                    "artery": "The Zhayyk river is a transboundary river of the Caspian Sea...",
+                    "rivers": {
+                        "ilek": {"name": "Ilek river – Aktobe city", "trend": "↘ Decrease"},
+                        "zhayyk_yanvarcevo": {"name": "Zhayyk river – Yanvartsevo", "trend": "↘ Decrease"}
+                    }
+                }
+            }
+        }
+        # Добавьте остальные ВХБ по этой же схеме
+    }
+
+
+
+
+
+
     VXB_FULL_DATA = {
             "Ертисский ВХБ": {
                 "photo": "Ертисский.tiff",
@@ -7344,7 +7507,7 @@ with tabs[5]:
                     {"Река / Створ": "р. Токташ – с. Жаугаш Батыра", "Норма": 1.26, "Пик": "2.23 (2016)", "Мин": "0.67 (2022)", "Динамика": "↘ Снижение"},
                     {"Река / Створ": "р. Аксу – а. Аксу", "Норма": 15.3, "Пик": "32.0 (2016)", "Мин": "2.81 (2024)", "Динамика": "↘ Снижение"},
                     {"Река / Створ": "р. Карабалта – а. Баласагун", "Норма": 1.40, "Пик": "4.0 (2016)", "Мин": "0.15 (2024)", "Динамика": "↔ Стабильно"}
-]
+            ]
         },
             "Тобыл-Торгайский ВХБ": {
                 "photo": "Тобыл-Торгай.tiff",
@@ -7367,132 +7530,364 @@ with tabs[5]:
                     {"Река / Створ": "р. Кара-Торгай – г. Урпек", "Норма": 10.49, "Пик": "26.3 (1948)", "Мин": "0.74 (1968)", "Динамика": "↔ Снижение"},
                     {"Река / Створ": "р. Иргиз – с. Шенбертал", "Норма": 9.28, "Пик": "41.5 (1941)", "Мин": "0.095 (2019)", "Динамика": "↘ Снижение"}
             ]                
+        },
+            "esil": {
+                "stats": {
+                    "photo": "esil.webp",
+                    "area": 237226,
+                    "stations": 43,
+                    "rivers_count": 2000,
+                    "years": list(range(1940, 2024)),
+                    "local_flow": [1.05, 4.15, 4.06, 2.32, 0.68, 0.57, 3.36, 3.72, 6.06, 3.72, 0.95, 0.99, 0.57, 1.27, 3.76, 1.93, 0.73, 1.24, 1.58, 2.41, 2.97, 2.88, 1.52, 0.98, 4.02, 1.20, 2.31, 0.30, 0.46, 0.60, 2.32, 4.12, 4.49, 2.44, 1.19, 0.64, 1.45, 0.81, 3.15, 2.66, 2.46, 2.44, 1.49, 5.32, 2.48, 4.68, 2.90, 3.79, 2.76, 1.30, 5.16, 3.02, 0.86, 5.63, 3.10, 3.44, 1.55, 2.91, 0.73, 0.42, 0.59, 2.08, 6.14, 1.08, 1.34, 3.10, 0.57, 3.79, 1.00, 0.71, 1.54, 1.16, 1.09, 1.81, 5.98, 2.83, 3.07, 8.88, 1.66, 4.41, 2.74, 2.11, 1.28, 3.10, 6.56],
+                    "inflow": [None]
+                },
+                "river_table": [
+                    {"id": "esil_astana", "norm": 4.73, "peak": "22.1 (1948)", "min": "0.10 (1967)"},
+                    {"id": "zhabai", "norm": 9.93, "peak": "70.5 (2017)", "min": "0.97 (1937)"},
+                    {"id": "kalkutan", "norm": 7.24, "peak": "33.3 (2002)", "min": "0.10 (1977)"}
+                ],
+                "i18n": {
+                    "ru": {
+                        "name": "Есильский ВХБ",
+                        "artery": "Река Есиль - равнинная река степной зоны с преимущественно снеговым питанием...",
+                        "objects": "Около 50 водохранилищ.",
+                        "rivers": {
+                            "esil_astana": {"name": "р. Есиль – с. Астана", "trend": "↘ Снижение"},
+                            "zhabai": {"name": "р. Жабай – с. Атбасар", "trend": "↗ Рост"},
+                            "kalkutan": {"name": "р. Калкутан – с. Калкутан", "trend": "↘ Снижение"}
+                        }
+                    },
+                    "kk": {
+                        "name": "Есіл СХБ",
+                        "artery": "Есіл өзені – негізінен қар суымен қоректенетін жазық өзені...",
+                        "objects": "50-ге жуық су қоймасы.",
+                        "rivers": {
+                            "esil_astana": {"name": "Есіл ө. – Астана қ.", "trend": "↘ Төмендеу"},
+                            "zhabai": {"name": "Жабай ө. – Атбасар а.", "trend": "↗ Өсу"},
+                            "kalkutan": {"name": "Қалқұтан ө. – Қалқұтан а.", "trend": "↘ Төмендеу"}
+                        }
+                    },
+                    "en": {
+                        "name": "Esil BWMA",
+                        "artery": "The Esil River is a lowland river of the steppe zone...",
+                        "objects": "About 50 reservoirs.",
+                        "rivers": {
+                            "esil_astana": {"name": "Esil river – Astana", "trend": "↘ Decrease"},
+                            "zhabai": {"name": "Zhabai river – Atbasar", "trend": "↗ Growth"},
+                            "kalkutan": {"name": "Kalkutan river – Kalkutan", "trend": "↘ Decrease"}
+                        }
+                    }
+                }
+            },
+            "nura_sarysu": {
+                "stats": {
+                    "photo": "nura.webp",
+                    "area": 290210,
+                    "stations": 27,
+                    "rivers_count": 15,
+                    "years": list(range(1940, 2024)),
+                    "local_flow": [0.49, 2.10, 1.28, 1.51, 0.48, 1.33, 1.06, 0.99, 2.68, 2.98, 0.73, 0.55, 0.78, 0.90, 2.35, 0.93, 0.63, 0.69, 1.95, 1.57, 1.87, 1.19, 1.08, 0.42, 1.15, 0.72, 1.51, 0.27, 0.36, 0.96, 1.16, 1.48, 1.75, 1.33, 0.48, 0.22, 0.89, 1.87, 0.71, 1.04, 0.63, 0.85, 0.92, 0.97, 0.96, 0.91, 1.54, 1.23, 1.45, 0.78, 1.77, 1.84, 0.97, 2.37, 0.66, 1.16, 0.84, 1.42, 0.59, 0.32, 0.66, 1.16, 2.33, 0.74, 1.89, 0.80, 0.32, 1.36, 0.50, 0.37, 1.53, 0.71, 0.42, 1.36, 1.42, 3.80, 2.39, 3.81, 1.83, 2.24, 1.24, 0.78, 1.30, 0.75, 2.26],
+                    "inflow": [None]
+                },
+                "river_table": [
+                    {"id": "nura_balykty", "norm": 9.03, "peak": "42.2 (2015)", "min": "0.36 (1936)"},
+                    {"id": "nura_koshkarbaeva", "norm": 22.6, "peak": "108.5 (2017)", "min": "1.44 (1939)"},
+                    {"id": "sherubainura", "norm": 5.81, "peak": "20.9 (2017)", "min": "0.40 (1975)"},
+                    {"id": "sarysu", "norm": 3.02, "peak": "29.3 (2015)", "min": "0.02 (2012)"},
+                    {"id": "karakengir", "norm": 4.08, "peak": "19.4 (1949)", "min": "0.00 (1937)"}
+                ],
+                "i18n": {
+                    "ru": {
+                        "name": "Нура-Сарысуйский ВХБ",
+                        "artery": "Река Нура - река центрального Казахстана с преимущественно снеговым питанием...",
+                        "objects": "около 400 водохранилищ и прудов",
+                        "rivers": {
+                            "nura_balykty": {"name": "р. Нура - ст. Балыкты", "trend": "↘ Снижение"},
+                            "nura_koshkarbaeva": {"name": "р. Нура - с. Р. Кошкарбаева", "trend": "↗ Рост"},
+                            "sherubainura": {"name": "р. Шерубайнура - раз. Карамурын", "trend": "↔ Стабильно"},
+                            "sarysu": {"name": "р. Сарысу - раз. № 189", "trend": "↗ Рост"},
+                            "karakengir": {"name": "р. Каракенгир - устье Жиланды", "trend": "↘ Снижение"}
+                        }
+                    },
+                    "kk": {
+                        "name": "Нұра-Сарысу СХБ",
+                        "artery": "Нұра өзені – Орталық Қазақстандағы қар суымен қоректенетін өзен...",
+                        "objects": "400-ге жуық су қоймасы мен тоғандар",
+                        "rivers": {
+                            "nura_balykty": {"name": "Нұра ө. – Балықты ст.", "trend": "↘ Төмендеу"},
+                            "nura_koshkarbaeva": {"name": "Нұра ө. – Р. Қошқарбаев а.", "trend": "↗ Өсу"},
+                            "sherubainura": {"name": "Шерубайнұра ө. – Қарамұрын", "trend": "↔ Тұрақты"},
+                            "sarysu": {"name": "Сарысу ө. – № 189 раз.", "trend": "↗ Өсу"},
+                            "karakengir": {"name": "Қаракеңгір ө. – Жыланды сағасы", "trend": "↘ Төмендеу"}
+                        }
+                    },
+                    "en": {
+                        "name": "Nura-Sarysu BWMA",
+                        "artery": "The Nura River is a river in Central Kazakhstan with snow-fed regime...",
+                        "objects": "About 400 reservoirs and ponds",
+                        "rivers": {
+                            "nura_balykty": {"name": "Nura – Balykty station", "trend": "↘ Decrease"},
+                            "nura_koshkarbaeva": {"name": "Nura – R. Koshkarbaeva v.", "trend": "↗ Growth"},
+                            "sherubainura": {"name": "Sherubainura – Karamuryn", "trend": "↔ Stable"},
+                            "sarysu": {"name": "Sarysu – No. 189 station", "trend": "↗ Growth"},
+                            "karakengir": {"name": "Karakengir – Zhilandy mouth", "trend": "↘ Decrease"}
+                        }
+                    }
+                }
+            },
+            "shu_talas": {
+                "stats": {
+                    "photo": "shu_talas.webp",
+                    "area": 160500,
+                    "stations": 22,
+                    "rivers_count": 850,
+                    "years": list(range(1940, 2024)),
+                    "local_flow": [0.63, 0.74, 1.02, 0.75, 0.82, 0.70, 0.78, 0.72, 1.00, 0.89, 0.86, 0.78, 1.10, 1.10, 1.00, 1.21, 1.03, 0.69, 1.36, 1.74, 1.61, 1.05, 0.95, 1.11, 1.33, 1.01, 1.51, 1.59, 1.45, 3.26, 1.60, 1.48, 1.61, 1.95, 1.00, 1.04, 1.08, 1.09, 1.47, 1.69, 1.25, 1.08, 0.93, 0.87, 1.02, 1.23, 0.83, 1.42, 1.60, 1.10, 1.56, 1.17, 1.29, 1.80, 2.08, 1.37, 1.45, 1.02, 1.42, 1.34, 1.05, 1.04, 2.02, 1.70, 1.60, 1.63, 1.47, 1.16, 1.00, 1.35, 1.46, 1.47, 1.38, 1.41, 1.71, 1.58, 2.05, 2.61, 1.85, 1.86, 1.69, 1.67, 0.94, 1.00, 1.08],
+                    "inflow": [2.37, 2.85, 3.74, 2.77, 2.45, 2.97, 3.12, 2.83, 2.79, 3.35, 2.93, 2.78, 3.63, 3.29, 3.47, 3.35, 3.20, 2.50, 4.20, 3.56, 3.55, 2.71, 2.55, 2.76, 3.08, 2.39, 3.21, 2.97, 2.83, 4.56, 2.98, 2.85, 2.71, 2.09, 1.85, 1.98, 1.66, 1.53, 1.82, 2.18, 1.89, 2.22, 1.95, 1.96, 1.86, 2.11, 1.92, 2.94, 2.93, 2.47, 2.76, 2.20, 2.26, 2.44, 3.39, 2.36, 2.26, 1.90, 2.98, 3.13, 2.52, 2.22, 4.14, 4.35, 3.90, 4.02, 2.82, 2.47, 1.98, 2.73, 3.85, 3.25, 2.66, 2.67, 2.55, 2.82, 5.08, 5.01, 3.32, 2.76, 2.41, 1.91, 2.52, 2.28, 3.06]
+                },
+                "river_table": [
+                    {"id": "teris", "norm": 5.32, "peak": "13.2 (1969)", "min": "2.19 (1957)"},
+                    {"id": "shu_kainar", "norm": 56.7, "peak": "100.0 (1969)", "min": "28.7 (1977)"},
+                    {"id": "talas", "norm": 24.5, "peak": "44.7 (2016)", "min": "11.8 (2015)"}
+                ],
+                "i18n": {
+                    "ru": {
+                        "name": "Шу-Таласский ВХБ",
+                        "artery": "Река Шу - трансграничная река с истоками в Кыргызстане...",
+                        "objects": "Свыше 21 водохранилища",
+                        "rivers": {
+                            "teris": {"name": "р. Терис – с. Нурлыкент", "trend": "↔ Стабильно"},
+                            "shu_kainar": {"name": "р. Шу – с. Кайнар", "trend": "↘ Снижение"},
+                            "talas": {"name": "р. Талас – с. Жасоркен", "trend": "↘ Снижение"}
+                        }
+                    },
+                    "kk": {
+                        "name": "Шу-Талас СХБ",
+                        "artery": "Шу өзені – бастауын Қырғызстан тауларынан алатын трансшекаралық өзен...",
+                        "objects": "21-ден астам су қоймасы",
+                        "rivers": {
+                            "teris": {"name": "Теріс ө. – Нұрлыкент а.", "trend": "↔ Тұрақты"},
+                            "shu_kainar": {"name": "Шу ө. – Қайнар а.", "trend": "↘ Төмендеу"},
+                            "talas": {"name": "Талас ө. – Жасөркен а.", "trend": "↘ Төмендеу"}
+                        }
+                    },
+                    "en": {
+                        "name": "Shu-Talas BWMA",
+                        "artery": "The Shu River is a transboundary river originating in Kyrgyzstan...",
+                        "objects": "Over 21 reservoirs",
+                        "rivers": {
+                            "teris": {"name": "Teris river – Nurlykent", "trend": "↔ Stable"},
+                            "shu_kainar": {"name": "Shu river – Kainar", "trend": "↘ Decrease"},
+                            "talas": {"name": "Talas river – Zhasorken", "trend": "↘ Decrease"}
+                        }
+                    }
+                }
+            },
+            "tobyl_torgai": {
+                "stats": {
+                    "photo": "tobyl.webp",
+                    "area": 347680,
+                    "stations": 25,
+                    "rivers_count": 350,
+                    "years": list(range(1940, 2025)),
+                    "local_flow": [0.62, 5.48, 4.59, 1.50, 0.21, 0.65, 2.61, 3.59, 3.88, 1.39, 1.14, 0.35, 1.07, 1.67, 1.26, 0.62, 0.85, 3.66, 1.05, 1.22, 1.50, 0.71, 1.09, 0.84, 2.38, 0.71, 1.51, 0.17, 0.24, 0.94, 1.93, 2.61, 1.12, 1.05, 0.91, 0.26, 0.65, 0.55, 1.71, 1.08, 0.80, 1.64, 0.38, 2.16, 0.66, 1.68, 1.11, 1.83, 1.65, 1.21, 2.17, 0.86, 0.76, 3.94, 2.35, 1.40, 0.81, 0.80, 1.09, 0.64, 2.77, 1.18, 2.93, 0.74, 1.86, 2.76, 0.21, 2.14, 0.79, 0.25, 1.51, 0.94, 0.80, 0.57, 1.03, 1.03, 1.22, 1.36, 1.34, 0.33, 0.74, 0.66, 0.81, 0.98, 5.13, 0.71],
+                    "inflow": [0.19, 1.19, 1.03, 0.42, 0.15, 0.23, 0.62, 1.04, 0.84, 0.18, 0.37, 0.21, 0.26, 0.61, 0.12, 0.09, 0.19, 1.16, 0.17, 0.29, 0.54, 0.22, 0.19, 0.26, 0.27, 0.14, 0.27, 0.21, 0.19, 0.49, 0.74, 0.47, 0.27, 0.14, 0.23, 0.07, 0.15, 0.06, 0.31, 0.17, 0.11, 0.35, 0.13, 0.38, 0.17, 0.38, 0.08, 0.23, 0.25, 0.14, 0.76, 0.27, 0.12, 0.84, 1.01, 0.37, 0.13, 0.13, 0.21, 0.29, 0.80, 0.44, 0.65, 0.31, 0.30, 0.76, 0.19, 0.59, 0.52, 0.08, 0.22, 0.28, 0.34, 0.52, 0.33, 0.08, 0.25, 0.24, 0.21, 0.08, 0.15, 0.19, 0.07, 0.23, 0.93, 0.28]
+                },
+                "river_table": [
+                    {"id": "tobyl_grish", "norm": 7.95, "peak": "38.7 (1941)", "min": "0.12 (1991)"},
+                    {"id": "tobyl_kost", "norm": 13.06, "peak": "64.5 (1942)", "min": "0.93 (1979)"},
+                    {"id": "ayat", "norm": 6.47, "peak": "23.9 (1941)", "min": "0.81 (2015)"}
+                ],
+                "i18n": {
+                    "ru": {
+                        "name": "Тобыл-Торгайский ВХБ",
+                        "artery": "Река Тобыл - левобережный приток Ертиса, формирующийся в степной зоне...",
+                        "objects": "180-190 водохранилищ и прудов",
+                        "rivers": {
+                            "tobyl_grish": {"name": "р. Тобыл – с. Гришенка", "trend": "↘ Снижение"},
+                            "tobyl_kost": {"name": "р. Тобыл – г. Костанай", "trend": "↘ Снижение"},
+                            "ayat": {"name": "р. Аят – с. Варваринка", "trend": "↘ Снижение"}
+                        }
+                    },
+                    "kk": {
+                        "name": "Тобыл-Торғай СХБ",
+                        "artery": "Тобыл өзені – Ертістің сол жақ саласы, далалық аймақта қалыптасады...",
+                        "objects": "180-190 су қоймасы мен тоғандар",
+                        "rivers": {
+                            "tobyl_grish": {"name": "Тобыл ө. – Гришенка а.", "trend": "↘ Төмендеу"},
+                            "tobyl_kost": {"name": "Тобыл ө. – Қостанай қ.", "trend": "↘ Төмендеу"},
+                            "ayat": {"name": "Аят ө. – Варваринка а.", "trend": "↘ Төмендеу"}
+                        }
+                    },
+                    "en": {
+                        "name": "Tobyl-Torgai BWMA",
+                        "artery": "The Tobyl River is a left-bank tributary of the Ertis river...",
+                        "objects": "180-190 reservoirs and ponds",
+                        "rivers": {
+                            "tobyl_grish": {"name": "Tobyl – Grishenka v.", "trend": "↘ Decrease"},
+                            "tobyl_kost": {"name": "Tobyl – Kostanay city", "trend": "↘ Decrease"},
+                            "ayat": {"name": "Ayat – Varvarinka v.", "trend": "↘ Decrease"}
+                        }
+                    }
+                }
+            }
         }
-            # Добавьте сюда остальные ВХБ по аналогии
+
+    UI_LABELS = {
+        "ru": {
+            "norm": "Норма", 
+            "peak": "Максимум", 
+            "min": "Минимум", 
+            "trend": "Динамика",
+            "area": "Площадь",
+            "gp": "ГП в ВХБ",
+            "rivers_total": "Всего рек",
+            "local_res": "💧 Местные ресурсы",
+            "inflow": "💧 Приток",
+            "artery": "🌊 Артерия:",
+            "objects": "🏢 Объекты:",
+            "table_title": "📋 Сводная таблица гидрологических показателей",
+            "photo_caption": "Вид бассейна"
+        },
+        "kk": {
+            "norm": "Норма", 
+            "peak": "Максимум", 
+            "min": "Минимум", 
+            "trend": "Динамика", # или "Үрдіс" (Тренд)
+            "area": "Ауданы",
+            "gp": "ГП саны",
+            "rivers_total": "Барлық өзендер",
+            "local_res": "💧 Жергілікті ресурстар",
+            "inflow": "💧 Келетін су",
+            "artery": "🌊 Артерия:",
+            "objects": "🏢 Объектілер:",
+            "table_title": "📋 Гидрологиялық көрсеткіштердің жиынтық кестесі",
+            "photo_caption": "Алап көрінісі"
+        },
+        "en": {
+            "norm": "Normal", 
+            "peak": "Peak", 
+            "min": "Min", 
+            "trend": "Trend",
+            "area": "Area",
+            "gp": "Hydroposts",
+            "rivers_total": "Total rivers",
+            "local_res": "💧 Local resources",
+            "inflow": "💧 Inflow",
+            "artery": "🌊 Artery:",
+            "objects": "🏢 Objects:",
+            "table_title": "📋 Summary table of hydrological indicators",
+            "photo_caption": "Basin view"
+        }
     }
-    
-                
+
+    # Текущий язык (выбирается пользователем в приложении)
+    L = UI_LABELS[st.session_state.get('lang', 'ru')]
+
     for name in vxb_list:
-        # Берем данные из нашего справочника. Если данных нет — берем пустой словарь
+        # 1. Получаем данные (учитываем, что ключи в словаре теперь технические, а не русские)
         details = VXB_FULL_DATA.get(name, {})
         
         if not details:
-            st.warning(f"Данные для {name} еще не внесены в справочник.")
+            st.warning(f"No data for {name}")
             continue
 
-        item_stats = VXB_STATS[name]
+        # 2. Локализованные тексты для текущего бассейна
+        # details['i18n'][lang] содержит: name, artery, objects, rivers
+        lang_content = details["i18n"][st.session_state.get('lang', 'ru')]
+        
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
-        
-        # Путь к фото теперь берется из справочника
-        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
+        photo_path = os.path.join(BASE_IMAGE_PATH, details["stats"]["photo"])
         
         st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
         
         with st.container(border=is_active):
-            st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
+            st.markdown(f"### {'🌟' if is_active else '🔹'} {lang_content['name']}")
             
             img_col, info_col = st.columns([1.2, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
+                    st.image(photo_path, use_container_width=True, caption=f"{L['photo_caption']}: {lang_content['name']}")
                 else:
-                    st.info(f"📸 Фото для {name} ожидается")
+                    st.info(f"{L['wait_photo']} {lang_content['name']}")
                     st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
             
             with info_col:
-                st.markdown(f"##### 📝 Гидрологическая справка: {name}")
+                st.markdown(f"##### 📝 {lang_content['name']}")
                 
-                # Динамические метрики из справочника
+                # Метрики (числа берем из stats, названия из L)
                 m1, m2, m3 = st.columns(3)
-                m1.metric("Площадь", details["площадь"])
-                m2.metric("ГП в ВХБ", details["гп_кол"])
-                m3.metric("Всего рек", details["рек_всего"])
+                m1.metric(L["area"], f"{details['stats']['area']:,} км²")
+                m2.metric(L["gp"], details["stats"]["stations"])
+                m3.metric(L["rivers_total"], details["stats"]["rivers_count"])
 
-                # Блок Местные ресурсы vs Приток
                 col_res, col_inf = st.columns(2)
                 with col_res:
-                    st.write("💧︎ **Местные ресурсы**")
-                    st.caption(details["местные_текст"])
+                    st.write(f"**{L['local_res']}**")
+                    # Здесь можно добавить описание текстом, если нужно
                 with col_inf:
-                    st.write("💧 **Приток**")
-                    st.caption(details["приток_текст"])
+                    st.write(f"**{L['inflow']}**")
 
-                # ГРАФИК (Теперь рисуется для каждого ВХБ свой!)
+                # ГРАФИК
                 mini_fig = go.Figure()
                 mini_fig.add_trace(go.Bar(
-                    x=details["years"], y=details["local_flow"], 
-                    name='Местный сток', marker_color='#1f77b4'
+                    x=details["stats"]["years"], y=details["stats"]["local_flow"], 
+                    name='Local', marker_color='#1f77b4'
                 ))
-                mini_fig.add_trace(go.Bar(
-                    x=details["years"], y=details["inflow"], 
-                    name='Приток', marker_color='#a6cee3'
-                ))
+                if details["stats"]["inflow"][0] is not None:
+                    mini_fig.add_trace(go.Bar(
+                        x=details["stats"]["years"], y=details["stats"]["inflow"], 
+                        name='Inflow', marker_color='#a6cee3'
+                    ))
+                
                 mini_fig.update_layout(
-                    barmode='stack', height=180, 
-                    margin=dict(l=0,r=0,t=10,b=0), 
-                    template="plotly_white", showlegend=False,
-                    xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
-                    yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
+                    barmode='stack', height=180, margin=dict(l=0,r=0,t=10,b=0), 
+                    template="plotly_white", showlegend=False
                 )
-                # ВАЖНО: используем уникальный key для каждого графика
                 st.plotly_chart(mini_fig, use_container_width=True, key=f"mini_chart_{name}")
 
-                # Детализация внизу блока
                 st.markdown("---")
                 col_a, col_b = st.columns(2)
                 with col_a:
-                    st.write(f"🌊 **Артерия:** {details['артерия']}")
-
+                    st.write(f"{L['artery']} {lang_content['artery']}")
                 with col_b:
-                    st.write(f"🏢 **Объекты:** {details['объекты']}")
-                    st.write(f"📊 **Норма (W):** {item_stats['норма']} км³/год")
-                # НОВЫЙ БЛОК: Текстовая справка по рекам
-                        
-            # Проверяем наличие нового ключа с данными для таблицы
-            if "river_table_data" in details:
-                st.markdown("---")
-                st.markdown("#### 📋 Сводная таблица гидрологических показателей")
-               
-                st.markdown("""
-                    <style>
-                    [data-testid="stTable"] {
-                        font-size: 20px;
-                    }
-                    /* Для старых версий Streamlit или специфических контейнеров */
-                    .css-110034a, .stDataFrame div {
-                        font-size: 1.2rem !important;
-                    }
-                    </style>
-                    """, unsafe_allow_html=True)
-    
+                    st.write(f"{L['objects']} {lang_content['objects']}")
 
-               
-                # Создаем DataFrame из списка словарей
-                df_rivers = pd.DataFrame(details["river_table_data"])
+            # ТАБЛИЦА РЕК
+            if "river_table" in details:
+                st.markdown("---")
+                st.markdown(f"#### {L['table_title']}")
                 
-                # Отображаем таблицу
+                # Собираем данные для таблицы, подтягивая переводы названий рек
+                table_rows = []
+                for row in details["river_table"]:
+                    river_id = row["id"]
+                    table_rows.append({
+                        "river_name": lang_content["rivers"][river_id]["name"],
+                        "norm": row["norm"],
+                        "peak": row["peak"],
+                        "min": row["min"],
+                        "trend": lang_content["rivers"][river_id]["trend"]
+                    })
+                
+                df_rivers = pd.DataFrame(table_rows)
+                
                 st.dataframe(
                     df_rivers,
                     use_container_width=True,
                     hide_index=True,
                     column_config={
-                        "Река / Створ": st.column_config.TextColumn("🌊 Река / Створ", width="large"),
-                        "Норма": st.column_config.NumberColumn("Норма (W)", format="%.1f м³/с"),
-                        "Пик": st.column_config.TextColumn("🚀 Максимум"),
-                        "Мин": st.column_config.TextColumn("📉 Минимум"),
-                        "Динамика": st.column_config.TextColumn("Тренд")
+                        "river_name": st.column_config.TextColumn(L["col_river"], width="large"),
+                        "norm": st.column_config.NumberColumn(L["col_norm"], format="%.1f м³/с"),
+                        "peak": st.column_config.TextColumn(L["col_max"]),
+                        "min": st.column_config.TextColumn(L["col_min"]),
+                        "trend": st.column_config.TextColumn(L["col_trend"])
                     }
                 )
                 
-                # Если вам нужно сохранить старые текстовые описания, их можно вывести так:
-                # (Но только если в словаре остался старый ключ river_descriptions с текстом)
-                if "river_descriptions" in details and isinstance(details["river_descriptions"], dict):
-                    with st.expander("🔍 Читать полные текстовые описания анализа"):
-                        for r, t in details["river_descriptions"].items():
-                            st.write(f"**{r}:** {t}")
-                
+            
                 
 
 
