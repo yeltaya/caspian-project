@@ -13841,102 +13841,6 @@ with tabs[8]:
     
         
   
-lang_int = {
-    "ru": {
-        "header": "🌐 Международное сотрудничество",
-        "quote": "«Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».",
-        "stats_title": "Ключевые показатели за 2024-2025 гг.",
-        "m1_val": "5", "m1_label": "Международных меморандумов", "m1_sub": "заключено в 2025 году",
-        "m2_val": ">50", "m2_label": "Специалистов обучено", "m2_sub": "онлайн и офлайн форматах",
-        "m3_val": "25+", "m3_label": "Встреч с партнерами", "m3_sub": "для обмена опытом и данными",
-        "wmo_title": "📍 Ключевые направления работы с ВМО",
-        "wmo_1_h": "📊 Региональный центр по паводкам (CARFFGS)",
-        "wmo_1_body": "**Функции Центра по быстроразвивающимся паводкам в ЦА.**\n* Оперативный мониторинг и прогнозирование.\n* Координация усилий стран региона.",
-        "wmo_2_h": "💧 Гидрологический мониторинг (HydroSoS)",
-        "wmo_2_body": "**Инициатива HydroSoS:**\n* Мониторинг состояния водных ресурсов.\n* Оценка речного стока для устойчивого водопользования.",
-        "wmo_3_h": "📡 Интегрированная система ВМО (WIGOS)",
-        "wmo_3_body": "**Региональный Центр WIGOS:**\n* Пилотный проект: Казахстан, Россия и Беларусь.\n* Повышение качества наблюдений и обмена данными.",
-        "wmo_4_h": "📢 Глобальная инициатива (EW4All)",
-        "wmo_4_body": "**Роль НГМС РК:**\n* Председатель Целевой группы для Региона II (Азия).\n* Региональный участник в Восточной Европе и ЦА.",
-        "org_details": "📋 Детализация ключевых проектов по организациям",
-        "platform_h": "🚀 Казгидромет — международная образовательная платформа",
-        "platform_sub": "В отчетном периоде проведены ключевые мероприятия:",
-        "platform_list": "<li><b>Семинар ВМО:</b> Управление климатическими данными</li><li><b>Семинар GIZ:</b> Модель SWIM для трансграничных бассейнов</li><li><b>Воркшоп:</b> Приложение Snowmapper</li>",
-        "wigos_banner": "### 🏆 Субрегиональный Центр ИГСНВ (WIGOS) RAVI / RAII\n**Статус:** С 1 января 2026 года Казахстан официально стал субрегиональным центром ВМО.",
-        "tasks_h": "🎯 Основные задачи РЦИ",
-        "region_h": "🌍 Значение для региона",
-        "task_list": [
-            ("🗂️ Централизация", "Доступ к гидрометаданным стран Центральной Азии."),
-            ("📈 Аналитика", "Отчеты для международных организаций."),
-            ("💧 Мониторинг", "Контроль водных ресурсов и атмосферы."),
-            ("🧠 Технологии", "Трансфер знаний между странами.")
-        ]
-    },
-    "kk": {
-        "header": "🌐 Халықаралық ынтымақтастық",
-        "quote": "«Халықаралық ынтымақтастық біздің қызметіміздің негізі болып табылады, өңірдің климаттық және су қауіпсіздігін қамтамасыз ету үшін жаһандық тәжірибе мен озық технологияларды біріктіреді».",
-        "stats_title": "2024-2025 жж. негізгі көрсеткіштер",
-        "m1_val": "5", "m1_label": "Халықаралық меморандум", "m1_sub": "2025 жылы жасалды",
-        "m2_val": ">50", "m2_label": "Маман оқытылды", "m2_sub": "онлайн және офлайн форматта",
-        "m3_val": "25+", "m3_label": "Серіктестермен кездесу", "m3_sub": "тәжірибе алмасу үшін",
-        "wmo_title": "📍 ДМҰ-мен жұмыстың негізгі бағыттары",
-        "wmo_1_h": "📊 Тасқын жөніндегі өңірлік орталық (CARFFGS)",
-        "wmo_1_body": "**Орталық Азиядағы жедел тасқындар жөніндегі орталық.**\n* Жедел мониторинг және болжау.\n* Өңір елдерінің күш-жігерін үйлестіру.",
-        "wmo_2_h": "💧 Гидрологиялық мониторинг (HydroSoS)",
-        "wmo_2_body": "**HydroSoS бастамасы:**\n* Су ресурстарының жай-күйін мониторингілеу.\n* Тұрақты су пайдалану үшін өзен ағысын бағалау.",
-        "wmo_3_h": "📡 ДМҰ интеграцияланған жүйесі (WIGOS)",
-        "wmo_3_body": "**WIGOS өңірлік орталығы:**\n* Пилоттық жоба: Қазақстан, Ресей және Беларусь.\n* Мәлімет алмасу сапасын арттыру.",
-        "wmo_4_h": "📢 Жаһандық бастама (EW4All)",
-        "wmo_4_body": "**ҚР ГМҚ рөлі:**\n* II өңір (Азия) үшін Мақсатты топтың төрағасы.\n* Шығыс Еуропа мен ОА-дағы өңірлік қатысушы.",
-        "org_details": "📋 Ұйымдар бойынша негізгі жобалар",
-        "platform_h": "🚀 Қазгидромет — халықаралық білім беру платформасы",
-        "platform_sub": "Есепті кезеңде келесі іс-шаралар өткізілді:",
-        "platform_list": "<li><b>ДМҰ семинары:</b> Климаттық деректерді басқару</li><li><b>GIZ семинары:</b> Трансшекаралық бассейндерге арналған SWIM моделі</li><li><b>Воркшоп:</b> Snowmapper қосымшасы</li>",
-        "wigos_banner": "### 🏆 ИГСНВ (WIGOS) RAVI / RAII Субрегионалдық орталығы\n**Мәртебе:** 2026 жылғы 1 қаңтардан бастап Қазақстан ресми түрде ДМҰ субрегионалдық орталығы болды.",
-        "tasks_h": "🎯 Орталықтың негізгі міндеттері",
-        "region_h": "🌍 Өңір үшін маңызы",
-        "task_list": [
-            ("🗂️ Орталықтандыру", "Орталық Азия елдерінің деректеріне қолжетімділік."),
-            ("📈 Аналитика", "Халықаралық ұйымдар үшін есептер дайындау."),
-            ("💧 Мониторинг", "Су ресурстары мен атмосфераны бақылау."),
-            ("🧠 Технологиялар", "Елдер арасында білім трансферті.")
-        ]
-    },
-    "en": {
-        "header": "🌐 International Cooperation",
-        "quote": "“International cooperation is the foundation of our activities, bringing together global experience and advanced technologies to ensure climate and water security in the region.”",
-        "stats_title": "Key Indicators for 2024-2025",
-        "m1_val": "5", "m1_label": "International Memorandums", "m1_sub": "signed in 2025",
-        "m2_val": ">50", "m2_label": "Specialists Trained", "m2_sub": "online and offline formats",
-        "m3_val": "25+", "m3_label": "Partner Meetings", "m3_sub": "for data and experience exchange",
-        "wmo_title": "📍 Key Areas of Work with WMO",
-        "wmo_1_h": "📊 Regional Flash Flood Centre (CARFFGS)",
-        "wmo_1_body": "**Functions of the Flash Flood Centre in CA.**\n* Operational monitoring and forecasting.\n* Coordination of regional efforts.",
-        "wmo_2_h": "💧 Hydrological Monitoring (HydroSoS)",
-        "wmo_2_body": "**HydroSoS Initiative:**\n* Monitoring and forecasting water resources state.\n* River discharge assessment for sustainable use.",
-        "wmo_3_h": "📡 Integrated WMO System (WIGOS)",
-        "wmo_3_body": "**Regional WIGOS Centre:**\n* Pilot project: Kazakhstan, Russia, and Belarus.\n* Improving observation quality and data exchange.",
-        "wmo_4_h": "📢 Global Initiative (EW4All)",
-        "wmo_4_body": "**Role of NHMS of RK:**\n* Chair of the Task Team for Region II (Asia).\n* Regional participant in Eastern Europe and CA.",
-        "org_details": "📋 Key Projects by Organizations",
-        "platform_h": "🚀 Kazhydromet — International Educational Platform",
-        "platform_sub": "Key international events held during the reporting period:",
-        "platform_list": "<li><b>WMO Seminar:</b> Climate Data Management</li><li><b>GIZ Seminar:</b> SWIM model for transboundary basins</li><li><b>Workshop:</b> Snowmapper application practice</li>",
-        "wigos_banner": "### 🏆 Sub-regional WIGOS Centre RAVI / RAII\n**Status:** Since January 1, 2026, Kazakhstan officially became a WMO sub-regional center.",
-        "tasks_h": "🎯 Key Tasks of the Center",
-        "region_h": "🌍 Regional Significance",
-        "task_list": [
-            ("🗂️ Centralization", "Access to hydromet data of Central Asian countries."),
-            ("📈 Analytics", "Reports for international organizations."),
-            ("💧 Monitoring", "Control of water resources and atmosphere."),
-            ("🧠 Technology", "Knowledge transfer between regional countries.")
-        ]
-    }
-}
-
-# Текущий язык
-curr_lang = st.session_state.get('lang_code', 'ru')
-L = lang_int.get(curr_lang, lang_int["ru"])
 
 with tabs[9]:
     st.header(L["header"])
@@ -14051,6 +13955,102 @@ with tabs[9]:
         """, unsafe_allow_html=True)
         
 
+    lang_int = {
+        "ru": {
+            "header": "🌐 Международное сотрудничество",
+            "quote": "«Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».",
+            "stats_title": "Ключевые показатели за 2024-2025 гг.",
+            "m1_val": "5", "m1_label": "Международных меморандумов", "m1_sub": "заключено в 2025 году",
+            "m2_val": ">50", "m2_label": "Специалистов обучено", "m2_sub": "онлайн и офлайн форматах",
+            "m3_val": "25+", "m3_label": "Встреч с партнерами", "m3_sub": "для обмена опытом и данными",
+            "wmo_title": "📍 Ключевые направления работы с ВМО",
+            "wmo_1_h": "📊 Региональный центр по паводкам (CARFFGS)",
+            "wmo_1_body": "**Функции Центра по быстроразвивающимся паводкам в ЦА.**\n* Оперативный мониторинг и прогнозирование.\n* Координация усилий стран региона.",
+            "wmo_2_h": "💧 Гидрологический мониторинг (HydroSoS)",
+            "wmo_2_body": "**Инициатива HydroSoS:**\n* Мониторинг состояния водных ресурсов.\n* Оценка речного стока для устойчивого водопользования.",
+            "wmo_3_h": "📡 Интегрированная система ВМО (WIGOS)",
+            "wmo_3_body": "**Региональный Центр WIGOS:**\n* Пилотный проект: Казахстан, Россия и Беларусь.\n* Повышение качества наблюдений и обмена данными.",
+            "wmo_4_h": "📢 Глобальная инициатива (EW4All)",
+            "wmo_4_body": "**Роль НГМС РК:**\n* Председатель Целевой группы для Региона II (Азия).\n* Региональный участник в Восточной Европе и ЦА.",
+            "org_details": "📋 Детализация ключевых проектов по организациям",
+            "platform_h": "🚀 Казгидромет — международная образовательная платформа",
+            "platform_sub": "В отчетном периоде проведены ключевые мероприятия:",
+            "platform_list": "<li><b>Семинар ВМО:</b> Управление климатическими данными</li><li><b>Семинар GIZ:</b> Модель SWIM для трансграничных бассейнов</li><li><b>Воркшоп:</b> Приложение Snowmapper</li>",
+            "wigos_banner": "### 🏆 Субрегиональный Центр ИГСНВ (WIGOS) RAVI / RAII\n**Статус:** С 1 января 2026 года Казахстан официально стал субрегиональным центром ВМО.",
+            "tasks_h": "🎯 Основные задачи РЦИ",
+            "region_h": "🌍 Значение для региона",
+            "task_list": [
+                ("🗂️ Централизация", "Доступ к гидрометаданным стран Центральной Азии."),
+                ("📈 Аналитика", "Отчеты для международных организаций."),
+                ("💧 Мониторинг", "Контроль водных ресурсов и атмосферы."),
+                ("🧠 Технологии", "Трансфер знаний между странами.")
+            ]
+        },
+        "kk": {
+            "header": "🌐 Халықаралық ынтымақтастық",
+            "quote": "«Халықаралық ынтымақтастық біздің қызметіміздің негізі болып табылады, өңірдің климаттық және су қауіпсіздігін қамтамасыз ету үшін жаһандық тәжірибе мен озық технологияларды біріктіреді».",
+            "stats_title": "2024-2025 жж. негізгі көрсеткіштер",
+            "m1_val": "5", "m1_label": "Халықаралық меморандум", "m1_sub": "2025 жылы жасалды",
+            "m2_val": ">50", "m2_label": "Маман оқытылды", "m2_sub": "онлайн және офлайн форматта",
+            "m3_val": "25+", "m3_label": "Серіктестермен кездесу", "m3_sub": "тәжірибе алмасу үшін",
+            "wmo_title": "📍 ДМҰ-мен жұмыстың негізгі бағыттары",
+            "wmo_1_h": "📊 Тасқын жөніндегі өңірлік орталық (CARFFGS)",
+            "wmo_1_body": "**Орталық Азиядағы жедел тасқындар жөніндегі орталық.**\n* Жедел мониторинг және болжау.\n* Өңір елдерінің күш-жігерін үйлестіру.",
+            "wmo_2_h": "💧 Гидрологиялық мониторинг (HydroSoS)",
+            "wmo_2_body": "**HydroSoS бастамасы:**\n* Су ресурстарының жай-күйін мониторингілеу.\n* Тұрақты су пайдалану үшін өзен ағысын бағалау.",
+            "wmo_3_h": "📡 ДМҰ интеграцияланған жүйесі (WIGOS)",
+            "wmo_3_body": "**WIGOS өңірлік орталығы:**\n* Пилоттық жоба: Қазақстан, Ресей және Беларусь.\n* Мәлімет алмасу сапасын арттыру.",
+            "wmo_4_h": "📢 Жаһандық бастама (EW4All)",
+            "wmo_4_body": "**ҚР ГМҚ рөлі:**\n* II өңір (Азия) үшін Мақсатты топтың төрағасы.\n* Шығыс Еуропа мен ОА-дағы өңірлік қатысушы.",
+            "org_details": "📋 Ұйымдар бойынша негізгі жобалар",
+            "platform_h": "🚀 Қазгидромет — халықаралық білім беру платформасы",
+            "platform_sub": "Есепті кезеңде келесі іс-шаралар өткізілді:",
+            "platform_list": "<li><b>ДМҰ семинары:</b> Климаттық деректерді басқару</li><li><b>GIZ семинары:</b> Трансшекаралық бассейндерге арналған SWIM моделі</li><li><b>Воркшоп:</b> Snowmapper қосымшасы</li>",
+            "wigos_banner": "### 🏆 ИГСНВ (WIGOS) RAVI / RAII Субрегионалдық орталығы\n**Мәртебе:** 2026 жылғы 1 қаңтардан бастап Қазақстан ресми түрде ДМҰ субрегионалдық орталығы болды.",
+            "tasks_h": "🎯 Орталықтың негізгі міндеттері",
+            "region_h": "🌍 Өңір үшін маңызы",
+            "task_list": [
+                ("🗂️ Орталықтандыру", "Орталық Азия елдерінің деректеріне қолжетімділік."),
+                ("📈 Аналитика", "Халықаралық ұйымдар үшін есептер дайындау."),
+                ("💧 Мониторинг", "Су ресурстары мен атмосфераны бақылау."),
+                ("🧠 Технологиялар", "Елдер арасында білім трансферті.")
+            ]
+        },
+        "en": {
+            "header": "🌐 International Cooperation",
+            "quote": "“International cooperation is the foundation of our activities, bringing together global experience and advanced technologies to ensure climate and water security in the region.”",
+            "stats_title": "Key Indicators for 2024-2025",
+            "m1_val": "5", "m1_label": "International Memorandums", "m1_sub": "signed in 2025",
+            "m2_val": ">50", "m2_label": "Specialists Trained", "m2_sub": "online and offline formats",
+            "m3_val": "25+", "m3_label": "Partner Meetings", "m3_sub": "for data and experience exchange",
+            "wmo_title": "📍 Key Areas of Work with WMO",
+            "wmo_1_h": "📊 Regional Flash Flood Centre (CARFFGS)",
+            "wmo_1_body": "**Functions of the Flash Flood Centre in CA.**\n* Operational monitoring and forecasting.\n* Coordination of regional efforts.",
+            "wmo_2_h": "💧 Hydrological Monitoring (HydroSoS)",
+            "wmo_2_body": "**HydroSoS Initiative:**\n* Monitoring and forecasting water resources state.\n* River discharge assessment for sustainable use.",
+            "wmo_3_h": "📡 Integrated WMO System (WIGOS)",
+            "wmo_3_body": "**Regional WIGOS Centre:**\n* Pilot project: Kazakhstan, Russia, and Belarus.\n* Improving observation quality and data exchange.",
+            "wmo_4_h": "📢 Global Initiative (EW4All)",
+            "wmo_4_body": "**Role of NHMS of RK:**\n* Chair of the Task Team for Region II (Asia).\n* Regional participant in Eastern Europe and CA.",
+            "org_details": "📋 Key Projects by Organizations",
+            "platform_h": "🚀 Kazhydromet — International Educational Platform",
+            "platform_sub": "Key international events held during the reporting period:",
+            "platform_list": "<li><b>WMO Seminar:</b> Climate Data Management</li><li><b>GIZ Seminar:</b> SWIM model for transboundary basins</li><li><b>Workshop:</b> Snowmapper application practice</li>",
+            "wigos_banner": "### 🏆 Sub-regional WIGOS Centre RAVI / RAII\n**Status:** Since January 1, 2026, Kazakhstan officially became a WMO sub-regional center.",
+            "tasks_h": "🎯 Key Tasks of the Center",
+            "region_h": "🌍 Regional Significance",
+            "task_list": [
+                ("🗂️ Centralization", "Access to hydromet data of Central Asian countries."),
+                ("📈 Analytics", "Reports for international organizations."),
+                ("💧 Monitoring", "Control of water resources and atmosphere."),
+                ("🧠 Technology", "Knowledge transfer between regional countries.")
+            ]
+        }
+    }
+
+    # Текущий язык
+    curr_lang = st.session_state.get('lang_code', 'ru')
+    L = lang_int.get(curr_lang, lang_int["ru"])
 
 
 
