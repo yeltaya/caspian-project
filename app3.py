@@ -7390,16 +7390,20 @@ with tabs[5]:
         
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
-            
-            img_col, info_col = st.columns([1.2, 1])
+            img_col, info_col = st.columns([2.5, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
+                    st.image(
+                        photo_path, 
+                        use_container_width=True, 
+                        caption=f"{L['photo_caption']}: {lang_content['name']}"
+                    )
                 else:
-                    st.info(f"📸 Фото для {name} ожидается")
-                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
-            
+                    st.info(f"{L['wait_photo']} {lang_content['name']}")
+                    st.image("https://via.placeholder.com/800x400?text=Photo+Missing", use_container_width=True)
+                    
+                    
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
@@ -7429,10 +7433,10 @@ with tabs[5]:
                     name='Приток', marker_color='#a6cee3'
                 ))
                 mini_fig.update_layout(
-                    barmode='stack', height=600, 
+                    barmode='stack', height=180, 
                     margin=dict(l=0,r=0,t=10,b=0), 
                     template="plotly_white", showlegend=False,
-                    xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-45, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                    xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
                     yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
                 )
                 # ВАЖНО: используем уникальный key для каждого графика
