@@ -12800,7 +12800,7 @@ with tabs[7]:
         # --- ОСНОВНОЙ МАКЕТ (2 Колонки) ---
         col_chart, col_analysis = st.columns([2, 1])
 
-    with col_chart:
+        with col_chart:
             # Выбор областей прямо над графиком
             selected_regions = st.multiselect(
                 "Выберите области для сравнения:", 
