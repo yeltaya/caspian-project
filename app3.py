@@ -3610,26 +3610,200 @@ with tabs[1]:
         img_filename = "AGRO.jpg"
         img_path = os.path.join(BASE_DIR, img_filename)
         
-        col_map, col_text = st.columns([3, 1])
-        
-        with col_map:
-            if os.path.exists(img_path):
-                st.image(
-                    img_path, 
-                    caption=t["caption"], 
-                    use_container_width=True
-                )
-            else:
-                st.error(t["error"].format(filename=img_filename))
+        # 1. Сначала выводим картинку на всю ширину
+        if os.path.exists(img_path):
+            st.image(
+                img_path, 
+                caption=t["caption"], 
+                use_container_width=True
+            )
+        else:
+            st.error(t["error"].format(filename=img_filename))
                 
-        with col_text:
-            st.markdown(f"****\n{t['main_text']}")
+        # 2. Текст выводим ниже под чертой
+        st.markdown(f"---")
+        st.markdown(t['main_text'])
+        
 
     # Вызов функции с передачей кода языка
     render_final_agro_map(lang_code)
 
 
+    import streamlit as st
+    import plotly.graph_objects as go
+    import pandas as pd
 
+    # 1. Справочники переводов
+    translations = {
+        "ru": {
+            "title": "Агроклиматические зоны по областям",
+            "legend_title": "**Легенда зон:**",
+            "zones": {
+                "I": "Слабо влажная умеренно-теплая",
+                "II": "Засушливая умеренно-теплая",
+                "III": "Засушливая теплая",
+                "IV": "Очень засушливая теплая",
+                "V": "Сухая теплая",
+                "VI": "Сухая умеренно-теплая",
+                "VII": "Очень сухая умеренно-жаркая",
+                "VIII": "Очень сухая жаркая",
+                "IX": "Очень сухая",
+                "X": "Центрально-казахстанский мелкосопочник",
+                "XI": "Предгорья Заилийского Алатау",
+                "XIII": "Предгорья Джунгарского Алатау",
+                "XIV": "Предгорья Северного и Западного Тянь-Шаня",
+                "XV": "Долина р. Или",
+                "XVI": "Горные районы"
+            },
+            "regions": {
+                "АКМОЛА": "Акмолинская", "СКО": "СКО", "КОСТАНАЙ": "Костанайская", 
+                "ПАВЛОДАР": "Павлодарская", "ВКО": "ВКО и Абай", "ЗКО": "ЗКО", 
+                "АКТОБЕ": "Актюбинская", "КАРАГАНДЫ": "Карагандинская и Улытау", 
+                "АТЫРАУ": "Атырауская", "АЛМАТЫ": "Алматинская и Жетысу", 
+                "ЖАМБЫЛ": "Жамбылская", "МАНГИСТАУ": "Мангистауская", 
+                "ТУРКЕСТАН": "Туркестанская", "КЫЗЫЛОРДА": "Кызылординская"
+            }
+        },
+        "kz": {
+            "title": "Облыстар бойынша агроклиматтық аймақтар",
+            "legend_title": "**Аймақтардың сипаттамасы:**",
+            "zones": {
+                "I": "Әлсіз ылғалды қолайлы-жылы",
+                "II": "Құрғақ қолайлы-жылы",
+                "III": "Құрғақ жылы",
+                "IV": "Өте құрғақ жылы",
+                "V": "Құрғақ жылы",
+                "VI": "Құрғақ қолайлы-жылы",
+                "VII": "Өте құрғақ қолайлы-ыстық",
+                "VIII": "Өте құрғақ ыстық",
+                "IX": "Өте құрғақ",
+                "X": "Орталық Қазақстан ұсақ шоқысы",
+                "XI": "Іле Алатауы етегі",
+                "XIII": "Жоңғар Алатауы етегі",
+                "XIV": "Солтүстік және Батыс Тянь-Шань етегі",
+                "XV": "Іле өзенінің аңғары",
+                "XVI": "Таулы аймақтар"
+            },
+            "regions": {
+                "АКМОЛА": "Ақмола", "СКО": "СҚО", "КОСТАНАЙ": "Қостанай", 
+                "ПАВЛОДАР": "Павлодар", "ВКО": "ШҚО және Абай", "ЗКО": "БҚО", 
+                "АКТОБЕ": "Ақтөбе", "КАРАГАНДЫ": "Қарағанды және Ұлытау", 
+                "АТЫРАУ": "Атырау", "АЛМАТЫ": "Алматы және Жетісу", 
+                "ЖАМБЫЛ": "Жамбыл", "МАНГИСТАУ": "Маңғыстау", 
+                "ТУРКЕСТАН": "Түркістан", "КЫЗЫЛОРДА": "Қызылорда"
+            }
+        },
+        "en": {
+            "title": "Agro-climatic zones by regions",
+            "legend_title": "**Zones Legend:**",
+            "zones": {
+                "I": "Slightly humid moderately warm",
+                "II": "Arid moderately warm",
+                "III": "Arid warm",
+                "IV": "Very arid warm",
+                "V": "Dry warm",
+                "VI": "Dry moderately warm",
+                "VII": "Very dry moderately hot",
+                "VIII": "Very dry hot",
+                "IX": "Very dry",
+                "X": "Central Kazakh upland",
+                "XI": "Trans-Ili Alatau foothills",
+                "XIII": "Dzungarian Alatau foothills",
+                "XIV": "North and West Tien Shan foothills",
+                "XV": "Ili River Valley",
+                "XVI": "Mountainous areas"
+            },
+            "regions": {
+                "АКМОЛА": "Akmola", "СКО": "North Kazakhstan", "КОСТАНАЙ": "Kostanay", 
+                "ПАВЛОДАР": "Pavlodar", "ВКО": "East Kazakhstan & Abai", "ЗКО": "West Kazakhstan", 
+                "АКТОБЕ": "Aktobe", "КАРАГАНДЫ": "Karaganda & Ulytau", 
+                "АТЫРАУ": "Atyrau", "АЛМАТЫ": "Almaty & Zhetysu", 
+                "ЖАМБЫЛ": "Zhambyl", "МАНГИСТАУ": "Mangystau", 
+                "ТУРКЕСТАН": "Turkistan", "КЫЗЫЛОРДА": "Kyzylorda"
+            }
+        }
+    }
+
+    # Используем lang_code из вашего селектора (ru/kz/en)
+    t = translations.get(lang_code, translations["ru"])
+
+    # Цвета (не меняются)
+    zones_colors = {
+        "I": "#385e26", "II": "#66ff66", "III": "#92d050", "IV": "#ffff00", 
+        "V": "#e6db98", "VI": "#f8cbad", "VII": "#f1a1eb", "VIII": "#ff8080", 
+        "IX": "#ff0000", "X": "#bf9000", "XI": "#c00000", "XIII": "#843c0c", 
+        "XIV": "#7f6000", "XV": "#00b0f0", "XVI": "#bcbcbc"
+    }
+
+    # 2. Подготовка данных
+    raw_data = [
+        ["АКМОЛА", "I", 6], ["АКМОЛА", "II", 31], ["АКМОЛА", "VI", 63],
+        ["СКО", "I", 18], ["СКО", "II", 55], ["СКО", "III", 27],
+        ["КОСТАНАЙ", "II", 11], ["КОСТАНАЙ", "III", 33], ["КОСТАНАЙ", "IV", 33], ["КОСТАНАЙ", "V", 11], ["КОСТАНАЙ", "VI", 6], ["КОСТАНАЙ", "VII", 6],
+        ["ПАВЛОДАР", "II", 7], ["ПАВЛОДАР", "IV", 60], ["ПАВЛОДАР", "VI", 20], ["ПАВЛОДАР", "XIV", 13],
+        ["ВКО", "II", 29], ["ВКО", "IV", 13], ["ВКО", "VI", 17], ["ВКО", "VII", 24], ["ВКО", "XVI", 17],
+        ["ЗКО", "IV", 31], ["ЗКО", "V", 8], ["ЗКО", "VI", 46], ["ЗКО", "VII", 15],
+        ["АКТОБЕ", "IV", 47], ["АКТОБЕ", "VI", 6], ["АКТОБЕ", "VII", 41], ["АКТОБЕ", "VIII", 6],
+        ["КАРАГАНДЫ", "IV", 13], ["КАРАГАНДЫ", "V", 13], ["КАРАГАНДЫ", "VI", 8], ["КАРАГАНДЫ", "VII", 42], ["КАРАГАНДЫ", "VIII", 8], ["КАРАГАНДЫ", "XIV", 16],
+        ["АТЫРАУ", "VII", 33], ["АТЫРАУ", "VIII", 67],
+        ["АЛМАТЫ", "VII", 16], ["АЛМАТЫ", "VIII", 6], ["АЛМАТЫ", "XI", 9], ["АЛМАТЫ", "XIII", 9], ["АЛМАТЫ", "XIV", 3], ["АЛМАТЫ", "XV", 13], ["АЛМАТЫ", "XVI", 44],
+        ["ЖАМБЫЛ", "VII", 8], ["ЖАМБЫЛ", "XIV", 54], ["ЖАМБЫЛ", "XVI", 38],
+        ["МАНГИСТАУ", "VIII", 90], ["МАНГИСТАУ", "IX", 10],
+        ["ТУРКЕСТАН", "VIII", 8], ["ТУРКЕСТАН", "XIV", 42], ["ТУРКЕСТАН", "XVI", 50],
+        ["КЫЗЫЛОРДА", "VIII", 63], ["КЫЗЫЛОРДА", "IX", 37]
+    ]
+
+    df = pd.DataFrame(raw_data, columns=["Key", "Зона", "Процент"])
+    # Заменяем ключи на переведенные названия регионов
+    df["Область"] = df["Key"].map(t["regions"])
+
+    st.subheader(t["title"])
+
+    col_chart, col_legend = st.columns([4, 1])
+
+    with col_chart:
+        fig = go.Figure()
+        for zone, color in zones_colors.items():
+            df_zone = df[df["Зона"] == zone]
+            if not df_zone.empty:
+                fig.add_trace(go.Bar(
+                    name=zone,
+                    y=df_zone["Область"],
+                    x=df_zone["Процент"],
+                    orientation='h',
+                    marker=dict(color=color),
+                    text=df_zone["Процент"],
+                    textposition='inside',
+                    insidetextanchor='middle',
+                    textfont=dict(color="black", size=11, family="Arial Black"),
+                    hovertemplate=f"<b>{zone}</b>: %{{x}}%<extra></extra>"
+                ))
+
+        fig.update_layout(
+            barmode='stack',
+            height=750,
+            margin=dict(l=250, r=20, t=50, b=50),
+            xaxis=dict(range=[0, 100], tickfont=dict(size=14), gridcolor='rgba(0,0,0,0.1)'),
+            yaxis=dict(autorange="reversed", type='category', tickfont=dict(size=14, color="#1f4e79")),
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col_legend:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.write(t["legend_title"])
+        for zone, color in zones_colors.items():
+            desc = t["zones"].get(zone, "")
+            st.markdown(f'''
+                <div style="display: flex; align-items: flex-start; margin-bottom: 6px;">
+                    <div style="min-width: 16px; height: 16px; background-color: {color}; margin-right: 8px; border: 1px solid #444;"></div>
+                    <div style="font-size: 0.9rem; line-height: 1.1;"><strong>{zone}</strong>: {desc}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        
+        
 
 
  #ЭКОЛОГИЧЕНСКИЙ МОНИТОРИНГ
