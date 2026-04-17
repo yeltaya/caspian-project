@@ -12879,35 +12879,70 @@ with tabs[7]:
                 st.write("Выберите область слева, чтобы увидеть аналитику.")
 
     
+env_labels = {
+    "ru": {
+        "title": "🌱 Мониторинг качества окружающей среды в Республике Казахстан",
+        "info": "Сбор, обработка, анализ данных экологического мониторинга для обеспечения экологической безопасности граждан Казахстана.",
+        "stats_header": "### 📊 Статистика мониторинга РГП «Казгидромет»",
+        "air_quality": "Качество воздуха",
+        "water_quality": "Качество воды",
+        "soil_quality": "Качество почвы"
+    },
+    "kk": {
+        "title": "🌱 Қазақстан Республикасындағы қоршаған орта сапасының мониторингі",
+        "info": "Қазақстан азаматтарының экологиялық қауіпсіздігін қамтамасыз ету үшін экологиялық мониторинг деректерін жинау, өңдеу, талдау.",
+        "stats_header": "### 📊 «Қазгидромет» РМК мониторинг статистикасы",
+        "air_quality": "Ауа сапасы",
+        "water_quality": "Су сапасы",
+        "soil_quality": "Топырақ сапасы"
+    },
+    "en": {
+        "title": "🌱 Environmental Quality Monitoring in the Republic of Kazakhstan",
+        "info": "Collection, processing, and analysis of environmental monitoring data to ensure the ecological safety of citizens of Kazakhstan.",
+        "stats_header": "### 📊 Monitoring Statistics of RSE «Kazhydromet»",
+        "air_quality": "Air Quality",
+        "water_quality": "Water Quality",
+        "soil_quality": "Soil Quality"
+    }
+}
+
+# Определяем текущий язык (используем ваш существующий механизм)
+current_l = st.session_state.get('lang_code', 'ru')
+t_env = env_labels.get(current_l, env_labels["ru"])
 
 with tabs[8]:
-    st.title("🌱Мониторинг качества окружающей среды в Республике Казахстан")
+    st.title(t_env["title"])
     
-    # Стилизация через CSS для красивых карточек
+    # Стилизация через CSS
     st.markdown("""
         <style>
-        .main {
-            background-color: #f8f9fa;
-        }
         .stCard {
             background-color: white;
             padding: 20px;
             border-radius: 15px;
-            border-left: 5px solid #007bff;
+            border-left: 5px solid #28a745; /* Сменим на зеленый для экологии */
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 20px;
-        }
-        .stMetric {
-            background-color: #e3f2fd;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
         }
         </style>
         """, unsafe_allow_html=True)
 
     # Вводная часть
-    st.info("Сбор, обработка, анализ данных экологического мониторинга для обеспечения экологической безопасности граждан Казахстана.")
+    st.info(t_env["info"])
+
+    st.markdown(t_env["stats_header"])
+    
+    # Пример карточек с использованием новых ключей
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.metric(t_env["air_quality"], "🟢 Хорошее", "75 пунктов")
+    with c2:
+        st.metric(t_env["water_quality"], "🟡 Умеренное", "42 объекта")
+    with c3:
+        st.metric(t_env["soil_quality"], "🟢 Норма", "12 регионов")
+        
+        
+
 
     st.markdown("### 📊 Статистика мониторинга РГП «Казгидромет»")
 
