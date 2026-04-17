@@ -7429,10 +7429,10 @@ with tabs[5]:
                     name='Приток', marker_color='#a6cee3'
                 ))
                 mini_fig.update_layout(
-                    barmode='stack', height=180, 
+                    barmode='stack', height=600, 
                     margin=dict(l=0,r=0,t=10,b=0), 
                     template="plotly_white", showlegend=False,
-                    xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-90, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
+                    xaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, tickangle=-45, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black')),
                     yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black', mirror=True, zeroline=False, title_font=dict(size=14, color='black'),tickfont=dict(size=12, color='black'))
                 )
                 # ВАЖНО: используем уникальный key для каждого графика
