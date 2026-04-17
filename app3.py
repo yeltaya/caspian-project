@@ -13839,37 +13839,37 @@ with tabs[8]:
         st.info("Раздел находится в разработке или данные загружаются.")
         
     
-# Словарь переводов для блока международных отношений
-intl_data = {
+# 1. Словарь переводов (можно разместить в начале файла или здесь)
+intl_dict = {
     "ru": {
         "header": "🌐 Международное сотрудничество",
         "quote": "«Международное сотрудничество является фундаментом нашей деятельности, объединяя глобальный опыт и передовые технологии для обеспечения климатической и водной безопасности региона».",
-        "partners": ["ВМО", "МСГ-СНГ", "КАСПКОМ", "ПРООН", "Всемирный банк", "EUMETSAT"],
-        "error": "Ошибка"
+        "partners_names": ["ВМО", "МСГ-СНГ", "КАСПКОМ", "ПРООН", "Всемирный банк", "EUMETSAT"],
+        "err_msg": "Ошибка"
     },
     "kk": {
         "header": "🌐 Халықаралық ынтымақтастық",
         "quote": "«Халықаралық ынтымақтастық біздің қызметіміздің негізі болып табылады, өңірдің климаттық және су қауіпсіздігін қамтамасыз ету үшін жаһандық тәжірибе мен озық технологияларды біріктіреді».",
-        "partners": ["ДМҰ", "МСГ-ТМД", "КАСПКОМ", "БҰҰДБ", "Дүниежүзілік банк", "EUMETSAT"],
-        "error": "Қате"
+        "partners_names": ["ДМҰ", "МСГ-ТМД", "КАСПКОМ", "БҰҰДБ", "Дүниежүзілік банк", "EUMETSAT"],
+        "err_msg": "Қате"
     },
     "en": {
         "header": "🌐 International Cooperation",
         "quote": "“International cooperation is the foundation of our activities, bringing together global experience and advanced technologies to ensure climate and water security in the region.”",
-        "partners": ["WMO", "MSG-CIS", "CASPCOM", "UNDP", "World Bank", "EUMETSAT"],
-        "error": "Error"
+        "partners_names": ["WMO", "MSG-CIS", "CASPCOM", "UNDP", "World Bank", "EUMETSAT"],
+        "err_msg": "Error"
     }
 }
 
-# Инициализация переменной L для этой вкладки
-# Важно: убедитесь, что в st.session_state['lang_code'] лежит 'ru', 'kk' или 'en'
-lang = st.session_state.get('lang_code', 'ru')
-L = intl_data.get(lang, intl_data["ru"])
+# 2. Инициализация переменной L (решает проблему NameError)
+current_lang = st.session_state.get('lang_code', 'ru')
+L = intl_dict.get(current_lang, intl_dict["ru"])
 
+# 3. Сам блок вкладки
 with tabs[9]:
     st.header(L["header"])
     
-    # CSS стилизация
+    # CSS стили для карточек
     st.markdown("""
         <style>
         [data-testid="column"] {
@@ -13885,7 +13885,6 @@ with tabs[9]:
             align-items: center;
             min-height: 180px; 
         }
-        
         [data-testid="column"]:hover {
             transform: translateY(-3px);
             border-color: #1f4e78;
@@ -13893,37 +13892,35 @@ with tabs[9]:
         </style>
     """, unsafe_allow_html=True)
 
-    # Цитата
+    # Блок с цитатой
     st.markdown(f"""
         <div style="border-left: 5px solid #1f4e78; padding-left: 20px; margin-bottom: 30px; background-color: #f8f9fa; padding: 15px;">
             <p style="color: #1f4e78; font-style: italic; font-weight: 400; line-height: 1.4; margin: 0; font-size: 1.1rem;">
-                {L["quote"]}
+                {L['quote']}
             </p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Список партнеров (логотипы остаются те же, меняются только названия)
-    partner_logos = ["wmo_logo.png", "cis_logo.png", "caspcom_logo.png", "undp_logo.png", "worldbank_logo.png", "eumetsat_logo.png"]
+    # Список логотипов (имена файлов должны совпадать с реальными)
+    logo_files = ["wmo_logo.png", "cis_logo.png", "caspcom_logo.png", "undp_logo.png", "worldbank_logo.png", "eumetsat_logo.png"]
     
-    # Формируем список объектов для цикла
-    partners = [{"name": name, "image": img} for name, img in zip(L["partners"], partner_logos)]
+    # Создание колонок по количеству партнеров
+    cols = st.columns(len(logo_files))
 
-    # Создаем колонки
-    cols = st.columns(len(partners))
-
-    for j, partner in enumerate(partners):
+    for j, (name, logo) in enumerate(zip(L["partners_names"], logo_files)):
         with cols[j]:
-            # Название организации
-            st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; font-size: 0.8rem; margin-bottom: 8px; height: 30px; display: flex; align-items: center; justify-content: center;">{partner["name"]}</div>', unsafe_allow_html=True)
+            # Название организации из словаря L
+            st.markdown(f'<div style="text-align: center; font-weight: bold; color: #1f4e78; font-size: 0.8rem; margin-bottom: 8px; height: 30px; display: flex; align-items: center; justify-content: center;">{name}</div>', unsafe_allow_html=True)
             
-            # Логотип
+            # Попытка отобразить логотип
             try:
-                st.image(partner["image"], use_container_width=True)
+                st.image(logo, use_container_width=True)
             except:
-                st.caption(f"{L['error']} {partner['name']}")
+                st.caption(f"{L['err_msg']} {name}")
                 
     st.write("---")
-
+    
+    
     
  
     
