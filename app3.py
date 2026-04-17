@@ -3555,6 +3555,80 @@ with tabs[1]:
     draw_block(a_col3, "agro_btn_3", t["block3_title"], "📲", t["block3_desc"], t["block3_list"], "AutoAgro")
 
 
+    def render_final_agro_map(lang_code):
+        # 1. Словарь переводов для блока карты
+        map_translations = {
+            "ru": {
+                "header": "### 🗺️ Агрометеорологические наблюдения",
+                "caption": "Схема агрометеорологических наблюдений с/х культур",
+                "main_text": """
+                Агрометеорологические наблюдения включают наблюдения за ростом и развитием сельскохозяйственных и пастбищных культур (с измерением параметров растений), за состоянием и увлажнением почвы, а также за основными метеорологическими параметрами.
+                
+                **Основные культуры:**
+                * 🌾 Зерновые
+                * 🌽 Пропашные
+                * 🌻 Масличные
+                * 🍎 Плодовые
+                """,
+                "error": "⚠️ Файл '{filename}' не найден в репозитории."
+            },
+            "kz": {
+                "header": "### 🗺️ Агрометеорологиялық бақылаулар",
+                "caption": "Ауыл шаруашылығы дақылдарын агрометеорологиялық бақылау схемасы",
+                "main_text": """
+                Агрометеорологиялық бақылауларға ауыл шаруашылығы және жайылымдық дақылдардың өсуі мен дамуын бақылау (өсімдік параметрлерін өлшеумен), топырақтың күйі мен ылғалдылығын, сондай-ақ негізгі метеорологиялық параметрлерді бақылау жатады.
+                
+                **Негізгі дақылдар:**
+                * 🌾 Дәнді дақылдар
+                * 🌽 Отамалы дақылдар
+                * 🌻 Майлы дақылдар
+                * 🍎 Жеміс дақылдары
+                """,
+                "error": "⚠️ '{filename}' файлы репозиторийден табылмады."
+            },
+            "en": {
+                "header": "### 🗺️ Agrometeorological Observations",
+                "caption": "Scheme of agrometeorological observations of agricultural crops",
+                "main_text": """
+                Agrometeorological observations include monitoring the growth and development of agricultural and pasture crops (with measurement of plant parameters), soil condition and moisture, as well as key meteorological parameters.
+                
+                **Main Crops:**
+                * 🌾 Grains
+                * 🌽 Row crops
+                * 🌻 Oilseeds
+                * 🍎 Fruit crops
+                """,
+                "error": "⚠️ File '{filename}' not found in the repository."
+            }
+        }
+
+        # Получаем нужный перевод (по умолчанию русский)
+        t = map_translations.get(lang_code, map_translations["ru"])
+
+        st.markdown(t["header"])
+        
+        img_filename = "AGRO.jpg"
+        img_path = os.path.join(BASE_DIR, img_filename)
+        
+        col_map, col_text = st.columns([3, 1])
+        
+        with col_map:
+            if os.path.exists(img_path):
+                st.image(
+                    img_path, 
+                    caption=t["caption"], 
+                    use_container_width=True
+                )
+            else:
+                st.error(t["error"].format(filename=img_filename))
+                
+        with col_text:
+            st.markdown(f"****\n{t['main_text']}")
+
+    # Вызов функции с передачей кода языка
+    render_final_agro_map(lang_code)
+
+
 
 
 
