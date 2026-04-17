@@ -7343,7 +7343,7 @@ with tabs[5]:
                     {"Река / Створ": "р. Токташ – с. Жаугаш Батыра", "Норма": 1.26, "Пик": "2.23 (2016)", "Мин": "0.67 (2022)", "Динамика": "↘ Снижение"},
                     {"Река / Створ": "р. Аксу – а. Аксу", "Норма": 15.3, "Пик": "32.0 (2016)", "Мин": "2.81 (2024)", "Динамика": "↘ Снижение"},
                     {"Река / Створ": "р. Карабалта – а. Баласагун", "Норма": 1.40, "Пик": "4.0 (2016)", "Мин": "0.15 (2024)", "Динамика": "↔ Стабильно"}
-        ]
+    ]
         },
             "Тобыл-Торгайский ВХБ": {
                 "photo": "Тобыл-Торгай.tiff",
@@ -7370,14 +7370,7 @@ with tabs[5]:
             # Добавьте сюда остальные ВХБ по аналогии
     }
     
- 
-    def get_base64_image(image_path):
-        if os.path.exists(image_path):
-            with open(image_path, "rb") as img_file:
-                return base64.b64encode(img_file.read()).decode()
-        return None
-    
- 
+                
     for name in vxb_list:
         # Берем данные из нашего справочника. Если данных нет — берем пустой словарь
         details = VXB_FULL_DATA.get(name, {})
@@ -7390,64 +7383,23 @@ with tabs[5]:
         is_active = (name == display_name)
         anchor_name = name.replace(' ', '-').lower()
         
-    photo_path = os.path.join(BASE_IMAGE_PATH, details["stats"]["photo"])
-    img_data = get_base64_image(photo_path)
-
-    # Расчет процентов (пример для визуализации в блоке)
-    avg_local = sum(details["stats"]["local_flow"]) / len(details["stats"]["years"])
-    avg_inflow = sum([v for v in details["stats"]["inflow"] if v is not None]) / len(details["stats"]["years"])
-    total = avg_local + avg_inflow
-    local_p = (avg_local / total * 100) if total > 0 else 0
-
-    # 2. Отрисовка
-    st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
-
-    with st.container(border=is_active):
-        st.markdown(f"### {'🌟' if is_active else '🔹'} {lang_content['name']}")
+        # Путь к фото теперь берется из справочника
+        photo_path = os.path.join(BASE_IMAGE_PATH, details["photo"])
         
-        if img_data:
-            # Используем вашу HTML структуру с адаптацией под 80/20
-            st.markdown(f"""
-                <div style="display: flex; align-items: flex-start; gap: 20px; width: 80%;">
-                    <div style="flex: 60%; text-align: center;">
-                        <img src="data:image/jpeg;base64,{img_data}" 
-                             style="width: 80%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                        <p style="color: #666; font-size: 0.9em; margin-top: 8px;">
-                            {L['photo_caption']}: {lang_content['name']}
-                        </p>
-                    </div>
-                    
-                    <div style="flex: 20%; font-size: 0.95rem; color: #1f4e79; border-left: 1px solid #eee; padding-left: 15px;">
-                        <div style="margin-bottom: 10px; font-weight: bold; border-bottom: 2px solid #1b5e20; padding-bottom: 5px; color: #1b5e20;">
-                            {L['area'].upper()}
-                        </div>
-                        <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">
-                            {details['stats']['area']:,} км²
-                        </div>
-                        
-                        <div style="margin-bottom: 5px; font-weight: bold; color: #1b5e20;">
-                            РЕСУРСЫ (%)
-                        </div>
-                        <div style="background: #e3f2fd; padding: 5px; border-radius: 4px; margin-bottom: 5px;">
-                            {L['local_res']}: <b>{local_p:.1f}%</b>
-                        </div>
-                        <div style="background: #f1f8e9; padding: 5px; border-radius: 4px; margin-bottom: 15px;">
-                            {L['inflow']}: <b>{100-local_p:.1f}%</b>
-                        </div>
-                        
-                        <div style="font-size: 0.85em; color: #555;">
-                            <b>{L['artery']}</b><br>{lang_content['artery'][:100]}...
-                        </div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.warning(f"Файл {details['stats']['photo']} не найден в {BASE_IMAGE_PATH}")
-
-        # Графики и таблицы можно оставить стандартными Streamlit-компонентами ниже
+        st.markdown(f"<div id='{anchor_name}'></div>", unsafe_allow_html=True)
         
-    
-    
+        with st.container(border=is_active):
+            st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
+            
+            img_col, info_col = st.columns([2, 1])
+            
+            with img_col:
+                if os.path.exists(photo_path):
+                    st.image(photo_path, use_container_width=True, caption=f"Вид бассейна: {name}")
+                else:
+                    st.info(f"📸 Фото для {name} ожидается")
+                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
+            
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
