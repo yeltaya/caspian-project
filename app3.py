@@ -7084,47 +7084,95 @@ with tabs[5]:
     # Вызов функции
     render_water_dynamics(lang_code)
 
+    def show_water_resources_analysis(lang_code):
+        # 1. Словарь переводов
+        analysis_lang = {
+            "ru": {
+                "subheader": "📊 Анализ суммарных водных ресурсов РК (1940–2024 гг.)",
+                "main_text": """
+                    Анализ графика суммарных водных ресурсов Республики Казахстан за **1940–2024 гг.** показывает постепенное 
+                    плавное снижение объемов речного стока. Такая динамика линии тренда отражает естественную реакцию 
+                    гидрологической системы на современные климатические изменения.
+                """,
+                "metric_label": "Тренд стока",
+                "metric_value": "Снижение",
+                "metric_delta": "- плавный",
+                "detail_text": """
+                    Согласно данным, наблюдаемое уменьшение водных ресурсов связано с тем, что рост испаряемости и изменения 
+                    в режиме осадков начинают преобладать над приточностью. Несмотря на то, что в отдельные годы мы видим 
+                    значительные пики водности, общая тенденция указывает на постепенное сокращение среднемноголетнего стока.
+                """,
+                "info_text": "**Ключевой фактор:** Перестройка структуры питания рек, где доля ледникового стока стабилизируется, а трансграничный приток испытывает влияние хозяйственной деятельности в верховьях.",
+                "warning_text": "**Вывод:** Нисходящая линия тренда — это важный индикатор, который призывает к более рациональному и бережному использованию имеющихся запасов воды в долгосрочной перспективе."
+            },
+            "kz": {
+                "subheader": "📊 ҚР жиынтық су ресурстарын талдау (1940–2024 жж.)",
+                "main_text": """
+                    **1940–2024 жж.** аралығындағы Қазақстан Республикасының жиынтық су ресурстарының графигін талдау өзен ағыны 
+                    көлемінің біртіндеп төмендегенін көрсетеді. Тренд сызығының мұндай динамикасы гидрологиялық жүйенің 
+                    қазіргі климаттық өзгерістерге табиғи реакциясын көрсетеді.
+                """,
+                "metric_label": "Ағын тренді",
+                "metric_value": "Төмендеу",
+                "metric_delta": "- бірқалыпты",
+                "detail_text": """
+                    Мәліметтерге сәйкес, су ресурстарының азаюы буланудың артуымен және жауын-шашын режиміндегі өзгерістердің 
+                    келу ағынынан басым бола бастауымен байланысты. Кейбір жылдары су деңгейінің айтарлықтай көтерілуі байқалғанымен, 
+                    жалпы тенденция орташа көпжылдық ағынның біртіндеп қысқаруын көрсетеді.
+                """,
+                "info_text": "**Негізгі фактор:** Өзендердің қоректену құрылымының өзгеруі, мұнда мұздық ағынының үлесі тұрақталады, ал трансшекаралық ағын жоғарғы ағыстағы шаруашылық қызметтің әсерін сезінуде.",
+                "warning_text": "**Қорытынды:** Төмендеу тренді — бұл су қорларын ұзақ мерзімді перспективада тиімдірек және ұқыпты пайдалануға шақыратын маңызды көрсеткіш."
+            },
+            "en": {
+                "subheader": "📊 Analysis of Total Water Resources of the RK (1940–2024)",
+                "main_text": """
+                    Analysis of the total water resources of the Republic of Kazakhstan for **1940–2024** shows a gradual 
+                    decrease in river runoff volumes. This trend line dynamics reflects the natural response 
+                    of the hydrological system to modern climate change.
+                """,
+                "metric_label": "Runoff Trend",
+                "metric_value": "Decrease",
+                "metric_delta": "- gradual",
+                "detail_text": """
+                    According to the data, the observed decrease in water resources is due to the fact that increased evaporation 
+                    and changes in precipitation patterns begin to prevail over inflow. Although significant peaks in water levels 
+                    are seen in individual years, the general trend points to a gradual reduction in average long-term runoff.
+                """,
+                "info_text": "**Key Factor:** Restructuring of river feed patterns, where the share of glacial runoff is stabilizing, while transboundary inflow is influenced by economic activities upstream.",
+                "warning_text": "**Conclusion:** The downward trend line is a critical indicator calling for more rational and careful use of available water reserves in the long term."
+            }
+        }
 
-    def show_water_resources_analysis():
-        st.subheader("📊 Анализ суммарных водных ресурсов РК (1940–2024 гг.)")
+        t = analysis_lang.get(lang_code, analysis_lang["ru"])
+
+        st.subheader(t["subheader"])
         
-        # Создаем контейнер для визуального выделения блока
         with st.container(border=True):
             col1, col2 = st.columns([3, 1])
             
             with col1:
-                st.markdown("""
-                Анализ графика суммарных водных ресурсов Республики Казахстан за **1940–2024 гг.** показывает постепенное 
-                плавное снижение объемов речного стока. Такая динамика линии тренда отражает естественную реакцию 
-                гидрологической системы на современные климатические изменения.
-                """)
+                st.markdown(t["main_text"])
             
             with col2:
-                # Маленький индикатор тренда для наглядности
-                st.metric(label="Тренд стока", value="Снижение", delta="- плавный", delta_color="inverse")
+                # delta_color="inverse" делает снижение (отрицательное значение) красным
+                st.metric(
+                    label=t["metric_label"], 
+                    value=t["metric_value"], 
+                    delta=t["metric_delta"], 
+                    delta_color="inverse"
+                )
 
             st.divider()
 
-            st.write("""
-            Согласно данным, наблюдаемое уменьшение водных ресурсов связано с тем, что рост испаряемости и изменения 
-            в режиме осадков начинают преобладать над приточностью. Несмотря на то, что в отдельные годы мы видим 
-            значительные пики водности, общая тенденция указывает на постепенное сокращение среднемноголетнего стока.
-            """)
+            st.write(t["detail_text"])
 
-            # Используем блок внимания для ключевого вывода
-            st.info("""
-            **Ключевой фактор:** Перестройка структуры питания рек, где доля ледникового стока стабилизируется, 
-            а трансграничный приток испытывает влияние хозяйственной деятельности в верховьях.
-            """, icon="💧")
+            st.info(t["info_text"], icon="💧")
+            st.warning(t["warning_text"], icon="⚠️")
 
-            st.warning("""
-            **Вывод:** Нисходящая линия тренда — это важный индикатор, который призывает к более 
-            рациональному и бережному использованию имеющихся запасов воды в долгосрочной перспективе.
-            """, icon="⚠️")
+    # Вызов функции
+    show_water_resources_analysis(lang_code)
 
-    # Вызов функции в основном приложении
-    if __name__ == "__main__":
-        show_water_resources_analysis()
+
     
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
         BASE_IMAGE_PATH = os.path.join(BASE_DIR)
