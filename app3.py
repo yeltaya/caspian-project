@@ -3604,34 +3604,32 @@ with tabs[1]:
 
         # Получаем нужный перевод (по умолчанию русский)
         t = map_translations.get(lang_code, map_translations["ru"])
-
         st.markdown(t["header"])
         
         img_filename = "AGRO.jpg"
-        img_path = os.path.join(BASE_DIR, img_filename)
-        
-        # Чтобы картинка была крупной, отдаем ей 80-85% ширины (пропорция 4:1 или 5:1)
-        col_map, col_text = st.columns([4, 1])
-        
-        with col_map:
-            if os.path.exists(img_path):
-                # use_container_width=True растянет фото на все 4 части колонки
-                st.image(
-                    img_path, 
-                    caption=t["caption"], 
-                    use_container_width=True 
-                )
-            else:
-                st.error(t["error"].format(filename=img_filename))
-                
-        with col_text:
-            # Убираем лишние отступы, чтобы текст начался на уровне верха картинки
+        # Получаем base64 изображения
+        img_data = get_img_as_base64(img_filename)
+
+        if img_data:
+            # Используем HTML для точного контроля размеров
             st.markdown(f"""
-                <div style="margin-top: 0px;">
-                    {t['main_text']}
+                <div style="display: flex; align-items: flex-start; gap: 20px; width: 100%;">
+                    <div style="flex: 80%; text-align: center;">
+                        <img src="data:image/jpeg;base64,{img_data}" 
+                             style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        <p style="color: #666; font-size: 0.9em; margin-top: 8px;">{t['caption']}</p>
+                    </div>
+                    <div style="flex: 20%; font-size: 1.0rem; color: #1f4e79; border-left: 1px solid #eee; padding-left: 15px;">
+                        <div style="margin-bottom: 10px; font-weight: bold; border-bottom: 2px solid #1b5e20; padding-bottom: 5px;">
+                            {t['regions_label'] if 'regions_label' in t else 'Details'}
+                        </div>
+                        {t['main_text']}
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
-
+        else:
+            st.error(f"Файл {img_filename} не найден.")
+        
     # Вызов
     render_final_agro_map(lang_code)
 
