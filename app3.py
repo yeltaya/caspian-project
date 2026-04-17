@@ -7391,11 +7391,11 @@ with tabs[5]:
         with st.container(border=is_active):
             st.markdown(f"### {'🌟' if is_active else '🔹'} {name}")
             
-            img_col, info_col = st.columns([1, 1])
+            img_col, info_col = st.columns([1.5, 1])
             
             with img_col:
                 if os.path.exists(photo_path):
-                    st.image(photo_path, width=800, caption=f"Вид бассейна: {name}")
+                    st.image(photo_path, width=2000, caption=f"Вид бассейна: {name}")
                 else:
                     st.info(f"📸 Фото для {name} ожидается")
                     st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
