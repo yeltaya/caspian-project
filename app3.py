@@ -6840,7 +6840,26 @@ with tabs[5]:
     from streamlit_folium import st_folium
     import os
     import pandas as pd
-
+    
+    
+    @st.cache_data
+    def load_geo_data(path):
+        all_gdf = []
+        rivers = None
+        if os.path.exists(path):
+            for file in os.listdir(path):
+                if file.endswith("_VXB.shp"):
+                    # Читаем шейп-файлы ВХБ
+                    gdf = gpd.read_file(os.path.join(path, file))
+                    all_gdf.append(gdf.to_crs(epsg=4326))
+            
+            rivers_path = os.path.join(path, "rivers_kz.shp")
+            if os.path.exists(rivers_path):
+                rivers = gpd.read_file(rivers_path).to_crs(epsg=4326)
+                
+        basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
+        return basins, rivers
+        
     # --- СЛОВАРЬ ПЕРЕВОДОВ ---
     vxb_translations = {
         "ru": {
@@ -6903,7 +6922,7 @@ with tabs[5]:
     # Загрузка данных (остается без изменений)
     FOLDER_PATH = os.path.join(BASE_DIR, "shp")
     data_basins, data_rivers = load_geo_data(FOLDER_PATH)
-
+    
     if data_basins is not None:
         tooltip_col = 'ВХБ_н_'
         col1, col2 = st.columns([2.2, 1])
