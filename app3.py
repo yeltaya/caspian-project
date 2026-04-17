@@ -7535,7 +7535,7 @@ with tabs[5]:
                         }
                     }
                 }
-            }
+    }
 
 
     UI_LABELS = {
