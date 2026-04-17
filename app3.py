@@ -7395,11 +7395,26 @@ with tabs[5]:
             
             with img_col:
                 if os.path.exists(photo_path):
-                    st.image(photo_path, width=1000, caption=f"Вид бассейна: {name}")
-                else:
-                    st.info(f"📸 Фото для {name} ожидается")
-                    st.image("https://via.placeholder.com/600x400?text=Photo+Missing", use_container_width=True)
-            
+                    # Добавляем стиль, который убирает внутренние отступы и заставляет картинку быть 100% ширины
+                    st.markdown(
+                        f"""
+                        <style>
+                            img {{
+                                max-width: 100%;
+                                height: auto;
+                                object-fit: contain;
+                            }}
+                            .stImage {{
+                                text-align: center;
+                                display: flex;
+                                justify-content: center;
+                            }}
+                        </style>
+                        """, 
+                        unsafe_allow_html=True
+                    )
+                    st.image(photo_path, use_container_width=True)
+                    
             with info_col:
                 st.markdown(f"##### 📝 Гидрологическая справка: {name}")
                 
