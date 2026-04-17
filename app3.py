@@ -3818,6 +3818,86 @@ with tabs[1]:
             ''', unsafe_allow_html=True)
         
         
+    def render_agro_climate_comparison(lang_code):
+        # 1. Словарь переводов
+        comparison_translations = {
+            "ru": {
+                "main_header": "### 🌡️ Анализ агроклиматических показателей",
+                "left_info": "Суммы эффективных температур воздуха (норма)",
+                "left_caption": "Карта температур за август",
+                "right_info": "Гидротермический коэффициент (ГТК) Селянинова",
+                "right_caption": "ГТК за период 1991-2020 гг.",
+                "expander_title": "🔍 Показать расшифровку ГТК",
+                "gtk_legend": """
+                    * 🟦 **ГТК > 0.8** — хорошо увлажнено
+                    * 🟩 **ГТК = 0.6 - 0.8** — слабо увлажнено
+                    * 🟧 **ГТК = 0.4 - 0.6** — средне засушливо
+                    * 🟨 **ГТК < 0.4** — сильно засушливо
+                """
+            },
+            "kz": {
+                "main_header": "### 🌡️ Агроклиматтық көрсеткіштерді талдау",
+                "left_info": "Тиімді ауа температураларының қосындысы (норма)",
+                "left_caption": "Тамыз айындағы температура картасы",
+                "right_info": "Селяниновтың гидротермиялық коэффициенті (ГТК)",
+                "right_caption": "1991-2020 жж. кезеңіндегі ГТК",
+                "expander_title": "🔍 ГТК түсіндірмесін көрсету",
+                "gtk_legend": """
+                    * 🟦 **ГТК > 0.8** — жақсы ылғалданған
+                    * 🟩 **ГТК = 0.6 - 0.8** — әлсіз ылғалданған
+                    * 🟧 **ГТК = 0.4 - 0.6** — орташа құрғақ
+                    * 🟨 **ГТК < 0.4** — қатты құрғақ
+                """
+            },
+            "en": {
+                "main_header": "### 🌡️ Analysis of Agro-climatic Indicators",
+                "left_info": "Sums of effective air temperatures (norm)",
+                "left_caption": "Temperature map for August",
+                "right_info": "Selyaninov Hydrothermal Coefficient (HTC)",
+                "right_caption": "HTC for the period 1991-2020",
+                "expander_title": "🔍 Show HTC interpretation",
+                "gtk_legend": """
+                    * 🟦 **HTC > 0.8** — well moistened
+                    * 🟩 **HTC = 0.6 - 0.8** — slightly moistened
+                    * 🟧 **HTC = 0.4 - 0.6** — moderately arid
+                    * 🟨 **HTC < 0.4** — severely arid
+                """
+            }
+        }
+
+        t = comparison_translations.get(lang_code, comparison_translations["ru"])
+
+        st.markdown("---")
+        st.markdown(t["main_header"])
+
+        # Пути к файлам
+        path_temp2 = "agro2.jpg"
+        path_gtk = "agro 3.png"
+
+        col_left, col_right = st.columns(2)
+
+        with col_left:
+            st.info(t["left_info"])
+            if os.path.exists(path_temp2):
+                img_temp = Image.open(path_temp2)
+                st.image(img_temp, use_container_width=True, caption=t["left_caption"])
+            else:
+                st.error(f"File not found: {path_temp2}")
+
+        with col_right:
+            st.info(t["right_info"])
+            if os.path.exists(path_gtk):
+                img_gtk = Image.open(path_gtk)
+                st.image(img_gtk, use_container_width=True, caption=t["right_caption"])
+                
+                with st.expander(t["expander_title"]):
+                    st.markdown(t["gtk_legend"])
+            else:
+                st.error(f"File not found: {path_gtk}")
+
+    # Вызов функции
+    render_agro_climate_comparison(lang_code)
+
 
 
  #ЭКОЛОГИЧЕНСКИЙ МОНИТОРИНГ
