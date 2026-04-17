@@ -12880,85 +12880,6 @@ with tabs[7]:
 
     
 
-# Словарик для вкладки экологического мониторинга
-env_translate = {
-    "ru": {
-        "title": "🌱 Мониторинг качества окружающей среды в Республике Казахстан",
-        "intro": "Сбор, обработка, анализ данных экологического мониторинга для обеспечения экологической безопасности граждан Казахстана.",
-        "stats_header": "### 📊 Статистика мониторинга РГП «Казгидромет»",
-        "air_title": "🌬️ Атмосферный воздух",
-        "air_list": """* **Населенных пунктов:** 70 
-* **Постов наблюдений:** 175 *(131 авто / 44 ручных)*
-* **Загрязняющих веществ:** 36 видов
-* **Охват:** 17 областей РК""",
-        "water_title": "💧 Поверхностные воды",
-        "water_list": """* **Водных объектов:** 134 *(88 рек, 29 озер, 13 вдхр)*
-* **Гидрохимических створов:** 373
-* **Морской мониторинг:** 1 (Каспийское море)""",
-        "soil_title": "🏜️ Почва и осадки",
-        "soil_list": """* **Мониторинг почв:** 101 населенный пункт
-* **Атмосферные осадки:** 47 метеостанций
-* **Снежный покров:** 40 метеостанций""",
-        "radio_title": "☢️ Радиационный мониторинг",
-        "radio_list": """* **Гамма-фон:** 89 станций (ежедневно)
-* **Радиоактивное загрязнение:** 43 станции
-* **География:** все 17 областей Казахстана""",
-        "footer_info": "💡 Различные типы постов (ручные, автоматические, передвижные) измеряют широкий спектр тяжелых металлов и загрязнителей."
-    },
-    "kk": {
-        "title": "🌱 Қазақстан Республикасындағы қоршаған орта сапасының мониторингі",
-        "intro": "Қазақстан азаматтарының экологиялық қауіпсіздігін қамтамасыз ету үшін экологиялық мониторинг деректерін жинау, өңдеу және талдау.",
-        "stats_header": "### 📊 «Қазгидромет» РМК мониторинг статистикасы",
-        "air_title": "🌬️ Атмосфералық ауа",
-        "air_list": """* **Елді мекендер:** 70 
-* **Бақылау бекеттері:** 175 *(131 авто / 44 қолмен)*
-* **Ластаушы заттар:** 36 түрі
-* **Қамту аймағы:** ҚР 17 облысы""",
-        "water_title": "💧 Беткі сулар",
-        "water_list": """* **Су нысандары:** 134 *(88 өзен, 29 көл, 13 су қоймасы)*
-* **Гидрохимиялық тұстамалар:** 373
-* **Теңіз мониторингі:** 1 (Каспий теңізі)""",
-        "soil_title": "🏜️ Топырақ пен жауын-шашын",
-        "soil_list": """* **Топырақ мониторингі:** 101 елді мекен
-* **Атмосфералық жауын-шашын:** 47 метеостанция
-* **Қар жамылғысы:** 40 метеостанция""",
-        "radio_title": "☢️ Радиациялық мониторинг",
-        "radio_list": """* **Гамма-фон:** 89 станция (күн сайын)
-* **Радиациялық ластану:** 43 станция
-* **География:** Қазақстанның барлық 17 облысы""",
-        "footer_info": "💡 Бекеттердің әртүрлі түрлері (қолмен, автоматты, жылжымалы) ауыр металдар мен ластаушы заттардың кең спектрін өлшейді."
-    },
-    "en": {
-        "title": "🌱 Environmental Quality Monitoring in the Republic of Kazakhstan",
-        "intro": "Collection, processing, and analysis of environmental monitoring data to ensure the ecological safety of Kazakhstan citizens.",
-        "stats_header": "### 📊 Monitoring Statistics of RSE «Kazhydromet»",
-        "air_title": "🌬️ Ambient Air",
-        "air_list": """* **Settlements:** 70 
-* **Monitoring posts:** 175 *(131 auto / 44 manual)*
-* **Pollutants:** 36 species
-* **Coverage:** 17 regions of RK""",
-        "water_title": "💧 Surface Waters",
-        "water_list": """* **Water bodies:** 134 *(88 rivers, 29 lakes, 13 reservoirs)*
-* **Hydrochemical cross-sections:** 373
-* **Marine monitoring:** 1 (Caspian Sea)""",
-        "soil_title": "🏜️ Soil and Precipitation",
-        "soil_list": """* **Soil monitoring:** 101 settlements
-* **Atmospheric precipitation:** 47 weather stations
-* **Snow cover:** 40 weather stations""",
-        "radio_title": "☢️ Radiation Monitoring",
-        "radio_list": """* **Gamma background:** 89 stations (daily)
-* **Radioactive pollution:** 43 stations
-* **Geography:** all 17 regions of Kazakhstan""",
-        "footer_info": "💡 Various types of posts (manual, automatic, mobile) measure a wide range of heavy metals and pollutants."
-    }
-}
-
-# Получаем текущий язык из session_state
-current_l = st.session_state.get('lang_code', 'ru')
-L = env_translate.get(current_l, env_translate["ru"])
-
-
-
 with tabs[8]:
     st.title(L["title"])
     
@@ -13002,7 +12923,83 @@ with tabs[8]:
 
     st.divider()
     
-    
+        
+    # Словарик для вкладки экологического мониторинга
+    env_translate = {
+        "ru": {
+            "title": "🌱 Мониторинг качества окружающей среды в Республике Казахстан",
+            "intro": "Сбор, обработка, анализ данных экологического мониторинга для обеспечения экологической безопасности граждан Казахстана.",
+            "stats_header": "### 📊 Статистика мониторинга РГП «Казгидромет»",
+            "air_title": "🌬️ Атмосферный воздух",
+            "air_list": """* **Населенных пунктов:** 70 
+    * **Постов наблюдений:** 175 *(131 авто / 44 ручных)*
+    * **Загрязняющих веществ:** 36 видов
+    * **Охват:** 17 областей РК""",
+            "water_title": "💧 Поверхностные воды",
+            "water_list": """* **Водных объектов:** 134 *(88 рек, 29 озер, 13 вдхр)*
+    * **Гидрохимических створов:** 373
+    * **Морской мониторинг:** 1 (Каспийское море)""",
+            "soil_title": "🏜️ Почва и осадки",
+            "soil_list": """* **Мониторинг почв:** 101 населенный пункт
+    * **Атмосферные осадки:** 47 метеостанций
+    * **Снежный покров:** 40 метеостанций""",
+            "radio_title": "☢️ Радиационный мониторинг",
+            "radio_list": """* **Гамма-фон:** 89 станций (ежедневно)
+    * **Радиоактивное загрязнение:** 43 станции
+    * **География:** все 17 областей Казахстана""",
+            "footer_info": "💡 Различные типы постов (ручные, автоматические, передвижные) измеряют широкий спектр тяжелых металлов и загрязнителей."
+        },
+        "kk": {
+            "title": "🌱 Қазақстан Республикасындағы қоршаған орта сапасының мониторингі",
+            "intro": "Қазақстан азаматтарының экологиялық қауіпсіздігін қамтамасыз ету үшін экологиялық мониторинг деректерін жинау, өңдеу және талдау.",
+            "stats_header": "### 📊 «Қазгидромет» РМК мониторинг статистикасы",
+            "air_title": "🌬️ Атмосфералық ауа",
+            "air_list": """* **Елді мекендер:** 70 
+    * **Бақылау бекеттері:** 175 *(131 авто / 44 қолмен)*
+    * **Ластаушы заттар:** 36 түрі
+    * **Қамту аймағы:** ҚР 17 облысы""",
+            "water_title": "💧 Беткі сулар",
+            "water_list": """* **Су нысандары:** 134 *(88 өзен, 29 көл, 13 су қоймасы)*
+    * **Гидрохимиялық тұстамалар:** 373
+    * **Теңіз мониторингі:** 1 (Каспий теңізі)""",
+            "soil_title": "🏜️ Топырақ пен жауын-шашын",
+            "soil_list": """* **Топырақ мониторингі:** 101 елді мекен
+    * **Атмосфералық жауын-шашын:** 47 метеостанция
+    * **Қар жамылғысы:** 40 метеостанция""",
+            "radio_title": "☢️ Радиациялық мониторинг",
+            "radio_list": """* **Гамма-фон:** 89 станция (күн сайын)
+    * **Радиациялық ластану:** 43 станция
+    * **География:** Қазақстанның барлық 17 облысы""",
+            "footer_info": "💡 Бекеттердің әртүрлі түрлері (қолмен, автоматты, жылжымалы) ауыр металдар мен ластаушы заттардың кең спектрін өлшейді."
+        },
+        "en": {
+            "title": "🌱 Environmental Quality Monitoring in the Republic of Kazakhstan",
+            "intro": "Collection, processing, and analysis of environmental monitoring data to ensure the ecological safety of Kazakhstan citizens.",
+            "stats_header": "### 📊 Monitoring Statistics of RSE «Kazhydromet»",
+            "air_title": "🌬️ Ambient Air",
+            "air_list": """* **Settlements:** 70 
+    * **Monitoring posts:** 175 *(131 auto / 44 manual)*
+    * **Pollutants:** 36 species
+    * **Coverage:** 17 regions of RK""",
+            "water_title": "💧 Surface Waters",
+            "water_list": """* **Water bodies:** 134 *(88 rivers, 29 lakes, 13 reservoirs)*
+    * **Hydrochemical cross-sections:** 373
+    * **Marine monitoring:** 1 (Caspian Sea)""",
+            "soil_title": "🏜️ Soil and Precipitation",
+            "soil_list": """* **Soil monitoring:** 101 settlements
+    * **Atmospheric precipitation:** 47 weather stations
+    * **Snow cover:** 40 weather stations""",
+            "radio_title": "☢️ Radiation Monitoring",
+            "radio_list": """* **Gamma background:** 89 stations (daily)
+    * **Radioactive pollution:** 43 stations
+    * **Geography:** all 17 regions of Kazakhstan""",
+            "footer_info": "💡 Various types of posts (manual, automatic, mobile) measure a wide range of heavy metals and pollutants."
+        }
+    }
+
+    # Получаем текущий язык из session_state
+    current_l = st.session_state.get('lang_code', 'ru')
+    L = env_translate.get(current_l, env_translate["ru"])
     
 
 
