@@ -7416,7 +7416,7 @@ with tabs[5]:
                         }
                     },
                     "kk": {
-                        "name": "Нұра-Сарысу СХБ",
+                        "name": "Нұра-Сарысу СШБ",
                         "artery": "Нұра өзені – Орталық Қазақстандағы қар суымен қоректенетін өзен...",
                         "objects": "400-ге жуық су қоймасы мен тоғандар",
                         "rivers": {
@@ -7428,7 +7428,7 @@ with tabs[5]:
                         }
                     },
                     "en": {
-                        "name": "Nura-Sarysu BWMA",
+                        "name": "Nura-Sarysu WMB",
                         "artery": "The Nura River is a river in Central Kazakhstan with snow-fed regime...",
                         "objects": "About 400 reservoirs and ponds",
                         "rivers": {
@@ -7536,8 +7536,8 @@ with tabs[5]:
                         }
                     }
                 }
-    }
-
+            }
+        }
 
     UI_LABELS = {
         "ru": {
