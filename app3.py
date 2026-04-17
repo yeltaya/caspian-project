@@ -4303,59 +4303,59 @@ with tabs[1]:
             
             
         
-# 1. Словарь переводов для подвала
-footer_content = {
-    "ru": {
-        "mission": "Обеспечение экологической и метеорологической безопасности Республики Казахстан через ведение непрерывного мониторинга атмосферного воздуха, водных ресурсов и климатических изменений.",
-        "entity": "© 2026 РГП «КАЗГИДРОМЕТ»"
-    },
-    "kz": {
-        "mission": "Атмосфералық ауаны, су ресурстарын және климаттың өзгеруін үздіксіз мониторингтеу арқылы Қазақстан Республикасының экологиялық және метеорологиялық қауіпсіздігін қамтамасыз ету.",
-        "entity": "© 2026 «ҚАЗГИДРОМЕТ» ШЖҚ РМК"
-    },
-    "en": {
-        "mission": "Ensuring ecological and meteorological safety of the Republic of Kazakhstan through continuous monitoring of air quality, water resources, and climate change.",
-        "entity": "© 2026 RSE 'KAZHYDROMET'"
+    # 1. Словарь переводов для подвала
+    footer_content = {
+        "ru": {
+            "mission": "Обеспечение экологической и метеорологической безопасности Республики Казахстан через ведение непрерывного мониторинга атмосферного воздуха, водных ресурсов и климатических изменений.",
+            "entity": "© 2026 РГП «КАЗГИДРОМЕТ»"
+        },
+        "kz": {
+            "mission": "Атмосфералық ауаны, су ресурстарын және климаттың өзгеруін үздіксіз мониторингтеу арқылы Қазақстан Республикасының экологиялық және метеорологиялық қауіпсіздігін қамтамасыз ету.",
+            "entity": "© 2026 «ҚАЗГИДРОМЕТ» ШЖҚ РМК"
+        },
+        "en": {
+            "mission": "Ensuring ecological and meteorological safety of the Republic of Kazakhstan through continuous monitoring of air quality, water resources, and climate change.",
+            "entity": "© 2026 RSE 'KAZHYDROMET'"
+        }
     }
-}
 
-# 2. Вывод подвала
-f = footer_content[lang_code]
+    # 2. Вывод подвала
+    f = footer_content[lang_code]
 
-st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown(f"""
-    <div style="background: #ffffff; padding: 40px; border-radius: 30px 30px 0 0; color: #001f3f; text-align: center; border-top: 1px solid #eaeaea; box-shadow: 0px -5px 15px rgba(0,0,0,0.02);">
-        <p style="opacity: 0.8; font-size: 1.1rem; max-width: 800px; margin: 0 auto 25px auto; color: #444;">
-            {f['mission']}
-        </p>
-        <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600; flex-wrap: wrap;">
-            <span><a href="https://www.kazhydromet.kz" target="_blank" style="color: #001f3f; text-decoration: none;">🌐 www.kazhydromet.kz</a></span>
-            <span><a href="mailto:info@meteo.kz" style="color: #001f3f; text-decoration: none;">📧 info@meteo.kz</a></span>
-            <span><a href="tel:+77172798394" style="color: #001f3f; text-decoration: none;">📞 +7 (7172) 79-83-94</a></span>
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown(f"""
+        <div style="background: #ffffff; padding: 40px; border-radius: 30px 30px 0 0; color: #001f3f; text-align: center; border-top: 1px solid #eaeaea; box-shadow: 0px -5px 15px rgba(0,0,0,0.02);">
+            <p style="opacity: 0.8; font-size: 1.1rem; max-width: 800px; margin: 0 auto 25px auto; color: #444;">
+                {f['mission']}
+            </p>
+            <div style="display: flex; justify-content: center; gap: 30px; font-weight: 600; flex-wrap: wrap;">
+                <span><a href="https://www.kazhydromet.kz" target="_blank" style="color: #001f3f; text-decoration: none;">🌐 www.kazhydromet.kz</a></span>
+                <span><a href="mailto:info@meteo.kz" style="color: #001f3f; text-decoration: none;">📧 info@meteo.kz</a></span>
+                <span><a href="tel:+77172798394" style="color: #001f3f; text-decoration: none;">📞 +7 (7172) 79-83-94</a></span>
+            </div>
+            <hr style="opacity: 0.1; margin: 25px 0; border: 0; border-top: 1px solid #001f3f;">
+            <p style="font-size: 0.8rem; opacity: 0.6; letter-spacing: 1px; color: #666;">
+                {f['entity']}
+            </p>
         </div>
-        <hr style="opacity: 0.1; margin: 25px 0; border: 0; border-top: 1px solid #001f3f;">
-        <p style="font-size: 0.8rem; opacity: 0.6; letter-spacing: 1px; color: #666;">
-            {f['entity']}
-        </p>
-    </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    
-# 1. Словарь переводов для вкладки Прогноз погоды
-forecast_content = {
-    "ru": {
-        "title": "🌦️ Гидрометцентр Казахстана: Оперативность. Безопасность.",
-        "description": "<b>Гидрометцентр — это сердце Казгидромета.</b> Мы работаем круглосуточно (24/7), чтобы вовремя предупреждать вас о штормах и давать точные прогнозы в режиме реального времени."
-    },
-    "kz": {
-        "title": "🌦️ Қазақстан Гидрометцентрі: Жеделдік. Қауіпсіздік.",
-        "description": "<b>Гидрометцентр — Қазгидрометтің жүрегі.</b> Біз дауыл туралы дер кезінде ескерту және нақты уақыт режимінде дәл болжамдар беру үшін тәулік бойы (24/7) жұмыс істейміз."
-    },
-    "en": {
-        "title": "🌦️ Hydrometcenter of Kazakhstan: Efficiency. Safety.",
-        "description": "<b>The Hydrometcenter is the heart of Kazhydromet.</b> We work 24/7 to warn you about storms in time and provide accurate real-time forecasts."
+        
+    # 1. Словарь переводов для вкладки Прогноз погоды
+    forecast_content = {
+        "ru": {
+            "title": "🌦️ Гидрометцентр Казахстана: Оперативность. Безопасность.",
+            "description": "<b>Гидрометцентр — это сердце Казгидромета.</b> Мы работаем круглосуточно (24/7), чтобы вовремя предупреждать вас о штормах и давать точные прогнозы в режиме реального времени."
+        },
+        "kz": {
+            "title": "🌦️ Қазақстан Гидрометцентрі: Жеделдік. Қауіпсіздік.",
+            "description": "<b>Гидрометцентр — Қазгидрометтің жүрегі.</b> Біз дауыл туралы дер кезінде ескерту және нақты уақыт режимінде дәл болжамдар беру үшін тәулік бойы (24/7) жұмыс істейміз."
+        },
+        "en": {
+            "title": "🌦️ Hydrometcenter of Kazakhstan: Efficiency. Safety.",
+            "description": "<b>The Hydrometcenter is the heart of Kazhydromet.</b> We work 24/7 to warn you about storms in time and provide accurate real-time forecasts."
+        }
     }
-}
 
 # 2. Применение во вкладке
 with tabs[2]:
@@ -6840,94 +6840,90 @@ with tabs[5]:
     from streamlit_folium import st_folium
     import os
     import pandas as pd
-    import plotly.graph_objects as go
-     
-    
-    base_path = os.path.dirname(os.path.abspath(__file__))
-        
-        
-    # --- НАСТРОЙКИ И ДАННЫЕ ---
-    FOLDER_PATH = os.path.join(BASE_DIR, "shp")
 
+    # --- СЛОВАРЬ ПЕРЕВОДОВ ---
+    vxb_translations = {
+        "ru": {
+            "title": "🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА",
+            "stats_header": "### 📊 Характеристики",
+            "norm_label": "💠 Норма бассейна (W)",
+            "local_label": "💧︎ Местный сток",
+            "inflow_label": "💧 Приток",
+            "outflow_label": "📤 **Отток:**",
+            "no_outflow": "🔄 Трансграничный отток не зафиксирован",
+            "btn_text": "📈 Посмотреть гидрограф бассейна",
+            "caption": "ℹ️ Выберите бассейн на карте для детального анализа",
+            "unit": "км³/год",
+            "rk": "Республика Казахстан"
+        },
+        "kz": {
+            "title": "🌊 ҚАЗАҚСТАННЫҢ СУ РЕСУРСТАРЫ",
+            "stats_header": "### 📊 Сипаттамалары",
+            "norm_label": "💠 Бассейн нормасы (W)",
+            "local_label": "💧︎ Жергілікті ағын",
+            "inflow_label": "💧 Келу ағыны",
+            "outflow_label": "📤 **Шығыс:**",
+            "no_outflow": "🔄 Трансшекаралық шығыс тіркелмеген",
+            "btn_text": "📈 Бассейн гидрографын көру",
+            "caption": "ℹ️ Толық талдау үшін картадан бассейнді таңдаңыз",
+            "unit": "км³/жыл",
+            "rk": "Қазақстан Республикасы"
+        },
+        "en": {
+            "title": "🌊 WATER RESOURCES OF KAZAKHSTAN",
+            "stats_header": "### 📊 Characteristics",
+            "norm_label": "💠 Basin Norm (W)",
+            "local_label": "💧︎ Local Runoff",
+            "inflow_label": "💧 Inflow",
+            "outflow_label": "📤 **Outflow:**",
+            "no_outflow": "🔄 No transboundary outflow recorded",
+            "btn_text": "📈 View Basin Hydrograph",
+            "caption": "ℹ️ Select a basin on the map for detailed analysis",
+            "unit": "km³/year",
+            "rk": "Republic of Kazakhstan"
+        }
+    }
+
+    # Данные (оставляем ключи на русском для внутренней логики сопоставления с SHP)
     VXB_STATS = {
         "Арало-Сырдарьинский ВХБ": {"норма": 21.42, "местные": 3.22, "приток": 18.21, "отток": None},
-        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, "отток": "В КНР: 0.67"},
-        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, "отток": "В КНР: 2.20, В РФ: 26.2"},
-        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, "отток": "В РФ: 1.48"},
-        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, "отток": "В РФ: 1.86"},
+        "Балкаш-Алакольский ВХБ": {"норма": 29.91, "местные": 17.20, "приток": 12.71, "отток": {"ru": "В КНР: 0.67", "kz": "ҚХР-ға: 0.67", "en": "To China: 0.67"}},
+        "Ертисский ВХБ": {"норма": 33.38, "местные": 26.36, "приток": 7.03, "отток": {"ru": "В КНР: 2.20, В РФ: 26.2", "kz": "ҚХР-ға: 2.20, РФ-ға: 26.2", "en": "To China: 2.20, To Russia: 26.2"}},
+        "Жайык-Каспийский ВХБ": {"норма": 12.00, "местные": 3.36, "приток": 8.63, "отток": {"ru": "В РФ: 1.48", "kz": "РФ-ға: 1.48", "en": "To Russia: 1.48"}},
+        "Есильский ВХБ": {"норма": 2.29, "местные": 2.29, "приток": 0, "отток": {"ru": "В РФ: 1.86", "kz": "РФ-ға: 1.86", "en": "To Russia: 1.86"}},
         "Нура-Сарысуйский ВХБ": {"норма": 1.16, "местные": 1.16, "приток": 0, "отток": None},
         "Шу-Таласский ВХБ": {"норма": 4.12, "местные": 1.29, "приток": 2.84, "отток": None},
-        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, "отток": "В РФ: 0.46"},
+        "Тобыл-Торгайский ВХБ": {"норма": 1.67, "местные": 1.33, "приток": 0.34, "отток": {"ru": "В РФ: 0.46", "kz": "РФ-ға: 0.46", "en": "To Russia: 0.46"}},
         "Республика Казахстан": {"норма": 106.0, "местные": 56.2, "приток": 49.8, "отток": None}
     }
 
-    @st.cache_data
-    def load_geo_data(path):
-        all_gdf = []
-        rivers = None
-        if os.path.exists(path):
-            for file in os.listdir(path):
-                if file.endswith("_VXB.shp"):
-                    gdf = gpd.read_file(os.path.join(path, file))
-                    all_gdf.append(gdf.to_crs(epsg=4326))
-            rivers_path = os.path.join(path, "rivers_kz.shp")
-            if os.path.exists(rivers_path):
-                rivers = gpd.read_file(rivers_path).to_crs(epsg=4326)
-        basins = pd.concat(all_gdf, ignore_index=True) if all_gdf else None
-        return basins, rivers
+    vt = vxb_translations.get(lang_code, vxb_translations["ru"])
+    st.title(vt["title"])
 
-    st.title("🌊 ВОДНЫЕ РЕСУРСЫ КАЗАХСТАНА")
+    # Загрузка данных (остается без изменений)
+    FOLDER_PATH = os.path.join(BASE_DIR, "shp")
     data_basins, data_rivers = load_geo_data(FOLDER_PATH)
 
     if data_basins is not None:
         tooltip_col = 'ВХБ_н_'
-        
-        # --- ВЕРХНЯЯ ЧАСТЬ: КАРТА И ИНФО-ПАНЕЛЬ ---
         col1, col2 = st.columns([2.2, 1])
         
         with col1:
-                    m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
-                    
-                    # 1. Основные полигоны ВХБ
-                    folium.GeoJson(
-                        data_basins,
-                        style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
-                        highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
-                        tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])
-                    ).add_to(m)
+            m = folium.Map(location=[48.0, 68.0], zoom_start=5, tiles="cartodbpositron")
+            folium.GeoJson(
+                data_basins,
+                style_function=lambda x: {'fillColor': '#3186cc', 'color': '#1d3557', 'weight': 1, 'fillOpacity': 0.4},
+                highlight_function=lambda x: {'fillColor': '#00fbff', 'color': 'white', 'weight': 3, 'fillOpacity': 0.7},
+                tooltip=folium.GeoJsonTooltip(fields=[tooltip_col])
+            ).add_to(m)
 
-                    # 2. ДОБАВЛЯЕМ НАЗВАНИЯ НА КАРТУ
-                    for _, row in data_basins.iterrows():
-                        # Вычисляем центр бассейна для размещения текста
-                        centroid = row.geometry.centroid
-                        name = row[tooltip_col]
-                        
-                        # Создаем текстовую метку
-                        folium.Marker(
-                            location=[centroid.y, centroid.x],
-                            icon=folium.DivIcon(
-                                html=f"""<div style="
-                                    font-family: sans-serif; 
-                                    color: #1d3557; 
-                                    font-size: 9pt; 
-                                    font-weight: bold; 
-                                    text-shadow: 1px 1px 2px white;
-                                    width: 150px;
-                                    text-align: center;
-                                    transform: translate(-50%, -50%);
-                                    pointer-events: none;
-                                ">{name}</div>"""
-                            )
-                        ).add_to(m)
+            # Реки
+            if data_rivers is not None:
+                folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
+            
+            output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map")
 
-                    # 3. Реки
-                    if data_rivers is not None:
-                        folium.GeoJson(data_rivers, style_function=lambda x: {'color': '#003399', 'weight': 1.2, 'opacity': 0.7}, interactive=False).add_to(m)
-                    
-                    output = st_folium(m, width=None, height=500, use_container_width=True, key="vxb_map")
-                    
-
-        # Определение выбора
+        # Логика определения выбранного бассейна
         display_name = "Республика Казахстан"
         if output and output.get("last_active_drawing"):
             raw_name = output["last_active_drawing"]["properties"].get(tooltip_col, "Республика Казахстан")
@@ -6939,62 +6935,40 @@ with tabs[5]:
                     break
 
         with col2:
-                    # Внедряем CSS, чтобы сделать текст внутри метрик жирным
-                    st.markdown("""
-                        <style>
-                        [data-testid="stMetricValue"] {
-                            font-weight: 800 !important;
-                            color: #1e3799;
-                        }
-                        </style>
-                        """, unsafe_allow_html=True)
+            st.markdown("""<style>[data-testid="stMetricValue"] { font-weight: 800 !important; color: #1e3799; }</style>""", unsafe_allow_html=True)
+            st.markdown(vt["stats_header"])
+            
+            # Локализация названия бассейна для заголовка
+            translated_display_name = vt["rk"] if display_name == "Республика Казахстан" else display_name
+            st.success(f"📍 **{translated_display_name}**")
+            
+            cur_stats = VXB_STATS[display_name]
+            st.metric(vt["norm_label"], f"{cur_stats['норма']} {vt['unit']}")
+            
+            m_col1, m_col2 = st.columns(2)
+            with m_col1:
+                st.metric(vt["local_label"], f"{cur_stats['местные']} км³")
+            with m_col2:
+                st.metric(vt["inflow_label"], f"{cur_stats['приток']} км³")
+            
+            # Блок оттока с переводом
+            if cur_stats.get('отток'):
+                outflow_text = cur_stats['отток'][lang_code] if isinstance(cur_stats['отток'], dict) else cur_stats['отток']
+                st.warning(f"{vt['outflow_label']} **{outflow_text}**")
+            else:
+                st.info(vt["no_outflow"])
 
-                    st.markdown("### 📊 Характеристики")
-                    st.success(f"📍 **{display_name}**")
-                    
-                    cur_stats = VXB_STATS[display_name]
-                    
-                    # 1. Общая норма (жирный шрифт применится автоматически через CSS)
-                    st.metric("💠 Норма бассейна (W)", f"{cur_stats['норма']} км³/год")
-                    
-                    # Разделяем на Местный сток и Приток
-                    m_col1, m_col2 = st.columns(2)
-                    with m_col1:
-                    # Используем символ '💧' (U+1F4A7) с модификатором текста для затемнения
-                        st.metric("💧︎ Местный сток", f"{cur_stats['местные']} км³")
-    
-                    with m_col2:
-                        st.metric("💧 Приток", f"{cur_stats['приток']} км³")
-                    
-                    # 3. Блок оттока
-                    if cur_stats.get('отток'):
-                        # Внутри st.warning можно использовать стандартный жирный шрифт **
-                        st.warning(f"📤 **Отток:** **{cur_stats['отток']}**")
-                    else:
-                        st.info("🔄 Трансграничный отток не зафиксирован")
-
-                    st.markdown("---") 
-                    
-                    # 4. Стилизованная кнопка перехода
-                    if display_name != "Республика Казахстан":
-                        anchor_id = display_name.replace(' ', '-').lower()
-                        st.markdown(f"""
-                            <a href="#{anchor_id}" style="text-decoration: none;">
-                                <div style="
-                                    background: linear-gradient(90deg, #1e3799, #009432);
-                                    color: white; 
-                                    padding: 12px; 
-                                    border-radius: 8px; 
-                                    text-align: center;
-                                    font-weight: bold;
-                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                                ">
-                                    📈 Посмотреть гидрограф бассейна
-                                </div>
-                            </a>
-                        """, unsafe_allow_html=True)
-                    else:
-                        st.caption("ℹ️ Выберите бассейн на карте для детального анализа")
+            if display_name != "Республика Казахстан":
+                anchor_id = display_name.replace(' ', '-').lower()
+                st.markdown(f"""
+                    <a href="#{anchor_id}" style="text-decoration: none;">
+                        <div style="background: linear-gradient(90deg, #1e3799, #009432); color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
+                            {vt['btn_text']}
+                        </div>
+                    </a>
+                """, unsafe_allow_html=True)
+            else:
+                st.caption(vt["caption"])
                 
       
         import streamlit as st
