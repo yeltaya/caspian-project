@@ -3610,22 +3610,29 @@ with tabs[1]:
         img_filename = "AGRO.jpg"
         img_path = os.path.join(BASE_DIR, img_filename)
         
-        # 1. Сначала выводим картинку на всю ширину
-        if os.path.exists(img_path):
-            st.image(
-                img_path, 
-                caption=t["caption"], 
-                use_container_width=True
-            )
-        else:
-            st.error(t["error"].format(filename=img_filename))
-                
-        # 2. Текст выводим ниже под чертой
-        st.markdown(f"---")
-        st.markdown(t['main_text'])
+        # Чтобы картинка была крупной, отдаем ей 80-85% ширины (пропорция 4:1 или 5:1)
+        col_map, col_text = st.columns([4, 1])
         
+        with col_map:
+            if os.path.exists(img_path):
+                # use_container_width=True растянет фото на все 4 части колонки
+                st.image(
+                    img_path, 
+                    caption=t["caption"], 
+                    use_container_width=True 
+                )
+            else:
+                st.error(t["error"].format(filename=img_filename))
+                
+        with col_text:
+            # Убираем лишние отступы, чтобы текст начался на уровне верха картинки
+            st.markdown(f"""
+                <div style="margin-top: 0px;">
+                    {t['main_text']}
+                </div>
+            """, unsafe_allow_html=True)
 
-    # Вызов функции с передачей кода языка
+    # Вызов
     render_final_agro_map(lang_code)
 
 
